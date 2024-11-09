@@ -5,6 +5,7 @@
 
 enum class Token {
     Name, // Only used by the parser
+    Space,
     Function,
     Int,
     Float,
@@ -13,7 +14,6 @@ enum class Token {
     Tuple,
     OpeningParenthesis,
     ClosingParenthesis,
-    Space,
     Unit,
     Empty,
     /**NullRoot is used only when an algorithm must start with an existing node
