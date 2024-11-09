@@ -5,15 +5,27 @@ A cpp replacement for the python_gui
 # STYLE FILES:
 
 ## FEATURES:
-### Style types
-int
-float
-string
-tuple[type,...]
-bool
+### Style types (exprimed in pseudo regex)
+- int: [0-9]+
+- float: [0-9]+\.[0-9]\*
+- string: .+
+- tuple[type,...]: \\( *\<style-type\>(, *\<style-type\>)* *\\)
+- bool
+
+### Operators
+- \+ addition
+- \- substraction
+- \* multiplication
+- \/ division
+- \% modulo
+
+### Functions
+- round(int|float)
 
 #### Special
-An int can be followed by a % to apply a percentage of the parent size.
+An int can be followed by:
+ - % to apply a percentage of the parent size
+ - px to be in pixels (default)
 
 ### Default styles:
 - UIElement:
@@ -70,9 +82,23 @@ A class can be used to apply style to multiple elements at once
 - distant parent
 
 ## SYNTAX:
+
+### Syntax
+
 ```
-"<element-name|.class|#id><<.class|#id>| element-name>[...][, ...]" { 
-    <style-name>: <styleType>[,...];
+"<element-name|.class|#id><<.class|#id|:modifier>| element-name>[...][, ...]" { 
+    <style-name>: <string|int|float|bool|tuple[string|int|float|bool,...]>[,...];
+    <style-name>: <int|float> +|-|/|*|% <int|float>;
+    <style-name>: function(<string|int|float|bool|tuple[string|int|float|bool,...]>, ...);
+
+    <element-name|.class|#id|:modifier><<.class|#id|:modifier>| element-name>[...] {
+        // recursive (styles, inner elements|classes|ids|modifiers)
+        [...]
+    }
+    // comment
+    /*
+    multiline comment
+    */
 }
 ```
 
