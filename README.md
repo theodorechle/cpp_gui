@@ -28,7 +28,7 @@ An int can be followed by:
  - px to be in pixels (default)
 
 ### Default styles:
-- UIElement:
+- element: // UIElement
     - background-color: string|tuple[int,int,int]
     - border-color: string|tuple[int,int,int]
     - border-width: int
@@ -44,21 +44,21 @@ An int can be followed by:
     - min-width: int
     - max-width: int
     - padding: int
-- Label:
+- label: // Label
     - text-color: string|tuple[int,int,int]
     - font: string
     - font-size: int
     - antialias: bool
-- InputTextBox:
+- input: // InputTextBox
     - caret-color: string|tuple[int,int,int]
     - placeholder-color: string|tuple[int,int,int]
-- Slider:
+- slider: // Slider
     - bar-color: string|tuple[int,int,int]
     - cursor-color: string|tuple[int,int,int]
-- Container:
-- ItemList:
-- Button:
-- Table:
+- container: // Container
+- list: // ItemList
+- button: // Button
+- table: // Table
 
 #### ! support custom styles
 
@@ -86,7 +86,7 @@ A class can be used to apply style to multiple elements at once
 ### Syntax
 
 ```
-"<element-name|.class|#id><<.class|#id|:modifier>| element-name>[...][, ...]" { 
+<element-name|.class|#id><<.class|#id|:modifier>| element-name>[...][, ...] { 
     <style-name>: <string|int|float|bool|tuple[string|int|float|bool,...]>[,...];
     <style-name>: <int|float> +|-|/|*|% <int|float>;
     <style-name>: function(<string|int|float|bool|tuple[string|int|float|bool,...]>, ...);
@@ -103,3 +103,16 @@ A class can be used to apply style to multiple elements at once
 ```
 
 ### Examples
+```
+element { // ui elements will have a red background
+    background-color: #ff0000;
+}
+
+label.blue { // labels with the class 'blue' will have a text in blue
+    text-color: #0000ff;
+}
+
+label.blue:hovered { // labels with the class 'blue' will have a text in gray
+    text-color: #888888; // this override the previous declaration of 'label.blue' when it's hovered
+}
+```
