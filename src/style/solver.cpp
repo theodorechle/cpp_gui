@@ -1,6 +1,5 @@
 #include "solver.hpp"
 #include "parser.hpp"
-#include "addition.hpp"
 
 void sortTree(Node* node) {
     
@@ -16,7 +15,7 @@ Node *goToNextExpr(Node *node) {
     return node->getParent();
 }
 
-Node *solve(Node *expr, bool debug) {
+/* Node *solve(Node *expr, bool debug) {
     bool updated = true;
     bool delete_node = false;
     Operator *ope;
@@ -40,4 +39,4 @@ Node *solve(Node *expr, bool debug) {
         }
     }
     return expr;
-}
+} */

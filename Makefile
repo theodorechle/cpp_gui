@@ -1,28 +1,40 @@
-#CC : le compilateur à utiliser
 CC=g++
 
-#CFLAGS : les options de compilation  (en C++ moderne, et voir les warning)
 CFLAGS= -std=c++17 -Wall -g
 
-# les fichiers sources : tous les fichiers présents dans src/
+# source files
 SRC=$(wildcard src/*.cpp)
 
-# les fichiers objets (.o)
+# object files (.o)
 OBJ=$(patsubst src/%.cpp,obj/%.o,$(SRC))
 
+# source files for style 
+SRC_STYLE=$(wildcard src/style/*.cpp)
 
-#edition des liens : génération de l'exécutable à partir des .o 
+# object files for style (.o)
+OBJ_STYLE=$(patsubst src/style/%.cpp,obj/style/%.o,$(SRC_STYLE))
+
+
 bin/exe: $(OBJ)
-	$(CC) $(OBJ) -o $@
+	$(CC) $^ -o $@
+bin/style: $(filter-out obj/tests.o, $(OBJ_STYLE))
+	$(CC) $^ -o $@
+bin/style-tests: obj/style/tests.o $(filter-out obj/main.o, $(OBJ_STYLE))
+	$(CC) $^ -o $@
 
-# génération des .o à partir des .cpp et .hpp correspondants :
 obj/main.o : src/main.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 obj/%.o: src/%.cpp src/%.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-#nettoyage : destruction des .o et de l'exécutable
+obj/style/style.o : src/style/style.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+obj/style/%.o: src/style/%.cpp src/style/%.hpp
+	$(CC) $(CFLAGS) -c $< -o $@
+obj/style/tests.o : src/style/tests.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
-	rm obj/*.o bin/exe
+	rm obj/*.o bin/*
 
 

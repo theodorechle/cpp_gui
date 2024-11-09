@@ -1,13 +1,6 @@
 using namespace std;
 
 #include "parser.hpp"
-#include "functions.hpp"
-#include "addition.hpp"
-#include "substraction.hpp"
-#include "multiplication.hpp"
-#include "division.hpp"
-#include "power.hpp"
-#include "factorial.hpp"
 
 void Parser::getRootOrStopBeforeParenthesis() {
     if (isNodeNull(expressionTree) ||

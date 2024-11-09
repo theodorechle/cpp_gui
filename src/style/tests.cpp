@@ -5,7 +5,6 @@
 #include "parser.hpp"
 #include "solver.hpp"
 #include "tokenizer.hpp"
-#include "number.hpp"
 
 using namespace std;
 

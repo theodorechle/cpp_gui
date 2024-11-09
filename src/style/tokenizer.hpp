@@ -28,7 +28,11 @@ public:
     void tokenize();
     void tokenizeSpace();
     void tokenizeName();
-    void tokenizeNumber();
+    void tokenizeString();
+    void tokenizeInt();
+    void tokenizeFloat();
+    void tokenizeBool();
+    void tokenizeUnit();
     void tokenizeSpecialCharacters();
     Node *getResult() {return expressionTree;}
 };

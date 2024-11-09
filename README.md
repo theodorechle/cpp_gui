@@ -8,7 +8,7 @@ A cpp replacement for the python_gui
 ### Style types (exprimed in pseudo regex)
 - int: [0-9]+
 - float: [0-9]+\.[0-9]\*
-- string: .+
+- string: [^,;\s{}()[]]+
 - tuple[type,...]: \\( *\<style-type\>(, *\<style-type\>)* *\\)
 - bool
 
@@ -17,14 +17,17 @@ A cpp replacement for the python_gui
 - \- substraction
 - \* multiplication
 - \/ division
-- \% modulo
 
 ### Functions
 - round(int|float)
 
 #### Special
 An int can be followed by:
- - % to apply a percentage of the parent size
+ - % to apply a percentage of the parent size (automatically choose width or height)
+ - pw to apply a percentage of the parent width
+ - ph to apply a percentage of the parent height
+ - ww to apply a percentage of the window width
+ - wh to apply a percentage of the window height
  - px to be in pixels (default)
 
 ### Default styles:

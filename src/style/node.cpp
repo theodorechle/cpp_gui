@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "node.hpp"
-#include "operator.hpp"
 #include "parser.hpp"
 
 using namespace std;
@@ -58,64 +57,6 @@ void Node::setParent(Node *parent) {
         node->parent = parent;
         node = node->getNext();
     }
-}
-
-string Node::str() const {
-    bool parenthesis = false;
-    Node *child;
-    string s;
-    if (isOperator(getTokenType())) {
-        // add parenthesis if father is operator and has bigger priority
-        if (getParent() != nullptr) {
-        }
-        if (getParent() != nullptr &&
-        isOperator(getParent()->getTokenType()) &&
-        getOperatorPriority(getTokenType()) < getOperatorPriority(getParent()->getTokenType())) {
-            parenthesis = true;
-            s += "(";
-        }
-        // check to allow using the method even if the tree is not fully created
-        if (getChild() != nullptr)
-            s += getChild()->str();
-        s += OperatorsString(getTokenType());
-        // same as first check
-        if (getChild() != nullptr &&
-        getChild()->getNext() != nullptr)
-            s += getChild()->getNext()->str();
-        if (parenthesis) s += ")";
-    }
-    else if (getTokenType() == Token::Function)
-    {
-        s += getValue();
-        s += "(";
-        child = getChild();
-        if (child != nullptr && child->getTokenType() != Token::Empty) { // don't print anything in the parenthesis if the function doesn't have parameters
-            s += child->str();
-            child = child->getNext();
-            while (child != nullptr) {
-                s += ", ";
-                s += child->str();
-                child = child->getNext();
-            }
-        }
-        s += ")";
-    }
-    else if (getTokenType() == Token::OpeningParenthesis ||
-            getTokenType() == Token::ClosingParenthesis) {
-        s += getChild()->str();
-    }
-    else s += getValue();
-    return s;
-}
-
-string Node::strNexts() const {
-    string s;
-    const Node *next = this;
-    while (next != nullptr) {
-        s += next->getValue();
-        next = next->getNext();
-    }
-    return s;
 }
 
 void Node::setChild(Node *child)  {
@@ -268,19 +209,4 @@ void deleteNullRoot(Node *node) {
 
 bool operator==(const Node &n1, const Node &n2) {
     return (n1.getValue() == n2.getValue() && n1.getTokenType() == n2.getTokenType());
-}
-
-std::ostream &operator<<(std::ostream &o, const Node &n) {
-    o << n.str();
-    return o;
-}
-
-bool isOperator(const Token &token) {
-    return (token == Token::Plus ||
-    token == Token::Minus ||
-    token == Token::Times ||
-    token == Token::Slash ||
-    token == Token::Caret ||
-    token == Token::DoubleTimes ||
-    token == Token::ImplicitTimes);
 }

@@ -6,20 +6,15 @@
 enum class Token {
     Name, // Only used by the parser
     Function,
-    Variable,
-    Number,
+    Int,
+    Float,
+    String,
+    Bool,
+    Tuple,
     OpeningParenthesis,
     ClosingParenthesis,
     Space,
-    Plus,
-    Minus,
-    Times,
-    ImplicitTimes,
-    Slash,
-    DoubleTimes,
-    Caret,
-    Comma,
-    Bang,
+    Unit,
     Empty,
     /**NullRoot is used only when an algorithm must start with an existing node
      * Nodes with this type will be ignored by the root and Parser::getRootOrStopBeforeParenthesis functions
@@ -28,6 +23,11 @@ enum class Token {
    NullRoot
 };
 
+std::string TRUE = "true";
+std::string FALSE = "false";
+
 std::string tokenToString(const Token &type);
+
+std::ostream& operator<<(std::ostream& o, const Token type);
 
 #endif // TOKENS_HPP

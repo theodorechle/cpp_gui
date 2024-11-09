@@ -27,3 +27,8 @@ std::string tokenToString(const Token &type) {
     }
     return value;
 }
+
+std::ostream& operator<<(std::ostream& o, const Token type) {
+    o << tokenToString(type);
+    return o;
+}

@@ -55,9 +55,7 @@ public :
     Node *copyNodeWithChildsAndNexts() const;
     void display(std::ostream &flow = std::cout) const;
     void displayNexts(std::ostream &flow = std::cout) const;
-    std::string str() const;
-    std::string strNexts() const;
-
+    
     friend bool operator==(const Node &, const Node &);
     friend std::ostream &operator<<(std::ostream &o, const Node &n);
 };
@@ -72,7 +70,5 @@ Node *getLastChild(Node *n);
 bool areSameNodes(const Node *node1, const Node *node2);
 
 void deleteNullRoot(Node *node);
-
-bool isOperator(const Token &token);
 
 #endif // NODE_HPP
