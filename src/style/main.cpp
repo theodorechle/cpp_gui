@@ -5,22 +5,22 @@
 using namespace std;
 
 int main() {
-    Settings *settings = new Settings;
-    string *expr = new string;
-    Node *tokens;
+    Settings* settings = new Settings;
+    string* expr = new string;
+    Node* tokens;
     cout << "Style : ";
     getline(cin, *expr);
     cout << "1 for debug, 0 else : ";
     cin >> settings->debug;
-    Tokenizer *tokenizer = new Tokenizer{*expr, settings};
+    Tokenizer* tokenizer = new Tokenizer{*expr, settings};
     tokens = tokenizer->getResult();
     delete tokenizer;
     if (settings->debug) {
         cerr << "Tokens" << endl;
         tokens->displayNexts(cerr);
     }
-    Node *tree;
-    Parser *parser = new Parser{tokens, settings};
+    Node* tree;
+    Parser* parser = new Parser{tokens, settings};
     tree = parser->getFinalTree();
     delete parser;
     delete tokens;

@@ -8,11 +8,11 @@
 
 using namespace std;
 
-void testExpressionsStrings(bool equal, const string &expr, const string &expected, Settings *settings) {
+void testExpressionsStrings(bool equal, const string &expr, const string &expected, Settings* settings) {
     cerr << "Test tokenizer + parser " << expr << " == \"" << expected << "\" : ";
     try {
-        Node *tokens = Tokenizer(expr, settings).getResult();
-        Node *result = Parser(tokens, settings).getFinalTree();
+        Node* tokens = Tokenizer(expr, settings).getResult();
+        Node* result = Parser(tokens, settings).getFinalTree();
         if ((result->str() == expected) == equal) cerr << "OK";
         else cerr << "KO";
         delete result;
@@ -24,13 +24,13 @@ void testExpressionsStrings(bool equal, const string &expr, const string &expect
     cerr << endl;
 }
 
-void testExpressions(bool equal, const string &expr, const string &expected, Settings *settings) {
+void testExpressions(bool equal, const string &expr, const string &expected, Settings* settings) {
     cerr << "Test expr " << expr << " == " << expected << " : ";
     try {
-        Node *tokens = Tokenizer(expr, settings).getResult();
-        Node *result = Parser(tokens, settings).getFinalTree();
-        Node *tokens2 = Tokenizer(expected, settings).getResult();
-        Node *result2 = Parser(tokens2, settings).getFinalTree();
+        Node* tokens = Tokenizer(expr, settings).getResult();
+        Node* result = Parser(tokens, settings).getFinalTree();
+        Node* tokens2 = Tokenizer(expected, settings).getResult();
+        Node* result2 = Parser(tokens2, settings).getFinalTree();
         if ((result->str() == result2->str()) == equal) cerr << "OK";
         else cerr << "KO";
         delete result;
@@ -44,12 +44,12 @@ void testExpressions(bool equal, const string &expr, const string &expected, Set
     cerr << endl;
 }
 
-void testTokenizer(bool equal, const string &expr, const Node *expected, Settings *settings) {
+void testTokenizer(bool equal, const string &expr, const Node* expected, Settings* settings) {
     cerr << "Test tokenizer " << expr << " == " << endl;
     cerr << " : ";
     try {
-        Node *result = Tokenizer(expr, settings).getResult();
-        Node *n = result;
+        Node* result = Tokenizer(expr, settings).getResult();
+        Node* n = result;
         while (n != nullptr) {
             if ((expected == nullptr || !(*n == *expected)) == equal) {
                 cerr << "KO" << endl;
@@ -69,10 +69,10 @@ void testTokenizer(bool equal, const string &expr, const Node *expected, Setting
     cerr << endl;
 }
 
-void testParser(bool equal, Node *expr, const Node *expected, Settings *settings) {
+void testParser(bool equal, Node* expr, const Node* expected, Settings* settings) {
     cerr << "Test parser " << *expr << " == " << *expected << " : ";
     try {
-        Node *result = Parser(expr, settings).getFinalTree();
+        Node* result = Parser(expr, settings).getFinalTree();
         if (areSameNodes(result, expected) == equal) cerr << "OK";
         else cerr << "KO";
         delete result;
@@ -83,11 +83,11 @@ void testParser(bool equal, Node *expr, const Node *expected, Settings *settings
     cerr << endl;
 }
 
-void testTokenizerAndParser(bool equal, const string &expr, const Node *expected, Settings *settings) {
+void testTokenizerAndParser(bool equal, const string &expr, const Node* expected, Settings* settings) {
     cerr << "Test tokenizer + parser " << expr << " == " << *expected << " : ";
     try {
-        Node *tokens = Tokenizer(expr, settings).getResult();
-        Node *result = Parser(tokens, settings).getFinalTree();
+        Node* tokens = Tokenizer(expr, settings).getResult();
+        Node* result = Parser(tokens, settings).getFinalTree();
         if (areSameNodes(result, expected) == equal) cerr << "OK";
         else cerr << "KO";
         delete result;
@@ -109,22 +109,22 @@ string testStrings(bool equal, const string &a, const string &b) {
     return "Error, " + a + " instead of " + b;
 }
 
-void isGreaterNumber(Number *a, Number *b, bool expected) {
+void isGreaterNumber(Number* a, Number* b, bool expected) {
     cerr << *a << " > " << *b << " : " << testBools(true, a->isGreaterThan(b), expected) << endl;
 }
 
-void isLowerNumber(Number *a, Number *b, bool expected) {
+void isLowerNumber(Number* a, Number* b, bool expected) {
     cerr << *a << " < " << *b << " : " << testBools(true, a->isLowerThan(b), expected) << endl;
 }
 
-void isEqualNumber(Number *a, Number *b, bool expected) {
+void isEqualNumber(Number* a, Number* b, bool expected) {
     cerr << *a << " == " << *b << " : " << testBools(true, a->isEqualTo(b), expected) << endl;
 }
 
 void testInvalidExpression(string expression, Settings* settings) {
-    cerr << "Test InvalidExpression exception with expression '" << expression << "' : ";
-    Node *tokens = nullptr;
-    Node *result = nullptr;
+    cerr << "Test MalformedExpression exception with expression '" << expression << "' : ";
+    Node* tokens = nullptr;
+    Node* result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
@@ -132,7 +132,7 @@ void testInvalidExpression(string expression, Settings* settings) {
         delete tokens;
         cerr << "KO";
     }
-    catch (const InvalidExpression &e) {
+    catch (const MalformedExpression &e) {
         cerr << "OK";
     }
     catch (const exception &e) {
@@ -145,8 +145,8 @@ void testInvalidExpression(string expression, Settings* settings) {
 
 void testUnknownToken(string expression, Settings* settings) {
     cerr << "Test UnknownToken exception with expression '" << expression << "' : ";
-    Node *tokens = nullptr;
-    Node *result = nullptr;
+    Node* tokens = nullptr;
+    Node* result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
@@ -167,8 +167,8 @@ void testUnknownToken(string expression, Settings* settings) {
 
 void testMissingToken(string expression, Settings* settings) {
     cerr << "Test MissingToken exception with expression '" << expression << "' : ";
-    Node *tokens = nullptr;
-    Node *result = nullptr;
+    Node* tokens = nullptr;
+    Node* result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
@@ -189,8 +189,8 @@ void testMissingToken(string expression, Settings* settings) {
 
 void testUnknownValue(string expression, Settings* settings) {
     cerr << "Test UnknownValue exception with expression '" << expression << "' : ";
-    Node *tokens = nullptr;
-    Node *result = nullptr;
+    Node* tokens = nullptr;
+    Node* result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
@@ -210,7 +210,7 @@ void testUnknownValue(string expression, Settings* settings) {
 }
 
 int main() {
-    Settings *settings = new Settings;
+    Settings* settings = new Settings;
     settings->debug = false;
     testExpressions(true, "3x**2", "3x^2", settings);
     testExpressions(false, "3x**2", "3x*2", settings);
@@ -219,20 +219,20 @@ int main() {
     settings->implicitMultiplicationPriority = true;
     testExpressionsStrings(true, "3x**2*(-2)+3", "3*x^2*(0-2)+3", settings);
     settings->implicitMultiplicationPriority = false;
-    Node *value = new Node{Token::Minus};
-    Node *next1 = new Number{"3"};
-    Node *next2 = new Node{Token::Name, "x"};
+    Node* value = new Node{Token::Minus};
+    Node* next1 = new Number{"3"};
+    Node* next2 = new Node{Token::Name, "x"};
     value->appendNext(next1);
     next1->appendNext(next2);
     testTokenizer(true, "-3x", value, settings);
     delete value;
-    Number *a = new Number{"53.9"};
-    Number *a2 = new Number{"53.9"};
-    Number *b = new Number{"-92.5"};
-    Number *c = new Number{"-3.2"};
-    Number *one = new Number{"1"};
-    Number *zero = new Number{"0"};
-    Number *zeroFloat = new Number{"0.0"};
+    Number* a = new Number{"53.9"};
+    Number* a2 = new Number{"53.9"};
+    Number* b = new Number{"-92.5"};
+    Number* c = new Number{"-3.2"};
+    Number* one = new Number{"1"};
+    Number* zero = new Number{"0"};
+    Number* zeroFloat = new Number{"0.0"};
     isGreaterNumber(a, b, true);
     isLowerNumber(b, a, true);
     isLowerNumber(a, b, false);

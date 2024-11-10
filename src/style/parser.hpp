@@ -23,39 +23,33 @@ public:
     const char* what() const noexcept override {return message.c_str();}
 };
 
-class InvalidExpression: public std::exception {
+class MalformedExpression: public std::exception {
     std::string message;
 public:
-    InvalidExpression(const std::string &expression): message{"Error : Invalid expression '" + expression + "'"} {};
-    const char *what() const noexcept override {return message.c_str();}
+    MalformedExpression(const std::string &expression): message{"Error : Malformed expression '" + expression + "'"} {};
+    const char* what() const noexcept override {return message.c_str();}
 };
 
+/**
+ * Transform a chain of trees (no childs) like the one the tokenizer function returns into a tree containing the entire expression
+*/
 class Parser {
-    Node *expressionTokens; // maybe change the program to forbid modification
+    Node* expressionTokens; // maybe change the program to forbid modification
     // only used to avoid recalculating many times the root
-    Node *expressionTreeRoot = new Node{Token::NullRoot};
-    Node *expressionTree = expressionTreeRoot;
-    Settings *settings;
+    Node* expressionTreeRoot = new Node{Token::NullRoot};
+    Node* expressionTree = expressionTreeRoot;
+    Settings* settings;
+    void goToParentBlock();
 
-    void getParentBlock();
-
-public:
-    Parser(Node *expressionTokens, Settings *settings)
-    : expressionTokens{expressionTokens}, settings{settings} {
-        parse();
-    };
-    
-    /**
-     * Transform a chain of trees (no childs) like the one the parser function returns into a tree containing the entire expression
-    */
     void parse();
-    void parseInt();
-    void parseFloat();
+
+    void parseSpace();
+    void parseLineReturn();
+    void parseValue();
     void parseComma();
+    void parseColon();
     void parseSemiColon();
-    void parseBool();
-    void parseString();
-    void parseFunction();
+    void parseName();
     void parseOpeningParenthesis();
     void parseClosingParenthesis();
     void parseOpeningCurlyBracket();
@@ -64,9 +58,11 @@ public:
     void parseClass();
     void parseModifier();
     void parseIdentifier();
-    void parseName();
-    static bool isNodeNull(Node *node);
-    Node *getFinalTree() {return expressionTreeRoot;}
+
+public:
+    Parser(Node* expressionTokens, Settings* settings)
+    : expressionTokens{expressionTokens}, settings{settings} {parse();};
+    Node* getFinalTree() {return expressionTreeRoot;}
 };
 
 #endif // PARSER_HPP

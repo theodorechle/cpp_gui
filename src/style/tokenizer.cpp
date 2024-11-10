@@ -3,11 +3,24 @@
 
 void Tokenizer::tokenizeSpace() {
     size_t i = 0;
-    while (index+i < expressionLength && isspace(expression[index+i])) {
+    while (index+i < expressionLength && (expression[index+i] == ' ' || expression[index+i] == '\t')
+        ) {
         i++;
     }
     if (i > 0) {
         expressionTree->appendNext(new Node{Token::Space});
+        tokenized = true;
+        index += i;
+    }
+}
+
+void Tokenizer::tokenizeLineReturn() {
+    size_t i = 0;
+    while (index+i < expressionLength && expression[index+i] == '\n') {
+        i++;
+    }
+    if (i > 0) {
+        expressionTree->appendNext(new Node{Token::LineReturn});
         tokenized = true;
         index += i;
     }
@@ -24,6 +37,7 @@ void Tokenizer::tokenizeName() {
         )) {
         i++;
     }
+    if (expression[index+i] == '-') return; // can't end with a '-';
     expressionTree->appendNext(new Node{Token::Name, expression.substr(index, i)});
     index += i;
     tokenized = true;
@@ -181,8 +195,15 @@ void Tokenizer::tokenizeSpecialCharacters() {
     case '}':
         token = Token::ClosingCurlyBracket;
         break;
+    case ',':
+        token = Token::Comma;
+        break;
+    case ':':
+        token = Token::Colon;
+        break;
     case ';':
         token = Token::SemiColon;
+        break;
         break;
     default:
         return;
@@ -196,11 +217,11 @@ void Tokenizer::tokenize() {
     while (index < expressionLength) {
         tokenized = false;
         tokenizeSpace();
+        if (!tokenized) tokenizeUnit();
         if (!tokenized) tokenizeName();
         if (!tokenized) tokenizeFloat();
         if (!tokenized) tokenizeInt();
         if (!tokenized) tokenizeBool();
-        if (!tokenized) tokenizeUnit();
         if (!tokenized) tokenizeSpecialCharacters();
         if (!tokenized) tokenizeString();
         if (!tokenized) {
@@ -208,7 +229,7 @@ void Tokenizer::tokenize() {
             throw UnknownValue(expression.substr(index));
         }
     }
-    Node *nextList = expressionTree->getNext();
+    Node* nextList = expressionTree->getNext();
     expressionTree->setNext(nullptr);
     delete expressionTree;
     expressionTree = nextList;

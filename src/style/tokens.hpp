@@ -4,27 +4,39 @@
 #include <unordered_map>
 
 enum class Token {
-    Name, // Only used by the parser
-    Space,
-    Function,
-    Int,
-    Float,
-    String,
-    Bool,
-    Tuple,
-    Unit,
+    // Used only by the tokenizer
     OpeningParenthesis,
     ClosingParenthesis,
     OpeningCurlyBracket,
     ClosingCurlyBracket,
+    Comma,
+    Colon,
+    SemiColon,
+    // Used only by the parser
+    StyleBlock,
+    BlockPrototype,
+    StyleDefinitions,
+    StyleName,
+    Function,
+    ElementName,
+    Tuple,
+    Assignment,
+    ArgSeparator,
+    // Used by both the tokenizer and the parser
+    Space,
+    LineReturn,
+    Name,
+    Int,
+    Float,
+    String,
+    Bool,
+    Unit,
     Class,
     Modifier,
     Identifier,
-    Comma,
-    SemiColon,
     Empty,
     /**NullRoot is used only when an algorithm must start with an existing node
-     * Nodes with this type will be ignored by the root function in node.h and the Parser::getParentBlock function
+     * Nodes with this type will be ignored by the root function in node.h and the Parser::goToParentBlock function
      * (they return the NullRoot node's child, except when it's the only node)
     */
    NullRoot

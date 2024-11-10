@@ -3,26 +3,41 @@
 #include "tokens.hpp"
 
 std::string tokenToString(const Token &type) {
-    std::string value;
     switch (type) {
-        case Token::Name: value = "Name";break;
-        case Token::Space: value = "Space";break;
-        case Token::Function: value = "Function";break;
-        case Token::Int: value = "Int";break;
-        case Token::Float: value = "Float";break;
-        case Token::String: value = "String";break;
-        case Token::Bool: value = "Bool";break;
-        case Token::Tuple: value = "Tuple";break;
-        case Token::Unit: value = "Unit";break;
-        case Token::OpeningParenthesis: value = "OpeningParenthesis";break;
-        case Token::ClosingParenthesis: value = "ClosingParenthesis";break;
-        case Token::OpeningCurlyBracket: value = "OpeningParenthesis";break;
-        case Token::ClosingCurlyBracket: value = "ClosingParenthesis";break;
-        case Token::Empty: value = "Empty";break;
-        case Token::NullRoot: value = "NullRoot";break;
-        default: value = "Unknown";break;
+        // Used only by the tokenizer
+        case Token::OpeningParenthesis: return "OpeningParenthesis";
+        case Token::ClosingParenthesis: return "ClosingParenthesis";
+        case Token::OpeningCurlyBracket: return "OpeningCurlyBracket";
+        case Token::ClosingCurlyBracket: return "ClosingCurlyBracket";
+        case Token::Comma: return "Comma";
+        case Token::Colon: return "Colon";
+        case Token::SemiColon: return "SemiColon";
+        // Used only by the parser
+        case Token::StyleBlock: return "StyleBlock";
+        case Token::BlockPrototype: return "BlockPrototype";
+        case Token::StyleDefinitions: return "StyleDefinitions";
+        case Token::StyleName: return "StyleName";
+        case Token::Function: return "Function";
+        case Token::ElementName: return "ElementName";
+        case Token::Tuple: return "Tuple";
+        case Token::Assignment: return "Assignment";
+        case Token::ArgSeparator: return "ArgSeparator";
+        // Used by both the tokenizer and the parser
+        case Token::Space: return "Space";
+        case Token::LineReturn: return "LineReturn";
+        case Token::Name: return "Name";
+        case Token::Int: return "Int";
+        case Token::Float: return "Float";
+        case Token::String: return "String";
+        case Token::Bool: return "Bool";
+        case Token::Unit: return "Unit";
+        case Token::Class: return "Class";
+        case Token::Modifier: return "Modifier";
+        case Token::Identifier: return "Identifier";
+        case Token::Empty: return "Empty";
+        case Token::NullRoot: return "NullRoot";
+        default: return "Unknown";
     }
-    return value;
 }
 
 std::ostream& operator<<(std::ostream& o, const Token type) {

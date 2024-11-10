@@ -5,8 +5,8 @@
 
 using namespace std;
 
-Node *Node::copyNode() const {
-    Node *n = createNewNode();
+Node* Node::copyNode() const {
+    Node* n = createNewNode();
     n->setTokenType(getTokenType());
     n->setValue(getValue());
     return n;
@@ -15,16 +15,16 @@ Node *Node::copyNode() const {
 /**
  * Copy the node and his childs (not the nexts)
 */
-Node *Node::copyNodeWithChilds() const {
-    Node *n = copyNode();
-    Node *child = getChild();
+Node* Node::copyNodeWithChilds() const {
+    Node* n = copyNode();
+    Node* child = getChild();
     if (child != nullptr) n->setChild(child->copyNodeWithChildsAndNexts());
     return n;
 }
 
-Node *Node::copyNodeWithChildsAndNexts() const {
-    Node *n = copyNodeWithChilds();
-    Node *next = getNext();
+Node* Node::copyNodeWithChildsAndNexts() const {
+    Node* n = copyNodeWithChilds();
+    Node* next = getNext();
     if (next != nullptr) n->setNext(next->copyNodeWithChildsAndNexts());
     return n;
 }
@@ -32,7 +32,7 @@ Node *Node::copyNodeWithChildsAndNexts() const {
 void Node::displayTree(ostream &flow, int level) const {
     for (int i=0; i<level; i++) flow << "\t";
     flow << getValue() << " (" << getTokenType() << ")" << endl;
-    const Node * child = getChild();
+    const Node*  child = getChild();
     while (child != nullptr) {
         child->displayTree(flow, level+1);
         child = child->next;
@@ -44,31 +44,53 @@ void Node::display(ostream &flow) const {
 }
 
 void Node::displayNexts(ostream &flow) const {
-    const Node *next = this;
+    const Node* next = this;
     while (next != nullptr) {
         flow << next->getValue() << " (" << next->getTokenType() << ")" << endl;
         next = next->getNext();
     }
 }
 
-void Node::setParent(Node *parent) {
-    Node *node = this;
+void Node::setParent(Node* parent) {
+    Node* node = this;
     while (node != nullptr) {
         node->parent = parent;
         node = node->getNext();
     }
 }
 
-void Node::setChild(Node *child)  {
+Node* Node::getLastChild() const {
+    Node* child = getChild();
+    Node* nextChild = child;
+    while (nextChild != nullptr) {
+        child = nextChild;
+        nextChild = nextChild->getNext();
+    }
+    return child;
+}
+
+int Node::getNbChilds() const {
+    int nbChilds = 0;
+    Node* child = getChild();
+    Node* nextChild = child;
+    while (nextChild != nullptr) {
+        nbChilds++;
+        child = nextChild;
+        nextChild = nextChild->getNext();
+    }
+    return nbChilds;
+}
+
+void Node::setChild(Node* child)  {
     this->child = child;
     if (child != nullptr) child->setParent(this);
 }
 
-void Node::setNext(Node *next) {
+void Node::setNext(Node* next) {
     this->next = next;
 }
 
-void Node::removeSpecificChild(Node *child) {
+void Node::removeSpecificChild(Node* child) {
     if (child == nullptr) return;
     if (child == getChild()) {
         setChild(child->getNext());
@@ -90,8 +112,8 @@ void Node::removeSpecificChild(Node *child) {
     
 }
 
-void Node::appendNext(Node *next) {
-    Node *c = this;
+void Node::appendNext(Node* next) {
+    Node* c = this;
     while (c->getNext() != nullptr) {
         c = c->getNext();
     }
@@ -99,27 +121,27 @@ void Node::appendNext(Node *next) {
     next->setParent(getParent());
 }
 
-Node *Node::appendChild(Node *child) {
-    Node *c = getChild();
+Node* Node::appendChild(Node* child) {
+    Node* c = getChild();
     if (c == nullptr) setChild(child);
     else c->appendNext(child);
     return child;
 }
 
-Node *Node::appendChild(Node &child) {
-    Node *c = getChild();
+Node* Node::appendChild(Node &child) {
+    Node* c = getChild();
     if (c == nullptr) setChild(&child);
     else c->appendNext(&child);
     child.parent = this;
     return &child;
 }
 
-Node *Node::addEmptyChild() {
-    Node *child = new Node{};
+Node* Node::addEmptyChild() {
+    Node* child = new Node{};
     return appendChild(child);
 }
 
-void Node::replaceData(Node *tree) {
+void Node::replaceData(Node* tree) {
     if (tree == nullptr) return;
     tree = tree->copyNodeWithChildsAndNexts();
     // copy node
@@ -143,9 +165,9 @@ void Node::replaceData(Node *tree) {
 /**
  * Find the child in the childs of the node and replace it with the new one
 */
-void Node::replaceChild(Node *child, Node *newChild) {
+void Node::replaceChild(Node* child, Node* newChild) {
     if (child == nullptr || newChild == nullptr) return;
-    Node *c = getChild();
+    Node* c = getChild();
     delete newChild->getNext();
     if (c == child) {
         newChild->setNext(c->getNext());
@@ -172,24 +194,16 @@ Node::~Node() {
     if (child != nullptr) delete child;
 }
 
-Node *root(Node *node) {
-    if (Parser::isNodeNull(node) ||
-        Parser::isNodeNull(node->getParent())) return node;
+Node* root(Node* node) {
+    if (isNodeNull(node) ||
+        isNodeNull(node->getParent())) return node;
     return root(node->getParent());
 }
 
-Node *getLastChild(Node *n) {
-    if (n == nullptr) return nullptr;
-    n = n->getChild();
-    if (n == nullptr) return nullptr;
-    while (n->getNext() != nullptr) n = n->getNext();
-    return n;
-}
-
-bool areSameNodes(const Node *node1, const Node *node2) {
+bool areSameNodes(const Node* node1, const Node* node2) {
     if (!(node1 == node2)) return false;
-    Node *child1 = node1->getChild();
-    Node *child2 = node2->getChild();
+    Node* child1 = node1->getChild();
+    Node* child2 = node2->getChild();
     while (child1 != nullptr) {
         if (child2 == nullptr) return false;
         if (!areSameNodes(child1, child2)) return false;
@@ -199,12 +213,16 @@ bool areSameNodes(const Node *node1, const Node *node2) {
     return (child2 == nullptr);
 }
 
-void deleteNullRoot(Node *node) {
+void deleteNullRoot(Node* node) {
     node = root(node);
     if (node->getParent() == nullptr) return;
     node->getParent()->setChild(nullptr);
     delete node->getParent();
     node->setParent(nullptr);
+}
+
+bool isNodeNull(Node* node) {
+    return (node == nullptr || node->getTokenType() == Token::NullRoot);
 }
 
 bool operator==(const Node &n1, const Node &n2) {
