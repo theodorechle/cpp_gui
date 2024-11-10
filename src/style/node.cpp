@@ -72,11 +72,9 @@ Node* Node::getLastChild() const {
 int Node::getNbChilds() const {
     int nbChilds = 0;
     Node* child = getChild();
-    Node* nextChild = child;
-    while (nextChild != nullptr) {
+    while (child != nullptr) {
         nbChilds++;
-        child = nextChild;
-        nextChild = nextChild->getNext();
+        child = child->getNext();
     }
     return nbChilds;
 }
@@ -113,6 +111,7 @@ void Node::removeSpecificChild(Node* child) {
 }
 
 void Node::appendNext(Node* next) {
+    if (next == nullptr) return;
     Node* c = this;
     while (c->getNext() != nullptr) {
         c = c->getNext();

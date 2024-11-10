@@ -17,9 +17,9 @@ OBJ_STYLE=$(patsubst src/style/%.cpp,obj/style/%.o,$(SRC_STYLE))
 
 bin/exe: $(OBJ)
 	$(CC) $^ -o $@
-bin/style: $(filter-out obj/tests.o, $(OBJ_STYLE))
+bin/style: $(OBJ_STYLE)
 	$(CC) $^ -o $@
-bin/style-tests: obj/style/tests.o $(filter-out obj/main.o, $(OBJ_STYLE))
+bin/style-tests: obj/style/tests/tests.o $(filter-out obj/style/main.o, $(OBJ_STYLE))
 	$(CC) $^ -o $@
 
 obj/main.o : src/main.cpp
@@ -31,10 +31,10 @@ obj/style/main.o : src/style/main.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 obj/style/%.o: src/style/%.cpp src/style/%.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
-obj/style/tests.o : src/style/tests.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
 
+obj/style/tests/tests.o : src/style/tests/tests.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
 clean:
-	rm obj/*.o bin/*
+	rm obj/* obj/style/* obj/style/tests/* bin/*
 
 

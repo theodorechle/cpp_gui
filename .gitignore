@@ -6,3 +6,5 @@ obj/*
 !obj/.gitkeep
 obj/style/*
 !obj/style/.gitkeep
+obj/style/tests/*
+!obj/style/tests/.gitkeep

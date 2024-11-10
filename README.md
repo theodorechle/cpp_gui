@@ -9,7 +9,7 @@ A cpp replacement for the python_gui
 - int: [0-9]+
 - float: [0-9]+\.[0-9]\*
 - string: [^,;\s{}()[]]+
-- tuple[type,...]: \\( *\<style-type\>(, *\<style-type\>)* *\\)
+- tuple[type,...]: \\( *\<style-type\>(, \*\<style-type\>)\* \*\\)
 - bool
 
 ### Operators
@@ -19,6 +19,7 @@ A cpp replacement for the python_gui
 - \/ division
 
 ### Functions
+regex: [\w\d][\w\d\\-]+[\w\d]
 - round(int|float)
 
 #### Special
@@ -115,7 +116,19 @@ label.blue { // labels with the class 'blue' will have a text in blue
     text-color: #0000ff;
 }
 
-label.blue:hovered { // labels with the class 'blue' will have a text in gray
-    text-color: #888888; // this override the previous declaration of 'label.blue' when it's hovered
+label.blue:hovered {
+    /*
+    labels with the class 'blue' will have a text in gray
+    this override the previous declaration block of 'label.blue' when it's hovered
+    */
+    text-color: #888888;
+}
+
+// equivalent at previous two blocks
+label.blue {
+    text-color: #0000ff;
+    :hovered {
+        text-color: #888888;
+    }
 }
 ```

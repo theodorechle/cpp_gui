@@ -18,7 +18,8 @@ class Tokenizer {
     size_t index=0;
     const std::string &expression;
     size_t expressionLength;
-    Node* expressionTree = new Node{Token::NullRoot};
+    Node* firstNode = new Node{Token::NullRoot};
+    Node* expressionTree = firstNode;
     Settings* settings;
 public:
     Tokenizer(const std::string &expression, Settings* settings)
@@ -28,6 +29,9 @@ public:
     void tokenize();
     void tokenizeSpace();
     void tokenizeLineReturn();
+    void tokenizeOneLineComment();
+    void tokenizeOpeningMultiLineComment();
+    void tokenizeClosingMultiLineComment();
     void tokenizeName();
     void tokenizeClass();
     void tokenizeModifier();
@@ -38,7 +42,7 @@ public:
     void tokenizeBool();
     void tokenizeUnit();
     void tokenizeSpecialCharacters();
-    Node* getResult() {return expressionTree;}
+    Node* getResult() {return firstNode;}
 };
 
 #endif // TOKENIZER_HPP

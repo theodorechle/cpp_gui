@@ -12,6 +12,6 @@ Node* goToFirstLeaf(Node* node);
 */
 Node* goToNextExpr(Node* node);
 
-Node* solve(Node* expr, bool debug);
+// Node* solve(Node* expr, bool debug);
 
 #endif // SOLVER_HPP

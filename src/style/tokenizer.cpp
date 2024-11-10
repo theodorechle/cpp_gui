@@ -26,6 +26,27 @@ void Tokenizer::tokenizeLineReturn() {
     }
 }
 
+void Tokenizer::tokenizeOneLineComment() {
+    if (expression[index] != '/' || expression[index+1] != '/') return;
+    expressionTree->appendNext(new Node{Token::OneLineComment});
+    tokenized = true;
+    index += 2;
+}
+
+void Tokenizer::tokenizeOpeningMultiLineComment() {
+    if (expression[index] != '/' || expression[index+1] != '*') return;
+    expressionTree->appendNext(new Node{Token::OpeningMultiLineComment});
+    tokenized = true;
+    index += 2;
+}
+
+void Tokenizer::tokenizeClosingMultiLineComment() {
+    if (expression[index] != '*' || expression[index+1] != '/') return;
+    expressionTree->appendNext(new Node{Token::ClosingMultiLineComment});
+    tokenized = true;
+    index += 2;
+}
+
 void Tokenizer::tokenizeName() {
     if (!isalpha(expression[index])) return;
 
@@ -117,7 +138,6 @@ void Tokenizer::tokenizeString() {
 }
 
 void Tokenizer::tokenizeInt() {
-    bool dotFound = false;
     if (!isdigit(expression[index])) return;
     size_t i = 1;
     while (index+i < expressionLength && isdigit(expression[index+i])) i++;
@@ -169,13 +189,13 @@ void Tokenizer::tokenizeUnit() {
                 isEqual = false;
                 break;
             }
-            if (isEqual) {
-                expressionTree->appendNext(new Node{Token::Unit, expression.substr(index, i)});
-                index += 1;
-                tokenized = true;
-                return;
-            }
-        }        
+        }
+        if (isEqual) {
+            expressionTree->appendNext(new Node{Token::Unit, expression.substr(index, i)});
+            index += 1;
+            tokenized = true;
+            return;
+        }
     }
     
 }
@@ -217,20 +237,29 @@ void Tokenizer::tokenize() {
     while (index < expressionLength) {
         tokenized = false;
         tokenizeSpace();
-        if (!tokenized) tokenizeUnit();
+        if (!tokenized) tokenizeLineReturn();
+        if (!tokenized) tokenizeOneLineComment();
+        if (!tokenized) tokenizeOpeningMultiLineComment();
+        if (!tokenized) tokenizeClosingMultiLineComment();
         if (!tokenized) tokenizeName();
-        if (!tokenized) tokenizeFloat();
+        if (!tokenized) tokenizeClass();
+        if (!tokenized) tokenizeModifier();
+        if (!tokenized) tokenizeIdentifier();
         if (!tokenized) tokenizeInt();
+        if (!tokenized) tokenizeFloat();
         if (!tokenized) tokenizeBool();
+        if (!tokenized) tokenizeUnit();
         if (!tokenized) tokenizeSpecialCharacters();
-        if (!tokenized) tokenizeString();
         if (!tokenized) {
             delete expressionTree; // avoid memory leak
             throw UnknownValue(expression.substr(index));
         }
+        // std::cerr << tokenToString(expressionTree->getTokenType()) << ": " << expressionTree->getValue() << std::endl;
+        expressionTree = expressionTree->getNext();
     }
-    Node* nextList = expressionTree->getNext();
-    expressionTree->setNext(nullptr);
-    delete expressionTree;
-    expressionTree = nextList;
+    // remove the NullRoot token at the start
+    Node* nextList = firstNode->getNext();
+    firstNode->setNext(nullptr);
+    delete firstNode;
+    firstNode = nextList;
 }

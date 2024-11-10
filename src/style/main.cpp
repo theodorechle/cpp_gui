@@ -2,17 +2,31 @@
 #include "parser.hpp"
 #include "solver.hpp"
 
+#include <sstream>
+#include <fstream>
+
 using namespace std;
 
 int main() {
     Settings* settings = new Settings;
-    string* expr = new string;
+    string* fileName = new string;
+    string* fileContent = new string;
     Node* tokens;
-    cout << "Style : ";
-    getline(cin, *expr);
+
+    while (true) {
+        cout << "Style file : ";
+        getline(cin, *fileName);
+        ifstream file(fileName->c_str());
+        stringstream buffer;
+        buffer << file.rdbuf();
+        *fileContent = buffer.str();
+        if (fileContent->size()) break;
+        cout << "Invalid file name" << endl;
+    }
+    cout << "File content:\n" << *fileContent << endl;
     cout << "1 for debug, 0 else : ";
     cin >> settings->debug;
-    Tokenizer* tokenizer = new Tokenizer{*expr, settings};
+    Tokenizer* tokenizer = new Tokenizer{*fileContent, settings};
     tokens = tokenizer->getResult();
     delete tokenizer;
     if (settings->debug) {
@@ -26,7 +40,7 @@ int main() {
     delete tokens;
     if (tree == nullptr) { // something is not freed, need to find it
         cout << "Empty result" << endl;
-        delete expr;
+        delete fileContent;
         delete tree;
         delete settings;
         return 0;
@@ -35,14 +49,12 @@ int main() {
         cerr << "Parsed tree" << endl;
         tree->display(cerr);
     }
-    tree = solve(tree, settings->debug);
-    if (settings->debug) {
-        cerr << "Solved tree" << endl;
-        tree->display(cerr);
-    }
-    cout << "Start expression : " << endl << *expr << endl;
-    cout << "Final expression : " << endl << *tree << endl;
-    delete expr;
+    // tree = solve(tree, settings->debug);
+    // if (settings->debug) {
+    //     cerr << "Solved tree" << endl;
+    //     tree->display(cerr);
+    // }
+    delete fileContent;
     delete tree;
     delete settings;
     return 0;

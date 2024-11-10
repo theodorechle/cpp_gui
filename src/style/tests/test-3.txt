@@ -1,0 +1,7 @@
+// equivalent at previous two blocks
+label.blue {
+    text-color: #0000ff;
+    :hovered {
+        text-color: #888888;
+    }
+}

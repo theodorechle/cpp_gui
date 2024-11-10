@@ -45,6 +45,8 @@ class Parser {
 
     void parseSpace();
     void parseLineReturn();
+    void parseOneLineComment();
+    void parseMultiLineComment();
     void parseValue();
     void parseComma();
     void parseColon();
@@ -56,8 +58,8 @@ class Parser {
     void parseClosingCurlyBracket();
     void parseUnit();
     void parseClass();
-    void parseModifier();
     void parseIdentifier();
+    void parseModifier();
 
 public:
     Parser(Node* expressionTokens, Settings* settings)

@@ -12,14 +12,18 @@ enum class Token {
     Comma,
     Colon,
     SemiColon,
+    OneLineComment,
+    OpeningMultiLineComment,
+    ClosingMultiLineComment,
     // Used only by the parser
     StyleBlock,
     BlockPrototype,
-    StyleDefinitions,
+    BlockDefinition,
     StyleName,
     Function,
     ElementName,
     Tuple,
+    String,
     Assignment,
     ArgSeparator,
     // Used by both the tokenizer and the parser
@@ -28,7 +32,6 @@ enum class Token {
     Name,
     Int,
     Float,
-    String,
     Bool,
     Unit,
     Class,
@@ -42,8 +45,8 @@ enum class Token {
    NullRoot
 };
 
-std::string TRUE = "true";
-std::string FALSE = "false";
+const std::string TRUE = "true";
+const std::string FALSE = "false";
 
 std::string tokenToString(const Token &type);
 
