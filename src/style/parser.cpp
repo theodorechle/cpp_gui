@@ -2,40 +2,14 @@ using namespace std;
 
 #include "parser.hpp"
 
-void Parser::getRootOrStopBeforeParenthesis() {
-    if (isNodeNull(expressionTree) ||
-            isNodeNull(expressionTree->getParent()) ||
-            expressionTree->getParent()->getTokenType() == Token::OpeningParenthesis)
-        return;
+void Parser::getParentBlock() {
+    if (isNodeNull(expressionTree)
+        || isNodeNull(expressionTree->getParent())
+        || expressionTree->getParent()->getTokenType() == Token::OpeningParenthesis
+        || expressionTree->getParent()->getTokenType() == Token::OpeningCurlyBracket
+        ) return;
     expressionTree = expressionTree->getParent();
-    getRootOrStopBeforeParenthesis();
-}
-
-Node *Parser::removeParenthesis(Node *t) {
-    if (t == nullptr) return t;
-    if (t->getTokenType() == Token::ClosingParenthesis) {
-        Node *temp = t->getChild();
-        t->setChild(nullptr);
-        t->getParent()->replaceChild(t, temp);
-        t = temp;
-    }
-    else if (t->getTokenType() == Token::OpeningParenthesis) throw MissingToken(")");
-    Node *child = t->getChild();
-    while (child != nullptr) {
-        child = removeParenthesis(child);
-        child = child->getNext();
-    }
-    return t;
-}
-
-void Parser::replaceImplicitTimes(Node *t) {
-    if (t == nullptr) return;
-    if (t->getTokenType() == Token::ImplicitTimes) t->setTokenType(Token::Times);
-    Node *child = t->getChild();
-    while (child != nullptr) {
-        replaceImplicitTimes(child);
-        child = child->getNext();
-    }
+    getParentBlock();
 }
 
 bool Parser::isNodeNull(Node *node) {
@@ -47,29 +21,53 @@ void Parser::parse() {
         while (expressionTokens != nullptr) {
             switch (expressionTokens->getTokenType())
             {
-            case Token::Number:
-                parseNumber();
+            case Token::Int:
+                parseInt();
                 break;
-            case Token::Name:
-                parseVariable();
+            case Token::Float:
+                parseFloat();
                 break;
             case Token::Comma:
                 parseComma();
                 break;
-            // should be changed where operators will be complete
-            case Token::Plus:
-            case Token::Minus:
-            case Token::Times:
-            case Token::Slash:
-            case Token::Caret:
-            case Token::DoubleTimes:
-                parseOperator();
+            case Token::SemiColon:
+                parseSemiColon();
+                break;
+            case Token::Bool:
+                parseBool();
+                break;
+            case Token::String:
+                parseString();
+                break;
+            case Token::Function:
+                parseFunction();
                 break;
             case Token::OpeningParenthesis:
                 parseOpeningParenthesis();
                 break;
             case Token::ClosingParenthesis:
                 parseClosingParenthesis();
+                break;
+            case Token::OpeningCurlyBracket:
+                parseOpeningCurlyBracket();
+                break;
+            case Token::ClosingCurlyBracket:
+                parseClosingCurlyBracket();
+                break;
+            case Token::Unit:
+                parseUnit();
+                break;
+            case Token::Class:
+                parseClass();
+                break;
+            case Token::Modifier:
+                parseModifier();
+                break;
+            case Token::Identifier:
+                parseIdentifier();
+                break;
+            case Token::Name:
+                parseName();
                 break;
             default:
                 throw UnknownToken(*expressionTokens);
@@ -83,8 +81,6 @@ void Parser::parse() {
             }
             expressionTokens = expressionTokens->getNext();
         }
-        expressionTreeRoot = removeParenthesis(expressionTreeRoot);
-        replaceImplicitTimes(expressionTreeRoot);
     }
     catch (const exception &) {
         expressionTree = nullptr;
@@ -103,14 +99,14 @@ void Parser::parse() {
 
 void Parser::parseNumber() {
     expressionTree = expressionTree->appendChild(new Number{expressionTokens->getValue()});
-    getRootOrStopBeforeParenthesis();
+    getParentBlock();
     return addImplicitMultiplication();
 }
 
 void Parser::parseVariable() {
     if ( !isFunction(expressionTokens->getValue()) || isNodeNull(expressionTokens->getNext()) || expressionTokens->getNext()->getTokenType() != Token::OpeningParenthesis) {
         expressionTree = expressionTree->appendChild(new Node{Token::Variable, expressionTokens->getValue()});
-        getRootOrStopBeforeParenthesis();
+        getParentBlock();
         addImplicitMultiplication();
     }
     else {
@@ -239,7 +235,7 @@ void Parser::parseClosingParenthesis() {
         }
         throw InvalidExpression("()");
     }
-    getRootOrStopBeforeParenthesis();
+    getParentBlock();
     if (isNodeNull(expressionTree->getParent())) {
         throw MissingToken("(");
     }

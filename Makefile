@@ -27,7 +27,7 @@ obj/main.o : src/main.cpp
 obj/%.o: src/%.cpp src/%.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-obj/style/style.o : src/style/style.cpp
+obj/style/main.o : src/style/main.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 obj/style/%.o: src/style/%.cpp src/style/%.hpp
 	$(CC) $(CFLAGS) -c $< -o $@

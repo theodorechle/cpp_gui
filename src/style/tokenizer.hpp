@@ -28,6 +28,9 @@ public:
     void tokenize();
     void tokenizeSpace();
     void tokenizeName();
+    void tokenizeClass();
+    void tokenizeModifier();
+    void tokenizeIdentifier();
     void tokenizeString();
     void tokenizeInt();
     void tokenizeFloat();

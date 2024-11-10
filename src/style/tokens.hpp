@@ -12,13 +12,20 @@ enum class Token {
     String,
     Bool,
     Tuple,
+    Unit,
     OpeningParenthesis,
     ClosingParenthesis,
-    Unit,
+    OpeningCurlyBracket,
+    ClosingCurlyBracket,
+    Class,
+    Modifier,
+    Identifier,
+    Comma,
+    SemiColon,
     Empty,
     /**NullRoot is used only when an algorithm must start with an existing node
-     * Nodes with this type will be ignored by the root and Parser::getRootOrStopBeforeParenthesis functions
-     * (they return the NullRoot node's child, except if it's the only node)
+     * Nodes with this type will be ignored by the root function in node.h and the Parser::getParentBlock function
+     * (they return the NullRoot node's child, except when it's the only node)
     */
    NullRoot
 };

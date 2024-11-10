@@ -72,8 +72,8 @@ focused
 clicked
 hovered
 
-### Ids (single element)
-An id can be used to apply to a specific element
+### Identifiers (single element)
+An ididentifier (id) can be used to apply to a specific element
 
 ### Classes (groups of elements)
 A class can be used to apply style to multiple elements at once

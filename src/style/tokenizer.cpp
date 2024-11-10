@@ -29,6 +29,57 @@ void Tokenizer::tokenizeName() {
     tokenized = true;
 }
 
+void Tokenizer::tokenizeClass() {
+    if (expression[index] != '.') return;
+
+    size_t i = 1;
+    while (index+i < expressionLength && (
+        isalnum(expression[index+i])
+        || expression[index+i] == '_'
+        || expression[index+i] == '-'
+        )) {
+        i++;
+    }
+    if (i == 1) return; // must have at list one char after the dot
+    expressionTree->appendNext(new Node{Token::Class, expression.substr(index+1, i)});
+    index += i;
+    tokenized = true;
+}
+
+void Tokenizer::tokenizeModifier() {
+    if (expression[index] != ':') return;
+
+    size_t i = 1;
+    while (index+i < expressionLength && (
+        isalnum(expression[index+i])
+        || expression[index+i] == '_'
+        || expression[index+i] == '-'
+        )) {
+        i++;
+    }
+    if (i == 1) return; // must have at list one char after the colon
+    expressionTree->appendNext(new Node{Token::Modifier, expression.substr(index+1, i)});
+    index += i;
+    tokenized = true;
+}
+
+void Tokenizer::tokenizeIdentifier() {
+    if (expression[index] != '#') return;
+
+    size_t i = 1;
+    while (index+i < expressionLength && (
+        isalnum(expression[index+i])
+        || expression[index+i] == '_'
+        || expression[index+i] == '-'
+        )) {
+        i++;
+    }
+    if (i == 1) return; // must have at list one char after the sharp
+    expressionTree->appendNext(new Node{Token::Identifier, expression.substr(index+1, i)});
+    index += i;
+    tokenized = true;
+}
+
 void Tokenizer::tokenizeString() {
     size_t i = 0;
     while (index + i < expressionLength && (
@@ -124,11 +175,18 @@ void Tokenizer::tokenizeSpecialCharacters() {
     case ')':
         token = Token::ClosingParenthesis;
         break;
-    default:
-        token = Token::Empty;
+    case '{':
+        token = Token::OpeningCurlyBracket;
         break;
+    case '}':
+        token = Token::ClosingCurlyBracket;
+        break;
+    case ';':
+        token = Token::SemiColon;
+        break;
+    default:
+        return;
     }
-    if (token == Token::Empty) return;
     expressionTree->appendNext(new Node{token});
     index++;
     tokenized = true;

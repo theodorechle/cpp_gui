@@ -32,14 +32,12 @@ public:
 
 class Parser {
     Node *expressionTokens; // maybe change the program to forbid modification
-    // only used to avoid recalculing many times the root
+    // only used to avoid recalculating many times the root
     Node *expressionTreeRoot = new Node{Token::NullRoot};
     Node *expressionTree = expressionTreeRoot;
     Settings *settings;
 
-    void getRootOrStopBeforeParenthesis();
-    Node *removeParenthesis(Node *t);
-    void replaceImplicitTimes(Node *t);
+    void getParentBlock();
 
 public:
     Parser(Node *expressionTokens, Settings *settings)
@@ -51,14 +49,22 @@ public:
      * Transform a chain of trees (no childs) like the one the parser function returns into a tree containing the entire expression
     */
     void parse();
-    void parseNumber();
-    void parseVariable();
-    void parseFunction();
+    void parseInt();
+    void parseFloat();
     void parseComma();
-    void parseOperator();
+    void parseSemiColon();
+    void parseBool();
+    void parseString();
+    void parseFunction();
     void parseOpeningParenthesis();
     void parseClosingParenthesis();
-    void addImplicitMultiplication();
+    void parseOpeningCurlyBracket();
+    void parseClosingCurlyBracket();
+    void parseUnit();
+    void parseClass();
+    void parseModifier();
+    void parseIdentifier();
+    void parseName();
     static bool isNodeNull(Node *node);
     Node *getFinalTree() {return expressionTreeRoot;}
 };

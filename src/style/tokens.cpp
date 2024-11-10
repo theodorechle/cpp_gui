@@ -16,6 +16,8 @@ std::string tokenToString(const Token &type) {
         case Token::Unit: value = "Unit";break;
         case Token::OpeningParenthesis: value = "OpeningParenthesis";break;
         case Token::ClosingParenthesis: value = "ClosingParenthesis";break;
+        case Token::OpeningCurlyBracket: value = "OpeningParenthesis";break;
+        case Token::ClosingCurlyBracket: value = "ClosingParenthesis";break;
         case Token::Empty: value = "Empty";break;
         case Token::NullRoot: value = "NullRoot";break;
         default: value = "Unknown";break;

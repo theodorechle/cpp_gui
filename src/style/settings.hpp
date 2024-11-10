@@ -3,7 +3,6 @@
 
 class Settings {
 public:
-    bool implicitMultiplicationPriority = false;
     bool debug = false;
 };
 
