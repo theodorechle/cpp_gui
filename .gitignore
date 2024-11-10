@@ -1,2 +1,6 @@
 test.py
 .vscode/
+bin/*
+!bin/.gitkeep
+ob/*
+!obj/.gitkeep
