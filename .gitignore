@@ -2,6 +2,7 @@ test.py
 .vscode/
 bin/*
 !bin/.gitkeep
-ob/*
+obj/*
 !obj/.gitkeep
+obj/style/*
 !obj/style/.gitkeep
