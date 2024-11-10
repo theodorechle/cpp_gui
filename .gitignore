@@ -4,3 +4,4 @@ bin/*
 !bin/.gitkeep
 ob/*
 !obj/.gitkeep
+!obj/style/.gitkeep
