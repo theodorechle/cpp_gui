@@ -240,6 +240,69 @@ int main() {
     delete rootExpected;
     expected = nullptr;
 
+    settings->debug = false;
+
+    fileContent = getFileContent("src/style/tests/test-3.txt");
+
+    rootExpected = new Node{Token::NullRoot};
+    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
+    expected = expected->appendChild(new Node{Token::BlockPrototype});
+    expected->appendChild(new Node{Token::ElementName, "label"});
+    expected->appendChild(new Node{Token::Class, "blue"});
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node{Token::BlockDefinition});
+    expected = expected->appendChild(new Node{Token::Assignment});
+    expected->appendChild(new Node{Token::StyleName, "text-color"});
+    expected->appendChild(new Node{Token::String, "#0000ff"});
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node{Token::StyleBlock});
+    expected = expected->appendChild(new Node{Token::BlockPrototype});
+    expected->appendChild(new Node{Token::Modifier, "hovered"});
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node{Token::BlockDefinition});
+    expected = expected->appendChild(new Node{Token::Assignment});
+    expected->appendChild(new Node{Token::StyleName, "text-color"});
+    expected = expected->appendChild(new Node{Token::Tuple});
+    expected->appendChild(new Node{Token::Int, "150"});
+    expected->appendChild(new Node{Token::Int, "150"});
+    expected->appendChild(new Node{Token::Int, "150"});
+
+    testTokenizerAndParser(true, fileContent, rootExpected, settings);
+
+    delete rootExpected;
+    expected = nullptr;
+
+    settings->debug = false;
+
+    fileContent = getFileContent("src/style/tests/test-4.txt");
+
+    rootExpected = new Node{Token::NullRoot};
+    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
+    expected = expected->appendChild(new Node{Token::BlockPrototype});
+    expected->appendChild(new Node{Token::ElementName, "label"});
+    expected->appendChild(new Node{Token::Class, "blue"});
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node{Token::BlockDefinition});
+    expected = expected->appendChild(new Node{Token::Assignment});
+    expected->appendChild(new Node{Token::StyleName, "text-color"});
+    expected->appendChild(new Node{Token::String, "#0000ff"});
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node{Token::StyleBlock});
+    expected = expected->appendChild(new Node{Token::BlockPrototype});
+    expected->appendChild(new Node{Token::ElementName, "element"});
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node{Token::BlockDefinition});
+    expected = expected->appendChild(new Node{Token::Assignment});
+    expected->appendChild(new Node{Token::StyleName, "text-color"});
+    expected = expected->appendChild(new Node{Token::Tuple});
+    expected->appendChild(new Node{Token::Int, "150"});
+    expected->appendChild(new Node{Token::Int, "150"});
+    expected->appendChild(new Node{Token::Int, "150"});
+
+    testTokenizerAndParser(true, fileContent, rootExpected, settings);
+
+    delete rootExpected;
+    expected = nullptr;
 
 
     delete settings;

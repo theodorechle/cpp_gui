@@ -248,6 +248,7 @@ void Parser::parseOpeningCurlyBracket() {
         lastChild = expressionTree->getLastChild();
         if (lastChild == nullptr) throw MissingToken("A style block must start with at list an element name|class|identifier before the opening curly bracket");
         lastChildCopy = lastChild->copyNodeWithChilds();
+        if (lastChildCopy->getTokenType() == Token::Name) lastChildCopy->setTokenType(Token::ElementName);
         expressionTree->removeSpecificChild(lastChild);
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockPrototype});
@@ -354,12 +355,10 @@ void Parser::parseClass() {
     Node* lastChildCopy = nullptr;
     Token token = expressionTree->getTokenType();
     if (token == Token::NullRoot || token == Token::BlockDefinition) {
-        if (expressionTree->getNbChilds() > 0) removeSpace();
-        else removeSpacesAndLineReturns();
-
         lastChild = expressionTree->getLastChild();
         if (lastChild != nullptr) {
-            if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
+            if (lastChild->getTokenType() == Token::Space || lastChild->getTokenType() == Token::LineReturn) removeSpacesAndLineReturns();
+            else if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
             else lastChildCopy = lastChild->copyNodeWithChilds();
             expressionTree->removeSpecificChild(lastChild);
         }
@@ -381,12 +380,10 @@ void Parser::parseIdentifier() {
     Node* lastChildCopy = nullptr;
     Token token = expressionTree->getTokenType();
     if (token == Token::NullRoot || token == Token::BlockDefinition) {
-        if (expressionTree->getNbChilds() > 0) removeSpace();
-        else removeSpacesAndLineReturns();
-
         lastChild = expressionTree->getLastChild();
         if (lastChild != nullptr) {
-            if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
+            if (lastChild->getTokenType() == Token::Space || lastChild->getTokenType() == Token::LineReturn) removeSpacesAndLineReturns();
+            else if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
             else lastChildCopy = lastChild->copyNodeWithChilds();
             expressionTree->removeSpecificChild(lastChild);
         }
@@ -409,9 +406,9 @@ void Parser::parseModifier() {
     Token token = expressionTree->getTokenType();
     if (token == Token::NullRoot || token == Token::BlockDefinition) {
         lastChild = expressionTree->getLastChild();
-        if (lastChild == nullptr && token == Token::NullRoot) throw MissingToken("A modifier must have something to modify (element, class, identifier, other modifier)");
         if (lastChild != nullptr) {
-            if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
+            if (lastChild->getTokenType() == Token::Space || lastChild->getTokenType() == Token::LineReturn) removeSpacesAndLineReturns();
+            else if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
             else lastChildCopy = lastChild->copyNodeWithChilds();
             expressionTree->removeSpecificChild(lastChild);
         }
@@ -421,6 +418,8 @@ void Parser::parseModifier() {
         expressionTree->appendChild(new Node{Token::Modifier, expressionTokens->getValue().substr(1)});
     }
     else if (token == Token::BlockPrototype) {
+        removeSpace();
+
         expressionTree->appendChild(new Node{Token::Modifier, expressionTokens->getValue().substr(1)});
     }
     else throw MalformedExpression("A modifier must be before a style block opening and at the root level of the style file or inside an other style block");
