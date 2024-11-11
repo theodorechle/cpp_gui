@@ -1,5 +1,7 @@
 #include <string>
 #include <iostream>
+#include <sstream>
+#include <fstream>
 
 #include "../node.hpp"
 #include "../tokenizer.hpp"
@@ -63,7 +65,14 @@ void testTokenizerAndParser(bool equal, const std::string &expr, const Node* exp
         Node* tokens = Tokenizer(expr, settings).getResult();
         Node* result = Parser(tokens, settings).getFinalTree();
         if (areSameNodes(result, expected) == equal) std::cerr << "OK";
-        else std::cerr << "KO";
+        else {
+            if (settings->debug) {
+                std::cerr << "Final tree is:\n";
+                result->display(std::cerr);
+                std::cerr << "\n";
+            }
+            std::cerr << "KO";
+        }
         delete result;
         delete tokens;
     }
@@ -167,7 +176,30 @@ int main() {
     Settings* settings = new Settings;
     settings->debug = false;
 
-    
+    std::string fileContent;
+
+    Node* rootExpected;
+    Node* expected;
+
+    std::ifstream file("src/style/tests/test-1.txt");
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    fileContent = buffer.str();
+
+    rootExpected = new Node{Token::NullRoot};
+    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
+    expected = expected->appendChild(new Node{Token::BlockPrototype});
+    expected->appendChild(new Node{Token::ElementName, "element"});
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node{Token::BlockDefinition});
+    expected = expected->appendChild(new Node{Token::Assignment});
+    expected->appendChild(new Node{Token::StyleName, "background-color"});
+    expected->appendChild(new Node{Token::String, "#ff0000"});
+
+    testTokenizerAndParser(true, fileContent, rootExpected, settings);
+
+    delete rootExpected;
+    expected = nullptr;
 
     delete settings;
     return 0;

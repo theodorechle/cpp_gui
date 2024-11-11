@@ -84,10 +84,6 @@ void Node::setChild(Node* child)  {
     if (child != nullptr) child->setParent(this);
 }
 
-void Node::setNext(Node* next) {
-    this->next = next;
-}
-
 void Node::removeSpecificChild(Node* child) {
     if (child == nullptr) return;
     if (child == getChild()) {
@@ -96,16 +92,15 @@ void Node::removeSpecificChild(Node* child) {
         delete child;
         return;
     }
-    next = getChild();
-    while (next != nullptr)
-    {
-        if (next->getNext() == child) {
-            next->setNext(child->getNext());
+    Node* nextChild = getChild();
+    while (nextChild != nullptr) {
+        if (nextChild->getNext() == child) {
+            nextChild->setNext(child->getNext());
             child->setNext(nullptr);
             delete child;
             return;
         }
-        next = next->getNext();
+        nextChild = nextChild->getNext();
     }
     
 }
@@ -200,16 +195,20 @@ Node* root(Node* node) {
 }
 
 bool areSameNodes(const Node* node1, const Node* node2) {
-    if (!(node1 == node2)) return false;
+    if (*node1 != *node2) return false; // works because != is overrided
+    if (node1->getNbChilds() != node2->getNbChilds()) return false;
     Node* child1 = node1->getChild();
     Node* child2 = node2->getChild();
     while (child1 != nullptr) {
-        if (child2 == nullptr) return false;
         if (!areSameNodes(child1, child2)) return false;
         child1 = child1->getNext();
         child2 = child2->getNext();
     }
-    return (child2 == nullptr);
+    return true;
+}
+
+bool areSameNodes(const Node& node1, const Node& node2) {
+    return areSameNodes(&node1, &node2);
 }
 
 void deleteNullRoot(Node* node) {
@@ -226,4 +225,8 @@ bool isNodeNull(Node* node) {
 
 bool operator==(const Node &n1, const Node &n2) {
     return (n1.getValue() == n2.getValue() && n1.getTokenType() == n2.getTokenType());
+}
+
+bool operator!=(const Node &n1, const Node &n2) {
+    return (n1.getValue() != n2.getValue() || n1.getTokenType() != n2.getTokenType());
 }

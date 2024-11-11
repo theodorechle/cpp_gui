@@ -13,9 +13,60 @@ void Parser::goToParentBlock() {
     goToParentBlock();
 }
 
+bool Parser::isValidName(const string& str, size_t start, size_t end) {
+    size_t i;
+    end = min(end, str.size());
+    for (i=start; i < end-1; i++) {
+        if (!isalpha(str[i]) && str[i] != '_' && str[i] != '-') return false;
+    }
+    if (!isalpha(str[i]) && str[i] != '_') return false;
+    return true;
+}
+
+bool Parser::isValidElementOrStyleName(const string& str) {
+    if (!isalpha(str[0])) return false;
+    return isValidName(str, 1, str.size());
+}
+
+bool Parser::isValidClass(const string& str) {
+    if (str.size() == 1 || str[0] != '.') return false;
+    return isValidName(str, 1, str.size());
+}
+
+bool Parser::isValidIdentifier(const string& str) {
+    if (str.size() == 1 || str[0] != '#') return false;
+    return isValidName(str, 1, str.size());
+}
+
+bool Parser::isValidModifier(const string& str) {
+    if (str.size() == 1 || str[0] != ':') return false;
+    return isValidName(str, 1, str.size());
+}
+
+void Parser::removeSpace() {
+    Node* lastChild = expressionTree->getLastChild();
+    if (lastChild != nullptr && lastChild->getTokenType() == Token::Space) expressionTree->removeSpecificChild(lastChild);
+}
+
+void Parser::removeLineReturn() {
+    Node* lastChild = expressionTree->getLastChild();
+    if (lastChild != nullptr && lastChild->getTokenType() == Token::LineReturn) expressionTree->removeSpecificChild(lastChild);
+}
+
+void Parser::removeSpacesAndLineReturns() {
+    Node* lastChild = expressionTree->getLastChild();
+    while (lastChild != nullptr && (
+            lastChild->getTokenType() == Token::Space
+            || lastChild->getTokenType() == Token::LineReturn)) {
+        expressionTree->removeSpecificChild(lastChild);
+        lastChild = expressionTree->getLastChild();
+    }
+}
+
 void Parser::parse() {
     try {
         while (expressionTokens != nullptr) {
+            if (settings->debug) cerr << "\nActual token : "<< tokenToString(expressionTokens->getTokenType()) << ": '" << expressionTokens->getValue() <<"'" << "\n";
             switch (expressionTokens->getTokenType())
             {
             case Token::Space:
@@ -25,18 +76,24 @@ void Parser::parse() {
                 parseLineReturn();
                 break;
             case Token::OneLineComment:
-                parseLineReturn();
+                parseOneLineComment();
                 break;
             case Token::OpeningMultiLineComment:
-                parseLineReturn();
+                parseMultiLineComment();
                 break;
             case Token::Int:
             case Token::Float:
             case Token::Bool:
-            case Token::String:
                 parseValue();
+                break;
+            case Token::String:
+                parseString();
+                break;
             case Token::Comma:
                 parseComma();
+                break;
+            case Token::Colon:
+                parseColon();
                 break;
             case Token::SemiColon:
                 parseSemiColon();
@@ -56,25 +113,13 @@ void Parser::parse() {
             case Token::ClosingCurlyBracket:
                 parseClosingCurlyBracket();
                 break;
-            case Token::Class:
-                parseClass();
-                break;
-            case Token::Identifier:
-                parseIdentifier();
-                break;
-            case Token::Modifier:
-                parseModifier();
-                break;
-            case Token::Name:
-                parseName();
-                break;
             default:
                 throw UnknownToken(*expressionTokens);
                 break;
             }
             if (settings->debug) {
-                cerr << endl << "Root : " << endl;
-                root(expressionTree)->display(cerr);
+                cerr << "Root :\n";
+                expressionTreeRoot->display(cerr);
                 cerr << endl;
             }
             expressionTokens = expressionTokens->getNext();
@@ -85,14 +130,6 @@ void Parser::parse() {
         delete expressionTreeRoot;
         throw;
     }
-    if (expressionTree == expressionTreeRoot) {
-        expressionTree = nullptr;
-        delete expressionTreeRoot;
-        expressionTreeRoot = nullptr;
-        return;
-    }
-    expressionTreeRoot = expressionTreeRoot->getChild();
-    deleteNullRoot(expressionTreeRoot);
 }
 
 void Parser::parseSpace() {
@@ -104,37 +141,43 @@ void Parser::parseLineReturn() {
 }
 
 void Parser::parseOneLineComment() {
-    while (expressionTree->getNext() != nullptr && expressionTree->getNext()->getTokenType() == Token::LineReturn) {
-        expressionTree = expressionTree->getNext();
+    while (expressionTokens->getNext() != nullptr && expressionTokens->getNext()->getTokenType() != Token::LineReturn) {
+        expressionTokens = expressionTokens->getNext();
     }    
 }
 
 void Parser::parseMultiLineComment() {
-    while (expressionTree != nullptr && expressionTree->getTokenType() == Token::ClosingMultiLineComment) {
-        expressionTree = expressionTree->getNext();
+    while (expressionTokens != nullptr && expressionTokens->getTokenType() != Token::ClosingMultiLineComment) {
+        expressionTokens = expressionTokens->getNext();
     }
-    if (expressionTree == nullptr) throw MissingToken("Comment opened with '/*' must be closed with '*/");
+    if (expressionTokens == nullptr) throw MissingToken("Comment opened with '/*' must be closed with '*/");
 }
 
 void Parser::parseValue() {
+    removeSpace();
+    
     Node* lastChild;
     if (expressionTree->getTokenType() != Token::Assignment) {
-        if (expressionTree->getNbChilds() > 1) throw MalformedExpression("Can only have one rvalue in an assignment");
         if (expressionTree->getTokenType() != Token::Tuple && expressionTree->getTokenType() != Token::Function) throw MalformedExpression("An int|float|bool|string must follow an assignment symbol or be inside of a tuple or a function parameter");
+        if (expressionTree->getNbChilds() > 1) throw MalformedExpression("Can only have one rvalue in an assignment");
         lastChild = expressionTree->getLastChild();
         if (lastChild != nullptr && lastChild->getTokenType() != Token::ArgSeparator) throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");
         expressionTree->removeSpecificChild(lastChild);
-        expressionTree->appendChild(expressionTree->copyNode());
+        expressionTree->appendChild(expressionTokens->copyNode());
     }
     expressionTree->appendChild(expressionTokens->copyNode());
 }
 
 void Parser::parseComma() {
+    removeSpace();
+    
     if (expressionTree->getTokenType() != Token::Tuple) throw MalformedExpression("A comma must be inside of a tuple");
     expressionTree->appendChild(new Node{Token::ArgSeparator});
 }
 
 void Parser::parseColon() {
+    removeSpace();
+
     Node* lastChild;
     Node* newChild;
     if (expressionTree->getTokenType() != Token::BlockDefinition) throw MalformedExpression("A colon must be inside of a style block");
@@ -142,53 +185,21 @@ void Parser::parseColon() {
     if (lastChild == nullptr) throw MissingToken("A colon must follow a style name");
     lastChild->setTokenType(Token::StyleName); // should be Token::Name before
     newChild = new Node{Token::Assignment};
-    newChild->appendChild(lastChild->copyNode());
+    newChild->appendChild(lastChild->copyNodeWithChilds());
     expressionTree->replaceChild(lastChild, newChild);
     expressionTree = newChild;
 }
 
 void Parser::parseSemiColon() {
+    removeSpace();
+
     if (expressionTree->getTokenType() != Token::Assignment) throw MalformedExpression("A semi-colon must be at the end of an assignment");
     expressionTree = expressionTree->getParent();
 }
 
-void Parser::parseName() {
-    Token token = expressionTree->getTokenType();
-    Node* lastChild;
-    Node* lastChildCopy;
-    if (token == Token::NullRoot) {
-        expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
-        expressionTree = expressionTree->appendChild(new Node{Token::BlockPrototype});
-        expressionTree->appendChild(new Node{Token::Name, expressionTokens->getValue()});
-        return;
-    }
-    if (token == Token::BlockDefinition) {
-        lastChild = expressionTree->getLastChild();
-        if (lastChild != nullptr && lastChild->getTokenType() == Token::String) {
-            lastChildCopy = lastChild->copyNode();
-            expressionTree->removeSpecificChild(lastChild);
-            expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
-            expressionTree = expressionTree->appendChild(new Node{Token::BlockPrototype});
-            expressionTree->appendChild(lastChildCopy);
-            expressionTree->appendChild(new Node{Token::Name, expressionTokens->getValue()});
-        }
-        else expressionTree = expressionTree->appendChild(new Node{Token::Name, expressionTokens->getValue()});
-        return;
-    }
-
-    if (token == Token::Assignment) {
-        if (expressionTree->getNbChilds() > 1) throw MalformedExpression("A function or a string must be the only right value of an assignment");
-        expressionTree->appendChild(new Node{Token::Name, expressionTokens->getValue()});
-        return;
-    }
-    if (token != Token::Tuple && token != Token::Function) throw MalformedExpression("A string|function must follow an assignment symbol or be inside of a tuple or a function parameter");
-    lastChild = expressionTree->getLastChild();
-    if (lastChild != nullptr && lastChild->getTokenType() != Token::ArgSeparator) throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");
-    expressionTree->removeSpecificChild(lastChild);
-    expressionTree->appendChild(expressionTree->copyNode());
-}
-
 void Parser::parseOpeningParenthesis() {
+    removeSpace();
+
     Node* lastChild;
     if (expressionTree->getTokenType() == Token::Assignment) {
         if (expressionTree->getNbChilds() > 1) {
@@ -205,7 +216,9 @@ void Parser::parseOpeningParenthesis() {
     lastChild = expressionTree->getLastChild();
     if (lastChild != nullptr) {
         if (lastChild->getTokenType() == Token::Name) {
-            expressionTree->replaceChild(lastChild, new Node{Token::Function, lastChild->getValue()});
+            lastChild->setTokenType(Token::Function);
+            expressionTree = lastChild;
+            return;
         }
         else if (lastChild->getTokenType() != Token::ArgSeparator) throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");
     }
@@ -214,6 +227,8 @@ void Parser::parseOpeningParenthesis() {
 }
 
 void Parser::parseClosingParenthesis() {
+    removeSpace();
+
     goToParentBlock();
     if (expressionTree->getTokenType() != Token::Function
         && expressionTree->getTokenType() != Token::Tuple) throw MissingToken("A closing parenthesis ')' needs an opening parenthesis '('");
@@ -221,6 +236,8 @@ void Parser::parseClosingParenthesis() {
 }
 
 void Parser::parseOpeningCurlyBracket() {
+    removeSpace();
+
     Node* lastChild;
     Node* lastChildCopy;
     if (expressionTree->getTokenType() != Token::NullRoot
@@ -229,7 +246,7 @@ void Parser::parseOpeningCurlyBracket() {
     if (expressionTree->getTokenType() != Token::BlockPrototype) {
         lastChild = expressionTree->getLastChild();
         if (lastChild == nullptr) throw MissingToken("A style block must start with at list an element name|class|identifier before the opening curly bracket");
-        lastChildCopy = lastChild->copyNode();
+        lastChildCopy = lastChild->copyNodeWithChilds();
         expressionTree->removeSpecificChild(lastChild);
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockPrototype});
@@ -239,9 +256,11 @@ void Parser::parseOpeningCurlyBracket() {
 }
 
 void Parser::parseClosingCurlyBracket() {
+    removeSpacesAndLineReturns();
+
     goToParentBlock();
-    if (expressionTree->getTokenType() != Token::StyleBlock) throw MalformedExpression("A closing curly bracket '{' needs an opening curly bracket '}'");
-    expressionTree = expressionTree->getParent();
+    if (expressionTree->getTokenType() != Token::BlockDefinition) throw MalformedExpression("A closing curly bracket '{' needs an opening curly bracket '}'");
+    expressionTree = expressionTree->getParent()->getParent();
 }
 
 void Parser::parseUnit() {
@@ -256,8 +275,77 @@ void Parser::parseUnit() {
         lastChild->getTokenType() != Token::Int
         && lastChild->getTokenType() != Token::Float)) throw MissingToken("A unit must have an int or a float before");
     newChild = new Node{Token::Unit, expressionTokens->getValue()};
-    newChild->appendChild(lastChild->copyNode());
+    newChild->appendChild(lastChild->copyNodeWithChilds());
     expressionTree->replaceChild(lastChild, newChild);
+}
+
+void Parser::parseString() {
+    Node* lastChild;
+    if (expressionTree->getTokenType() == Token::Assignment) {
+        removeSpace();
+    
+        expressionTree->appendChild(new Node{Token::String, expressionTokens->getValue()});
+    }
+    else if (expressionTree->getTokenType() == Token::Tuple || expressionTree->getTokenType() == Token::Function) {
+        removeSpace();
+    
+        if (expressionTree->getNbChilds() > 1) throw MalformedExpression("Can only have one rvalue in an assignment");
+        lastChild = expressionTree->getLastChild();
+        if (lastChild != nullptr && lastChild->getTokenType() != Token::ArgSeparator) throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");
+        expressionTree->removeSpecificChild(lastChild);
+        expressionTree->appendChild(new Node{Token::String, expressionTree->getValue()});
+    }
+    else {
+        if (isValidClass(expressionTokens->getValue())) parseClass();
+        else if (isValidIdentifier(expressionTokens->getValue())) parseIdentifier();
+        else if (isValidModifier(expressionTokens->getValue())) parseModifier();
+        else if (isValidElementOrStyleName(expressionTokens->getValue())) parseName();
+        else throw MalformedExpression("Illegal string");
+    }
+}
+
+void Parser::parseName() {
+    Token token = expressionTree->getTokenType();
+    Node* lastChild;
+    Node* lastChildCopy;
+    if (token == Token::NullRoot) {
+        removeSpacesAndLineReturns();
+
+        expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
+        expressionTree = expressionTree->appendChild(new Node{Token::BlockPrototype});
+        expressionTree->appendChild(new Node{Token::ElementName, expressionTokens->getValue()});
+        return;
+    }
+    if (token == Token::BlockDefinition) {
+        removeSpacesAndLineReturns();
+        lastChild = expressionTree->getLastChild();
+        
+        if (lastChild != nullptr && lastChild->getTokenType() == Token::String) {
+            lastChildCopy = lastChild->copyNodeWithChilds();
+            expressionTree->removeSpecificChild(lastChild);
+            expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
+            expressionTree = expressionTree->appendChild(new Node{Token::BlockPrototype});
+            expressionTree->appendChild(lastChildCopy);
+            expressionTree->appendChild(new Node{Token::ElementName, expressionTokens->getValue()});
+        }
+        else expressionTree->appendChild(new Node{Token::Name, expressionTokens->getValue()});
+        return;
+    }
+
+    if (token == Token::Assignment) {
+        removeSpace();
+        
+        if (expressionTree->getNbChilds() > 1) throw MalformedExpression("A function or a string must be the only right value of an assignment");
+        expressionTree->appendChild(new Node{Token::Name, expressionTokens->getValue()});
+        return;
+    }
+    removeSpace();
+
+    if (token != Token::Tuple && token != Token::Function) throw MalformedExpression("A string|function must follow an assignment symbol or be inside of a tuple or a function parameter");
+    lastChild = expressionTree->getLastChild();
+    if (lastChild != nullptr && lastChild->getTokenType() != Token::ArgSeparator) throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");
+    expressionTree->removeSpecificChild(lastChild);
+    expressionTree->appendChild(expressionTokens->copyNode());
 }
 
 void Parser::parseClass() {
@@ -265,9 +353,13 @@ void Parser::parseClass() {
     Node* lastChildCopy = nullptr;
     Token token = expressionTree->getTokenType();
     if (token == Token::NullRoot || token == Token::BlockDefinition) {
+        if (expressionTree->getNbChilds() > 0) removeSpace();
+        else removeSpacesAndLineReturns();
+
         lastChild = expressionTree->getLastChild();
-        if (lastChild != nullptr && lastChild->getTokenType() == Token::Name) {
-            lastChildCopy = lastChild->copyNode();
+        if (lastChild != nullptr) {
+            if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
+            else lastChildCopy = lastChild->copyNodeWithChilds();
             expressionTree->removeSpecificChild(lastChild);
         }
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
@@ -275,7 +367,11 @@ void Parser::parseClass() {
         expressionTree->appendChild(lastChildCopy);
         expressionTree->appendChild(expressionTokens->copyNode());
     }
-    else if (token == Token::BlockPrototype) expressionTree->appendChild(expressionTokens->copyNode());
+    else if (token == Token::BlockPrototype) {
+        removeSpace();
+
+        expressionTree->appendChild(expressionTokens->copyNode());
+    }
     else throw MalformedExpression("A class|identifier must be before a style block opening and at the root level of the style file or inside an other style block");
 }
 
@@ -284,9 +380,13 @@ void Parser::parseIdentifier() {
     Node* lastChildCopy = nullptr;
     Token token = expressionTree->getTokenType();
     if (token == Token::NullRoot || token == Token::BlockDefinition) {
+        if (expressionTree->getNbChilds() > 0) removeSpace();
+        else removeSpacesAndLineReturns();
+
         lastChild = expressionTree->getLastChild();
-        if (lastChild != nullptr && lastChild->getTokenType() == Token::Name) {
-            lastChildCopy = lastChild->copyNode();
+        if (lastChild != nullptr) {
+            if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
+            else lastChildCopy = lastChild->copyNodeWithChilds();
             expressionTree->removeSpecificChild(lastChild);
         }
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
@@ -294,7 +394,11 @@ void Parser::parseIdentifier() {
         expressionTree->appendChild(lastChildCopy);
         expressionTree->appendChild(expressionTokens->copyNode());
     }
-    else if (token == Token::BlockPrototype) expressionTree->appendChild(expressionTokens->copyNode());
+    else if (token == Token::BlockPrototype) {
+        removeSpace();
+
+        expressionTree->appendChild(expressionTokens->copyNode());
+    }
     else throw MalformedExpression("An identifier must be before a style block opening and at the root level of the style file or inside an other style block");
 }
 
@@ -305,8 +409,9 @@ void Parser::parseModifier() {
     if (token == Token::NullRoot || token == Token::BlockDefinition) {
         lastChild = expressionTree->getLastChild();
         if (lastChild == nullptr && token == Token::NullRoot) throw MissingToken("A modifier must have something to modify (element, class, identifier, other modifier)");
-        if (lastChild != nullptr && lastChild->getTokenType() == Token::Name) {
-            lastChildCopy = lastChild->copyNode();
+        if (lastChild != nullptr) {
+            if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
+            else lastChildCopy = lastChild->copyNodeWithChilds();
             expressionTree->removeSpecificChild(lastChild);
         }
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
@@ -314,6 +419,8 @@ void Parser::parseModifier() {
         expressionTree->appendChild(lastChildCopy);
         expressionTree->appendChild(expressionTokens->copyNode());
     }
-    else if (token == Token::BlockPrototype) expressionTree->appendChild(expressionTokens->copyNode());
+    else if (token == Token::BlockPrototype) {
+        expressionTree->appendChild(expressionTokens->copyNode());
+    }
     else throw MalformedExpression("A modifier must be before a style block opening and at the root level of the style file or inside an other style block");
 }

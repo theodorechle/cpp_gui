@@ -32,10 +32,6 @@ public:
     void tokenizeOneLineComment();
     void tokenizeOpeningMultiLineComment();
     void tokenizeClosingMultiLineComment();
-    void tokenizeName();
-    void tokenizeClass();
-    void tokenizeModifier();
-    void tokenizeIdentifier();
     void tokenizeString();
     void tokenizeInt();
     void tokenizeFloat();

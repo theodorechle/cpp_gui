@@ -47,79 +47,12 @@ void Tokenizer::tokenizeClosingMultiLineComment() {
     index += 2;
 }
 
-void Tokenizer::tokenizeName() {
-    if (!isalpha(expression[index])) return;
-
-    size_t i = 1;
-    while (index+i < expressionLength && (
-        isalnum(expression[index+i])
-        || expression[index+i] == '_'
-        || expression[index+i] == '-'
-        )) {
-        i++;
-    }
-    if (expression[index+i] == '-') return; // can't end with a '-';
-    expressionTree->appendNext(new Node{Token::Name, expression.substr(index, i)});
-    index += i;
-    tokenized = true;
-}
-
-void Tokenizer::tokenizeClass() {
-    if (expression[index] != '.') return;
-
-    size_t i = 1;
-    while (index+i < expressionLength && (
-        isalnum(expression[index+i])
-        || expression[index+i] == '_'
-        || expression[index+i] == '-'
-        )) {
-        i++;
-    }
-    if (i == 1) return; // must have at list one char after the dot
-    expressionTree->appendNext(new Node{Token::Class, expression.substr(index+1, i)});
-    index += i;
-    tokenized = true;
-}
-
-void Tokenizer::tokenizeModifier() {
-    if (expression[index] != ':') return;
-
-    size_t i = 1;
-    while (index+i < expressionLength && (
-        isalnum(expression[index+i])
-        || expression[index+i] == '_'
-        || expression[index+i] == '-'
-        )) {
-        i++;
-    }
-    if (i == 1) return; // must have at list one char after the colon
-    expressionTree->appendNext(new Node{Token::Modifier, expression.substr(index+1, i)});
-    index += i;
-    tokenized = true;
-}
-
-void Tokenizer::tokenizeIdentifier() {
-    if (expression[index] != '#') return;
-
-    size_t i = 1;
-    while (index+i < expressionLength && (
-        isalnum(expression[index+i])
-        || expression[index+i] == '_'
-        || expression[index+i] == '-'
-        )) {
-        i++;
-    }
-    if (i == 1) return; // must have at list one char after the sharp
-    expressionTree->appendNext(new Node{Token::Identifier, expression.substr(index+1, i)});
-    index += i;
-    tokenized = true;
-}
-
 void Tokenizer::tokenizeString() {
     size_t i = 0;
     while (index + i < expressionLength && (
         expression[index+i] != ','
         && expression[index+i] != ';'
+        && expression[index+i] != ':'
         && expression[index+i] != ' '
         && expression[index+i] != '\n'
         && expression[index+i] != '\t'
@@ -241,20 +174,17 @@ void Tokenizer::tokenize() {
         if (!tokenized) tokenizeOneLineComment();
         if (!tokenized) tokenizeOpeningMultiLineComment();
         if (!tokenized) tokenizeClosingMultiLineComment();
-        if (!tokenized) tokenizeName();
-        if (!tokenized) tokenizeClass();
-        if (!tokenized) tokenizeModifier();
-        if (!tokenized) tokenizeIdentifier();
         if (!tokenized) tokenizeInt();
         if (!tokenized) tokenizeFloat();
         if (!tokenized) tokenizeBool();
         if (!tokenized) tokenizeUnit();
         if (!tokenized) tokenizeSpecialCharacters();
+        if (!tokenized) tokenizeString();
         if (!tokenized) {
             delete expressionTree; // avoid memory leak
             throw UnknownValue(expression.substr(index));
         }
-        // std::cerr << tokenToString(expressionTree->getTokenType()) << ": " << expressionTree->getValue() << std::endl;
+        if (settings->debug) std::cerr << tokenToString(expressionTree->getTokenType()) << ": '" << expressionTree->getValue() << "'" << std::endl;
         expressionTree = expressionTree->getNext();
     }
     // remove the NullRoot token at the start

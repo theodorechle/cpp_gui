@@ -26,8 +26,8 @@ public :
     */
     void setParent(Node* parent);
     Node* getNext() const {return next;};
-    void setNext(Node* next);
-    void removeNext() {setValue(nullptr);};
+    void setNext(Node* n) {next = n;};
+    void removeNext() {setNext(nullptr);};
     Node* getChild() const {return child;};
     Node* getLastChild() const;
     int getNbChilds() const;
@@ -59,6 +59,7 @@ public :
     void displayNexts(std::ostream &flow = std::cout) const;
     
     friend bool operator==(const Node &, const Node &);
+    friend bool operator!=(const Node &, const Node &);
 };
 
 /**
@@ -67,6 +68,7 @@ public :
 Node* root(Node* node);
 
 bool areSameNodes(const Node* node1, const Node* node2);
+bool areSameNodes(const Node& node1, const Node& node2);
 
 void deleteNullRoot(Node* node);
 

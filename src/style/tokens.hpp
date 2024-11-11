@@ -26,17 +26,17 @@ enum class Token {
     String,
     Assignment,
     ArgSeparator,
+    Name,
+    Class,
+    Modifier,
+    Identifier,
     // Used by both the tokenizer and the parser
     Space,
     LineReturn,
-    Name,
     Int,
     Float,
     Bool,
     Unit,
-    Class,
-    Modifier,
-    Identifier,
     Empty,
     /**NullRoot is used only when an algorithm must start with an existing node
      * Nodes with this type will be ignored by the root function in node.h and the Parser::goToParentBlock function
