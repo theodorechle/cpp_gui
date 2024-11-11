@@ -121,7 +121,7 @@ label.blue:hovered {
     labels with the class 'blue' will have a text in gray
     this override the previous declaration block of 'label.blue' when it's hovered
     */
-    text-color: #888888;
+    text-color: (150, 150, 150);
 }
 
 // equivalent at previous two blocks

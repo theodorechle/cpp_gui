@@ -48,11 +48,25 @@ void Tokenizer::tokenizeClosingMultiLineComment() {
 }
 
 void Tokenizer::tokenizeString() {
-    size_t i = 0;
+    if (expression[index] == ','
+        || expression[index] == ';'
+        || expression[index] == ' '
+        || expression[index] == '\n'
+        || expression[index] == '\t'
+        || expression[index] == '{'
+        || expression[index] == '}'
+        || expression[index] == '('
+        || expression[index] == ')'
+        || expression[index] == '['
+        || expression[index] == ']') return;
+    
+    size_t i = 1;
     while (index + i < expressionLength && (
         expression[index+i] != ','
         && expression[index+i] != ';'
         && expression[index+i] != ':'
+        && expression[index+i] != '#'
+        && expression[index+i] != '.'
         && expression[index+i] != ' '
         && expression[index+i] != '\n'
         && expression[index+i] != '\t'
@@ -65,6 +79,7 @@ void Tokenizer::tokenizeString() {
         )) {
         i++;
     }
+    if (!isalpha(expression[index]) && i == 1) return;
     expressionTree->appendNext(new Node{Token::String, expression.substr(index, i)});
     index += i;
     tokenized = true;    
@@ -81,17 +96,16 @@ void Tokenizer::tokenizeInt() {
 
 void Tokenizer::tokenizeFloat() {
     bool dotFound = false;
-    if (expression[index] == '.') dotFound = true;
-    else if (!isdigit(expression[index])) return;
-    size_t i = 1;
-    while (index+i < expressionLength && (isdigit(expression[index+i]) || expression[index+i] == '.')) {
+    size_t i = 0;
+    while (index+i < expressionLength) {
         if (expression[index+i] == '.') {
             if (!dotFound) dotFound = true;
             else return;
         }
+        else if (!isdigit(expression[index+i])) return;
         i++;
     }
-    if (!dotFound) return;
+    if (!dotFound || i < 2) return; // < 2 because at least one int (0-9) and a dot
     expressionTree->appendNext(new Node{Token::Float, expression.substr(index, i)});
     index += i;
     tokenized = true;
@@ -178,8 +192,8 @@ void Tokenizer::tokenize() {
         if (!tokenized) tokenizeFloat();
         if (!tokenized) tokenizeBool();
         if (!tokenized) tokenizeUnit();
-        if (!tokenized) tokenizeSpecialCharacters();
         if (!tokenized) tokenizeString();
+        if (!tokenized) tokenizeSpecialCharacters();
         if (!tokenized) {
             delete expressionTree; // avoid memory leak
             throw UnknownValue(expression.substr(index));
