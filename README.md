@@ -107,28 +107,4 @@ A class can be used to apply style to multiple elements at once
 ```
 
 ### Examples
-```
-element { // ui elements will have a red background
-    background-color: #ff0000;
-}
-
-label.blue { // labels with the class 'blue' will have a text in blue
-    text-color: #0000ff;
-}
-
-label.blue:hovered {
-    /*
-    labels with the class 'blue' will have a text in gray
-    this override the previous declaration block of 'label.blue' when it's hovered
-    */
-    text-color: (150, 150, 150);
-}
-
-// equivalent at previous two blocks
-label.blue {
-    text-color: #0000ff;
-    :hovered {
-        text-color: #888888;
-    }
-}
-```
+See txt files in <a href="src/style/tests">src/style/tests</a>
