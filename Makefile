@@ -19,7 +19,7 @@ bin/exe: $(OBJ)
 	$(CC) $^ -o $@
 bin/style: $(OBJ_STYLE)
 	$(CC) $^ -o $@
-bin/style-tests: obj/style/tests/tests.o $(filter-out obj/style/main.o, $(OBJ_STYLE))
+bin/style-tests: obj/style/tests/main.o obj/style/tests/tests.o $(filter-out obj/style/main.o, $(OBJ_STYLE))
 	$(CC) $^ -o $@
 
 obj/main.o : src/main.cpp
@@ -32,7 +32,9 @@ obj/style/main.o : src/style/main.cpp
 obj/style/%.o: src/style/%.cpp src/style/%.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-obj/style/tests/tests.o : src/style/tests/tests.cpp
+obj/style/tests/main.o: src/style/tests/main.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+obj/style/tests/tests.o : src/style/tests/tests.cpp src/style/tests/tests.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 clean:
 	rm obj/* obj/style/* obj/style/tests/* bin/*

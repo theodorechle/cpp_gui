@@ -8,10 +8,10 @@
 using namespace std;
 
 int main() {
-    Settings* settings = new Settings;
-    string* fileName = new string;
-    string* fileContent = new string;
-    Node* tokens;
+    Settings *settings = new Settings;
+    string *fileName = new string;
+    string *fileContent = new string;
+    Node *tokens;
 
     while (true) {
         cout << "Style file : ";
@@ -26,15 +26,15 @@ int main() {
     cout << "File content:\n" << *fileContent << endl;
     cout << "1 for debug, 0 else : ";
     cin >> settings->debug;
-    Tokenizer* tokenizer = new Tokenizer{*fileContent, settings};
+    Tokenizer *tokenizer = new Tokenizer{*fileContent, settings};
     tokens = tokenizer->getResult();
     delete tokenizer;
     if (settings->debug) {
         cerr << "Tokens" << endl;
         tokens->displayNexts(cerr);
     }
-    Node* tree;
-    Parser* parser = new Parser{tokens, settings};
+    Node *tree;
+    Parser *parser = new Parser{tokens, settings};
     tree = parser->getFinalTree();
     delete parser;
     delete tokens;

@@ -1,310 +1,195 @@
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <fstream>
+#include "tests.hpp"
 
-#include "../node.hpp"
-#include "../tokenizer.hpp"
-#include "../parser.hpp"
-#include "../solver.hpp"
-
-void testTokenizer(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
-    std::cerr << "Test if tokenizing\n'\n" << expr << "\n'\n";
+void Test::tokenizer(bool equal, const std::string &expr, const Node *expected, Settings *settings) {
+    std::cerr << "(" << getTestNumber() << ") Test if tokenizing\n'\n" << expr << "\n'\n";
     if (equal) std::cerr << "equals to\n";
     else std::cerr << "differs from\n";
     expected->displayNexts(std::cerr);
     std::cerr << ": ";
     try {
-        Node* result = Tokenizer(expr, settings).getResult();
-        Node* n = result;
+        Node *result = Tokenizer(expr, settings).getResult();
+        Node *n = result;
         while (n != nullptr) {
             if ((expected == nullptr || !(*n == *expected)) == equal) {
-                std::cerr << "KO" << std::endl;
+                setTestResult(KO);
                 delete result;
                 return;
             }
             n = n->getNext();
             expected = expected->getNext();
         }
-        if (expected != nullptr) std::cerr << "KO";
-        else std::cerr << "OK";
+        if (expected == nullptr) setTestResult(OK);
+        else setTestResult(KO);
         delete result;
+        displayResult(results.back());
     }
     catch (const std::exception& e) {
+        setTestResult(ERROR);
         std::cerr << "Failed with error : " << e.what();
     }
-    std::cerr << std::endl;
+    std::cerr << "\n";
 }
 
-void testParser(bool equal, Node* expr, const Node* expected, Settings* settings) {
-    std::cerr << "Test if parsing\n";
+void Test::parser(bool equal, Node *expr, const Node *expected, Settings *settings) {
+    std::cerr << "(" << getTestNumber() << ") Test if parsing\n";
     expr->displayNexts(std::cerr);
     if (equal) std::cerr << "equals to\n";
     else std::cerr << "differs from\n";
     expr->display(std::cerr);
     std::cerr << ": ";
     try {
-        Node* result = Parser(expr, settings).getFinalTree();
-        if (areSameNodes(result, expected) == equal) std::cerr << "OK";
-        else std::cerr << "KO";
+        Node *result = Parser(expr, settings).getFinalTree();
+        if (areSameNodes(result, expected) == equal) setTestResult(OK);
+        else setTestResult(KO);
         delete result;
+        displayResult(results.back());
     }
     catch (const std::exception& e) {
+        setTestResult(ERROR);
         std::cerr << "Failed with error : " << e.what();
     }
-    std::cerr << std::endl;
+    std::cerr << "\n";
 }
 
-void testTokenizerAndParser(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
-    std::cerr << "Test if tokenizing and parsing\n'\n" << expr << "\n'\n";
+void Test::tokenizerAndParser(bool equal, const std::string &expr, const Node *expected, Settings *settings) {
+    std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expr << "\n'\n";
     if (equal) std::cerr << "equals to\n";
     else std::cerr << "differs from\n";
     expected->display(std::cerr);
     std::cerr << ": ";
     try {
-        Node* tokens = Tokenizer(expr, settings).getResult();
-        Node* result = Parser(tokens, settings).getFinalTree();
-        if (areSameNodes(result, expected) == equal) std::cerr << "OK";
-        else {
-            if (settings->debug) {
-                std::cerr << "Final tree is:\n";
-                result->display(std::cerr);
-                std::cerr << "\n";
-            }
-            std::cerr << "KO";
-        }
+        Node *tokens = Tokenizer(expr, settings).getResult();
+        Node *result = Parser(tokens, settings).getFinalTree();
+        if (areSameNodes(result, expected) == equal) setTestResult(OK);
+        else setTestResult(KO);
         delete result;
         delete tokens;
+        displayResult(results.back());
     }
     catch (const std::exception& e) {
+        setTestResult(ERROR);
         std::cerr << "Failed with error : " << e.what();
     }
-    std::cerr << std::endl;
+    std::cerr << "\n";
 }
 
-std::string testEqualBools(bool equal, bool a, bool b) {
-    if ((a == b) == equal) return "OK";
-    return "Error, " + std::to_string(a) + " instead of " + std::to_string(b);
-}
-
-std::string testEqualStrings(bool equal, const std::string &a, const std::string &b) {
-    if ((a == b) == equal) return "OK";
-    return "Error, " + a + " instead of " + b;
-}
-
-void testInvalidExpression(std::string expression, Settings* settings) {
-    std::cerr << "Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a MalformedExpression exception : ";
-    Node* tokens = nullptr;
-    Node* result = nullptr;
+void Test::invalidExpression(std::string expression, Settings *settings) {
+    std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a MalformedExpression exception : ";
+    Node *tokens = nullptr;
+    Node *result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
-        std::cerr << "KO";
+        setTestResult(KO);
+        displayResult(results.back());
     }
     catch (const MalformedExpression &e) {
-        std::cerr << "OK";
+        setTestResult(OK);
+        displayResult(results.back());
     }
     catch (const std::exception &e) {
+        setTestResult(ERROR);
         std::cerr << "Error : " << e.what();
     }
     delete tokens;
     delete result;
-    std::cerr << std::endl;
+    std::cerr << "\n";
 }
 
-void testUnknownToken(std::string expression, Settings* settings) {
-    std::cerr << "Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a UnknownToken exception : ";
-    Node* tokens = nullptr;
-    Node* result = nullptr;
+void Test::unknownToken(std::string expression, Settings *settings) {
+    std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a UnknownToken exception : ";
+    Node *tokens = nullptr;
+    Node *result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
-        std::cerr << "KO";
+        setTestResult(KO);
+        displayResult(results.back());
+
     }
     catch (const UnknownToken &e) {
-        std::cerr << "OK";
+        setTestResult(OK);
+        displayResult(results.back());
+
     }
     catch (const std::exception &e) {
+        setTestResult(ERROR);
         std::cerr << "Error : " << e.what();
     }
     delete tokens;
     delete result;
-    std::cerr << std::endl;
+    std::cerr << "\n";
 }
 
-void testMissingToken(std::string expression, Settings* settings) {
-    std::cerr << "Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a MissingToken exception : ";
-    Node* tokens = nullptr;
-    Node* result = nullptr;
+void Test::missingToken(std::string expression, Settings *settings) {
+    std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a MissingToken exception : ";
+    Node *tokens = nullptr;
+    Node *result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
-        std::cerr << "KO";
+        setTestResult(KO);
+        displayResult(results.back());
     }
     catch (const MissingToken &e) {
-        std::cerr << "OK";
+        setTestResult(OK);
+        displayResult(results.back());
     }
     catch (const std::exception &e) {
+        setTestResult(ERROR);
         std::cerr << "Error : " << e.what();
     }
     delete tokens;
     delete result;
-    std::cerr << std::endl;
+    std::cerr << "\n";
 }
 
-void testUnknownValue(std::string expression, Settings* settings) {
-    std::cerr << "Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a UnknownValue exception : ";
-    Node* tokens = nullptr;
-    Node* result = nullptr;
+void Test::unknownValue(std::string expression, Settings *settings) {
+    std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a UnknownValue exception : ";
+    Node *tokens = nullptr;
+    Node *result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
-        std::cerr << "KO";
+        setTestResult(KO);
+        displayResult(results.back());
     }
     catch (const UnknownValue &e) {
-        std::cerr << "OK";
+        setTestResult(OK);
+        displayResult(results.back());
     }
     catch (const std::exception &e) {
+        setTestResult(ERROR);
         std::cerr << "Error : " << e.what();
     }
     delete tokens;
     delete result;
-    std::cerr << std::endl;
+    std::cerr << "\n";
 }
 
-std::string getFileContent(std::string fileName) {
+std::string Test::getFileContent(std::string fileName) {
     std::ifstream file(fileName);
     std::stringstream buffer;
     buffer << file.rdbuf();
     return buffer.str();
 }
 
-int main() {
-    Settings* settings = new Settings;
+void Test::displayResult(Result r) const {
+    if (r == OK) std::cerr << "OK";
+    else if (r == KO) std::cerr << "KO";
+    else if (r == ERROR) std::cerr << "ERROR";
+    else std::cerr << "Invalid result";
+}
 
-    std::string fileContent;
-
-    Node* rootExpected;
-    Node* expected;
-
-    settings->debug = false;
-
-    fileContent = getFileContent("src/style/tests/test-1.txt");
-
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockPrototype});
-    expected->appendChild(new Node{Token::ElementName, "element"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "background-color"});
-    expected->appendChild(new Node{Token::String, "#ff0000"});
-
-    testTokenizerAndParser(true, fileContent, rootExpected, settings);
-
-    delete rootExpected;
-    expected = nullptr;
-
-    settings->debug = false;
-
-    fileContent = getFileContent("src/style/tests/test-2.txt");
-
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockPrototype});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::String, "#0000ff"});
-
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockPrototype});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
-    expected->appendChild(new Node{Token::Modifier, "hovered"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected = expected->appendChild(new Node{Token::Tuple});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-
-    testTokenizerAndParser(true, fileContent, rootExpected, settings);
-
-    delete rootExpected;
-    expected = nullptr;
-
-    settings->debug = false;
-
-    fileContent = getFileContent("src/style/tests/test-3.txt");
-
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockPrototype});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::String, "#0000ff"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockPrototype});
-    expected->appendChild(new Node{Token::Modifier, "hovered"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected = expected->appendChild(new Node{Token::Tuple});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-
-    testTokenizerAndParser(true, fileContent, rootExpected, settings);
-
-    delete rootExpected;
-    expected = nullptr;
-
-    settings->debug = false;
-
-    fileContent = getFileContent("src/style/tests/test-4.txt");
-
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockPrototype});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::String, "#0000ff"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockPrototype});
-    expected->appendChild(new Node{Token::ElementName, "element"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected = expected->appendChild(new Node{Token::Tuple});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-
-    testTokenizerAndParser(true, fileContent, rootExpected, settings);
-
-    delete rootExpected;
-    expected = nullptr;
-
-
-    delete settings;
-    return 0;
+void Test::displaySummary() const {
+    std::cerr << "Summary:\n";
+    size_t index = 0;
+    for (std::list<Result>::const_iterator it = results.cbegin(); it != results.cend(); it++) {
+        std::cerr << "\ttest " << index << ": ";
+        displayResult(*it);
+        std::cerr << "\n";
+        index++;
+    }
+    std::cerr << "End of summary\n";
+    
 }

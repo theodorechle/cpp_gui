@@ -39,8 +39,8 @@ enum class Token {
     Unit,
     Empty,
     /**NullRoot is used only when an algorithm must start with an existing node
-     * Nodes with this type will be ignored by the root function in node.h and the Parser::goToParentBlock function
-     * (they return the NullRoot node's child, except when it's the only node)
+      *Nodes with this type will be ignored by the root function in node.h and the Parser::goToParentBlock function
+      *(they return the NullRoot node's child, except when it's the only node)
     */
    NullRoot
 };

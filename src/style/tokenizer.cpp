@@ -202,7 +202,7 @@ void Tokenizer::tokenize() {
         expressionTree = expressionTree->getNext();
     }
     // remove the NullRoot token at the start
-    Node* nextList = firstNode->getNext();
+    Node *nextList = firstNode->getNext();
     firstNode->setNext(nullptr);
     delete firstNode;
     firstNode = nextList;
