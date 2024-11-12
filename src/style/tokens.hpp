@@ -13,8 +13,7 @@ enum class Token {
     Colon,
     SemiColon,
     OneLineComment,
-    OpeningMultiLineComment,
-    ClosingMultiLineComment,
+    MultiLineComment,
     // Used only by the parser
     StyleBlock,
     BlockPrototype,

@@ -30,7 +30,7 @@ public:
     void tokenizeSpace();
     void tokenizeLineReturn();
     void tokenizeOneLineComment();
-    void tokenizeOpeningMultiLineComment();
+    void tokenizeMultiLineComment();
     void tokenizeClosingMultiLineComment();
     void tokenizeString();
     void tokenizeInt();

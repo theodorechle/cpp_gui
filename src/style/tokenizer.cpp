@@ -28,23 +28,24 @@ void Tokenizer::tokenizeLineReturn() {
 
 void Tokenizer::tokenizeOneLineComment() {
     if (expression[index] != '/' || expression[index+1] != '/') return;
-    expressionTree->appendNext(new Node{Token::OneLineComment});
+    int i = 1;
+    while (index + i + 1 < expression.size() && expression[index+i+1] != '\n') {
+        i++;
+    }
+    expressionTree->appendNext(new Node{Token::OneLineComment, expression.substr(index+2, i-1)});
     tokenized = true;
-    index += 2;
+    index += i + 1;
 }
 
-void Tokenizer::tokenizeOpeningMultiLineComment() {
+void Tokenizer::tokenizeMultiLineComment() {
     if (expression[index] != '/' || expression[index+1] != '*') return;
-    expressionTree->appendNext(new Node{Token::OpeningMultiLineComment});
+    int i = 1;
+    while (index + i + 2 < expression.size() && expression[index+i+1] != '*' && expression[index+i+2] != '/') {
+        i++;
+    }
+    expressionTree->appendNext(new Node{Token::MultiLineComment, expression.substr(index+2, i-2)});
     tokenized = true;
-    index += 2;
-}
-
-void Tokenizer::tokenizeClosingMultiLineComment() {
-    if (expression[index] != '*' || expression[index+1] != '/') return;
-    expressionTree->appendNext(new Node{Token::ClosingMultiLineComment});
-    tokenized = true;
-    index += 2;
+    index += i + 3;
 }
 
 void Tokenizer::tokenizeString() {
@@ -186,8 +187,7 @@ void Tokenizer::tokenize() {
         tokenizeSpace();
         if (!tokenized) tokenizeLineReturn();
         if (!tokenized) tokenizeOneLineComment();
-        if (!tokenized) tokenizeOpeningMultiLineComment();
-        if (!tokenized) tokenizeClosingMultiLineComment();
+        if (!tokenized) tokenizeMultiLineComment();
         if (!tokenized) tokenizeInt();
         if (!tokenized) tokenizeFloat();
         if (!tokenized) tokenizeBool();

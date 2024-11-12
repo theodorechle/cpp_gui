@@ -13,8 +13,7 @@ std::string tokenToString(const Token &type) {
         case Token::Colon: return "Colon";
         case Token::SemiColon: return "SemiColon";
         case Token::OneLineComment: return "OneLineComment";
-        case Token::OpeningMultiLineComment: return "OpeningMultiLineComment";
-        case Token::ClosingMultiLineComment: return "ClosingMultiLineComment";
+        case Token::MultiLineComment: return "MultiLineComment";
         // Used only by the parser
         case Token::StyleBlock: return "StyleBlock";
         case Token::BlockPrototype: return "BlockPrototype";

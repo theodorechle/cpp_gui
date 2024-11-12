@@ -78,7 +78,7 @@ void Parser::parse() {
             case Token::OneLineComment:
                 parseOneLineComment();
                 break;
-            case Token::OpeningMultiLineComment:
+            case Token::MultiLineComment:
                 parseMultiLineComment();
                 break;
             case Token::Int:
@@ -141,16 +141,11 @@ void Parser::parseLineReturn() {
 }
 
 void Parser::parseOneLineComment() {
-    while (expressionTokens->getNext() != nullptr && expressionTokens->getNext()->getTokenType() != Token::LineReturn) {
-        expressionTokens = expressionTokens->getNext();
-    }    
+
 }
 
 void Parser::parseMultiLineComment() {
-    while (expressionTokens != nullptr && expressionTokens->getTokenType() != Token::ClosingMultiLineComment) {
-        expressionTokens = expressionTokens->getNext();
-    }
-    if (expressionTokens == nullptr) throw MissingToken("Comment opened with '/*' must be closed with '*/");
+
 }
 
 void Parser::parseValue() {
