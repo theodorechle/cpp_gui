@@ -119,7 +119,7 @@ int main() {
     expected = expected->appendChild(new Node{Token::Tuple});
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
-    // expected->appendChild(new Node{Token::Int, "150"});
+    expected->appendChild(new Node{Token::Int, "150"});
 
     test.tokenizerAndParser(true, fileContent, rootExpected, settings);
 
