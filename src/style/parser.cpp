@@ -125,7 +125,7 @@ void Parser::parse() {
             expressionTokens = expressionTokens->getNext();
         }
     }
-    catch (const exception &) {
+    catch (const ParserError &) {
         expressionTree = nullptr;
         delete expressionTreeRoot;
         throw;

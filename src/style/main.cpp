@@ -11,7 +11,10 @@ int main() {
     Settings *settings = new Settings;
     string *fileName = new string;
     string *fileContent = new string;
+    Tokenizer *tokenizer = nullptr;
+    Parser *parser = nullptr;
     Node *tokens;
+    Node *tree;
 
     while (true) {
         cout << "Style file : ";
@@ -26,24 +29,42 @@ int main() {
     cout << "File content:\n" << *fileContent << endl;
     cout << "1 for debug, 0 else : ";
     cin >> settings->debug;
-    Tokenizer *tokenizer = new Tokenizer{*fileContent, settings};
+    try {
+        tokenizer = new Tokenizer{*fileContent, settings};
+    } catch (const TokenizerError &) {
+        delete tokenizer;
+        delete fileContent;
+        delete fileName;
+        delete settings;
+        throw;
+    }
     tokens = tokenizer->getResult();
     delete tokenizer;
     if (settings->debug) {
         cerr << "Tokens" << endl;
         tokens->displayNexts(cerr);
     }
-    Node *tree;
-    Parser *parser = new Parser{tokens, settings};
+
+    try {
+        parser = new Parser{tokens, settings};
+    } catch (const ParserError &e) {
+        delete parser;
+        delete fileContent;
+        delete fileName;
+        delete tokens;
+        delete settings;
+        return -1;
+    }
     tree = parser->getFinalTree();
     delete parser;
     delete tokens;
     if (tree == nullptr) { // something is not freed, need to find it
         cout << "Empty result" << endl;
         delete fileContent;
+        delete fileName;
         delete tree;
         delete settings;
-        return 0;
+        return -1;
     }
     if (settings->debug) {
         cerr << "Parsed tree" << endl;
@@ -55,6 +76,7 @@ int main() {
     //     tree->display(cerr);
     // }
     delete fileContent;
+    delete fileName;
     delete tree;
     delete settings;
     return 0;

@@ -196,7 +196,7 @@ void Tokenizer::tokenize() {
         if (!tokenized) tokenizeSpecialCharacters();
         if (!tokenized) {
             delete expressionTree; // avoid memory leak
-            throw UnknownValue(expression.substr(index));
+            throw UnknownValue(expression.substr(index, MAX_ERROR_COMPLEMENTARY_INFOS_SIZE));
         }
         if (settings->debug) std::cerr << tokenToString(expressionTree->getTokenType()) << ": '" << expressionTree->getValue() << "'" << std::endl;
         expressionTree = expressionTree->getNext();

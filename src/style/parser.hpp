@@ -8,26 +8,26 @@
 
 #include "settings.hpp"
 
-
-class UnknownToken: public std::exception {
+class ParserError: public std::exception {
     std::string message;
 public:
-    UnknownToken(const Node token): message{"Unknown token: \"" + token.getValue() + " (" + tokenToString(token.getTokenType()) + ")\""} {};
+    ParserError(const std::string& message): message{message} {};
     const char *what() const noexcept override {return message.c_str();}
 };
 
-class MissingToken: public std::exception {
-    std::string message;
+class UnknownToken: public ParserError {
 public:
-    MissingToken(const std::string &token): message{"Missing token: \"" + token + "\""} {};
-    const char *what() const noexcept override {return message.c_str();}
+    UnknownToken(const Node token): ParserError{"Unknown token: \"" + token.getValue() + " (" + tokenToString(token.getTokenType()) + ")\""} {};
 };
 
-class MalformedExpression: public std::exception {
-    std::string message;
+class MissingToken: public ParserError {
 public:
-    MalformedExpression(const std::string &expression): message{"Malformed expression: \"" + expression + "\""} {};
-    const char *what() const noexcept override {return message.c_str();}
+    MissingToken(const std::string &token): ParserError{"Missing token: \"" + token + "\""} {};
+};
+
+class MalformedExpression: public ParserError {
+public:
+    MalformedExpression(const std::string &expression): ParserError{"Malformed expression: \"" + expression + "\""} {};
 };
 
 /**

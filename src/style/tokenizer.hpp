@@ -6,11 +6,18 @@
 #include "node.hpp"
 #include "settings.hpp"
 
-class UnknownValue: public std::exception {
+#define MAX_ERROR_COMPLEMENTARY_INFOS_SIZE 20
+
+class TokenizerError: public std::exception {
     std::string message;
 public:
-    UnknownValue(const std::string& value): message{"Error : Unknown value '" + value + "'"} {};
+    TokenizerError(const std::string& message): message{message} {}
     const char *what() const noexcept override {return message.c_str();};
+};
+
+class UnknownValue: public TokenizerError {
+public:
+    UnknownValue(const std::string& value): TokenizerError{"Error : Unknown value '" + value + "'"} {};
 };
 
 class Tokenizer {
