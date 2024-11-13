@@ -53,7 +53,7 @@ int main() {
         delete fileName;
         delete tokens;
         delete settings;
-        return -1;
+        throw;
     }
     tree = parser->getFinalTree();
     delete parser;
@@ -64,7 +64,7 @@ int main() {
         delete fileName;
         delete tree;
         delete settings;
-        return -1;
+        throw;
     }
     if (settings->debug) {
         cerr << "Parsed tree" << endl;

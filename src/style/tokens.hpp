@@ -16,7 +16,7 @@ enum class Token {
     MultiLineComment,
     // Used only by the parser
     StyleBlock,
-    BlockPrototype,
+    BlockDeclaration,
     BlockDefinition,
     StyleName,
     Function,
