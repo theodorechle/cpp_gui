@@ -1,1 +1,0 @@
-Add multiple declarations (declaration1, declaration2) (see test-6)
