@@ -17,6 +17,7 @@ enum class Token {
     // Used only by the parser
     StyleBlock,
     BlockDeclaration,
+    Declaration,
     BlockDefinition,
     StyleName,
     Function,

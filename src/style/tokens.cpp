@@ -17,6 +17,7 @@ std::string tokenToString(const Token &type) {
         // Used only by the parser
         case Token::StyleBlock: return "StyleBlock";
         case Token::BlockDeclaration: return "BlockDeclaration";
+        case Token::Declaration: return "Declaration";
         case Token::BlockDefinition: return "BlockDefinition";
         case Token::StyleName: return "StyleName";
         case Token::Function: return "Function";

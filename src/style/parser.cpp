@@ -173,9 +173,17 @@ void Parser::parseValue() {
 
 void Parser::parseComma() {
     removeSpace();
-    
-    if (expressionTree->getTokenType() != Token::Tuple) throw MalformedExpression("A comma must be inside of a tuple");
-    expressionTree->appendChild(new Node{Token::ArgSeparator});
+    switch (expressionTree->getTokenType())
+    {
+    case Token::Tuple:
+        expressionTree->appendChild(new Node{Token::ArgSeparator});
+        break;
+    case Token::Declaration:
+        expressionTree = expressionTree->getParent()->appendChild(new Node{Token::Declaration});
+        break;
+    default:
+        throw MalformedExpression("A comma must be inside of a tuple");
+    }
 }
 
 void Parser::parseColon() {
@@ -244,8 +252,8 @@ void Parser::parseOpeningCurlyBracket() {
     Node *lastChildCopy;
     if (expressionTree->getTokenType() != Token::NullRoot
         && expressionTree->getTokenType() != Token::BlockDefinition
-        && expressionTree->getTokenType() != Token::BlockDeclaration) throw MalformedExpression("A style block must be defined in an other style block or at the root level of the file");
-    if (expressionTree->getTokenType() != Token::BlockDeclaration) {
+        && expressionTree->getTokenType() != Token::Declaration) throw MalformedExpression("A style block must be defined in an other style block or at the root level of the file");
+    if (expressionTree->getTokenType() != Token::Declaration) {
         lastChild = expressionTree->getLastChild();
         if (lastChild == nullptr) throw MissingToken("A style block must start with at list an element name|class|identifier before the opening curly bracket");
         lastChildCopy = lastChild->copyNodeWithChilds();
@@ -253,9 +261,10 @@ void Parser::parseOpeningCurlyBracket() {
         expressionTree->removeSpecificChild(lastChild);
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
+        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
         expressionTree->appendChild(lastChildCopy);
     }
-    expressionTree = expressionTree->getParent()->appendChild(new Node{Token::BlockDefinition});
+    expressionTree = expressionTree->getParent()->getParent()->appendChild(new Node{Token::BlockDefinition});
 }
 
 void Parser::parseClosingCurlyBracket() {
@@ -316,6 +325,7 @@ void Parser::parseName() {
 
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
+        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
         expressionTree->appendChild(new Node{Token::ElementName, expressionTokens->getValue()});
         return;
     }
@@ -328,6 +338,7 @@ void Parser::parseName() {
             expressionTree->removeSpecificChild(lastChild);
             expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
             expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
+            expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
             expressionTree->appendChild(lastChildCopy);
             expressionTree->appendChild(new Node{Token::ElementName, expressionTokens->getValue()});
         }
@@ -342,7 +353,7 @@ void Parser::parseName() {
         expressionTree->appendChild(new Node{Token::Name, expressionTokens->getValue()});
         return;
     }
-    if (token == Token::BlockDeclaration) {
+    if (token == Token::Declaration) {
         removeSpace();
 
         expressionTree->appendChild(new Node{Token::ElementName, expressionTokens->getValue()});
@@ -371,10 +382,11 @@ void Parser::parseClass() {
         }
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
+        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
         expressionTree->appendChild(lastChildCopy);
         expressionTree->appendChild(new Node{Token::Class, expressionTokens->getValue().substr(1)});
     }
-    else if (token == Token::BlockDeclaration) {
+    else if (token == Token::Declaration) {
         removeSpace();
 
         expressionTree->appendChild(new Node{Token::Class, expressionTokens->getValue().substr(1)});
@@ -396,10 +408,11 @@ void Parser::parseIdentifier() {
         }
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
+        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
         expressionTree->appendChild(lastChildCopy);
         expressionTree->appendChild(new Node{Token::Identifier, expressionTokens->getValue().substr(1)});
     }
-    else if (token == Token::BlockDeclaration) {
+    else if (token == Token::Declaration) {
         removeSpace();
 
         expressionTree->appendChild(new Node{Token::Identifier, expressionTokens->getValue().substr(1)});
@@ -421,10 +434,11 @@ void Parser::parseModifier() {
         }
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
+        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
         expressionTree->appendChild(lastChildCopy);
         expressionTree->appendChild(new Node{Token::Modifier, expressionTokens->getValue().substr(1)});
     }
-    else if (token == Token::BlockDeclaration) {
+    else if (token == Token::Declaration) {
         removeSpace();
 
         expressionTree->appendChild(new Node{Token::Modifier, expressionTokens->getValue().substr(1)});
