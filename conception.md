@@ -22,6 +22,7 @@ String
 Bool
 Tuple
 
+StyleMap
 
 lot of maps:
  + memory

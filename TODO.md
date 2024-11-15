@@ -1,1 +1,1 @@
-Allow any character in a comment (manage comments in the tokenizer)
+Add multiple declarations (declaration1, declaration2) (see test-6)
