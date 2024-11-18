@@ -8,17 +8,17 @@
 using namespace std;
 
 int main() {
-    Settings *settings = new Settings;
-    string *fileName = new string;
-    string *fileContent = new string;
-    Tokenizer *tokenizer = nullptr;
-    Parser *parser = nullptr;
-    Node *tokens;
-    Node *tree;
+    Settings* settings = new Settings;
+    string* fileName = new string;
+    string* fileContent = new string;
+    Tokenizer* tokenizer = nullptr;
+    Parser* parser = nullptr;
+    Node* tokens;
+    Node* tree;
 
     while (true) {
         cout << "Style file : ";
-        getline(cin, *fileName);
+        getline(cin,* fileName);
         ifstream file(fileName->c_str());
         stringstream buffer;
         buffer << file.rdbuf();
@@ -26,7 +26,7 @@ int main() {
         if (fileContent->size()) break;
         cout << "Invalid file name" << endl;
     }
-    cout << "File content:\n" << *fileContent << endl;
+    cout << "File content:\n" <<* fileContent << endl;
     cout << "1 for debug, 0 else : ";
     cin >> settings->debug;
     try {

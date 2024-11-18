@@ -1,16 +1,16 @@
 #include "tests.hpp"
 
-void Test::tokenizer(bool equal, const std::string &expr, const Node *expected, Settings *settings) {
+void Test::tokenizer(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing\n'\n" << expr << "\n'\n";
     if (equal) std::cerr << "equals to\n";
     else std::cerr << "differs from\n";
     expected->displayNexts(std::cerr);
     std::cerr << ": ";
     try {
-        Node *result = Tokenizer(expr, settings).getResult();
-        Node *n = result;
+        Node* result = Tokenizer(expr, settings).getResult();
+        Node* n = result;
         while (n != nullptr) {
-            if ((expected == nullptr || !(*n == *expected)) == equal) {
+            if ((expected == nullptr || !(*n ==* expected)) == equal) {
                 setTestResult(KO);
                 delete result;
                 return;
@@ -30,7 +30,7 @@ void Test::tokenizer(bool equal, const std::string &expr, const Node *expected, 
     std::cerr << "\n";
 }
 
-void Test::parser(bool equal, Node *expr, const Node *expected, Settings *settings) {
+void Test::parser(bool equal, Node* expr, const Node* expected, Settings* settings) {
     std::cerr << "(" << getTestNumber() << ") Test if parsing\n";
     expr->displayNexts(std::cerr);
     if (equal) std::cerr << "equals to\n";
@@ -38,7 +38,7 @@ void Test::parser(bool equal, Node *expr, const Node *expected, Settings *settin
     expr->display(std::cerr);
     std::cerr << ": ";
     try {
-        Node *result = Parser(expr, settings).getFinalTree();
+        Node* result = Parser(expr, settings).getFinalTree();
         if (areSameNodes(result, expected) == equal) setTestResult(OK);
         else setTestResult(KO);
         delete result;
@@ -51,15 +51,15 @@ void Test::parser(bool equal, Node *expr, const Node *expected, Settings *settin
     std::cerr << "\n";
 }
 
-void Test::tokenizerAndParser(bool equal, const std::string &expr, const Node *expected, Settings *settings) {
+void Test::tokenizerAndParser(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expr << "\n'\n";
     if (equal) std::cerr << "equals to\n";
     else std::cerr << "differs from\n";
     expected->display(std::cerr);
     std::cerr << ": ";
     try {
-        Node *tokens = Tokenizer(expr, settings).getResult();
-        Node *result = Parser(tokens, settings).getFinalTree();
+        Node* tokens = Tokenizer(expr, settings).getResult();
+        Node* result = Parser(tokens, settings).getFinalTree();
         if (areSameNodes(result, expected) == equal) setTestResult(OK);
         else setTestResult(KO);
         delete result;
@@ -73,10 +73,10 @@ void Test::tokenizerAndParser(bool equal, const std::string &expr, const Node *e
     std::cerr << "\n";
 }
 
-void Test::invalidExpression(std::string expression, Settings *settings) {
+void Test::invalidExpression(std::string expression, Settings* settings) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a MalformedExpression exception : ";
-    Node *tokens = nullptr;
-    Node *result = nullptr;
+    Node* tokens = nullptr;
+    Node* result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
@@ -96,10 +96,10 @@ void Test::invalidExpression(std::string expression, Settings *settings) {
     std::cerr << "\n";
 }
 
-void Test::unknownToken(std::string expression, Settings *settings) {
+void Test::unknownToken(std::string expression, Settings* settings) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a UnknownToken exception : ";
-    Node *tokens = nullptr;
-    Node *result = nullptr;
+    Node* tokens = nullptr;
+    Node* result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
@@ -121,10 +121,10 @@ void Test::unknownToken(std::string expression, Settings *settings) {
     std::cerr << "\n";
 }
 
-void Test::missingToken(std::string expression, Settings *settings) {
+void Test::missingToken(std::string expression, Settings* settings) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a MissingToken exception : ";
-    Node *tokens = nullptr;
-    Node *result = nullptr;
+    Node* tokens = nullptr;
+    Node* result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
@@ -144,10 +144,10 @@ void Test::missingToken(std::string expression, Settings *settings) {
     std::cerr << "\n";
 }
 
-void Test::unknownValue(std::string expression, Settings *settings) {
+void Test::unknownValue(std::string expression, Settings* settings) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a UnknownValue exception : ";
-    Node *tokens = nullptr;
-    Node *result = nullptr;
+    Node* tokens = nullptr;
+    Node* result = nullptr;
     try {
         tokens = Tokenizer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();

@@ -20,6 +20,7 @@ std::string tokenToString(const Token &type) {
         case Token::Declaration: return "Declaration";
         case Token::BlockDefinition: return "BlockDefinition";
         case Token::StyleName: return "StyleName";
+        case Token::DirectParent: return "DirectParent";
         case Token::Function: return "Function";
         case Token::ElementName: return "ElementName";
         case Token::Tuple: return "Tuple";

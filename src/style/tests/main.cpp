@@ -1,13 +1,13 @@
 #include "tests.hpp"
 
 int main() {
-    Settings *settings = new Settings;
+    Settings* settings = new Settings;
     Test test = Test{};
 
     std::string fileContent;
 
-    Node *rootExpected;
-    Node *expected;
+    Node* rootExpected;
+    Node* expected;
 
     settings->debug = false;
 
@@ -152,6 +152,7 @@ int main() {
     expected->appendChild(new Node{Token::ElementName, "label"});
     expected->appendChild(new Node{Token::Class, "blue"});
     expected->appendChild(new Node{Token::Modifier, "hovered"});
+    expected->appendChild(new Node{Token::DirectParent});
     expected->appendChild(new Node{Token::ElementName, "element"});
     expected->appendChild(new Node{Token::Class, "red"});
     expected->appendChild(new Node{Token::Identifier, "root"});
@@ -182,7 +183,7 @@ int main() {
     expected = nullptr;
 
 
-    settings->debug = false;
+    settings->debug = true;
 
     fileContent = test.getFileContent("src/style/tests/test-6.txt");
 

@@ -1,24 +1,24 @@
 #include "solver.hpp"
 #include "parser.hpp"
 
-void sortTree(Node *node) {
+void sortTree(Node* node) {
     
 }
 
-Node *goToFirstLeaf(Node *node) {
+Node* goToFirstLeaf(Node* node) {
     if (node->getChild() != nullptr) return goToFirstLeaf(node->getChild());
     return node;
 }
 
-Node *goToNextExpr(Node *node) {
+Node* goToNextExpr(Node* node) {
     if (node->getNext() != nullptr) return goToFirstLeaf(node->getNext());
     return node->getParent();
 }
 
-/* Node *solve(Node *expr, bool debug) {
+/* Node* solve(Node* expr, bool debug) {
     bool updated = true;
     bool delete_node = false;
-    Operator *ope;
+    Operator* ope;
     while (updated || !Parser::isNodeNull(expr->getParent())) {
         if (updated) expr = goToFirstLeaf(expr);
         else expr = goToNextExpr(expr);

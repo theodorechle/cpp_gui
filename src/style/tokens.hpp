@@ -19,6 +19,7 @@ enum class Token {
     BlockDeclaration,
     Declaration,
     BlockDefinition,
+    DirectParent,
     StyleName,
     Function,
     ElementName,
