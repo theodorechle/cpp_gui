@@ -1,7 +1,7 @@
-#include "tokenizer.hpp"
+#include "lexer.hpp"
 #include "units.hpp"
 
-void Tokenizer::tokenizeSpace() {
+void Lexer::lexeSpace() {
     size_t i = 0;
     while (index+i < expressionLength && (expression[index+i] == ' ' || expression[index+i] == '\t')
         ) {
@@ -9,46 +9,46 @@ void Tokenizer::tokenizeSpace() {
     }
     if (i > 0) {
         expressionTree->appendNext(new Node{Token::Space});
-        tokenized = true;
+        lexed = true;
         index += i;
     }
 }
 
-void Tokenizer::tokenizeLineReturn() {
+void Lexer::lexeLineReturn() {
     size_t i = 0;
     while (index+i < expressionLength && expression[index+i] == '\n') {
         i++;
     }
     if (i > 0) {
         expressionTree->appendNext(new Node{Token::LineReturn});
-        tokenized = true;
+        lexed = true;
         index += i;
     }
 }
 
-void Tokenizer::tokenizeOneLineComment() {
+void Lexer::lexeOneLineComment() {
     if (expression[index] != '/' || expression[index+1] != '/') return;
     int i = 1;
     while (index + i + 1 < expression.size() && expression[index+i+1] != '\n') {
         i++;
     }
     expressionTree->appendNext(new Node{Token::OneLineComment, expression.substr(index+2, i-1)});
-    tokenized = true;
+    lexed = true;
     index += i + 1;
 }
 
-void Tokenizer::tokenizeMultiLineComment() {
+void Lexer::lexeMultiLineComment() {
     if (expression[index] != '/' || expression[index+1] != '*') return;
     int i = 1;
     while (index + i + 2 < expression.size() && expression[index+i+1] != '*' && expression[index+i+2] != '/') {
         i++;
     }
     expressionTree->appendNext(new Node{Token::MultiLineComment, expression.substr(index+2, i-2)});
-    tokenized = true;
+    lexed = true;
     index += i + 3;
 }
 
-void Tokenizer::tokenizeString() {
+void Lexer::lexeString() {
     if (expression[index] == ','
         || expression[index] == ';'
         || expression[index] == ' '
@@ -83,19 +83,19 @@ void Tokenizer::tokenizeString() {
     if (!isalpha(expression[index]) && i == 1) return;
     expressionTree->appendNext(new Node{Token::String, expression.substr(index, i)});
     index += i;
-    tokenized = true;    
+    lexed = true;    
 }
 
-void Tokenizer::tokenizeInt() {
+void Lexer::lexeInt() {
     if (!isdigit(expression[index])) return;
     size_t i = 1;
     while (index+i < expressionLength && isdigit(expression[index+i])) i++;
     expressionTree->appendNext(new Node{Token::Int, expression.substr(index, i)});
     index += i;
-    tokenized = true;
+    lexed = true;
 }
 
-void Tokenizer::tokenizeFloat() {
+void Lexer::lexeFloat() {
     bool dotFound = false;
     size_t i = 0;
     while (index+i < expressionLength) {
@@ -109,23 +109,23 @@ void Tokenizer::tokenizeFloat() {
     if (!dotFound || i < 2) return; // < 2 because at least one int (0-9) and a dot
     expressionTree->appendNext(new Node{Token::Float, expression.substr(index, i)});
     index += i;
-    tokenized = true;
+    lexed = true;
 }
 
-void Tokenizer::tokenizeBool() {
+void Lexer::lexeBool() {
     if (expression.substr(index, TRUE.size()) == TRUE) {
         expressionTree->appendNext(new Node{Token::Bool, expression.substr(index, TRUE.size())});
         index += TRUE.size();
-        tokenized = true;
+        lexed = true;
     }
     else if (expression.substr(index, FALSE.size()) == FALSE) {
         expressionTree->appendNext(new Node{Token::Bool, expression.substr(index, FALSE.size())});
         index += FALSE.size();
-        tokenized = true;
+        lexed = true;
     }
 }
 
-void Tokenizer::tokenizeUnit() {
+void Lexer::lexeUnit() {
     std::unordered_map<std::string, function>::const_iterator map_it;
     size_t i;
     bool isEqual;
@@ -141,14 +141,14 @@ void Tokenizer::tokenizeUnit() {
         if (isEqual) {
             expressionTree->appendNext(new Node{Token::Unit, expression.substr(index, i)});
             index += 1;
-            tokenized = true;
+            lexed = true;
             return;
         }
     }
     
 }
 
-void Tokenizer::tokenizeSpecialCharacters() {
+void Lexer::lexeSpecialCharacters() {
     Token token;
     switch (expression[index]) {
     case '(':
@@ -178,23 +178,23 @@ void Tokenizer::tokenizeSpecialCharacters() {
     }
     expressionTree->appendNext(new Node{token});
     index++;
-    tokenized = true;
+    lexed = true;
 }
 
-void Tokenizer::tokenize() {
+void Lexer::lexe() {
     while (index < expressionLength) {
-        tokenized = false;
-        tokenizeSpace();
-        if (!tokenized) tokenizeLineReturn();
-        if (!tokenized) tokenizeOneLineComment();
-        if (!tokenized) tokenizeMultiLineComment();
-        if (!tokenized) tokenizeInt();
-        if (!tokenized) tokenizeFloat();
-        if (!tokenized) tokenizeBool();
-        if (!tokenized) tokenizeUnit();
-        if (!tokenized) tokenizeString();
-        if (!tokenized) tokenizeSpecialCharacters();
-        if (!tokenized) {
+        lexed = false;
+        lexeSpace();
+        if (!lexed) lexeLineReturn();
+        if (!lexed) lexeOneLineComment();
+        if (!lexed) lexeMultiLineComment();
+        if (!lexed) lexeInt();
+        if (!lexed) lexeFloat();
+        if (!lexed) lexeBool();
+        if (!lexed) lexeUnit();
+        if (!lexed) lexeString();
+        if (!lexed) lexeSpecialCharacters();
+        if (!lexed) {
             delete expressionTree; // avoid memory leak
             throw UnknownValue(expression.substr(index, MAX_ERROR_COMPLEMENTARY_INFOS_SIZE));
         }

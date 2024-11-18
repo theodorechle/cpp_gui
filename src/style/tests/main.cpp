@@ -25,7 +25,7 @@ int main() {
     expected->appendChild(new Node{Token::StyleName, "background-color"});
     expected->appendChild(new Node{Token::String, "#ff0000"});
 
-    test.tokenizerAndParser(true, fileContent, rootExpected, settings);
+    test.lexerAndParser(true, fileContent, rootExpected, settings);
 
     delete rootExpected;
     expected = nullptr;
@@ -63,7 +63,7 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.tokenizerAndParser(true, fileContent, rootExpected, settings);
+    test.lexerAndParser(true, fileContent, rootExpected, settings);
 
     delete rootExpected;
     expected = nullptr;
@@ -99,7 +99,7 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.tokenizerAndParser(true, fileContent, rootExpected, settings);
+    test.lexerAndParser(true, fileContent, rootExpected, settings);
 
     delete rootExpected;
     expected = nullptr;
@@ -135,7 +135,7 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.tokenizerAndParser(true, fileContent, rootExpected, settings);
+    test.lexerAndParser(true, fileContent, rootExpected, settings);
 
     delete rootExpected;
     expected = nullptr;
@@ -177,7 +177,7 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.tokenizerAndParser(true, fileContent, rootExpected, settings);
+    test.lexerAndParser(true, fileContent, rootExpected, settings);
 
     delete rootExpected;
     expected = nullptr;
@@ -220,7 +220,7 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.tokenizerAndParser(true, fileContent, rootExpected, settings);
+    test.lexerAndParser(true, fileContent, rootExpected, settings);
 
     delete rootExpected;
     expected = nullptr;

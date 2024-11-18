@@ -4,7 +4,7 @@
 
 std::string tokenToString(const Token &type) {
     switch (type) {
-        // Used only by the tokenizer
+        // Used only by the lexer
         case Token::OpeningParenthesis: return "OpeningParenthesis";
         case Token::ClosingParenthesis: return "ClosingParenthesis";
         case Token::OpeningCurlyBracket: return "OpeningCurlyBracket";
@@ -26,7 +26,7 @@ std::string tokenToString(const Token &type) {
         case Token::Tuple: return "Tuple";
         case Token::Assignment: return "Assignment";
         case Token::ArgSeparator: return "ArgSeparator";
-        // Used by both the tokenizer and the parser
+        // Used by both the lexer and the parser
         case Token::Space: return "Space";
         case Token::LineReturn: return "LineReturn";
         case Token::Name: return "Name";

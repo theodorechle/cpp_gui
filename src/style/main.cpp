@@ -1,4 +1,4 @@
-#include "tokenizer.hpp"
+#include "lexer.hpp"
 #include "parser.hpp"
 #include "solver.hpp"
 
@@ -11,7 +11,7 @@ int main() {
     Settings* settings = new Settings;
     string* fileName = new string;
     string* fileContent = new string;
-    Tokenizer* tokenizer = nullptr;
+    Lexer* lexer = nullptr;
     Parser* parser = nullptr;
     Node* tokens;
     Node* tree;
@@ -30,16 +30,16 @@ int main() {
     cout << "1 for debug, 0 else : ";
     cin >> settings->debug;
     try {
-        tokenizer = new Tokenizer{*fileContent, settings};
-    } catch (const TokenizerError &) {
-        delete tokenizer;
+        lexer = new Lexer{*fileContent, settings};
+    } catch (const LexerError &) {
+        delete lexer;
         delete fileContent;
         delete fileName;
         delete settings;
         throw;
     }
-    tokens = tokenizer->getResult();
-    delete tokenizer;
+    tokens = lexer->getResult();
+    delete lexer;
     if (settings->debug) {
         cerr << "Tokens" << endl;
         tokens->displayNexts(cerr);

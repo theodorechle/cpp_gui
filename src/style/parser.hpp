@@ -31,7 +31,7 @@ public:
 };
 
 /**
-  *Transform a chain of trees (no childs) like the one the tokenizer function returns into a tree containing the entire expression
+  *Transform a chain of trees (no childs) like the one the lexer function returns into a tree containing the entire expression
 */
 class Parser {
     /**

@@ -1,13 +1,13 @@
 #include "tests.hpp"
 
-void Test::tokenizer(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
+void Test::lexer(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing\n'\n" << expr << "\n'\n";
     if (equal) std::cerr << "equals to\n";
     else std::cerr << "differs from\n";
     expected->displayNexts(std::cerr);
     std::cerr << ": ";
     try {
-        Node* result = Tokenizer(expr, settings).getResult();
+        Node* result = Lexer(expr, settings).getResult();
         Node* n = result;
         while (n != nullptr) {
             if ((expected == nullptr || !(*n ==* expected)) == equal) {
@@ -51,14 +51,14 @@ void Test::parser(bool equal, Node* expr, const Node* expected, Settings* settin
     std::cerr << "\n";
 }
 
-void Test::tokenizerAndParser(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
+void Test::lexerAndParser(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expr << "\n'\n";
     if (equal) std::cerr << "equals to\n";
     else std::cerr << "differs from\n";
     expected->display(std::cerr);
     std::cerr << ": ";
     try {
-        Node* tokens = Tokenizer(expr, settings).getResult();
+        Node* tokens = Lexer(expr, settings).getResult();
         Node* result = Parser(tokens, settings).getFinalTree();
         if (areSameNodes(result, expected) == equal) setTestResult(OK);
         else setTestResult(KO);
@@ -78,7 +78,7 @@ void Test::invalidExpression(std::string expression, Settings* settings) {
     Node* tokens = nullptr;
     Node* result = nullptr;
     try {
-        tokens = Tokenizer(expression, settings).getResult();
+        tokens = Lexer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
         setTestResult(KO);
         displayResult(results.back());
@@ -101,7 +101,7 @@ void Test::unknownToken(std::string expression, Settings* settings) {
     Node* tokens = nullptr;
     Node* result = nullptr;
     try {
-        tokens = Tokenizer(expression, settings).getResult();
+        tokens = Lexer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
         setTestResult(KO);
         displayResult(results.back());
@@ -126,7 +126,7 @@ void Test::missingToken(std::string expression, Settings* settings) {
     Node* tokens = nullptr;
     Node* result = nullptr;
     try {
-        tokens = Tokenizer(expression, settings).getResult();
+        tokens = Lexer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
         setTestResult(KO);
         displayResult(results.back());
@@ -149,7 +149,7 @@ void Test::unknownValue(std::string expression, Settings* settings) {
     Node* tokens = nullptr;
     Node* result = nullptr;
     try {
-        tokens = Tokenizer(expression, settings).getResult();
+        tokens = Lexer(expression, settings).getResult();
         result = Parser(tokens, settings).getFinalTree();
         setTestResult(KO);
         displayResult(results.back());

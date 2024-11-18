@@ -5,7 +5,7 @@
 #include <list>
 
 #include "../node.hpp"
-#include "../tokenizer.hpp"
+#include "../lexer.hpp"
 #include "../parser.hpp"
 #include "../solver.hpp"
 
@@ -21,9 +21,9 @@ public:
     size_t getTestNumber() const {return results.size();}
     void setTestResult(Result r) {results.push_back(r);}
 
-    void tokenizer(bool equal, const std::string &expr, const Node* expected, Settings* settings);
+    void lexer(bool equal, const std::string &expr, const Node* expected, Settings* settings);
     void parser(bool equal, Node* expr, const Node* expected, Settings* settings);
-    void tokenizerAndParser(bool equal, const std::string &expr, const Node* expected, Settings* settings);
+    void lexerAndParser(bool equal, const std::string &expr, const Node* expected, Settings* settings);
 
     std::string boolsEquals(bool equal, bool a, bool b);
     void invalidExpression(std::string expression, Settings* settings);

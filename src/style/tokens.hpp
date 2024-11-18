@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 enum class Token {
-    // Used only by the tokenizer
+    // Used only by the lexer
     OpeningParenthesis,
     ClosingParenthesis,
     OpeningCurlyBracket,
@@ -31,7 +31,7 @@ enum class Token {
     Class,
     Modifier,
     Identifier,
-    // Used by both the tokenizer and the parser
+    // Used by both the lexer and the parser
     Space,
     LineReturn,
     Int,
