@@ -1,0 +1,5 @@
+// should raise an error because you can't do block declaration on mulitple lines
+element
+.blue {
+    text-color: #ffffff;
+}

@@ -1,6 +1,6 @@
 #include "tests.hpp"
 
-void Test::lexer(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
+void Test::lexer(bool equal, const std::string &expr, const Node* expected) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing\n'\n" << expr << "\n'\n";
     if (equal) std::cerr << "equals to\n";
     else std::cerr << "differs from\n";
@@ -30,7 +30,7 @@ void Test::lexer(bool equal, const std::string &expr, const Node* expected, Sett
     std::cerr << "\n";
 }
 
-void Test::parser(bool equal, Node* expr, const Node* expected, Settings* settings) {
+void Test::parser(bool equal, Node* expr, const Node* expected) {
     std::cerr << "(" << getTestNumber() << ") Test if parsing\n";
     expr->displayNexts(std::cerr);
     if (equal) std::cerr << "equals to\n";
@@ -51,7 +51,7 @@ void Test::parser(bool equal, Node* expr, const Node* expected, Settings* settin
     std::cerr << "\n";
 }
 
-void Test::lexerAndParser(bool equal, const std::string &expr, const Node* expected, Settings* settings) {
+void Test::lexerAndParser(bool equal, const std::string &expr, const Node* expected) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expr << "\n'\n";
     if (equal) std::cerr << "equals to\n";
     else std::cerr << "differs from\n";
@@ -73,7 +73,7 @@ void Test::lexerAndParser(bool equal, const std::string &expr, const Node* expec
     std::cerr << "\n";
 }
 
-void Test::invalidExpression(std::string expression, Settings* settings) {
+void Test::invalidExpression(std::string expression) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a MalformedExpression exception : ";
     Node* tokens = nullptr;
     Node* result = nullptr;
@@ -96,7 +96,7 @@ void Test::invalidExpression(std::string expression, Settings* settings) {
     std::cerr << "\n";
 }
 
-void Test::unknownToken(std::string expression, Settings* settings) {
+void Test::unknownToken(std::string expression) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a UnknownToken exception : ";
     Node* tokens = nullptr;
     Node* result = nullptr;
@@ -121,7 +121,7 @@ void Test::unknownToken(std::string expression, Settings* settings) {
     std::cerr << "\n";
 }
 
-void Test::missingToken(std::string expression, Settings* settings) {
+void Test::missingToken(std::string expression) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a MissingToken exception : ";
     Node* tokens = nullptr;
     Node* result = nullptr;
@@ -144,7 +144,7 @@ void Test::missingToken(std::string expression, Settings* settings) {
     std::cerr << "\n";
 }
 
-void Test::unknownValue(std::string expression, Settings* settings) {
+void Test::unknownValue(std::string expression) {
     std::cerr << "(" << getTestNumber() << ") Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a UnknownValue exception : ";
     Node* tokens = nullptr;
     Node* result = nullptr;

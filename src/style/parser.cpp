@@ -146,6 +146,10 @@ void Parser::parseSpace() {
 }
 
 void Parser::parseLineReturn() {
+    Token token = expressionTree->getTokenType();
+    if (token != Token::NullRoot && token != Token::BlockDefinition) {
+        throw MalformedExpression("A line return can only be between blocks declarations and between assignments");
+    }
     expressionTree->appendChild(expressionTokens->copyNode());
 }
 
