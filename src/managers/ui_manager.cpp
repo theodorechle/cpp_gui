@@ -23,3 +23,7 @@ void UIManager::removeAllElements(bool delete_if_found) {
     }
     elementsList.clear();
 }
+
+void UIManager::render() {
+
+}

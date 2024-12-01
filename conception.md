@@ -1,29 +1,10 @@
-AN UIManager who manage all elements.
-Elements in tree (DOM like).
+AbstractElement
+- virtual computeLayout()
+- virtual render()
 
-Applicating style to elements:
-Identifiers:
--map string, UIElement
-Classes:
--map string, list\<UIElement\>
-Modifiers:
--map string, list\<UIElement\>
-Style inheritance:
--save parent in child
+### layout computing:
 
-in element:
--map string, StyleObject
-
-namespace style
-Object:
-Int
-Float
-String
-Bool
-Tuple
-
-StyleMap
-
-lot of maps:
- + memory
-
+- get window size
+- compute wanted size
+- compute parent layout
+- adjust with parent size

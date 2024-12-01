@@ -1,42 +1,77 @@
-CC=g++
+CC = g++
+CFLAGS = -std=c++17 -Wall -g -MMD -MP
+BIN_DIR = bin
+OBJ_DIR = obj
 
-CFLAGS= -std=c++17 -Wall -g
+# Subdirectories
+SUBDIRS = src/elements src/managers
 
-# source files
-SRC=$(wildcard src/*.cpp)
+# Source files
+SRC_MAIN = src/main.cpp
+SRC_SUBDIRS = $(foreach dir, $(SUBDIRS), $(wildcard $(dir)/*.cpp))
+SRC_STYLE = $(wildcard src/style/*.cpp)
+SRC_STYLE_TESTS = $(wildcard src/style/tests/*.cpp)
+SRC_TESTS = $(filter-out src/style/main.cpp, $(SRC_STYLE)) $(SRC_STYLE_TESTS)
 
-# object files (.o)
-OBJ=$(patsubst src/%.cpp,obj/%.o,$(SRC))
+# Object files
+OBJ_MAIN = $(patsubst src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_MAIN))
+OBJ_SUBDIRS = $(patsubst src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_SUBDIRS))
+OBJ_STYLE = $(patsubst src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_STYLE))
+OBJ_TESTS = $(patsubst src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_TESTS))
 
-# source files for style 
-SRC_STYLE=$(wildcard src/style/*.cpp)
+# Executable targets
+BIN_MAIN = $(BIN_DIR)/exe
+BIN_STYLE = $(BIN_DIR)/style
+BIN_ALL = $(BIN_DIR)/all
+BIN_STYLE_TESTS = $(BIN_DIR)/style-tests
 
-# object files for style (.o)
-OBJ_STYLE=$(patsubst src/style/%.cpp,obj/style/%.o,$(SRC_STYLE))
+# Dependency files
+DEPS = $(OBJ_MAIN:.o=.d) $(OBJ_SUBDIRS:.o=.d) $(OBJ_STYLE:.o=.d) $(OBJ_TESTS:.o=.d)
+
+.PHONY: all clean style style-tests no-tests tests main
+
+# Build the final executable combining exe and style
+all: $(BIN_ALL)
+
+# Build only the main and subdirs
+main: $(BIN_MAIN)
 
 
-bin/exe: $(OBJ)
-	$(CC) $^ -o $@
-bin/style: $(OBJ_STYLE)
-	$(CC) $^ -o $@
-bin/style-tests: obj/style/tests/main.o obj/style/tests/tests.o $(filter-out obj/style/main.o, $(OBJ_STYLE))
-	$(CC) $^ -o $@
+# Build style only
+style: $(BIN_STYLE)
 
-obj/main.o : src/main.cpp
+# Build tests only
+style-tests: $(BIN_STYLE_TESTS)
+
+# Build everything except tests (combines exe and style)
+$(BIN_ALL): $(OBJ_MAIN) $(OBJ_SUBDIRS) $(filter-out obj/style/main.o, $(OBJ_STYLE))
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# Build the main executable (main.cpp + elements + managers)
+$(BIN_MAIN): $(OBJ_MAIN) $(OBJ_SUBDIRS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# Build the style executable (style sources only)
+$(BIN_STYLE): $(OBJ_STYLE)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# Build the style tests executable (style tests + all style sources except src/style/main.cpp)
+$(BIN_STYLE_TESTS): $(OBJ_TESTS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# Rule for compiling all object files
+$(OBJ_DIR)/%.o: src/%.cpp
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
-obj/%.o: src/%.cpp src/%.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
 
-obj/style/main.o : src/style/main.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
-obj/style/%.o: src/style/%.cpp src/style/%.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+# Include dependency files if they exist
+-include $(DEPS)
 
-obj/style/tests/main.o: src/style/tests/main.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
-obj/style/tests/tests.o : src/style/tests/tests.cpp src/style/tests/tests.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+# Clean all generated files
 clean:
-	rm obj/* obj/style/* obj/style/tests/* bin/*
-
-
+	find obj -mindepth 1 ! -name .gitkeep -delete
+	find bin -mindepth 1 ! -name .gitkeep -delete
