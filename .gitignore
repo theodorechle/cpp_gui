@@ -1,11 +1,8 @@
 .vscode/
-bin/*
-!bin/.gitkeep
-obj/*.o
-!obj/.gitkeep
-obj/style/*.o
-!obj/style/.gitkeep
-obj/style/tests/*.o
-!obj/style/tests/.gitkeep
+bin/**
+!bin/**/.gitkeep
+obj/**
+obj/**
+!obj/**/.gitkeep
 
 log*
