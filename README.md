@@ -4,15 +4,8 @@ A cpp replacement for the python_gui
 # Installation
 
 Install SDL
-```sh
-git clone https://github.com/libsdl-org/SDL
-cd SDL
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --config Release --parallel
-sudo cmake --install . --config Release
-```
+
+<a href="https://wiki.libsdl.org/SDL3/Installation">https://wiki.libsdl.org/SDL3/Installation</a>
 
 ## Elements
 The gui is designed so you can implements easily your own elements
