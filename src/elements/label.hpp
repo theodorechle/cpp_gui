@@ -3,7 +3,9 @@
 
 #include "ui_element.hpp"
 
-class Label: UIElement {
+class Label: public UIElement {
+public:
+    Label(): UIElement{} {}
     void render() const override;
 };
 

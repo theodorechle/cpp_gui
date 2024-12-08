@@ -3,7 +3,3 @@
 void UIElement::computeLayout() {
     
 }
-
-void UIElement::render() const {
-
-}
