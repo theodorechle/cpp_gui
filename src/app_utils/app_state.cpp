@@ -1,14 +1,10 @@
 #include "app_state.hpp"
 
-AppState::AppState(AbstractManager *manager)
-: manager{manager} {
+AppState::AppState(AbstractManager *manager, AbstractRenderer *renderer)
+: manager{manager}, renderer{renderer} {
 
 }
 
 AppState::~AppState() {
     delete manager;
-}
-
-AbstractManager *AppState::getManager() {
-    return manager;
 }

@@ -3,6 +3,8 @@
 #include "elements/ui_element.hpp"
 #include "elements/label.hpp"
 #include "app_utils/app_state.hpp"
+#include "render/abstract_renderer.hpp"
+#include "render/renderer.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1  /* use the callbacks instead of main() */
 #include <SDL3/SDL.h>
@@ -15,24 +17,23 @@ void init(AbstractManager *manager) {
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     int windowLength = 500;
     int windowHeight = 500;
-    SDL_Window *window = NULL;
-    SDL_Renderer *renderer = NULL;
-    AbstractManager *manager = new UIManager();
+    SDL_Window *sdl_window = nullptr;
+    SDL_Renderer *sdl_renderer = nullptr;
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL! %s", SDL_GetError());
-        delete manager;
         return SDL_APP_FAILURE;
     }
     
-    if (!SDL_CreateWindowAndRenderer("GUI Tests", windowLength, windowHeight, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+    if (!SDL_CreateWindowAndRenderer("GUI Tests", windowLength, windowHeight, SDL_WINDOW_RESIZABLE, &sdl_window, &sdl_renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
-        delete manager;
         return SDL_APP_FAILURE;
     }
 
+    AbstractManager *manager = new UIManager(sdl_window, sdl_renderer);
+
     init(manager);
-    *appstate = new AppState(manager);
+    *appstate = new AppState(manager, new Renderer{sdl_renderer});
 
     return SDL_APP_CONTINUE;
 }
@@ -46,7 +47,11 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
-    static_cast<AppState*>(appstate)->getManager()->render();
+    AppState *state = static_cast<AppState*>(appstate);
+    AbstractManager *manager = state->getManager();
+    manager->render();
+    state->getRenderer()->render();
+
     return SDL_APP_CONTINUE;
 }
 

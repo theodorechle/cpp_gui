@@ -6,7 +6,7 @@
 class Label: public UIElement {
 public:
     Label(): UIElement{} {}
-    void render() const override;
+    void render(SDL_Renderer *renderer) const override;
 };
 
 #endif // LABEL_HPP

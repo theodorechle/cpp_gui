@@ -4,9 +4,11 @@
 #include "abstract_manager.hpp"
 
 class UIManager: public AbstractManager {
+    SDL_Window *window = nullptr;
+    SDL_Renderer *renderer = nullptr;
 public:
-    UIManager();
-    void render() override;
+    UIManager(SDL_Window *window, SDL_Renderer *renderer): window{window}, renderer{renderer} {}
+    void render() const override;
 };
 
 #endif // UIMANAGER_HPP

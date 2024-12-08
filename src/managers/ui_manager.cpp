@@ -1,11 +1,7 @@
 #include "ui_manager.hpp"
 
-UIManager::UIManager() {
-    
-}
-
-void UIManager::render() {
+void UIManager::render() const {
     for (AbstractElement* element : elementsList) {
-        element->render();
+        element->render(renderer);
     }
 }
