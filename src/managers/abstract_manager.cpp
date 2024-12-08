@@ -1,10 +1,5 @@
 #include "abstract_manager.hpp"
 
-AbstractElement::AbstractElement(AbstractManager *manager)
-: manager{manager} {
-    manager->addElement(this);
-}
-
 void AbstractManager::addElement(AbstractElement* element) {
     elementsList.push_back(element);
 }

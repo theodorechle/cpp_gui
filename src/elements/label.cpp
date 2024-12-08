@@ -1,5 +1,5 @@
 #include "label.hpp"
 
-void Label::render() {
+void Label::render() const {
     std::cout << "label" << std::endl;
 }

@@ -5,7 +5,6 @@ class AbstractElement {
 private:
     virtual void computeLayout() = 0;
 public:
-    AbstractElement();
     virtual ~AbstractElement() = default;
     virtual void render() const = 0;
 };
