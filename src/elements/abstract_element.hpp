@@ -5,12 +5,13 @@
 
 class AbstractElement {
 protected:
-    AbstractManager *uiManager;
+    AbstractManager *manager;
 private:
     virtual void computeLayout() = 0;
-    virtual void render() const = 0;
 public:
-    virtual ~AbstractElement() = 0;
+    AbstractElement(AbstractManager *manager);
+    virtual void render() const = 0;
+    virtual ~AbstractElement() = default;
 };
 
 #endif // ABSTRACT_ELEMENT_HPP

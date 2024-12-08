@@ -6,7 +6,7 @@
 class UIElement: public AbstractElement {
     void computeLayout() override final;
 public:
-    virtual ~UIElement();
+    UIElement(AbstractManager *manager): AbstractElement{manager} {}
     void render() const override;
 };
 
