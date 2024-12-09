@@ -1,7 +1,9 @@
 #ifndef TEXT_BUTTON_HPP
 #define TEXT_BUTTON_HPP
 
-class TextButton {
+#include "button.hpp"
+
+class TextButton: Button {
 
 };
 

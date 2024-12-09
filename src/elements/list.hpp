@@ -1,7 +1,9 @@
 #ifndef LIST_HPP
 #define LIST_HPP
 
-class List {
+#include "ui_element.hpp"
+
+class List: UIElement {
 
 };
 

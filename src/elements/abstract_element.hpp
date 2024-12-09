@@ -8,7 +8,8 @@ private:
     virtual void computeLayout() = 0;
 public:
     virtual ~AbstractElement() = default;
-    virtual void render(SDL_Renderer *renderer) const = 0;
+    virtual void render() const = 0;
+
 };
 
 #endif // ABSTRACT_ELEMENT_HPP

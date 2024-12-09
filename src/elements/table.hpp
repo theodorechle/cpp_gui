@@ -1,7 +1,9 @@
 #ifndef TABLE_HPP
 #define TABLE_HPP
 
-class Table {
+#include "ui_element.hpp"
+
+class Table: UIElement {
 
 };
 

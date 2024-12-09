@@ -1,8 +1,10 @@
 #ifndef IMAGE_BUTTON_HPP
 #define IMAGE_BUTTON_HPP
 
-class ImageButton {
+#include "button.hpp"
 
+class ImageButton: Button {
+    void render(SDL_Renderer *renderer) const override;
 };
 
 #endif // IMAGE_BUTTON_HPP

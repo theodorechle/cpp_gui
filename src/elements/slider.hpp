@@ -1,7 +1,9 @@
 #ifndef SLIDER_HPP
 #define SLIDER_HPP
 
-class Slider {
+#include "ui_element.hpp"
+
+class Slider: UIElement {
 
 };
 

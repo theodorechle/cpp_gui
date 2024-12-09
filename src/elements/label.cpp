@@ -2,7 +2,7 @@
 #include <SDL3/SDL.h>
 
 
-void Label::render(SDL_Renderer *renderer) const {
+void Label::render() const {
     SDL_FRect rect = SDL_FRect{0, 0, 50, 50};
     Uint8 r, g, b, a;
     if (!SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
