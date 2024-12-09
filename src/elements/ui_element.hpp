@@ -5,14 +5,15 @@
 
 #include <iostream>
 
-class UIElement: AbstractElement {
+class UIElement: public AbstractElement {
 protected:
+    SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Rect elementRect = SDL_Rect{};
 private:
     void computeLayout() override final;
 public:
-    UIElement(SDL_Renderer *renderer): renderer{renderer} {}
+    UIElement(SDL_Window *window, SDL_Renderer *renderer): window{window}, renderer{renderer} {}
     int getXpos() {return elementRect.x;}
     int getYpos() {return elementRect.y;}
     int getWidth() {return elementRect.w;}
@@ -26,7 +27,7 @@ public:
     void setYpos(int y) {elementRect.y = y;}
     void setWidth(int width) {elementRect.w = width;}
     void setHeight(int height) {elementRect.h = height;}
-    
+
     void setCoords(int x, int y);
     void setSize(int width, int height);
     void setRect(int x, int y, int width, int height);

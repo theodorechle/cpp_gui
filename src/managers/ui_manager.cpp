@@ -2,6 +2,6 @@
 
 void UIManager::render() const {
     for (AbstractElement* element : elementsList) {
-        element->render(renderer);
+        element->render();
     }
 }

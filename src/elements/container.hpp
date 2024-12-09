@@ -1,10 +1,9 @@
 #ifndef CONTAINER_HPP
 #define CONTAINER_HPP
 
-#include "abstract_container.hpp"
+#include "ui_element.hpp"
 
-class Container: AbstractContainer {
-    void render(SDL_Renderer *renderer) const override;
+class Container: UIElement {
 };
 
 #endif // CONTAINER_HPP

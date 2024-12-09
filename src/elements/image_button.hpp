@@ -4,7 +4,6 @@
 #include "button.hpp"
 
 class ImageButton: Button {
-    void render(SDL_Renderer *renderer) const override;
 };
 
 #endif // IMAGE_BUTTON_HPP

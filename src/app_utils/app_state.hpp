@@ -5,11 +5,13 @@
 
 class AppState {
     AbstractManager *manager = nullptr;
+    SDL_Window *window;
     SDL_Renderer *renderer = nullptr;
 public:
-    AppState(AbstractManager *manager, SDL_Renderer *renderer);
+    AppState(AbstractManager *manager, SDL_Window *window, SDL_Renderer *renderer);
     ~AppState();
     AbstractManager *getManager() const {return manager;}
+    SDL_Window *getWindow() const {return window;}
     SDL_Renderer *getRenderer() const {return renderer;}
 };
 
