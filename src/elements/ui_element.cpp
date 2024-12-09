@@ -5,35 +5,35 @@ void UIElement::computeLayout() {
 }
 
 void UIElement::getCoords(int *x, int *y) const {
-    *x = getXpos();
-    *y = getYpos();
+    *x = elementRect.x;
+    *y = elementRect.y;
 }
 
 void UIElement::getSize(int *width, int *height) const {
-    *width = getWidth();
-    *height = getHeight();
+    *width = elementRect.w;
+    *height = elementRect.h;
 }
 
 void UIElement::getRect(int *x, int *y, int *width, int *height) const {
-    *x = getXpos();
-    *y = getYpos();
-    *width = getWidth();
-    *height = getHeight();
+    *x = elementRect.x;
+    *y = elementRect.y;
+    *width = elementRect.w;
+    *height = elementRect.h;
 }
 
-void UIElement::setCoords(int *x, int *y) const {
-    setXpos(*x);
-    setYpos(*y);
+void UIElement::setCoords(int x, int y) {
+    elementRect.x = x;
+    elementRect.y = y;
 }
 
-void UIElement::setSize(int *width, int *height) const {
-    setWidth(*width);
-    setHeight(*height);
+void UIElement::setSize(int width, int height) {
+    elementRect.w = width;
+    elementRect.h = height;
 }
 
-void UIElement::setRect(int *x, int *y, int *width, int *height) const {
-    setXpos(*x);
-    setYpos(*y);
-    setWidth(*width);
-    setHeight(*height);
+void UIElement::setRect(int x, int y, int width, int height) {
+    elementRect.x = x;
+    elementRect.y = y;
+    elementRect.w = width;
+    elementRect.h = height;
 }
