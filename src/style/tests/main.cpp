@@ -222,9 +222,34 @@ int main() {
     expected = nullptr;
 
 
-    settings->debug = true;
+    settings->debug = false;
     fileContent = test.getFileContent("src/style/tests/tests/test-7.txt");
     test.invalidExpression(fileContent);
+
+
+    settings->debug = true;
+    fileContent = test.getFileContent("src/style/tests/tests/test-8.txt");
+
+    rootExpected = new Node{Token::NullRoot};
+    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
+    expected = expected->appendChild(new Node{Token::BlockDeclaration});
+    expected = expected->appendChild(new Node{Token::Declaration});
+    expected->appendChild(new Node{Token::ElementName, "element"});
+    expected = expected->getParent();
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node{Token::BlockDefinition});
+    expected = expected->appendChild(new Node{Token::Assignment});
+    expected->appendChild(new Node{Token::StyleName, "width"});
+    expected->appendChild(new Node{Token::Unit, "px"})->appendChild(new Node{Token::Int, "150"});
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node{Token::Assignment});
+    expected->appendChild(new Node{Token::StyleName, "height"});
+    expected->appendChild(new Node{Token::Unit, "%"})->appendChild(new Node{Token::Int, "40"});
+
+    test.lexerAndParser(true, fileContent, rootExpected);
+
+    delete rootExpected;
+    expected = nullptr;
 
     test.displaySummary();
 

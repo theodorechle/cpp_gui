@@ -140,7 +140,7 @@ void Lexer::lexeUnit() {
         }
         if (isEqual) {
             expressionTree->appendNext(new Node{Token::Unit, expression.substr(index, i)});
-            index += 1;
+            index += i;
             lexed = true;
             return;
         }
