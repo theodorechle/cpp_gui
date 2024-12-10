@@ -1,8 +1,6 @@
 #ifndef ABSTRACT_ELEMENT_HPP
 #define ABSTRACT_ELEMENT_HPP
 
-#include <SDL3/SDL.h>
-
 class AbstractElement {
 private:
     virtual void computeLayout() = 0;

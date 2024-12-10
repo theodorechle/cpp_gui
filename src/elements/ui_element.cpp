@@ -1,7 +1,12 @@
 #include "ui_element.hpp"
 
-void UIElement::computeLayout() {
+void UIElement::computeDesiredLayout() {
     
+}
+
+void UIElement::computeLayout() {
+    int w, h;
+    SDL_GetRenderOutputSize(renderer, &w, &h);
 }
 
 void UIElement::getCoords(int *x, int *y) const {

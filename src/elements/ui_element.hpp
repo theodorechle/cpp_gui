@@ -3,6 +3,7 @@
 
 #include "abstract_element.hpp"
 
+#include <SDL3/SDL.h>
 #include <iostream>
 
 class UIElement: public AbstractElement {
@@ -11,6 +12,7 @@ protected:
     SDL_Renderer *renderer;
     SDL_Rect elementRect = SDL_Rect{};
 private:
+    void computeDesiredLayout();
     void computeLayout() override final;
 public:
     UIElement(SDL_Window *window, SDL_Renderer *renderer): window{window}, renderer{renderer} {}
