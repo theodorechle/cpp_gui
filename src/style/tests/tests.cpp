@@ -193,9 +193,6 @@ void Test::displaySummary() const {
     std::cerr << "End of summary\n";
 }
 
-int Test::getResultCode() const {
-    for (std::list<Result>::const_iterator it = results.cbegin(); it != results.cend(); it++) {
-        if (*it != OK) return 1;
-    }
-    return 0;
+int Test::getNbErrors() const {
+    return results.size() - std::count(results.cbegin(), results.cend(), OK);
 }

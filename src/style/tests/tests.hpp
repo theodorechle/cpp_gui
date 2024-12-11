@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <list>
+#include <bits/stdc++.h>
 
 #include "../node.hpp"
 #include "../lexer.hpp"
@@ -36,9 +37,8 @@ public:
 
     /**
      * For CI.
-     * Returns 1 if no error else 0
      */
-    int getResultCode() const;
+    int getNbErrors() const;
 
     std::string getFileContent(std::string fileName);
 };

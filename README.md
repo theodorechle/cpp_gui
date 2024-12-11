@@ -1,3 +1,5 @@
+![build status](https://github.com/theodorechle/cpp_gui/actions/workflows/c-cpp.yml/badge.svg)
+
 # cpp_gui
 A cpp replacement for the python_gui
 
