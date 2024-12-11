@@ -254,5 +254,5 @@ int main() {
     test.displaySummary();
 
     delete settings;
-    return 0;
+    return test.getResultCode();
 }

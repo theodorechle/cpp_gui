@@ -27,3 +27,8 @@ StyleMap
 lot of maps:
  + memory
 
+{
+    "element": [
+        ([".blue", "#unique", ":hovered"], {"key": ("value", type, priority)})
+    ]
+}

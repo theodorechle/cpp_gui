@@ -7,7 +7,6 @@
 #include "../node.hpp"
 #include "../lexer.hpp"
 #include "../parser.hpp"
-#include "../solver.hpp"
 
 enum Result {
     OK,
@@ -27,7 +26,6 @@ public:
     void parser(bool equal, Node* expr, const Node* expected);
     void lexerAndParser(bool equal, const std::string &expr, const Node* expected);
 
-    std::string boolsEquals(bool equal, bool a, bool b);
     void invalidExpression(std::string expression);
     void unknownToken(std::string expression);
     void missingToken(std::string expression);
@@ -35,6 +33,12 @@ public:
 
     void displayResult(Result r) const;
     void displaySummary() const;
+
+    /**
+     * For CI.
+     * Returns 1 if no error else 0
+     */
+    int getResultCode() const;
 
     std::string getFileContent(std::string fileName);
 };

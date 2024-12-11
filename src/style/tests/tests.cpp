@@ -191,5 +191,11 @@ void Test::displaySummary() const {
         index++;
     }
     std::cerr << "End of summary\n";
-    
+}
+
+int Test::getResultCode() const {
+    for (std::list<Result>::const_iterator it = results.cbegin(); it != results.cend(); it++) {
+        if (*it != OK) return 0;
+    }
+    return 1;
 }
