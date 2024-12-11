@@ -195,7 +195,7 @@ void Test::displaySummary() const {
 
 int Test::getResultCode() const {
     for (std::list<Result>::const_iterator it = results.cbegin(); it != results.cend(); it++) {
-        if (*it != OK) return 0;
+        if (*it != OK) return 1;
     }
-    return 1;
+    return 0;
 }
