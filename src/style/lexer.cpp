@@ -43,7 +43,7 @@ void Lexer::lexeMultiLineComment() {
     while (index + i + 2 < expression.size() && expression[index+i+1] != '*' && expression[index+i+2] != '/') {
         i++;
     }
-    expressionTree->appendNext(new Node{Token::MultiLineComment, expression.substr(index+2, i-2)});
+    expressionTree->appendNext(new Node{Token::MultiLineComment, expression.substr(index+2, i-1)});
     lexed = true;
     index += i + 3;
 }
