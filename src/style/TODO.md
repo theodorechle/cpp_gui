@@ -1,0 +1,1 @@
+only show debug for tests when they fail

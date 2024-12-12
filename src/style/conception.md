@@ -27,8 +27,12 @@ StyleMap
 lot of maps:
  + memory
 
-{
-    "element": [
-        ([".blue", "#unique", ":hovered"], {"key": ("value", type, priority)})
+StyleComponent
+    name: "element"
+    type: type
+    styles: [
+        ((("blue", type, relation), ...), {"key": ("value", type), ...}),
+        ...
     ]
-}
+
+relation -> direct parent, any parent, ...

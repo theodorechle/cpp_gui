@@ -6,7 +6,7 @@ OBJ_DIR=obj
 SRC_DIR=src
 
 # Subdirectories
-SUBDIRS=$(SRC_DIR)/elements $(SRC_DIR)/managers $(SRC_DIR)/app_utils $(SRC_DIR)/convert_style_to_gui_style
+SUBDIRS=$(SRC_DIR)/elements $(SRC_DIR)/managers $(SRC_DIR)/app_utils
 
 # Source files
 SRC_MAIN=$(SRC_DIR)/main.cpp

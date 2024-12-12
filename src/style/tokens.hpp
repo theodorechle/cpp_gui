@@ -21,29 +21,32 @@ enum class Token {
     BlockDefinition,
     DirectParent,
     StyleName,
-    Function,
-    ElementName,
-    Tuple,
-    String,
     Assignment,
     ArgSeparator,
+    ElementName,
     Name,
     Class,
     Modifier,
     Identifier,
+    // value types
+    Tuple,
+    String,
+    Function,
     // Used by both the lexer and the parser
     Space,
     LineReturn,
+    Empty,
+    /**
+     * NullRoot is used only when an algorithm must start with an existing node
+     * Nodes with this type will be ignored by the root function in node.h and the Parser::goToParentBlock function
+     * (they return the NullRoot node's child, except when it's the only node)
+    */
+   NullRoot,
+    // value types
     Int,
     Float,
     Bool,
     Unit,
-    Empty,
-    /**NullRoot is used only when an algorithm must start with an existing node
-      *Nodes with this type will be ignored by the root function in node.h and the Parser::goToParentBlock function
-      *(they return the NullRoot node's child, except when it's the only node)
-    */
-   NullRoot
 };
 
 const std::string TRUE = "true";
