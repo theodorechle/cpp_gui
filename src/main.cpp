@@ -29,13 +29,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     *appstate = new AppState(manager, sdl_window, sdl_renderer);
 
-    StyleComponent component = StyleComponent();
-    RequiredStyleComponentsList componentsList = RequiredStyleComponentsList{std::tuple<std::string, StyleComponentType, StyleRelation>("element", StyleComponentType::ElementName, StyleRelation::DirectParent)};
-    AppliedStyleMap styleMap = AppliedStyleMap{{"color", std::tuple<std::string, StyleValueType>("#ff0000", StyleValueType::String)}};
-    component.addStyleDefinition(componentsList, styleMap);
-    const StyleDefinition &def = component.getStyleDefinition();
-    std::cerr << std::get<0>(def.front().first[0]) << std::endl;
-
     return SDL_APP_CONTINUE;
 }
 

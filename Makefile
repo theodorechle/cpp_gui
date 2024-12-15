@@ -30,7 +30,7 @@ BIN_STYLE_TESTS=$(BIN_DIR)/style-tests
 # Dependency files
 DEPS=$(OBJ_MAIN:.o=.d) $(OBJ_SUBDIRS:.o=.d) $(OBJ_STYLE:.o=.d) $(OBJ_TESTS:.o=.d)
 
-.PHONY: all clean style style-tests no-tests tests main
+.PHONY: all clean style style-tests main
 
 # Build the final executable combining exe and style
 all: $(BIN_ALL)
