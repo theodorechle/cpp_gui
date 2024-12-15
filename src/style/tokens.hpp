@@ -2,6 +2,8 @@
 #define TOKENS_HPP
 
 #include <unordered_map>
+#include <string>
+#include <iostream>
 
 enum class Token {
     // Used only by the lexer
@@ -46,7 +48,13 @@ enum class Token {
     Int,
     Float,
     Bool,
-    Unit,
+    PercentageUnit,
+    PixelUnit
+};
+
+const std::unordered_map<std::string, Token> UNITS {
+    {"%", Token::PercentageUnit},
+    {"px", Token::PixelUnit}
 };
 
 const std::string TRUE = "true";

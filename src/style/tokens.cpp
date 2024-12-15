@@ -34,12 +34,13 @@ std::string tokenToString(const Token &type) {
         case Token::Float: return "Float";
         case Token::String: return "String";
         case Token::Bool: return "Bool";
-        case Token::Unit: return "Unit";
         case Token::Class: return "Class";
         case Token::Modifier: return "Modifier";
         case Token::Identifier: return "Identifier";
         case Token::Empty: return "Empty";
         case Token::NullRoot: return "NullRoot";
+        case Token::PercentageUnit: return "PercentageUnit";
+        case Token::PixelUnit: return "PixelUnit";
         default: return "Unknown";
     }
 }

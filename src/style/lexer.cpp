@@ -1,5 +1,4 @@
 #include "lexer.hpp"
-#include "units.hpp"
 
 void Lexer::lexeSpace() {
     size_t i = 0;
@@ -126,7 +125,7 @@ void Lexer::lexeBool() {
 }
 
 void Lexer::lexeUnit() {
-    std::unordered_map<std::string, function>::const_iterator map_it;
+    std::unordered_map<std::string, Token>::const_iterator map_it;
     size_t i;
     bool isEqual;
 
@@ -139,7 +138,7 @@ void Lexer::lexeUnit() {
             }
         }
         if (isEqual) {
-            expressionTree->appendNext(new Node{Token::Unit, expression.substr(index, i)});
+            expressionTree->appendNext(new Node{map_it->second});
             index += i;
             lexed = true;
             return;

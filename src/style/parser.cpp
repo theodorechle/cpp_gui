@@ -98,7 +98,8 @@ void Parser::parse() {
             case Token::SemiColon:
                 parseSemiColon();
                 break;
-            case Token::Unit:
+            case Token::PercentageUnit:
+            case Token::PixelUnit:
                 parseUnit();
                 break;
             case Token::OpeningParenthesis:
@@ -296,7 +297,7 @@ void Parser::parseUnit() {
     if (lastChild == nullptr || (
         lastChild->getTokenType() != Token::Int
         && lastChild->getTokenType() != Token::Float)) throw MissingToken("A unit must have an int or a float before");
-    newChild = new Node{Token::Unit, expressionTokens->getValue()};
+    newChild = new Node{expressionTokens->getTokenType(), expressionTokens->getValue()};
     newChild->appendChild(lastChild->copyNodeWithChilds());
     expressionTree->replaceChild(lastChild, newChild);
 }
