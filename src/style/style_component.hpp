@@ -25,7 +25,8 @@ enum class StyleValueType {
     String,
     Tuple,
     Function,
-    Unit,
+    PercentageUnit,
+    PixelUnit,
     Null
 };
 
@@ -38,9 +39,26 @@ enum class StyleRelation {
 StyleComponentType tokenTypeToStyleComponentType(Token token);
 StyleValueType tokenTypeToStyleValueType(Token token);
 
+class AppliedStyle {
+    std::string styleName;
+    StyleValueType styleType;
+    AppliedStyle *styleChild;
+    AppliedStyle *styleNext;
+public:
+    void setName(const std::string &name) {styleName = name;}
+    void setType(StyleValueType type) {styleType = type;}
+    void setChild(AppliedStyle *child) {styleChild = child;}
+    void setNext(AppliedStyle *next) {styleNext = next;}
+    std::string getName() {return styleName;}
+    StyleValueType getType() {return styleType;}
+    AppliedStyle *getChild() {return styleChild;}
+    AppliedStyle *getNext() {return styleNext;}
+    ~AppliedStyle();
+};
+
 typedef std::tuple<std::string, StyleComponentType, StyleRelation> StyleComponentData;
 typedef std::list<StyleComponentData> StyleComponentDataList;
-typedef std::unordered_map<std::string, std::tuple<std::string, StyleValueType>> AppliedStyleMap;
+typedef std::unordered_map<std::string, AppliedStyle*> AppliedStyleMap;
 typedef std::list<std::pair<StyleComponentDataList, AppliedStyleMap>> StyleDefinition;
 
 class StyleComponent {

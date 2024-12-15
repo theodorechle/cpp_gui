@@ -29,11 +29,18 @@ StyleValueType tokenTypeToStyleValueType(Token token) {
         return StyleValueType::Tuple;
     case Token::Function:
         return StyleValueType::Function;
-    case Token::Unit:
-        return StyleValueType::Unit;
+    case Token::PercentageUnit:
+        return StyleValueType::PercentageUnit;
+    case Token::PixelUnit:
+        return StyleValueType::PixelUnit;
     default:
         return StyleValueType::Null;
     }
+}
+
+AppliedStyle::~AppliedStyle() {
+    delete styleChild;
+    delete styleNext;
 }
 
 std::list<StyleComponentDataList *> *NodeToStyleComponentList::convertStyleComponents() {
@@ -47,53 +54,121 @@ std::list<StyleComponentDataList *> *NodeToStyleComponentList::convertStyleCompo
 
     styleComponentsLists = new std::list<StyleComponentDataList *>();
     declaration = tree->getChild();
+    // loop through declarations
     while (declaration != nullptr && declaration->getTokenType() == Token::Declaration) {
         requiredStyleComponents = new StyleComponentDataList();
         componentDeclaration = declaration->getChild();
+        // loop through each value in a declaration
         while (componentDeclaration != nullptr) {
             styleComponentType = tokenTypeToStyleComponentType(componentDeclaration->getTokenType());
-            if (styleComponentType == StyleComponentType::Null) return styleComponentsLists;
-
+            if (styleComponentType == StyleComponentType::Null) { // if invalid declaration, go to next one
+                componentDeclaration = componentDeclaration->getNext();
+                continue;
+            }
+            // TODO : change DirectElement to true value
             requiredStyleComponents->push_back(StyleComponentData(componentDeclaration->getValue(), styleComponentType, StyleRelation::SameElement));
             componentDeclaration = componentDeclaration->getNext();
         }
         styleComponentsLists->push_back(requiredStyleComponents);
+        declaration = declaration->getNext();
     }
     return styleComponentsLists;
 }
 
-AppliedStyleMap *NodeToStyleComponentList::convertAppliedStyle() {
-    AppliedStyleMap *appliedStyle;
-    if (tree == nullptr || tree->getTokenType() != Token::BlockDefinition) return nullptr;
-    appliedStyle = new AppliedStyleMap();
+AppliedStyle *NodeToStyleComponentList::convertStyleNodesToAppliedStyle(Node *node) {
+    StyleValueType type;
+    Node *child;
+    AppliedStyle *styleChild;
+    AppliedStyle *appliedStyle;
+
+    type = tokenTypeToStyleValueType(node->getTokenType());
+    if (type == StyleValueType::Null) return nullptr;
+
+    appliedStyle = new AppliedStyle();
+    appliedStyle->setName(node->getValue());
+    appliedStyle->setType(type);
+
+    child = node->getChild();
+    if (child == nullptr) return appliedStyle;
+    styleChild = convertStyleNodesToAppliedStyle(child);
+    if (styleChild != nullptr) {
+        appliedStyle->setChild(styleChild);
+        appliedStyle = styleChild;
+    }
+
+    child = child->getNext();
+    while (child != nullptr) {
+        styleChild = convertStyleNodesToAppliedStyle(child);
+        if (styleChild != nullptr) {
+            appliedStyle->setNext(styleChild);
+            appliedStyle = styleChild;
+        }
+        child = child->getNext();
+    }
     return appliedStyle;
 }
 
-std::list<StyleComponent *> *NodeToStyleComponentList::createStyleComponents(std::list<std::list<StyleComponentDataList *> *>::const_iterator componentsListIt, StyleComponentDataList *components, AppliedStyleMap *appliedStyle) {
-    std::list<StyleComponent *> *styleComponentList;
+AppliedStyleMap *NodeToStyleComponentList::convertAppliedStyle() {
+    AppliedStyleMap *appliedStyleMap;
+    AppliedStyle *appliedStyle;
+    std::string styleName;
+    Node *definition;
+    Node *value;
+    Token token;
+    if (tree == nullptr || tree->getTokenType() != Token::BlockDefinition) return nullptr;
+
+    appliedStyleMap = new AppliedStyleMap();
+    definition = tree->getChild();
+    while (definition != nullptr) {
+        token = definition->getTokenType();
+        if (token == Token::Assignment) {
+            value = definition->getChild();
+            if (value == nullptr || value->getTokenType() != Token::StyleName) {
+                definition = definition->getNext();
+                continue;
+            }
+            styleName = definition->getValue();
+            value = value->getNext();
+            if (!isNodeNull(value)) {
+                appliedStyle = convertStyleNodesToAppliedStyle(value);
+                if (appliedStyle != nullptr) (*appliedStyleMap)[styleName] = appliedStyle;
+            }
+        } else if (token == Token::StyleBlock) {
+            convertStyleBlock();
+        }
+        // if other token type, just don't use the definition
+        definition = definition->getNext();
+    }
+
+    return appliedStyleMap;
+}
+
+std::list<StyleComponent *> *NodeToStyleComponentList::createStyleComponents(std::list<std::list<StyleComponentDataList *> *>::const_iterator componentsListIt, StyleComponentDataList *components, AppliedStyleMap *appliedStyleMap) {
+    std::list<StyleComponent *> *styleComponentList = new std::list<StyleComponent *>();
+    std::list<StyleComponent *> *tmpStyleComponentList;
     StyleComponentDataList::const_iterator componentsIt;
     if (components == nullptr) return nullptr;
     bool islistHead = std::next(componentsListIt) == requiredStyleComponentsLists.cend();
-    if (islistHead) {
-        styleComponentList = new std::list<StyleComponent *>();
+    if (islistHead) { // if at end of the declaration list
         for (StyleComponentDataList *components : **componentsListIt) {
             StyleComponent *styleComponent = new StyleComponent(std::get<0>(components->back()), std::get<1>(components->back()));
 
             componentsIt = std::prev(components->end());
             components->splice(components->end(), *components);
 
-            styleComponent->addStyleDefinition(components, appliedStyle);
+            styleComponent->addStyleDefinition(components, appliedStyleMap);
             styleComponentList->push_back(styleComponent);
 
             components->erase(componentsIt);
         }
     } else {
         for (StyleComponentDataList *componentsList : **componentsListIt) {
-
             componentsIt = std::prev(components->end());
             components->splice(components->end(), *componentsList);
 
-            styleComponentList = createStyleComponents(std::next(componentsListIt), components, appliedStyle);
+            tmpStyleComponentList = createStyleComponents(std::next(componentsListIt), components, appliedStyleMap);
+            styleComponentList->splice(styleComponentList->end(), *tmpStyleComponentList);
+            delete tmpStyleComponentList;
 
             components->erase(componentsIt);
         }
@@ -101,35 +176,41 @@ std::list<StyleComponent *> *NodeToStyleComponentList::createStyleComponents(std
     return styleComponentList;
 }
 
-std::list<StyleComponent *> *NodeToStyleComponentList::convertStyleBlock() {
-    if (tree == nullptr || tree->getTokenType() != Token::StyleBlock) return nullptr;
+void NodeToStyleComponentList::convertStyleBlock() {
+    std::list<StyleComponentDataList *> *styleComponentsLists;
+    std::list<StyleComponent *> *finalStyleComponents;
+    if (tree == nullptr || tree->getTokenType() != Token::StyleBlock) return;
     tree = tree->getChild();
-    std::list<StyleComponentDataList *> *styleComponentsLists = convertStyleComponents();
-    if (styleComponentsLists == nullptr || styleComponentsLists->empty()) return nullptr;
-
-    requiredStyleComponentsLists.push_back(styleComponentsLists);
+    styleComponentsLists = convertStyleComponents();
+    if (styleComponentsLists == nullptr || styleComponentsLists->empty()) {
+        delete styleComponentsLists;
+        return;
+    }
     tree = tree->getNext();
 
-    AppliedStyleMap *appliedStyle = convertAppliedStyle();
+    AppliedStyleMap *appliedStyleMap = convertAppliedStyle();
     tree = tree->getParent();
-    if (appliedStyle == nullptr || appliedStyle->empty()) return nullptr;
-
+    if (appliedStyleMap == nullptr || appliedStyleMap->empty()) {
+        delete styleComponentsLists;
+        delete appliedStyleMap;
+        return;
+    }
+    requiredStyleComponentsLists.push_back(styleComponentsLists);
     StyleComponentDataList components = StyleComponentDataList();
-    return createStyleComponents(requiredStyleComponentsLists.cbegin(), &components, appliedStyle);
+    finalStyleComponents = createStyleComponents(requiredStyleComponentsLists.cbegin(), &components, appliedStyleMap);
+    requiredStyleComponentsLists.pop_back();
+    styleDefinitions->splice(styleDefinitions->end(), *finalStyleComponents);
 }
 
 std::list<StyleComponent *> *NodeToStyleComponentList::convert(Node *styleTree) {
-    std::list<StyleComponent *> *styleDefinitions = new std::list<StyleComponent *>();
-    ;
-    std::list<StyleComponent *> *convertedStyleBlock;
+    styleDefinitions = new std::list<StyleComponent *>();
     requiredStyleComponentsLists = std::list<std::list<StyleComponentDataList *> *>();
 
     if (styleTree->getTokenType() != Token::NullRoot) return styleDefinitions;
 
     tree = styleTree->getChild();
     while (tree != nullptr && tree->getTokenType() == Token::StyleBlock) {
-        convertedStyleBlock = convertStyleBlock();
-        styleDefinitions->splice(styleDefinitions->end(), *convertedStyleBlock);
+        convertStyleBlock();
         tree = tree->getNext();
     }
 
