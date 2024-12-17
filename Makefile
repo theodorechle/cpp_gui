@@ -46,7 +46,7 @@ style: $(BIN_STYLE)
 style-tests: $(BIN_STYLE_TESTS)
 
 # Build everything except tests (combines exe and style)
-$(BIN_ALL): $(OBJ_MAIN) $(OBJ_SUBDIRS) $(filter-out obj/style/main.o, $(OBJ_STYLE))
+$(BIN_ALL): $(filter-out obj/style/main.o, $(OBJ_STYLE)) $(OBJ_SUBDIRS) $(OBJ_MAIN)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o $@ $(SDL_CMD)
 

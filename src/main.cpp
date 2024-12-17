@@ -3,7 +3,7 @@
 #include "elements/ui_element.hpp"
 #include "elements/label.hpp"
 #include "app_utils/app_state.hpp"
-#include "style/style_component.hpp"
+#include "style/style_deserializer.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1  /* use the callbacks instead of main() */
 #include <SDL3/SDL.h>
@@ -28,6 +28,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     AbstractManager *manager = new UIManager(sdl_window, sdl_renderer);
 
     *appstate = new AppState(manager, sdl_window, sdl_renderer);
+
+    std::list<StyleComponent *> *style = StyleDeserializer().deserialize("style/tests/tests/test-1.txt");
 
     return SDL_APP_CONTINUE;
 }
