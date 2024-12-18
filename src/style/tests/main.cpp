@@ -251,6 +251,10 @@ int main() {
     delete rootExpected;
     expected = nullptr;
 
+    settings->debug = false;
+    fileContent = test.getFileContent("src/style/tests/tests/test-9.txt");
+    test.invalidExpression(fileContent);
+
     test.displaySummary();
 
     delete settings;
