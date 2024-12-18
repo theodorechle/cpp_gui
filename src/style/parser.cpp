@@ -266,7 +266,7 @@ void Parser::parseOpeningCurlyBracket() {
         && expressionTree->getTokenType() != Token::Declaration) throw MalformedExpression("A style block must be defined in an other style block or at the root level of the file");
     if (expressionTree->getTokenType() != Token::Declaration) {
         lastChild = expressionTree->getLastChild();
-        if (lastChild == nullptr) throw MissingToken("A style block must start with at list an element name|class|identifier before the opening curly bracket");
+        if (lastChild == nullptr) throw MalformedExpression("A style block must start with at list an element name|class|identifier before the opening curly bracket");
         lastChildCopy = lastChild->copyNodeWithChilds();
         if (lastChildCopy->getTokenType() == Token::Name) lastChildCopy->setTokenType(Token::ElementName);
         expressionTree->removeSpecificChild(lastChild);
