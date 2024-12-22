@@ -15,7 +15,7 @@ private:
     void computeDesiredLayout();
     void computeLayout() override final;
 public:
-    UIElement(SDL_Window *window, SDL_Renderer *renderer): window{window}, renderer{renderer} {}
+    UIElement(SDL_Window *window, SDL_Renderer *renderer, std::string elementName, ElementsStyleManager *elementsStyleManager=nullptr, std::vector<std::string> *classes=nullptr, const std::string &identifier="", AbstractElement *parent = nullptr, AbstractElement *child = nullptr, AbstractElement *next = nullptr): AbstractElement{elementName, elementsStyleManager, classes, identifier, parent, child, next}, window{window}, renderer{renderer} {}
     int getXpos() {return elementRect.x;}
     int getYpos() {return elementRect.y;}
     int getWidth() {return elementRect.w;}

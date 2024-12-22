@@ -1,1 +1,2 @@
-only show debug for tests when they fail
+- only show debug for tests when they fail
+- register where errors occurs to be able to signal them

@@ -6,3 +6,4 @@ obj/**
 !obj/**/.gitkeep
 
 log*
+valgrind-suppressions

@@ -3,7 +3,6 @@
 
 #include <list>
 #include <algorithm>
-#include <SDL3/SDL.h>
 
 class AbstractElement;
 

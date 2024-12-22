@@ -1,9 +1,9 @@
 #ifndef TOKENS_HPP
 #define TOKENS_HPP
 
-#include <unordered_map>
-#include <string>
 #include <iostream>
+#include <string>
+#include <unordered_map>
 
 enum class Token {
     // Used only by the lexer
@@ -38,12 +38,8 @@ enum class Token {
     Space,
     LineReturn,
     Empty,
-    /**
-     * NullRoot is used only when an algorithm must start with an existing node
-     * Nodes with this type will be ignored by the root function in node.h and the Parser::goToParentBlock function
-     * (they return the NullRoot node's child, except when it's the only node)
-    */
-   NullRoot,
+    // NullRoot is used only when an algorithm must start with an existing node
+    NullRoot,
     // value types
     Int,
     Float,
@@ -52,16 +48,15 @@ enum class Token {
     PixelUnit
 };
 
-const std::unordered_map<std::string, Token> UNITS {
+const std::unordered_map<std::string, Token> UNITS{
     {"%", Token::PercentageUnit},
-    {"px", Token::PixelUnit}
-};
+    {"px", Token::PixelUnit}};
 
 const std::string TRUE = "true";
 const std::string FALSE = "false";
 
 std::string tokenToString(const Token &type);
 
-std::ostream& operator<<(std::ostream& o, const Token type);
+std::ostream &operator<<(std::ostream &o, const Token type);
 
 #endif // TOKENS_HPP

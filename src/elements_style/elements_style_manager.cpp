@@ -1,0 +1,148 @@
+#include "elements_style_manager.hpp"
+
+int ElementsStyleManager::findFile(const std::string &fileName) {
+    for (std::pair<int, std::pair<std::string, int>> file : files) {
+        if (file.second.first == fileName) return file.first;
+    }
+    return -1;
+}
+
+void ElementsStyleManager::updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber, ElementStyle *element) {
+    ElementStyle *child;
+    element->updateStylePriorityFromFile(oldFileNumber, newFileNumber);
+    child = element->getChild();
+    while (child != nullptr) {
+        updateRulesPrioritiesInElements(oldFileNumber, newFileNumber, child);
+        child = child->getNext();
+    }
+}
+
+void ElementsStyleManager::updateRulesPriorities(int fileNumber) {
+    std::unordered_map<int, std::pair<std::string, int>>::node_type node;
+    if (elements != nullptr) {
+        updateRulesPrioritiesInElements(fileNumber, fileCount, elements);
+        node = files.extract(fileNumber);
+        node.key() = fileCount;
+        files.insert(std::move(node));
+        fileCount++;
+    }
+}
+
+void ElementsStyleManager::applySpecificStyleToElement(std::list<StyleComponent *> specificStyle, ElementStyle *elementStyle, bool recursive) {
+    if (elementStyle == nullptr) return;
+    ElementStyle *actualElementStyle = elementStyle;
+    const StyleValuesMap *styleMap;
+    AppliedStyleMap elementStyleMap;
+    std::string modifier = "";
+    for (StyleComponent *styleComponent : specificStyle) {
+        const StyleComponentDataList *componentsList = styleComponent->getComponentsList();
+        if (!areElementSelectorsCompatibles(actualElementStyle, componentsList)) continue;
+        styleMap = styleComponent->getStyleMap();
+        elementStyleMap = AppliedStyleMap();
+        if (componentsList->back().first.second == StyleComponentType::Modifier) {
+            modifier = componentsList->back().first.first;
+            actualElementStyle->addModifier(modifier);
+        }
+        for (const std::pair<std::string, StyleRule> styleRule : *styleMap) {
+            elementStyleMap[styleRule.first] = {StyleRule(std::get<0>(styleRule.second), std::get<1>(styleRule.second) + actualElementStyle->getPriority(), std::get<2>(styleRule.second), std::get<3>(styleRule.second))};
+            if (!modifier.empty()) {
+                actualElementStyle->addRuleAffectedByModifier(std::get<2>(styleRule.second), std::get<3>(styleRule.second), modifier);
+            }
+        }
+
+        actualElementStyle->addStyle(elementStyleMap);
+    }
+
+    if (recursive) {
+        actualElementStyle = actualElementStyle->getChild();
+        while (actualElementStyle != nullptr) {
+            applySpecificStyleToElement(specificStyle, actualElementStyle, recursive);
+            actualElementStyle = actualElementStyle->getNext();
+        }
+    }
+}
+
+int ElementsStyleManager::addStyleFile(const std::string &fileName) {
+    int fileNumber = findFile(fileName);
+    if (fileNumber != -1) {
+        updateRulesPriorities(fileNumber);
+        return fileNumber;
+    }
+    std::ifstream file(fileName);
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return addStyle(buffer.str());
+}
+
+int ElementsStyleManager::addStyle(const std::string &styleFileContent) {
+    int ruleNumber;
+    std::list<StyleComponent *> *fileRules;
+    fileRules = StyleDeserializer::deserialize(styleFileContent, fileCount, &ruleNumber);
+    applySpecificStyleToElement(*fileRules, elements, true);
+    style.splice(style.end(), *fileRules);
+    files[fileCount] = std::pair<std::string, int>("", ruleNumber);
+    fileCount++;
+    return fileCount;
+}
+
+void ElementsStyleManager::removeStyleInElements(int fileNumber, ElementStyle *element) {
+    ElementStyle *child;
+    element->deleteStyleFromFile(fileNumber);
+    child = element->getChild();
+    while (child != nullptr) {
+        removeStyleInElements(fileNumber, child);
+        child = child->getNext();
+    }
+}
+
+void ElementsStyleManager::removeStyle(int fileNumber) {
+    if (elements != nullptr && files.find(fileNumber) != files.end()) {
+        removeStyleInElements(fileNumber, elements);
+        files.erase(fileNumber);
+    }
+}
+
+bool ElementsStyleManager::areElementSelectorsCompatibles(ElementStyle *elementStyle, const StyleComponentDataList *componentsList) {
+    bool selectorExists = false;
+    ElementStyle *currentStyle = elementStyle;
+    StyleComponentDataList::const_iterator listEndIt = componentsList->cend();
+    const std::set<StyleComponentData> *elementSelectors;
+    elementSelectors = currentStyle->getSelectors();
+    if (componentsList->back().first.second == StyleComponentType::Modifier) {
+        listEndIt = listEndIt--;
+    }
+    for (StyleComponentDataList::const_iterator it = componentsList->cbegin(); it != listEndIt; it++) {
+        switch (it->second) {
+        case StyleRelation::SameElement:
+            selectorExists = elementSelectors->find(it->first) != elementSelectors->end();
+            break;
+        case StyleRelation::DirectParent:
+            currentStyle = currentStyle->getParent();
+            elementSelectors = currentStyle->getSelectors();
+            selectorExists = elementSelectors->find(it->first) != elementSelectors->end();
+            break;
+        case StyleRelation::AnyParent:
+            while (currentStyle != nullptr) {
+                currentStyle = currentStyle->getParent();
+                elementSelectors = currentStyle->getSelectors();
+                selectorExists = elementSelectors->find(it->first) != elementSelectors->end();
+                if (selectorExists) break;
+            }
+            break;
+        default:
+            selectorExists = false;
+            break;
+        }
+        if (!selectorExists) break;
+    }
+    return selectorExists;
+}
+
+void ElementsStyleManager::applyStyleToElement(ElementStyle *elementStyle, bool recursive) {
+    applySpecificStyleToElement(style, elementStyle, recursive);
+}
+
+void ElementsStyleManager::addElementStyle(ElementStyle *elementStyle) {
+    if (elements == nullptr) elements = elementStyle;
+    applyStyleToElement(elementStyle, true);
+}

@@ -4,6 +4,8 @@
 #include "elements/label.hpp"
 #include "app_utils/app_state.hpp"
 #include "style/style_deserializer.hpp"
+#include "elements_style/elements_style_manager.hpp"
+#include "elements_style/element_style.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1  /* use the callbacks instead of main() */
 #include <SDL3/SDL.h>
@@ -29,7 +31,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     *appstate = new AppState(manager, sdl_window, sdl_renderer);
 
-    std::list<StyleComponent *> *style = StyleDeserializer().deserialize("style/tests/tests/test-1.txt");
+    ElementsStyleManager elementStyleManager = ElementsStyleManager();
+    elementStyleManager.addStyleFile("style/tests/tests/test-2.txt");
+
+    UIElement *element = new Label(sdl_window, sdl_renderer, &elementStyleManager);
+    manager->addElement(element);
 
     return SDL_APP_CONTINUE;
 }
@@ -45,12 +51,11 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *state = static_cast<AppState*>(appstate);
     AbstractManager *manager = state->getManager();
-    manager->addElement(new Label{state->getWindow(), state->getRenderer()});
     manager->render();
     SDL_RenderPresent(state->getRenderer());
     manager->removeAllElements();
 
-    return SDL_APP_CONTINUE;
+    return SDL_APP_SUCCESS;
 }
 
 

@@ -9,12 +9,12 @@
 class Node {
     Token type;
     std::string value;
-    Node* next;
-    Node* child;
+    Node* next=nullptr;
+    Node* child=nullptr;
     Node* parent;
     void displayTree(std::ostream &flow = std::cout, int level=0) const;
 public :
-    Node(Token type=Token::Empty, std::string value="", Node* parent=nullptr): type{type}, value{value}, next{}, child{}, parent{parent} {};
+    Node(Token type=Token::Empty, std::string value="", Node* parent=nullptr): type{type}, value{value}, parent{parent} {};
     virtual ~Node();
     virtual void setValue(const std::string& s) {value = s;};
     virtual const std::string& getValue() const {return value;};

@@ -9,6 +9,7 @@ void Label::render() const {
         SDL_Log("Couldn't get draw color");
         return;
     }
+    std::cerr << "Can get text color " << (style->getRule("text-color") == nullptr) << std::endl;
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderRect(renderer, &rect);
     SDL_SetRenderDrawColor(renderer, r, g, b, a);

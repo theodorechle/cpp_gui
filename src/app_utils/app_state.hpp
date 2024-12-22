@@ -2,6 +2,7 @@
 #define APP_STATE_HPP
 
 #include "../managers/abstract_manager.hpp"
+#include <SDL3/SDL.h>
 
 class AppState {
     AbstractManager *manager = nullptr;

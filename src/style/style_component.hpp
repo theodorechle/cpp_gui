@@ -33,45 +33,54 @@ enum class StyleValueType {
 enum class StyleRelation {
     SameElement,
     DirectParent,
-    AnyParent
+    AnyParent,
+    Null
 };
 
 StyleComponentType tokenTypeToStyleComponentType(Token token);
 StyleValueType tokenTypeToStyleValueType(Token token);
 
-class AppliedStyle {
+/**
+ * All data types are not simple.
+ * For example a tuple contains multiple elements.
+ * That's why this class exists, to allow such elements who contains others to exists.
+ */
+class StyleValue {
     std::string styleName;
     StyleValueType styleType;
-    AppliedStyle *styleChild;
-    AppliedStyle *styleNext;
+    StyleValue *styleChild;
+    StyleValue *styleNext;
 public:
     void setName(const std::string &name) {styleName = name;}
     void setType(StyleValueType type) {styleType = type;}
-    void setChild(AppliedStyle *child) {styleChild = child;}
-    void setNext(AppliedStyle *next) {styleNext = next;}
+    void setChild(StyleValue *child) {styleChild = child;}
+    void setNext(StyleValue *next) {styleNext = next;}
     std::string getName() {return styleName;}
     StyleValueType getType() {return styleType;}
-    AppliedStyle *getChild() {return styleChild;}
-    AppliedStyle *getNext() {return styleNext;}
-    ~AppliedStyle();
+    StyleValue *getChild() {return styleChild;}
+    StyleValue *getNext() {return styleNext;}
+    ~StyleValue();
 };
 
-typedef std::tuple<std::string, StyleComponentType, StyleRelation> StyleComponentData;
-typedef std::list<StyleComponentData> StyleComponentDataList;
-typedef std::unordered_map<std::string, AppliedStyle*> AppliedStyleMap;
-typedef std::list<std::pair<StyleComponentDataList, AppliedStyleMap>> StyleDefinition;
+/**
+ *   style value
+ *   priority
+ *   file number
+ *   rule number (file dependant)
+ */
+typedef std::tuple<StyleValue *, int, int, int> StyleRule;
+typedef std::pair<std::string, StyleComponentType> StyleComponentData;
+typedef std::list<std::pair<StyleComponentData, StyleRelation>> StyleComponentDataList;
+typedef std::unordered_map<std::string, StyleRule> StyleValuesMap;
+typedef std::pair<StyleComponentDataList, StyleValuesMap> StyleDefinition;
 
 class StyleComponent {
-    std::string name;
-    StyleComponentType type;
     StyleDefinition *styleDef;
-
 public:
-    StyleComponent(const std::string &name, StyleComponentType type) : name{name}, type{type} {}
-    std::string getName() const { return name; }
-    StyleComponentType getType() const { return type; }
+    StyleComponent(StyleComponentDataList *componentsList, StyleValuesMap *styleMap);
     StyleDefinition *getStyleDefinition() const { return styleDef; }
-    void addStyleDefinition(StyleComponentDataList *componentsList, AppliedStyleMap *styleMap);
+    const StyleComponentDataList *getComponentsList() const { return &styleDef->first; }
+    const StyleValuesMap *getStyleMap() const { return &styleDef->second; }
 };
 
 #endif // STYLE_COMPONENT_HPP

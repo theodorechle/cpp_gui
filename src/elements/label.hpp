@@ -3,9 +3,9 @@
 
 #include "ui_element.hpp"
 
-class Label: public UIElement {
+class Label : public UIElement {
 public:
-    Label(SDL_Window *window, SDL_Renderer *renderer): UIElement{window, renderer} {}
+    Label(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes=nullptr, const std::string &identifier="", AbstractElement *parent = nullptr, AbstractElement *child = nullptr, AbstractElement *next = nullptr) : UIElement{window, renderer, "label", elementsStyleManager, classes, identifier, parent, child, next} {}
     void render() const override;
 };
 

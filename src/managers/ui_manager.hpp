@@ -2,6 +2,7 @@
 #define UIMANAGER_HPP
 
 #include "abstract_manager.hpp"
+#include <SDL3/SDL.h>
 
 class UIManager: public AbstractManager {
     SDL_Window *window = nullptr;
