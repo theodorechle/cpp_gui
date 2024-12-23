@@ -26,10 +26,11 @@ class ElementStyle {
     ElementStyle *child = nullptr;
     ElementStyle *next = nullptr;
     int priority = 0;
-    static bool compareRulesLess(std::tuple<StyleValue *, int, int, int> rule1, std::tuple<StyleValue *, int, int, int> rule2);
+    static bool compareRulesLess(StyleRule rule1, StyleRule rule2);
 
 public:
-    void setPriority(int priority) { this->priority = priority; }
+    ElementStyle() { updatePriority(); }
+    void updatePriority() { this->priority = (parent == nullptr) ? 0 : parent->getPriority() + 1; }
     int getPriority() { return priority; }
     void setParent(ElementStyle *parent) { this->parent = parent; }
     ElementStyle *getParent() { return parent; }
@@ -52,6 +53,8 @@ public:
     void addSelector(std::string selectorName, StyleComponentType selectorType);
     void addModifier(std::string modifierName);
     void addRuleAffectedByModifier(int fileNumber, int ruleNumber, std::string modifierName);
+    void toggleRule(int fileNumber, int ruleNumber);
+    void toggleRule(int fileNumber, int ruleNumber, bool isEnabled);
 };
 
 #endif // ELEMENT_STYLE_HPP

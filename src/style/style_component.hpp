@@ -50,25 +50,33 @@ class StyleValue {
     StyleValueType styleType;
     StyleValue *styleChild;
     StyleValue *styleNext;
+
 public:
-    void setName(const std::string &name) {styleName = name;}
-    void setType(StyleValueType type) {styleType = type;}
-    void setChild(StyleValue *child) {styleChild = child;}
-    void setNext(StyleValue *next) {styleNext = next;}
-    std::string getName() {return styleName;}
-    StyleValueType getType() {return styleType;}
-    StyleValue *getChild() {return styleChild;}
-    StyleValue *getNext() {return styleNext;}
+    void setName(const std::string &name) { styleName = name; }
+    void setType(StyleValueType type) { styleType = type; }
+    void setChild(StyleValue *child) { styleChild = child; }
+    void setNext(StyleValue *next) { styleNext = next; }
+    std::string getName() { return styleName; }
+    StyleValueType getType() { return styleType; }
+    StyleValue *getChild() { return styleChild; }
+    StyleValue *getNext() { return styleNext; }
     ~StyleValue();
 };
 
 /**
  *   style value
+ *   isEnabled
  *   priority
  *   file number
  *   rule number (file dependant)
  */
-typedef std::tuple<StyleValue *, int, int, int> StyleRule;
+struct StyleRule {
+    StyleValue *value;
+    bool isEnabled;
+    int priority;
+    int fileNumber;
+    int ruleNumber;
+};
 typedef std::pair<std::string, StyleComponentType> StyleComponentData;
 typedef std::list<std::pair<StyleComponentData, StyleRelation>> StyleComponentDataList;
 typedef std::unordered_map<std::string, StyleRule> StyleValuesMap;
@@ -76,6 +84,7 @@ typedef std::pair<StyleComponentDataList, StyleValuesMap> StyleDefinition;
 
 class StyleComponent {
     StyleDefinition *styleDef;
+
 public:
     StyleComponent(StyleComponentDataList *componentsList, StyleValuesMap *styleMap);
     StyleDefinition *getStyleDefinition() const { return styleDef; }

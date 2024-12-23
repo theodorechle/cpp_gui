@@ -146,7 +146,7 @@ StyleValuesMap *NodeToStyleComponentList::convertAppliedStyle(int fileNumber, in
             if (!isNodeNull(value)) {
                 appliedStyle = convertStyleNodesToAppliedStyle(value);
                 if (appliedStyle != nullptr) {
-                    (*appliedStyleMap)[styleName] = StyleRule(appliedStyle, 0, fileNumber, *ruleNumber);
+                    (*appliedStyleMap)[styleName] = StyleRule{appliedStyle, true, 0, fileNumber, *ruleNumber};
                     (*ruleNumber)++;
                 }
             }

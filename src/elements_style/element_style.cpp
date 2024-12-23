@@ -1,11 +1,11 @@
 #include "element_style.hpp"
 
-bool ElementStyle::compareRulesLess(std::tuple<StyleValue *, int, int, int> rule1, std::tuple<StyleValue *, int, int, int> rule2) {
-    if (std::get<1>(rule1) < std::get<1>(rule2)) return true; // compare priority
-    if (std::get<1>(rule1) == std::get<1>(rule2)) {
-        if (std::get<2>(rule1) < std::get<2>(rule2)) return true; // compare file number
-        if (std::get<2>(rule1) == std::get<2>(rule2)) {
-            if (std::get<3>(rule1) <= std::get<3>(rule2)) return true; // compare rule number
+bool ElementStyle::compareRulesLess(StyleRule rule1, StyleRule rule2) {
+    if (rule1.priority < rule2.priority) return true;
+    if (rule1.priority == rule2.priority) {
+        if (rule1.fileNumber < rule2.fileNumber) return true;
+        if (rule1.fileNumber == rule2.fileNumber) {
+            if (rule1.ruleNumber <= rule2.ruleNumber) return true;
         }
     }
     return false;
@@ -20,7 +20,7 @@ void ElementStyle::addStyle(AppliedStyleMap &newStyle) {
         }
         // same priority, more recent file or same file and more recent rule
         else {
-            actualStyleIt->second.merge(it->second);
+            actualStyleIt->second.splice(actualStyleIt->second.end(), it->second);
             actualStyleIt->second.sort(compareRulesLess);
         }
     }
@@ -29,7 +29,7 @@ void ElementStyle::addStyle(AppliedStyleMap &newStyle) {
 bool ElementStyle::deleteStyle(int fileNumber, int ruleNumber) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
-            if (std::get<2>(*listIt) == fileNumber && std::get<3>(*listIt) == ruleNumber) {
+            if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
                 style.erase(it);
                 return true; // should not have multiple rules with same file and rule number
             }
@@ -42,7 +42,7 @@ int ElementStyle::deleteStyleFromFile(int fileNumber) {
     int nbDeletedRules = 0;
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
-            if (std::get<1>(*listIt) == fileNumber) {
+            if (listIt->fileNumber == fileNumber) {
                 style.erase(it);
                 nbDeletedRules++;
             }
@@ -54,8 +54,8 @@ int ElementStyle::deleteStyleFromFile(int fileNumber) {
 void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNumber) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
-            if (std::get<1>(*listIt) == oldFileNumber) {
-                std::get<1>(*listIt) = newFileNumber;
+            if (listIt->fileNumber == oldFileNumber) {
+                listIt->fileNumber = newFileNumber;
             }
         }
         it->second.sort(compareRulesLess);
@@ -64,7 +64,11 @@ void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNum
 
 StyleRule *ElementStyle::getRule(const std::string &ruleName) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
-        if (it->first == ruleName) return &(it->second.front());
+        if (it->first == ruleName) {
+            for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
+                if (listIt->isEnabled) return &(it->second.front());
+            }
+        }
     }
     return nullptr;
 }
@@ -79,7 +83,7 @@ bool ElementStyle::ruleExists(const std::string &ruleName) {
 bool ElementStyle::ruleExists(int fileNumber, int ruleNumber) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
-            if (std::get<2>(*listIt) == fileNumber && std::get<3>(*listIt) == ruleNumber) {
+            if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
                 return true;
             }
         }
@@ -101,4 +105,24 @@ void ElementStyle::addRuleAffectedByModifier(int fileNumber, int ruleNumber, std
     if (modifier == modifiers.end()) return;
     if (!ruleExists(fileNumber, ruleNumber)) return;
     modifier->second.second.push_back(std::pair<int, int>(fileNumber, ruleNumber));
+}
+
+void ElementStyle::toggleRule(int fileNumber, int ruleNumber) {
+    for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
+        for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
+            if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
+                listIt->isEnabled = !listIt->isEnabled;
+            }
+        }
+    }
+}
+
+void ElementStyle::toggleRule(int fileNumber, int ruleNumber, bool isEnabled) {
+    for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
+        for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
+            if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
+                listIt->isEnabled = isEnabled;
+            }
+        }
+    }
 }

@@ -43,10 +43,10 @@ void ElementsStyleManager::applySpecificStyleToElement(std::list<StyleComponent 
             modifier = componentsList->back().first.first;
             actualElementStyle->addModifier(modifier);
         }
-        for (const std::pair<std::string, StyleRule> styleRule : *styleMap) {
-            elementStyleMap[styleRule.first] = {StyleRule(std::get<0>(styleRule.second), std::get<1>(styleRule.second) + actualElementStyle->getPriority(), std::get<2>(styleRule.second), std::get<3>(styleRule.second))};
+        for (std::pair<std::string, StyleRule> styleRule : *styleMap) {
+            elementStyleMap[styleRule.first] = {StyleRule{styleRule.second.value, true, styleRule.second.priority + actualElementStyle->getPriority(), styleRule.second.fileNumber, styleRule.second.ruleNumber}};
             if (!modifier.empty()) {
-                actualElementStyle->addRuleAffectedByModifier(std::get<2>(styleRule.second), std::get<3>(styleRule.second), modifier);
+                actualElementStyle->addRuleAffectedByModifier(styleRule.second.fileNumber, styleRule.second.ruleNumber, modifier);
             }
         }
 
