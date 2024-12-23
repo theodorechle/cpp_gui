@@ -62,15 +62,15 @@ void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNum
     }
 }
 
-StyleRule *ElementStyle::getRule(const std::string &ruleName) {
+StyleValue *ElementStyle::getRule(const std::string &ruleName, StyleValue *defaultValue) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         if (it->first == ruleName) {
             for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
-                if (listIt->isEnabled) return &(it->second.front());
+                if (listIt->isEnabled) return listIt->value;
             }
         }
     }
-    return nullptr;
+    return defaultValue;
 }
 
 bool ElementStyle::ruleExists(const std::string &ruleName) {

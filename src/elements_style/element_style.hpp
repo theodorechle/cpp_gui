@@ -46,7 +46,7 @@ public:
     // returns the number of deleted rules
     int deleteStyleFromFile(int fileNumber);
     void updateStylePriorityFromFile(int oldFileNumber, int newFileNumber);
-    StyleRule *getRule(const std::string &ruleName);
+    StyleValue *getRule(const std::string &ruleName, StyleValue *defaultValue = nullptr);
     bool ruleExists(const std::string &ruleName);
     bool ruleExists(int fileNumber, int ruleNumber);
     const std::set<StyleComponentData> *getSelectors() { return &selectors; }
