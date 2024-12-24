@@ -1,9 +1,13 @@
 ![build status](https://github.com/theodorechle/cpp_gui/actions/workflows/c-cpp.yml/badge.svg)
 
 # cpp_gui
-A cpp replacement for the python_gui
+A cpp improvement of the python_gui ![https://github.com/theodorechle/python_gui](https://github.com/theodorechle/python_gui)
+
+![Readme for the gui's style](src/style/README.md)
 
 # Installation
+
+To use this program, you need g++ and make.
 
 Install SDL
 

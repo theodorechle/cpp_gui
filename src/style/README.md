@@ -1,12 +1,12 @@
 # style
-A program who pick css like files and convert them to style understandable for the cpp_gui.
+A program who pick files in a css like format and convert them to understandable style for the cpp_gui.
 
 ## FEATURES:
 ### Style types (exprimed in pseudo regex)
 - int: [0-9]+
 - float: [0-9]+\.[0-9]\*
 - string: [^,;\s{}()[]]+
-- tuple[type,...]: \\( *\<style-type\>(, \*\<style-type\>)\* \*\\)
+- tuple[type,...]: \\( *\<style-type\>( \*, \*\<style-type\>)\* \*\\)
 - bool
 
 ### Operators
@@ -64,14 +64,16 @@ An int can be followed by:
 #### ! support custom styles
 
 ### Modifiers
-Shown in the order style would apply
+Shown in precedence priority order:
 
 focused
 clicked
 hovered
 
+Custom modifiers can be written
+
 ### Identifiers (single element)
-An ididentifier (id) can be used to apply to a specific element
+An identifier (id) can be used to apply to a specific element
 
 ### Classes (groups of elements)
 A class can be used to apply style to multiple elements at once
