@@ -1,6 +1,7 @@
 #include "managers/abstract_manager.hpp"
 #include "managers/ui_manager.hpp"
 #include "elements/ui_element.hpp"
+#include "elements/container.hpp"
 #include "elements/label.hpp"
 #include "app_utils/app_state.hpp"
 #include "style/style_deserializer.hpp"
@@ -32,10 +33,12 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     *appstate = new AppState(manager, sdl_window, sdl_renderer);
 
     ElementsStyleManager elementStyleManager = ElementsStyleManager();
-    elementStyleManager.addStyleFile("style/tests/tests/test-2.txt");
+    elementStyleManager.addStyleFile("src/style/tests/tests/main-test.txt");
 
-    UIElement *element = new Label(sdl_window, sdl_renderer, &elementStyleManager);
-    manager->addElement(element);
+    UIElement *container = new Container(sdl_window, sdl_renderer, &elementStyleManager);
+    manager->addElement(container);
+    UIElement *label = new Label(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "", container);
+    manager->addElement(label);
 
     return SDL_APP_CONTINUE;
 }

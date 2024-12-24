@@ -171,8 +171,6 @@ std::list<StyleComponent *> *NodeToStyleComponentList::createStyleComponents(std
         for (StyleComponentDataList *components : **componentsListIt) {
             StyleComponent *styleComponent = new StyleComponent(components, appliedStyleMap);
             styleComponentList->push_back(styleComponent);
-
-            components->erase(componentsIt);
         }
     }
     else {
@@ -181,9 +179,10 @@ std::list<StyleComponent *> *NodeToStyleComponentList::createStyleComponents(std
             components->splice(components->end(), *componentsList);
 
             tmpStyleComponentList = createStyleComponents(std::next(componentsListIt), components, appliedStyleMap);
-            styleComponentList->splice(styleComponentList->end(), *tmpStyleComponentList);
-            delete tmpStyleComponentList;
-
+            if (tmpStyleComponentList != nullptr) {
+                styleComponentList->splice(styleComponentList->end(), *tmpStyleComponentList);
+                delete tmpStyleComponentList;
+            }
             components->erase(componentsIt);
         }
     }
@@ -213,7 +212,9 @@ void NodeToStyleComponentList::convertStyleBlock(int fileNumber, int *ruleNumber
     StyleComponentDataList components = StyleComponentDataList();
     finalStyleComponents = createStyleComponents(requiredStyleComponentsLists.cbegin(), &components, appliedStyleMap);
     requiredStyleComponentsLists.pop_back();
-    styleDefinitions->splice(styleDefinitions->end(), *finalStyleComponents);
+    if (finalStyleComponents != nullptr) {
+        styleDefinitions->splice(styleDefinitions->end(), *finalStyleComponents);
+    }
 }
 
 std::list<StyleComponent *> *NodeToStyleComponentList::convert(Node *styleTree, int fileNumber, int *ruleNumber) {

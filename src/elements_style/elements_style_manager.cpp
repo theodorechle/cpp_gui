@@ -34,7 +34,13 @@ void ElementsStyleManager::applySpecificStyleToElement(std::list<StyleComponent 
     const StyleValuesMap *styleMap;
     AppliedStyleMap elementStyleMap;
     std::string modifier = "";
+    std::cerr << "nb rules: " << specificStyle.size() <<std::endl;
     for (StyleComponent *styleComponent : specificStyle) {
+        std::cerr << "nb same rules: " << styleComponent->getComponentsList()->size() << std::endl;
+        for (StyleComponentDataList::const_iterator list = styleComponent->getComponentsList()->cbegin(); list != styleComponent->getComponentsList()->cend(); list++) {
+            std::cerr << "style name: " << list->first.first << std::endl;
+        }
+
         const StyleComponentDataList *componentsList = styleComponent->getComponentsList();
         if (!areElementSelectorsCompatibles(actualElementStyle, componentsList)) continue;
         styleMap = styleComponent->getStyleMap();
@@ -78,6 +84,8 @@ int ElementsStyleManager::addStyle(const std::string &styleFileContent) {
     int ruleNumber;
     std::list<StyleComponent *> *fileRules;
     fileRules = StyleDeserializer::deserialize(styleFileContent, fileCount, &ruleNumber);
+    std::cerr << "nb new rules: " << fileRules->size() << std::endl;
+    // TODO: find why there is one style component but not rules inside
     applySpecificStyleToElement(*fileRules, elements, true);
     style.splice(style.end(), *fileRules);
     files[fileCount] = std::pair<std::string, int>("", ruleNumber);

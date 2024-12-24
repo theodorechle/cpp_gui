@@ -23,7 +23,7 @@ class NodeToStyleComponentList {
 
     StyleValuesMap *convertAppliedStyle(int fileNumber, int *ruleNumber);
     /**
-     * Does not accept an null pointer as components
+     * Does not accept a null pointer for "components" parameter
      */
     std::list<StyleComponent *> *createStyleComponents(std::list<std::list<StyleComponentDataList *> *>::const_iterator componentsListIt, StyleComponentDataList *components, StyleValuesMap *appliedStyle);
     void convertStyleBlock(int fileNumber, int *ruleNumber);
