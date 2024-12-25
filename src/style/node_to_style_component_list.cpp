@@ -48,40 +48,44 @@ std::list<StyleComponentDataList *> *NodeToStyleComponentList::convertStyleCompo
     StyleComponentDataList *requiredStyleComponents;
     Node *declaration;
     Node *componentDeclaration;
-    Node *nextDeclarationNode;
     Token nextDeclarationToken;
     StyleComponentType styleComponentType;
     StyleRelation styleRelationToken;
+    std::string currentValue;
 
     if (tree == nullptr || tree->getTokenType() != Token::BlockDeclaration) return nullptr;
 
     styleComponentsLists = new std::list<StyleComponentDataList *>();
     declaration = tree->getChild();
     // loop through declarations
-    while (declaration != nullptr && declaration->getTokenType() == Token::Declaration) {
+    while (declaration != nullptr) {
+        if (declaration->getTokenType() != Token::Declaration) { // invalid block declaration
+            delete styleComponentsLists;
+            return nullptr;
+        }
         requiredStyleComponents = new StyleComponentDataList();
         componentDeclaration = declaration->getChild();
         // loop through each value in a declaration
         while (componentDeclaration != nullptr) {
             styleComponentType = tokenTypeToStyleComponentType(componentDeclaration->getTokenType());
-            if (styleComponentType == StyleComponentType::Null) { // if invalid declaration, go to next one
-                componentDeclaration = componentDeclaration->getNext();
-                continue;
-            }
+            currentValue = componentDeclaration->getValue();
+            componentDeclaration = componentDeclaration->getNext();
 
-            nextDeclarationNode = componentDeclaration->getNext();
-            if (nextDeclarationNode != nullptr) {
-                nextDeclarationToken = nextDeclarationNode->getTokenType();
+            // if invalid declaration, skip it
+            if (styleComponentType == StyleComponentType::Null) continue;
+
+            styleRelationToken = StyleRelation::Null;
+
+            if (componentDeclaration == nullptr) styleRelationToken = StyleRelation::SameElement; // last value
+            else {
+                nextDeclarationToken = componentDeclaration->getTokenType();
                 if (nextDeclarationToken == Token::ElementName || nextDeclarationToken == Token::Class || nextDeclarationToken == Token::Identifier || nextDeclarationToken == Token::Modifier) {
                     styleRelationToken = StyleRelation::SameElement;
                 }
-                else
-                    styleRelationToken = StyleRelation::Null;
-                if (styleRelationToken != StyleRelation::Null) {
-                    requiredStyleComponents->push_back(std::pair(StyleComponentData(componentDeclaration->getValue(), styleComponentType), styleRelationToken));
-                }
             }
-            componentDeclaration = componentDeclaration->getNext();
+            if (styleRelationToken != StyleRelation::Null) {
+                requiredStyleComponents->push_back(std::pair(StyleComponentData(currentValue, styleComponentType), styleRelationToken));
+            }
         }
         styleComponentsLists->push_back(requiredStyleComponents);
         declaration = declaration->getNext();
@@ -89,7 +93,7 @@ std::list<StyleComponentDataList *> *NodeToStyleComponentList::convertStyleCompo
     return styleComponentsLists;
 }
 
-StyleValue *NodeToStyleComponentList::convertStyleNodesToAppliedStyle(Node *node) {
+StyleValue *NodeToStyleComponentList::convertStyleNodeToStyleValue(Node *node) {
     StyleValueType type;
     Node *child;
     StyleValue *styleChild;
@@ -104,7 +108,7 @@ StyleValue *NodeToStyleComponentList::convertStyleNodesToAppliedStyle(Node *node
 
     child = node->getChild();
     if (child == nullptr) return appliedStyle;
-    styleChild = convertStyleNodesToAppliedStyle(child);
+    styleChild = convertStyleNodeToStyleValue(child);
     if (styleChild != nullptr) {
         appliedStyle->setChild(styleChild);
         appliedStyle = styleChild;
@@ -112,7 +116,7 @@ StyleValue *NodeToStyleComponentList::convertStyleNodesToAppliedStyle(Node *node
 
     child = child->getNext();
     while (child != nullptr) {
-        styleChild = convertStyleNodesToAppliedStyle(child);
+        styleChild = convertStyleNodeToStyleValue(child);
         if (styleChild != nullptr) {
             appliedStyle->setNext(styleChild);
             appliedStyle = styleChild;
@@ -124,10 +128,10 @@ StyleValue *NodeToStyleComponentList::convertStyleNodesToAppliedStyle(Node *node
 
 StyleValuesMap *NodeToStyleComponentList::convertAppliedStyle(int fileNumber, int *ruleNumber) {
     StyleValuesMap *appliedStyleMap;
-    StyleValue *appliedStyle;
+    StyleValue *styleValue;
     std::string styleName;
     Node *definition;
-    Node *value;
+    Node *styleNameNode;
     Token token;
     if (tree == nullptr || tree->getTokenType() != Token::BlockDefinition) return nullptr;
 
@@ -136,17 +140,17 @@ StyleValuesMap *NodeToStyleComponentList::convertAppliedStyle(int fileNumber, in
     while (definition != nullptr) {
         token = definition->getTokenType();
         if (token == Token::Assignment) {
-            value = definition->getChild();
-            if (value == nullptr || value->getTokenType() != Token::StyleName) {
+            styleNameNode = definition->getChild();
+            if (styleNameNode == nullptr || styleNameNode->getTokenType() != Token::StyleName) {
                 definition = definition->getNext();
                 continue;
             }
-            styleName = definition->getValue();
-            value = value->getNext();
-            if (!isNodeNull(value)) {
-                appliedStyle = convertStyleNodesToAppliedStyle(value);
-                if (appliedStyle != nullptr) {
-                    (*appliedStyleMap)[styleName] = StyleRule{appliedStyle, true, 0, fileNumber, *ruleNumber};
+            styleName = styleNameNode->getValue();
+            styleNameNode = styleNameNode->getNext();
+            if (!isNodeNull(styleNameNode)) {
+                styleValue = convertStyleNodeToStyleValue(styleNameNode);
+                if (styleValue != nullptr) {
+                    (*appliedStyleMap)[styleName] = StyleRule{styleValue, true, 0, fileNumber, *ruleNumber};
                     (*ruleNumber)++;
                 }
             }
@@ -169,8 +173,7 @@ std::list<StyleComponent *> *NodeToStyleComponentList::createStyleComponents(std
     bool islistHead = std::next(componentsListIt) == requiredStyleComponentsLists.cend();
     if (islistHead) { // if at end of the declaration list
         for (StyleComponentDataList *components : **componentsListIt) {
-            StyleComponent *styleComponent = new StyleComponent(components, appliedStyleMap);
-            styleComponentList->push_back(styleComponent);
+            styleComponentList->push_back(new StyleComponent(components, appliedStyleMap));
         }
     }
     else {
@@ -191,7 +194,6 @@ std::list<StyleComponent *> *NodeToStyleComponentList::createStyleComponents(std
 
 void NodeToStyleComponentList::convertStyleBlock(int fileNumber, int *ruleNumber) {
     std::list<StyleComponentDataList *> *styleComponentsLists;
-    std::list<StyleComponent *> *finalStyleComponents;
     if (tree == nullptr || tree->getTokenType() != Token::StyleBlock) return;
     tree = tree->getChild();
     styleComponentsLists = convertStyleComponents();
@@ -210,7 +212,7 @@ void NodeToStyleComponentList::convertStyleBlock(int fileNumber, int *ruleNumber
     }
     requiredStyleComponentsLists.push_back(styleComponentsLists);
     StyleComponentDataList components = StyleComponentDataList();
-    finalStyleComponents = createStyleComponents(requiredStyleComponentsLists.cbegin(), &components, appliedStyleMap);
+    std::list<StyleComponent *> *finalStyleComponents = createStyleComponents(requiredStyleComponentsLists.cbegin(), &components, appliedStyleMap);
     requiredStyleComponentsLists.pop_back();
     if (finalStyleComponents != nullptr) {
         styleDefinitions->splice(styleDefinitions->end(), *finalStyleComponents);
@@ -225,7 +227,7 @@ std::list<StyleComponent *> *NodeToStyleComponentList::convert(Node *styleTree, 
     if (styleTree->getTokenType() != Token::NullRoot) return styleDefinitions;
 
     tree = styleTree->getChild();
-    while (tree != nullptr && tree->getTokenType() == Token::StyleBlock) {
+    while (tree != nullptr && tree->getTokenType() == Token::StyleBlock) { // also verified in th convetStyleBlock method. Don't need to check twice
         convertStyleBlock(fileNumber, ruleNumber);
         tree = tree->getNext();
     }

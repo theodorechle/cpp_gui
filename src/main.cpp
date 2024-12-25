@@ -37,7 +37,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     UIElement *container = new Container(sdl_window, sdl_renderer, &elementStyleManager);
     manager->addElement(container);
-    UIElement *label = new Label(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "", container);
+    UIElement *label = new Label(sdl_window, sdl_renderer, &elementStyleManager, new std::vector<std::string>{"red"}, "test-label", container);
     manager->addElement(label);
 
     return SDL_APP_CONTINUE;

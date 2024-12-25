@@ -16,7 +16,7 @@ void ElementStyle::addStyle(AppliedStyleMap &newStyle) {
     for (AppliedStyleMap::iterator it = newStyle.begin(); it != newStyle.end(); it++) {
         actualStyleIt = style.find(it->first);
         if (actualStyleIt == style.cend()) { // not found in existing element's style or new style has bigger priority
-            actualStyleIt->second = it->second;
+            style[it->first] = it->second;
         }
         // same priority, more recent file or same file and more recent rule
         else {

@@ -8,6 +8,7 @@ AbstractElement::AbstractElement(std::string elementName, ElementsStyleManager *
     if (child != nullptr) style->setChild(child->style);
     if (next != nullptr) style->setNext(next->style);
 
+    style->addSelector(elementName, StyleComponentType::ElementName);
     // set selectors
     if (classes != nullptr) {
         for (std::string c : *classes) {

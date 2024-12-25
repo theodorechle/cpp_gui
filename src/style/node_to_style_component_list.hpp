@@ -10,16 +10,16 @@
 
 class NodeToStyleComponentList {
     Node *tree;
-    // for each inner style block, multiple components list definitions (separated by commas)
+    // for each inner style block, multiple components list definitions (separated by commas in the style files)
     std::list<std::list<StyleComponentDataList *> *> requiredStyleComponentsLists;
     std::list<StyleComponent *> *styleDefinitions;
 
     std::list<StyleComponentDataList *> *convertStyleComponents();
 
     /**
-     * Be aware that the method does not check if the given npde is instanciated for performance reasons
+     * Be aware that the method does not check if the given node is instanciated for performance reasons
      */
-    StyleValue * convertStyleNodesToAppliedStyle(Node *node);
+    StyleValue * convertStyleNodeToStyleValue(Node *node);
 
     StyleValuesMap *convertAppliedStyle(int fileNumber, int *ruleNumber);
     /**
