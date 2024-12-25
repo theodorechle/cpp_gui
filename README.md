@@ -19,9 +19,9 @@ The gui is designed so you can implements easily your own elements
 ### Abstracts
 - <i>AbstractElement</i>
 - <i>AbstractContainer</i>
+- <i>UIElement</i>
 
 ### Concretes (they all inherits the AbstractElement class)
-- UIElement
 - Label
 - Input
 - Container
