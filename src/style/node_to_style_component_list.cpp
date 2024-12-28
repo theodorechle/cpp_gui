@@ -221,13 +221,13 @@ void NodeToStyleComponentList::convertStyleBlock(int fileNumber, int *ruleNumber
 
 std::list<StyleComponent *> *NodeToStyleComponentList::convert(Node *styleTree, int fileNumber, int *ruleNumber) {
     *ruleNumber = 0;
+    if (styleTree->getTokenType() != Token::NullRoot) return nullptr;
     styleDefinitions = new std::list<StyleComponent *>();
     requiredStyleComponentsLists = std::list<std::list<StyleComponentDataList *> *>();
 
-    if (styleTree->getTokenType() != Token::NullRoot) return styleDefinitions;
 
     tree = styleTree->getChild();
-    while (tree != nullptr && tree->getTokenType() == Token::StyleBlock) { // also verified in th convetStyleBlock method. Don't need to check twice
+    while (tree != nullptr && tree->getTokenType() == Token::StyleBlock) { // FIXME: also verified in the convetStyleBlock method. Don't need to check twice
         convertStyleBlock(fileNumber, ruleNumber);
         tree = tree->getNext();
     }

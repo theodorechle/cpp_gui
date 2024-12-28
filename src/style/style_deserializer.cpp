@@ -10,7 +10,7 @@ std::list<StyleComponent *> *StyleDeserializer::deserializeFromFile(const std::s
 
 std::list<StyleComponent *> *StyleDeserializer::deserialize(const std::string &style, int fileNumber, int *ruleNumber) {
     Settings *settings = new Settings();
-    settings->debug = true;
+    settings->debug = false;
     Node *tokens = Lexer(style, settings).getResult();
     Node *result = Parser(tokens, settings).getFinalTree();
     return NodeToStyleComponentList().convert(result, fileNumber, ruleNumber);

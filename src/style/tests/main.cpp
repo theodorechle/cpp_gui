@@ -1,16 +1,13 @@
-#include "tests.hpp"
+#include "style_tests.hpp"
 
-int main() {
-    Settings* settings = new Settings;
-    Test test = Test{settings};
-
+void StyleTests::tests() {
     std::string fileContent;
 
     Node* rootExpected;
     Node* expected;
 
     settings->debug = false;
-    fileContent = test.getFileContent("src/style/tests/tests/test-1.txt");
+    fileContent = getFileContent("src/style/tests/tests/test-1.txt");
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
     expected = expected->appendChild(new Node{Token::BlockDeclaration});
@@ -23,14 +20,14 @@ int main() {
     expected->appendChild(new Node{Token::StyleName, "background-color"});
     expected->appendChild(new Node{Token::String, "#ff0000"});
 
-    test.lexerAndParser(true, fileContent, rootExpected);
+    lexerAndParser(true, fileContent, rootExpected);
 
     delete rootExpected;
     expected = nullptr;
 
 
     settings->debug = false;
-    fileContent = test.getFileContent("src/style/tests/tests/test-2.txt");
+    fileContent = getFileContent("src/style/tests/tests/test-2.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -61,14 +58,14 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.lexerAndParser(true, fileContent, rootExpected);
+    lexerAndParser(true, fileContent, rootExpected);
 
     delete rootExpected;
     expected = nullptr;
 
 
     settings->debug = false;
-    fileContent = test.getFileContent("src/style/tests/tests/test-3.txt");
+    fileContent = getFileContent("src/style/tests/tests/test-3.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -97,14 +94,14 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.lexerAndParser(true, fileContent, rootExpected);
+    lexerAndParser(true, fileContent, rootExpected);
 
     delete rootExpected;
     expected = nullptr;
 
 
     settings->debug = false;
-    fileContent = test.getFileContent("src/style/tests/tests/test-4.txt");
+    fileContent = getFileContent("src/style/tests/tests/test-4.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -133,14 +130,14 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.lexerAndParser(true, fileContent, rootExpected);
+    lexerAndParser(true, fileContent, rootExpected);
 
     delete rootExpected;
     expected = nullptr;
 
 
     settings->debug = false;
-    fileContent = test.getFileContent("src/style/tests/tests/test-5.txt");
+    fileContent = getFileContent("src/style/tests/tests/test-5.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -174,14 +171,14 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.lexerAndParser(true, fileContent, rootExpected);
+    lexerAndParser(true, fileContent, rootExpected);
 
     delete rootExpected;
     expected = nullptr;
 
 
     settings->debug = false;
-    fileContent = test.getFileContent("src/style/tests/tests/test-6.txt");
+    fileContent = getFileContent("src/style/tests/tests/test-6.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -216,19 +213,19 @@ int main() {
     expected->appendChild(new Node{Token::Int, "150"});
     expected->appendChild(new Node{Token::Int, "150"});
 
-    test.lexerAndParser(true, fileContent, rootExpected);
+    lexerAndParser(true, fileContent, rootExpected);
 
     delete rootExpected;
     expected = nullptr;
 
 
     settings->debug = false;
-    fileContent = test.getFileContent("src/style/tests/tests/test-7.txt");
-    test.invalidExpression(fileContent);
+    fileContent = getFileContent("src/style/tests/tests/test-7.txt");
+    invalidExpression(fileContent);
 
 
     settings->debug = true;
-    fileContent = test.getFileContent("src/style/tests/tests/test-8.txt");
+    fileContent = getFileContent("src/style/tests/tests/test-8.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -246,17 +243,21 @@ int main() {
     expected->appendChild(new Node{Token::StyleName, "height"});
     expected->appendChild(new Node{Token::PercentageUnit})->appendChild(new Node{Token::Int, "40"});
 
-    test.lexerAndParser(true, fileContent, rootExpected);
+    lexerAndParser(true, fileContent, rootExpected);
 
     delete rootExpected;
     expected = nullptr;
 
     settings->debug = false;
-    fileContent = test.getFileContent("src/style/tests/tests/test-9.txt");
-    test.invalidExpression(fileContent);
+    fileContent = getFileContent("src/style/tests/tests/test-9.txt");
+    invalidExpression(fileContent);
+}
 
-    test.displaySummary();
-
+int main() {
+    Settings *settings = new Settings();
+    settings->debug = true;
+    StyleTests test = StyleTests(settings);
+    test.runTests();
     delete settings;
     return test.getNbErrors();
 }

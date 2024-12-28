@@ -23,9 +23,9 @@ class ElementsStyleManager {
 
 public:
     void setParentElementStyle(ElementStyle *elementStyle) { elements = elementStyle; }
-    // returns a number who corresponds to the file number (used to delete it)
+    // returns a number who corresponds to the file number (used to delete it) or -1 if not added
     int addStyleFile(const std::string &fileName);
-    // returns a number who corresponds to the style pseudo-file number (used to delete it)
+    // returns a number who corresponds to the style pseudo-file number (used to delete it) or -1 if not added
     int addStyle(const std::string &style);
     void removeStyleInElements(int fileNumber, ElementStyle *element);
     void removeStyle(int fileNumber);

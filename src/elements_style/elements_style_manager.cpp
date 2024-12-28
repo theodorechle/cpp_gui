@@ -81,6 +81,7 @@ int ElementsStyleManager::addStyle(const std::string &styleFileContent) {
     int ruleNumber;
     std::list<StyleComponent *> *fileRules;
     fileRules = StyleDeserializer::deserialize(styleFileContent, fileCount, &ruleNumber);
+    if (fileRules == nullptr || fileRules->empty()) return -1;
     applySpecificStyleToElement(*fileRules, elements, true);
     style.splice(style.end(), *fileRules);
     files[fileCount] = std::pair<std::string, int>("", ruleNumber);

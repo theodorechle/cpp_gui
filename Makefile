@@ -6,23 +6,21 @@ OBJ_DIR=obj
 SRC_DIR=src
 
 # Subdirectories
-SUBDIRS=$(SRC_DIR)/elements $(SRC_DIR)/managers $(SRC_DIR)/app_utils $(SRC_DIR)/elements_style
+SUBDIRS=elements managers app_utils elements_style
 
 # Source files
 SRC_MAIN=$(SRC_DIR)/main.cpp
-SRC_SUBDIRS=$(foreach dir, $(SUBDIRS), $(wildcard $(dir)/*.cpp))
-SRC_STYLE=$(wildcard src/style/*.cpp)
-SRC_STYLE_TESTS=$(wildcard src/style/tests/*.cpp)
-SRC_TESTS=$(filter-out src/style/main.cpp, $(SRC_STYLE)) $(SRC_STYLE_TESTS)
+SRC_SUBDIRS=$(foreach dir, $(SUBDIRS), $(wildcard $(SRC_DIR)/$(dir)/*.cpp))
+SRC_STYLE=$(wildcard $(SRC_DIR)/style/*.cpp)
+SRC_STYLE_TESTS=$(filter-out $(SRC_DIR)/style/main.cpp, $(SRC_STYLE)) $(wildcard $(SRC_DIR)/tests/*.cpp) $(wildcard $(SRC_DIR)/style/tests/*.cpp)
 
 # Object files
-OBJ_MAIN=$(patsubst src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_MAIN))
-OBJ_SUBDIRS=$(patsubst src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_SUBDIRS))
-OBJ_STYLE=$(patsubst src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_STYLE))
-OBJ_TESTS=$(patsubst src/%.cpp, $(OBJ_DIR)/%.o, $(SRC_TESTS))
+OBJ_MAIN=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_MAIN))
+OBJ_SUBDIRS=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_SUBDIRS))
+OBJ_STYLE=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_STYLE))
+OBJ_STYLE_TESTS=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_STYLE_TESTS))
 
 # Executable targets
-BIN_MAIN=$(BIN_DIR)/exe
 BIN_STYLE=$(BIN_DIR)/style
 BIN_ALL=$(BIN_DIR)/all
 BIN_STYLE_TESTS=$(BIN_DIR)/style-tests
@@ -30,14 +28,10 @@ BIN_STYLE_TESTS=$(BIN_DIR)/style-tests
 # Dependency files
 DEPS=$(OBJ_MAIN:.o=.d) $(OBJ_SUBDIRS:.o=.d) $(OBJ_STYLE:.o=.d) $(OBJ_TESTS:.o=.d)
 
-.PHONY: all clean style style-tests main
+.PHONY: all clean style style-tests
 
 # Build the final executable combining exe and style
 all: $(BIN_ALL)
-
-# Build only the main and subdirs
-main: $(BIN_MAIN)
-
 
 # Build style only
 style: $(BIN_STYLE)
@@ -46,7 +40,7 @@ style: $(BIN_STYLE)
 style-tests: $(BIN_STYLE_TESTS)
 
 # Build everything except tests (combines exe and style)
-$(BIN_ALL): $(filter-out obj/style/main.o, $(OBJ_STYLE)) $(OBJ_SUBDIRS) $(OBJ_MAIN)
+$(BIN_ALL): $(filter-out $(OBJ_DIR)/style/main.o, $(OBJ_STYLE)) $(OBJ_SUBDIRS) $(OBJ_MAIN)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o $@ $(SDL_CMD)
 
@@ -61,7 +55,7 @@ $(BIN_STYLE): $(OBJ_STYLE)
 	$(CC) $(CFLAGS) $^ -o $@ $(SDL_CMD)
 
 # Build the style tests executable (style tests + all style sources except src/style/main.cpp)
-$(BIN_STYLE_TESTS): $(OBJ_TESTS)
+$(BIN_STYLE_TESTS): $(OBJ_STYLE_TESTS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o $@ $(SDL_CMD)
 
