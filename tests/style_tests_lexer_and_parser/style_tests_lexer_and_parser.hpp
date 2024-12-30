@@ -1,5 +1,5 @@
-#ifndef STYLE_TESTS
-#define STYLE_TESTS
+#ifndef STYLE_TESTS_LEXER_AND_PARSER
+#define STYLE_TESTS_LEXER_AND_PARSER
 
 #include <bits/stdc++.h>
 #include <fstream>
@@ -8,18 +8,18 @@
 #include <sstream>
 #include <string>
 
-#include "../../tests/tests.hpp"
-#include "../lexer.hpp"
-#include "../node.hpp"
-#include "../parser.hpp"
+#include "../../src/style/lexer.hpp"
+#include "../../src/style/node.hpp"
+#include "../../src/style/parser.hpp"
+#include "../tests.hpp"
 
-class StyleTests : public Tests {
+class StyleTestsLexerAndParser : public Tests {
     Settings *settings;
+    const std::string TESTS_FILES_DIR = "tests/style_tests_lexer_and_parser/tests-files";
+    void tests() override;
 
 public:
-    StyleTests(Settings *settings = new Settings()) : settings{settings} {};
-
-    void tests() override;
+    StyleTestsLexerAndParser(Settings *settings = new Settings()) : Tests{"Tests style lexer and parser"}, settings{settings} {};
 
     void lexer(bool equal, const std::string &expr, const Node *expected);
     void parser(bool equal, Node *expr, const Node *expected);
@@ -31,4 +31,4 @@ public:
     void unknownValue(std::string epxression);
 };
 
-#endif // STYLE_TESTS
+#endif // STYLE_TESTS_LEXER_AND_PARSER

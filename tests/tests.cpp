@@ -1,53 +1,55 @@
 #include "tests.hpp"
 
 bool Tests::openFile() {
-    debugFile.open(debugFileName);
-    if (!debugFile.is_open()) {
-        std::cerr << "Can't create file '" << debugFileName << "' used for debug\n";
+    logFile.open(logFileName);
+    if (!logFile.is_open()) {
+        std::cerr << "Can't create file '" << logFileName << "' used for logging\n";
         return false;
     }
     return true;
 }
 
 bool Tests::closeFile() {
-    if (debugFile.is_open()) {
-        debugFile.close();
+    if (logFile.is_open()) {
+        logFile.close();
     }
     return true;
 }
 
 bool Tests::startTestSession() {
     testsRunning = true;
-    if (!showDebugMessages || alwaysShowDebugMessages) return true;
+    if (!showLogMessages || alwaysShowLogMessages) return true;
 
     struct stat buffer;
-    if (stat(debugFileName.c_str(), &buffer) != -1) {
-        std::cerr << "File '" << debugFileName << "' who should have been used for debug already exists\n";
+    if (stat(logFileName.c_str(), &buffer) != -1) {
+        std::cerr << "File '" << logFileName << "' who should have been used for logging already exists\n";
         return false;
     }
 
-    std::cerr << "Started test session\n";
+    std::cout << "Started test session \"" << testsName << "\"\n";
     return true;
 }
 
 bool Tests::endTestSession() {
     testsRunning = false;
-    std::cerr << "Ended test session\n";
-    if (showDebugMessages) {
+    std::cout << "Ended test session \"" << testsName << "\"\n";
+    if (showLogMessages) {
         displaySummary();
     }
-    if (remove(debugFileName.c_str())) {
-        std::cerr << "Can't delete file '" << debugFileName << "'\n";
+
+    // if nothing was written, the file wasn't created
+    if (std::filesystem::exists(logFileName) && remove(logFileName.c_str())) {
+        std::cerr << "Can't delete file '" << logFileName << "'\n";
         return false;
     }
     return true;
 }
 
 void Tests::redirectStandardOutput() {
-    oldOutBuffer = std::cout.rdbuf(debugFile.rdbuf());
+    oldOutBuffer = std::cout.rdbuf(logFile.rdbuf());
 }
 void Tests::redirectErrorOutput() {
-    oldErrBuffer = std::cerr.rdbuf(debugFile.rdbuf());
+    oldErrBuffer = std::cerr.rdbuf(logFile.rdbuf());
 }
 
 void Tests::resetStandardOutput() {
@@ -60,7 +62,7 @@ void Tests::resetErrorOutput() {
 
 void Tests::startTest() {
     openFile();
-    if (!alwaysShowDebugMessages) {
+    if (!alwaysShowLogMessages) {
         redirectStandardOutput();
         redirectErrorOutput();
     }
@@ -69,12 +71,12 @@ void Tests::startTest() {
 
 void Tests::endTest() {
     std::stringstream buffer;
-    if (!alwaysShowDebugMessages) {
+    if (!alwaysShowLogMessages) {
         resetStandardOutput();
         resetErrorOutput();
     }
-    if (debugFile.is_open() && results.back() != Result::OK) {
-        std::ifstream file(debugFileName);
+    if (logFile.is_open() && results.back() != Result::OK) {
+        std::ifstream file(logFileName);
         std::stringstream buffer;
         buffer << file.rdbuf();
         std::cerr << buffer.str();
@@ -106,7 +108,7 @@ void Tests::setTestResult(Result r) {
     results.push_back(r);
 }
 
-std::string Tests::getFileContent(std::string fileName) const {
+std::string Tests::getFileContent(std::string fileName) {
     std::ifstream file(fileName);
     std::stringstream buffer;
     buffer << file.rdbuf();
@@ -130,24 +132,24 @@ void Tests::displayLastResult() {
     std::cout << resultToStr(results.back());
 }
 
-void Tests::setDebugFile(const std::string &newFileName) {
-    if (!testsRunning) debugFileName = newFileName;
+void Tests::setLogFile(const std::string &newFileName) {
+    if (!testsRunning) logFileName = newFileName;
 }
 
-void Tests::showDebug(bool show) {
-    if (!testsRunning) showDebugMessages = show;
+void Tests::showLogs(bool show) {
+    if (!testsRunning) showLogMessages = show;
 }
 
-bool Tests::showDebug() const {
-    return showDebugMessages;
+bool Tests::showLogs() const {
+    return showLogMessages;
 }
 
-void Tests::alwaysShowDebug(bool alwaysShow) {
-    if (!testsRunning) alwaysShowDebugMessages = alwaysShow;
+void Tests::alwaysShowLogs(bool alwaysShow) {
+    if (!testsRunning) alwaysShowLogMessages = alwaysShow;
 }
 
-bool Tests::alwaysShowDebug() const {
-    return alwaysShowDebugMessages;
+bool Tests::alwaysShowLogs() const {
+    return alwaysShowLogMessages;
 }
 void Tests::displaySummary() const {
     std::cout << "Summary:\n";

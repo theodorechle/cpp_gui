@@ -4,6 +4,7 @@ SDL_CMD=`pkg-config sdl3 --cflags --libs`
 BIN_DIR=bin
 OBJ_DIR=obj
 SRC_DIR=src
+TESTS_DIR=tests
 
 # Subdirectories
 SUBDIRS=elements managers app_utils elements_style
@@ -12,7 +13,7 @@ SUBDIRS=elements managers app_utils elements_style
 SRC_MAIN=$(SRC_DIR)/main.cpp
 SRC_SUBDIRS=$(foreach dir, $(SUBDIRS), $(wildcard $(SRC_DIR)/$(dir)/*.cpp))
 SRC_STYLE=$(wildcard $(SRC_DIR)/style/*.cpp)
-SRC_STYLE_TESTS=$(filter-out $(SRC_DIR)/style/main.cpp, $(SRC_STYLE)) $(wildcard $(SRC_DIR)/tests/*.cpp) $(wildcard $(SRC_DIR)/style/tests/*.cpp)
+SRC_STYLE_TESTS=$(filter-out $(SRC_DIR)/style/main.cpp, $(SRC_STYLE)) $(TESTS_DIR)/tests.cpp $(wildcard $(TESTS_DIR)/*/*.cpp) $(TESTS_DIR)/main.cpp
 
 # Object files
 OBJ_MAIN=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_MAIN))
