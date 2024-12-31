@@ -25,6 +25,7 @@ public:
     void parser(bool equal, Node *expr, const Node *expected);
     void lexerAndParser(bool equal, const std::string &expr, const Node *expected);
 
+    // TODO: mettre en réference const
     void invalidExpression(std::string expression);
     void unknownToken(std::string expression);
     void missingToken(std::string expression);

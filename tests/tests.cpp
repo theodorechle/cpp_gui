@@ -69,7 +69,7 @@ void Tests::startTest() {
     std::cout << "Test n°" << getTestNumber() << ":\n";
 }
 
-void Tests::endTest() {
+void Tests::endTest() { // TODO: ensure a result were written
     std::stringstream buffer;
     if (!alwaysShowLogMessages) {
         resetStandardOutput();
