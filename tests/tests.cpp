@@ -60,13 +60,18 @@ void Tests::resetErrorOutput() {
     std::cout.rdbuf(oldOutBuffer);
 }
 
-void Tests::startTest() {
+void Tests::startTest(const std::string &testName) {
+    results.push_back(std::pair(testName, Result::NOT_GIVEN));
     openFile();
     if (!alwaysShowLogMessages) {
         redirectStandardOutput();
         redirectErrorOutput();
     }
-    std::cout << "Test n°" << getTestNumber() << ":\n";
+    std::cout << "Test n°" << getTestNumber();
+    if (!results.back().first.empty()) {
+        std::cout << " (" << results.back().first << ")";
+    }
+    std::cout << ":\n";
 }
 
 void Tests::endTest() {
@@ -75,9 +80,8 @@ void Tests::endTest() {
         resetStandardOutput();
         resetErrorOutput();
     }
-    if (!resultEntered) setTestResult(Result::UNKNOWN);
     resultEntered = false;
-    if (logFile.is_open() && results.back() != Result::OK) {
+    if (logFile.is_open() && results.back().second != Result::OK) {
         std::ifstream file(logFileName);
         std::stringstream buffer;
         buffer << file.rdbuf();
@@ -113,7 +117,7 @@ bool Tests::runTests() {
 }
 
 void Tests::setTestResult(Result r) {
-    results.push_back(r);
+    results.back().second = r;
     resultEntered = true;
 }
 
@@ -132,15 +136,11 @@ std::string Tests::resultToStr(Result result) const {
         return "KO";
     case Result::ERROR:
         return "ERROR";
-    case Result::UNKNOWN:
-        return "No result";
+    case Result::NOT_GIVEN:
+        return "NOT GIVEN";
     default:
-        return "Not valid result";
+        return "UNKNOWN";
     }
-}
-
-void Tests::displayLastResult() {
-    std::cout << resultToStr(results.back());
 }
 
 void Tests::setLogFile(const std::string &newFileName) {
@@ -165,13 +165,23 @@ bool Tests::alwaysShowLogs() const {
 void Tests::displaySummary() const {
     std::cout << "Summary:\n";
     size_t index = 0;
-    for (std::list<Result>::const_iterator it = results.cbegin(); it != results.cend(); it++) {
-        std::cout << "\tTest n°" << index << ": " << resultToStr(*it) << "\n";
+    std::string resultStr;
+    for (std::list<std::pair<std::string, Result>>::const_iterator it = results.cbegin(); it != results.cend(); it++) {
+        resultStr = resultToStr(it->second);
+        std::cout << "\tTest n°" << index << ": " << resultStr;
+        if (!it->first.empty()) {
+            std::cout << std::string(nbSpacesBeforeTestDescription - resultStr.size(), ' ') << " (" << it->first << ")";
+        }
+        std::cout << "\n";
         index++;
     }
     std::cout << "End of summary\n";
 }
 
 int Tests::getNbErrors() const {
-    return results.size() - std::count(results.cbegin(), results.cend(), Result::OK);
+    int nbErrors = 0;
+    for (std::pair<std::string, Result> result : results) {
+        if (result.second != Result::OK) nbErrors++;
+    }
+    return nbErrors;
 }

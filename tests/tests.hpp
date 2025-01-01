@@ -14,7 +14,7 @@ enum class Result {
     OK,
     KO,
     ERROR,
-    UNKNOWN
+    NOT_GIVEN,
 };
 
 /**
@@ -36,8 +36,9 @@ enum class Result {
  */
 class Tests {
     std::string testsName;
+    int nbSpacesBeforeTestDescription = 9;
 
-    std::list<Result> results;
+    std::list<std::pair<std::string, Result>> results;
     std::string logFileName = "logFile";
     std::ofstream logFile = std::ofstream();
     bool testsRunning = false;
@@ -63,7 +64,6 @@ class Tests {
     size_t getTestNumber() const { return results.size(); }
 
     std::string resultToStr(Result result) const;
-    void displayLastResult();
     void displaySummary() const;
 
     void redirectStandardOutput();
@@ -77,7 +77,7 @@ protected:
      * Must be called before each test.
      * 
      */
-    void startTest();
+    void startTest(const std::string &testName="");
 
     /**
      * Ends a test.

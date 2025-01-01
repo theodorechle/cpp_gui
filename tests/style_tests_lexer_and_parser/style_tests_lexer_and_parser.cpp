@@ -6,8 +6,9 @@ void StyleTestsLexerAndParser::tests() {
     Node *rootExpected;
     Node *expected;
 
+    startTest("single rule");
     settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR+"/test-1.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-1.txt");
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
     expected = expected->appendChild(new Node{Token::BlockDeclaration});
@@ -24,9 +25,11 @@ void StyleTestsLexerAndParser::tests() {
 
     delete rootExpected;
     expected = nullptr;
+    endTest();
 
+    startTest("two style blocks");
     settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR+"/test-2.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-2.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -61,9 +64,11 @@ void StyleTestsLexerAndParser::tests() {
 
     delete rootExpected;
     expected = nullptr;
+    endTest();
 
+    startTest("nested modifier block");
     settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR+"/test-3.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-3.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -96,9 +101,11 @@ void StyleTestsLexerAndParser::tests() {
 
     delete rootExpected;
     expected = nullptr;
+    endTest();
 
+    startTest("nested element name block");
     settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR+"/test-4.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-4.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -131,9 +138,11 @@ void StyleTestsLexerAndParser::tests() {
 
     delete rootExpected;
     expected = nullptr;
+    endTest();
 
+    startTest("apply style block to two distinct commponents");
     settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR+"/test-5.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-5.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -171,9 +180,11 @@ void StyleTestsLexerAndParser::tests() {
 
     delete rootExpected;
     expected = nullptr;
+    endTest();
 
+    startTest("apply style block to two distinct component with nested element name");
     settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR+"/test-6.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-6.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -212,13 +223,17 @@ void StyleTestsLexerAndParser::tests() {
 
     delete rootExpected;
     expected = nullptr;
+    endTest();
 
+    startTest("raising an error for multi-line block declaration");
     settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR+"/test-7.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-7.txt");
     invalidExpression(fileContent);
+    endTest();
 
+    startTest("test units for values");
     settings->debug = true;
-    fileContent = getFileContent(TESTS_FILES_DIR+"/test-8.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-8.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -240,14 +255,16 @@ void StyleTestsLexerAndParser::tests() {
 
     delete rootExpected;
     expected = nullptr;
+    endTest();
 
+    startTest("raising an error for no block declaration");
     settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR+"/test-9.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-9.txt");
     invalidExpression(fileContent);
+    endTest();
 }
 
 void StyleTestsLexerAndParser::lexer(bool equal, const std::string &expr, const Node *expected) {
-    startTest();
     std::cout << "Test if tokenizing\n'\n"
               << expr << "\n'\n";
     if (equal) std::cout << "equals to\n";
@@ -275,11 +292,9 @@ void StyleTestsLexerAndParser::lexer(bool equal, const std::string &expr, const 
         std::cerr << "Failed with error : " << e.what();
     }
     std::cout << "\n";
-    endTest();
 }
 
 void StyleTestsLexerAndParser::parser(bool equal, Node *expr, const Node *expected) {
-    startTest();
     std::cout << "Test if parsing\n";
     expr->displayNexts(std::cout);
     if (equal) std::cout << "equals to\n";
@@ -297,11 +312,9 @@ void StyleTestsLexerAndParser::parser(bool equal, Node *expr, const Node *expect
         std::cerr << "Failed with error : " << e.what();
     }
     std::cout << "\n";
-    endTest();
 }
 
 void StyleTestsLexerAndParser::lexerAndParser(bool equal, const std::string &expr, const Node *expected) {
-    startTest();
     std::cout << "Test if tokenizing and parsing\n'\n"
               << expr << "\n'\n";
     if (equal) std::cout << "equals to\n";
@@ -321,11 +334,9 @@ void StyleTestsLexerAndParser::lexerAndParser(bool equal, const std::string &exp
         std::cerr << "Failed with error : " << e.what();
     }
     std::cout << "\n";
-    endTest();
 }
 
 void StyleTestsLexerAndParser::invalidExpression(std::string expression) {
-    startTest();
     std::cout << "Test if tokenizing and parsing\n'\n"
               << expression << "\n'\n raises a MalformedExpression exception : ";
     Node *tokens = nullptr;
@@ -345,11 +356,9 @@ void StyleTestsLexerAndParser::invalidExpression(std::string expression) {
     delete tokens;
     delete result;
     std::cout << "\n";
-    endTest();
 }
 
 void StyleTestsLexerAndParser::unknownToken(std::string expression) {
-    startTest();
     std::cout << "Test if tokenizing and parsing\n'\n"
               << expression << "\n'\n raises a UnknownToken exception : ";
     Node *tokens = nullptr;
@@ -369,11 +378,9 @@ void StyleTestsLexerAndParser::unknownToken(std::string expression) {
     delete tokens;
     delete result;
     std::cout << "\n";
-    endTest();
 }
 
 void StyleTestsLexerAndParser::missingToken(std::string expression) {
-    startTest();
     std::cout << "Test if tokenizing and parsing\n'\n"
               << expression << "\n'\n raises a MissingToken exception : ";
     Node *tokens = nullptr;
@@ -393,11 +400,9 @@ void StyleTestsLexerAndParser::missingToken(std::string expression) {
     delete tokens;
     delete result;
     std::cout << "\n";
-    endTest();
 }
 
 void StyleTestsLexerAndParser::unknownValue(std::string expression) {
-    startTest();
     std::cout << "Test if tokenizing and parsing\n'\n"
               << expression << "\n'\n raises a UnknownValue exception : ";
     Node *tokens = nullptr;
@@ -417,5 +422,4 @@ void StyleTestsLexerAndParser::unknownValue(std::string expression) {
     delete tokens;
     delete result;
     std::cout << "\n";
-    endTest();
 }

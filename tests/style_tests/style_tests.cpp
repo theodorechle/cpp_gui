@@ -110,7 +110,7 @@ void StyleTests::tests() {
     style = ".container      label#red{text-color : #ff0000;}";
     fileNumber = 0;
     expectedData = StyleComponentDataList();
-    startTest();
+    startTest("deserializing a single rule");
     components = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
     if (ruleNumber != 1) {
         std::cerr << "ruleNumber is " << ruleNumber << " instead of 1\n";
@@ -146,10 +146,10 @@ void StyleTests::tests() {
 
     endTest();
 
-    style = ".container      label#red{text-color : #ff0000}"; // should fail because must have a semi-colon after the assignment
+    style = ".container      label#red{text-color : #ff0000}";
     fileNumber = 0;
     expectedData = StyleComponentDataList();
-    startTest();
+    startTest("raising an error for missing semi-colon after assignment");
     try {
         components = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
         setTestResult(Result::KO);
