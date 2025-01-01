@@ -12,14 +12,14 @@
 
 class ElementsStyleManager {
     ElementStyle *elements = nullptr;
-    std::list<StyleComponent *> style = std::list<StyleComponent *>();
+    std::list<StyleBlock *> style = std::list<StyleBlock *>();
     int fileCount = 0;
     // file number: <file name, rule number>
     std::unordered_map<int, std::pair<std::string, int>> files = {};
     int findFile(const std::string &fileName);
     void updateRulesPrioritiesInElements(int oldFileNumber, int newwFileNumber, ElementStyle *element);
     void updateRulesPriorities(int fileNumber);
-    void applySpecificStyleToElement(std::list<StyleComponent *> specificStyle, ElementStyle *elementStyle, bool recursive = false);
+    void applySpecificStyleToElement(std::list<StyleBlock *> specificStyle, ElementStyle *elementStyle, bool recursive = false);
 
 public:
     void setParentElementStyle(ElementStyle *elementStyle) { elements = elementStyle; }

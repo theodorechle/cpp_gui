@@ -12,7 +12,7 @@ class NodeToStyleComponentList {
     Node *tree;
     // for each inner style block, multiple components list definitions (separated by commas in the style files)
     std::list<std::list<StyleComponentDataList *> *> requiredStyleComponentsLists;
-    std::list<StyleComponent *> *styleDefinitions;
+    std::list<StyleBlock *> *styleDefinitions;
 
     std::list<StyleComponentDataList *> *convertStyleComponents();
 
@@ -25,11 +25,11 @@ class NodeToStyleComponentList {
     /**
      * Does not accept a null pointer for "components" parameter
      */
-    std::list<StyleComponent *> *createStyleComponents(std::list<std::list<StyleComponentDataList *> *>::const_iterator componentsListIt, StyleComponentDataList *components, StyleValuesMap *appliedStyle);
+    std::list<StyleBlock *> *createStyleComponents(std::list<std::list<StyleComponentDataList *> *>::const_iterator componentsListIt, StyleComponentDataList *components, StyleValuesMap *appliedStyle);
     void convertStyleBlock(int fileNumber, int *ruleNumber);
 
 public:
-    std::list<StyleComponent *> *convert(Node *tree, int fileNumber, int *ruleNumber);
+    std::list<StyleBlock *> *convert(Node *tree, int fileNumber, int *ruleNumber);
 };
 
 #endif // NODE_TO_STYLE_COMPONENT_LIST_HPP

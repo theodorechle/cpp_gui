@@ -13,8 +13,8 @@
 
 class StyleDeserializer {
 public:
-    static std::list<StyleComponent *> *deserializeFromFile(const std::string &fileName, int fileNumber, int *ruleNumber, bool debug = false);
-    static std::list<StyleComponent *> *deserialize(const std::string &style, int fileNumber, int *ruleNumber, bool debug = false);
+    static std::list<StyleBlock *> *deserializeFromFile(const std::string &fileName, int fileNumber, int *ruleNumber, bool debug = false);
+    static std::list<StyleBlock *> *deserialize(const std::string &style, int fileNumber, int *ruleNumber, bool debug = false);
 };
 
 #endif // STYLE_DESERIALIZER_HPP

@@ -28,13 +28,13 @@ void ElementsStyleManager::updateRulesPriorities(int fileNumber) {
     }
 }
 
-void ElementsStyleManager::applySpecificStyleToElement(std::list<StyleComponent *> specificStyle, ElementStyle *elementStyle, bool recursive) {
+void ElementsStyleManager::applySpecificStyleToElement(std::list<StyleBlock *> specificStyle, ElementStyle *elementStyle, bool recursive) {
     if (elementStyle == nullptr) return;
     ElementStyle *actualElementStyle = elementStyle;
     const StyleValuesMap *styleMap;
     AppliedStyleMap elementStyleMap;
     std::string modifier = "";
-    for (StyleComponent *styleComponent : specificStyle) {
+    for (StyleBlock *styleComponent : specificStyle) {
         for (StyleComponentDataList::const_iterator list = styleComponent->getComponentsList()->cbegin(); list != styleComponent->getComponentsList()->cend(); list++) {
         }
 
@@ -79,7 +79,7 @@ int ElementsStyleManager::addStyleFile(const std::string &fileName) {
 
 int ElementsStyleManager::addStyle(const std::string &styleFileContent) {
     int ruleNumber;
-    std::list<StyleComponent *> *fileRules;
+    std::list<StyleBlock *> *fileRules;
     fileRules = StyleDeserializer::deserialize(styleFileContent, fileCount, &ruleNumber);
     if (fileRules == nullptr || fileRules->empty()) return -1;
     applySpecificStyleToElement(*fileRules, elements, true);

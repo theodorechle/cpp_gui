@@ -94,11 +94,15 @@ bool Tests::runTests() {
         tests();
     }
     catch (const std::exception &exception) {
+        if (resultEntered) results.pop_back();
+        setTestResult(Result::ERROR);
         endTest();
         std::cerr << "Tests stopped after an exception was raised: " << exception.what() << "\n";
         testsValid = false;
     }
     catch (...) {
+        if (resultEntered) results.pop_back();
+        setTestResult(Result::ERROR);
         endTest();
         std::cerr << "Tests stopped after an exception was raised who is not a subclass of std::exception\n";
         testsValid = false;

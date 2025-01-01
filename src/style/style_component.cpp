@@ -57,6 +57,6 @@ std::string styleRelationToString(StyleRelation token) {
     }
 }
 
-StyleComponent::StyleComponent(StyleComponentDataList *componentsList, StyleValuesMap *styleMap) {
+StyleBlock::StyleBlock(StyleComponentDataList *componentsList, StyleValuesMap *styleMap) {
     styleDef = new StyleDefinition(*componentsList, *styleMap);
 }

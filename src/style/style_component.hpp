@@ -50,20 +50,21 @@ std::string styleRelationToString(StyleRelation token);
  * That's why this class exists, to allow such elements who contains others to exists.
  */
 class StyleValue {
-    std::string styleName;
-    StyleValueType styleType;
-    StyleValue *styleChild;
-    StyleValue *styleNext;
+    std::string name;
+    StyleValueType type;
+    StyleValue *child = nullptr;
+    StyleValue *next = nullptr;
 
 public:
-    void setName(const std::string &name) { styleName = name; }
-    void setType(StyleValueType type) { styleType = type; }
-    void setChild(StyleValue *child) { styleChild = child; }
-    void setNext(StyleValue *next) { styleNext = next; }
-    std::string getName() { return styleName; }
-    StyleValueType getType() { return styleType; }
-    StyleValue *getChild() { return styleChild; }
-    StyleValue *getNext() { return styleNext; }
+    StyleValue(const std::string &name = "", const StyleValueType type = StyleValueType::Null) : name{name}, type{type} {};
+    void setName(const std::string &name) { this->name = name; }
+    void setType(StyleValueType type) { this->type = type; }
+    void setChild(StyleValue *child) { this->child = child; }
+    void setNext(StyleValue *next) { this->next = next; }
+    std::string getName() { return name; }
+    StyleValueType getType() { return type; }
+    StyleValue *getChild() { return child; }
+    StyleValue *getNext() { return next; }
     ~StyleValue();
 };
 
@@ -81,17 +82,21 @@ struct StyleRule {
     int fileNumber;
     int ruleNumber;
 };
+
 typedef std::pair<std::string, StyleComponentType> StyleComponentData;
 typedef std::list<std::pair<StyleComponentData, StyleRelation>> StyleComponentDataList;
 typedef std::unordered_map<std::string, StyleRule> StyleValuesMap;
 typedef std::pair<StyleComponentDataList, StyleValuesMap> StyleDefinition;
 
-class StyleComponent {
+/**
+ * A block composed of a list of required components (parent classes, special identifier, ...) and the corresponding style
+ */
+class StyleBlock {
     StyleDefinition *styleDef;
 
 public:
-    StyleComponent(StyleComponentDataList *componentsList, StyleValuesMap *styleMap);
-    ~StyleComponent() {delete styleDef;}
+    StyleBlock(StyleComponentDataList *componentsList, StyleValuesMap *styleMap);
+    ~StyleBlock() { delete styleDef; }
     StyleDefinition *getStyleDefinition() const { return styleDef; }
     const StyleComponentDataList *getComponentsList() const { return &styleDef->first; }
     const StyleValuesMap *getStyleMap() const { return &styleDef->second; }
