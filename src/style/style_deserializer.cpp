@@ -9,9 +9,14 @@ std::list<StyleComponent *> *StyleDeserializer::deserializeFromFile(const std::s
 }
 
 std::list<StyleComponent *> *StyleDeserializer::deserialize(const std::string &style, int fileNumber, int *ruleNumber) {
+    std::list<StyleComponent *> *deserializedStyle;
     Settings *settings = new Settings();
     settings->debug = false;
     Node *tokens = Lexer(style, settings).getResult();
     Node *result = Parser(tokens, settings).getFinalTree();
-    return NodeToStyleComponentList().convert(result, fileNumber, ruleNumber);
+    delete tokens;
+    delete settings;
+    deserializedStyle = NodeToStyleComponentList().convert(result, fileNumber, ruleNumber);
+    delete result;
+    return deserializedStyle;
 }

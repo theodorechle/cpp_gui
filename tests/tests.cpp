@@ -69,12 +69,14 @@ void Tests::startTest() {
     std::cout << "Test n°" << getTestNumber() << ":\n";
 }
 
-void Tests::endTest() { // TODO: ensure a result were written
+void Tests::endTest() {
     std::stringstream buffer;
     if (!alwaysShowLogMessages) {
         resetStandardOutput();
         resetErrorOutput();
     }
+    if (!resultEntered) setTestResult(Result::UNKNOWN);
+    resultEntered = false;
     if (logFile.is_open() && results.back() != Result::OK) {
         std::ifstream file(logFileName);
         std::stringstream buffer;
@@ -106,6 +108,7 @@ bool Tests::runTests() {
 
 void Tests::setTestResult(Result r) {
     results.push_back(r);
+    resultEntered = true;
 }
 
 std::string Tests::getFileContent(std::string fileName) {
@@ -123,8 +126,10 @@ std::string Tests::resultToStr(Result result) const {
         return "KO";
     case Result::ERROR:
         return "ERROR";
+    case Result::UNKNOWN:
+        return "No result";
     default:
-        return "Invalid result";
+        return "Not valid result";
     }
 }
 

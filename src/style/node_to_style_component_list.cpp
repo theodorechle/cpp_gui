@@ -152,6 +152,7 @@ StyleValuesMap *NodeToStyleComponentList::convertAppliedStyle(int fileNumber, in
                 if (styleValue != nullptr) {
                     (*appliedStyleMap)[styleName] = StyleRule{styleValue, true, 0, fileNumber, *ruleNumber};
                     (*ruleNumber)++;
+                    delete styleValue;
                 }
             }
         }
@@ -213,9 +214,15 @@ void NodeToStyleComponentList::convertStyleBlock(int fileNumber, int *ruleNumber
     requiredStyleComponentsLists.push_back(styleComponentsLists);
     StyleComponentDataList components = StyleComponentDataList();
     std::list<StyleComponent *> *finalStyleComponents = createStyleComponents(requiredStyleComponentsLists.cbegin(), &components, appliedStyleMap);
+    delete appliedStyleMap;
+    for (StyleComponentDataList *componentDataList : *(requiredStyleComponentsLists.back())) {
+        delete componentDataList;
+    }
+    delete requiredStyleComponentsLists.back();
     requiredStyleComponentsLists.pop_back();
     if (finalStyleComponents != nullptr) {
         styleDefinitions->splice(styleDefinitions->end(), *finalStyleComponents);
+        delete finalStyleComponents;
     }
 }
 
@@ -225,12 +232,10 @@ std::list<StyleComponent *> *NodeToStyleComponentList::convert(Node *styleTree, 
     styleDefinitions = new std::list<StyleComponent *>();
     requiredStyleComponentsLists = std::list<std::list<StyleComponentDataList *> *>();
 
-
     tree = styleTree->getChild();
-    while (tree != nullptr && tree->getTokenType() == Token::StyleBlock) { // FIXME: also verified in the convetStyleBlock method. Don't need to check twice
+    while (tree != nullptr && tree->getTokenType() == Token::StyleBlock) { // FIXME: also verified in the convertStyleBlock method. Don't need to check twice
         convertStyleBlock(fileNumber, ruleNumber);
         tree = tree->getNext();
     }
-
     return styleDefinitions;
 }

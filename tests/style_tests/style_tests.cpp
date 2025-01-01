@@ -25,4 +25,10 @@ void StyleTests::tests() {
     else {
         // testStyleComponentDataList(components->front()->getComponentsList(), );
     }
+
+    for (StyleComponent *component : *components) {
+        delete component;
+    }
+    components->clear();
+    delete components;
 }

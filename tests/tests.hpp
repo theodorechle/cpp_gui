@@ -13,7 +13,8 @@
 enum class Result {
     OK,
     KO,
-    ERROR
+    ERROR,
+    UNKNOWN
 };
 
 /**
@@ -38,6 +39,7 @@ class Tests {
     std::string logFileName = "logFile";
     std::ofstream logFile = std::ofstream();
     bool testsRunning = false;
+    bool resultEntered = false;
     bool showLogMessages = true;
     bool alwaysShowLogMessages = false;
     std::streambuf *oldErrBuffer = nullptr;
@@ -68,7 +70,17 @@ class Tests {
     void resetErrorOutput();
 
 protected:
+    /**
+     * Starts a test.
+     * Must be called before each test.
+     * 
+     */
     void startTest();
+
+    /**
+     * Ends a test.
+     * Must be called after each test.
+     */
     void endTest();
     void setTestResult(Result r);
     static std::string getFileContent(std::string fileName);

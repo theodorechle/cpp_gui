@@ -87,6 +87,7 @@ class StyleComponent {
 
 public:
     StyleComponent(StyleComponentDataList *componentsList, StyleValuesMap *styleMap);
+    ~StyleComponent() {delete styleDef;}
     StyleDefinition *getStyleDefinition() const { return styleDef; }
     const StyleComponentDataList *getComponentsList() const { return &styleDef->first; }
     const StyleValuesMap *getStyleMap() const { return &styleDef->second; }
