@@ -79,8 +79,13 @@ std::list<StyleComponentDataList *> *NodeToStyleComponentList::convertStyleCompo
             if (componentDeclaration == nullptr) styleRelationToken = StyleRelation::SameElement; // last value
             else {
                 nextDeclarationToken = componentDeclaration->getTokenType();
-                if (nextDeclarationToken == Token::ElementName || nextDeclarationToken == Token::Class || nextDeclarationToken == Token::Identifier || nextDeclarationToken == Token::Modifier) {
+                if (tokenTypeToStyleComponentType(nextDeclarationToken) != StyleComponentType::Null) {
                     styleRelationToken = StyleRelation::SameElement;
+                    componentDeclaration = componentDeclaration->getNext();
+                }
+                else if (nextDeclarationToken == Token::DirectParent) {
+                    styleRelationToken = StyleRelation::DirectParent;
+                    componentDeclaration = componentDeclaration->getNext();
                 }
             }
             if (styleRelationToken != StyleRelation::Null) {

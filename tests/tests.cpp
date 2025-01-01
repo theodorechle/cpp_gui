@@ -31,11 +31,11 @@ bool Tests::startTestSession() {
 }
 
 bool Tests::endTestSession() {
+    resetErrorOutput();
+    resetStandardOutput();
     testsRunning = false;
     std::cout << "Ended test session \"" << testsName << "\"\n";
-    if (showLogMessages) {
-        displaySummary();
-    }
+    displaySummary();
 
     // if nothing was written, the file wasn't created
     if (std::filesystem::exists(logFileName) && remove(logFileName.c_str())) {
@@ -93,12 +93,14 @@ bool Tests::runTests() {
     try {
         tests();
     }
-    catch (std::exception &exception) {
+    catch (const std::exception &exception) {
+        endTest();
         std::cerr << "Tests stopped after an exception was raised: " << exception.what() << "\n";
         testsValid = false;
     }
     catch (...) {
-        std::cerr << "Tests stopped after an exception was raised who is not an subclass of std::exception\n";
+        endTest();
+        std::cerr << "Tests stopped after an exception was raised who is not a subclass of std::exception\n";
         testsValid = false;
     }
 

@@ -1,22 +1,32 @@
 #include "style_deserializer.hpp"
 
-std::list<StyleComponent *> *StyleDeserializer::deserializeFromFile(const std::string &fileName, int fileNumber, int *ruleNumber) {
+std::list<StyleComponent *> *StyleDeserializer::deserializeFromFile(const std::string &fileName, int fileNumber, int *ruleNumber, bool debug) {
     std::ifstream file(fileName);
     std::stringstream buffer;
     buffer << file.rdbuf();
 
-    return deserialize(buffer.str(), fileNumber, ruleNumber);
+    return deserialize(buffer.str(), fileNumber, ruleNumber, debug);
 }
 
-std::list<StyleComponent *> *StyleDeserializer::deserialize(const std::string &style, int fileNumber, int *ruleNumber) {
-    std::list<StyleComponent *> *deserializedStyle;
+std::list<StyleComponent *> *StyleDeserializer::deserialize(const std::string &style, int fileNumber, int *ruleNumber, bool debug) {
+    std::list<StyleComponent *> *deserializedStyle = nullptr;
+    Node *tokens = nullptr;
+    Node *result = nullptr;
     Settings *settings = new Settings();
-    settings->debug = false;
-    Node *tokens = Lexer(style, settings).getResult();
-    Node *result = Parser(tokens, settings).getFinalTree();
+    settings->debug = debug;
+    try {
+        tokens = Lexer(style, settings).getResult();
+        result = Parser(tokens, settings).getFinalTree();
+        deserializedStyle = NodeToStyleComponentList().convert(result, fileNumber, ruleNumber);
+    }
+    catch (...) {
+        delete tokens;
+        delete result;
+        delete settings;
+        throw;
+    }
     delete tokens;
-    delete settings;
-    deserializedStyle = NodeToStyleComponentList().convert(result, fileNumber, ruleNumber);
     delete result;
+    delete settings;
     return deserializedStyle;
 }

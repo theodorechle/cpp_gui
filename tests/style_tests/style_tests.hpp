@@ -12,7 +12,7 @@ class StyleTests : public Tests {
 public:
     StyleTests() : Tests{"Tests style"} {}
     
-    void testStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expected);
+    Result testStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expected);
 };
 
 #endif // STYLE_TESTS_HPP

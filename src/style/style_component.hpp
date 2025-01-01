@@ -40,6 +40,10 @@ enum class StyleRelation {
 StyleComponentType tokenTypeToStyleComponentType(Token token);
 StyleValueType tokenTypeToStyleValueType(Token token);
 
+std::string styleComponentTypeToString(StyleComponentType token);
+std::string styleValueTypeToString(StyleValueType token);
+std::string styleRelationToString(StyleRelation token);
+
 /**
  * All data types are not simple.
  * For example a tuple contains multiple elements.

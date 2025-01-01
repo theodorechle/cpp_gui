@@ -32,13 +32,13 @@ public:
 };
 
 /**
- *Transform a chain of trees (no childs) like the one the lexer function returns into a tree containing the entire expression
+ * Transform a chain of trees (no childs) like the one the lexer function returns into a tree containing the entire expression
  */
 class Parser {
     /**
-     *The expressionTreeRoot should never contains a pointer on it,
-     *because it could be used and freed in the calling program after the parser call.
-     *Consider expressionTokens has const
+     * The expressionTreeRoot should never contains a pointer pointing to expressionTokens in any way,
+     * because it could be used and freed in the calling program after the parser call.
+     * Consider expressionTokens has const
      */
     Node *expressionTokens;
 
@@ -46,7 +46,6 @@ class Parser {
     Node *expressionTreeRoot = new Node{Token::NullRoot};
     Node *expressionTree = expressionTreeRoot;
     Settings *settings;
-    void goToParentBlock();
     bool isValidName(const std::string &str, size_t start, size_t end);
     bool isValidElementOrStyleName(const std::string &str);
     bool isValidClass(const std::string &str);

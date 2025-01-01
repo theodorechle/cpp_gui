@@ -24,7 +24,9 @@ enum class Result {
  * Every new test method must call startTest at the beginning of the method and endTest at the end.
  *
  * Notice that if a non-catchable error such as a segfault or a stack overflow is raised, the program will crash.
- * Also, in this case, a temporary file used by the class may not be erased.
+ * 
+ * A temporary file used by the class may not be erased.
+ * If the program crash, this file could not be erased.
  * This file is used to register all log messages of a test and is read after the test execution to display it if the test fails.
  * This default behavior can be changed.
  *
@@ -89,7 +91,7 @@ protected:
 public:
     Tests(const std::string &testsName) : testsName{testsName} {}
 
-    virtual ~Tests() {}
+    virtual ~Tests() {};
 
     bool runTests();
 
