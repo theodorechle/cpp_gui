@@ -32,6 +32,41 @@ The gui is designed so you can implements easily your own elements
 - Table
 - Slider
 
+
+### Default styles:
+- element: // UIElement
+    - background-color: string|tuple[int,int,int]
+    - border-color: string|tuple[int,int,int]
+    - border-width: int
+    - border-radius: int
+    - border-top-left-radius: int
+    - border-top-right-radius: int
+    - border-bottom-left-radius: int
+    - border-bottom-right-radius: int
+    - height: int
+    - min-height: int
+    - max-height: int
+    - width: int
+    - min-width: int
+    - max-width: int
+    - padding: int
+- label: // Label
+    - text-color: string|tuple[int,int,int]
+    - font: string
+    - font-size: int
+    - antialias: bool
+- input: // InputTextBox
+    - caret-color: string|tuple[int,int,int]
+    - placeholder-color: string|tuple[int,int,int]
+- slider: // Slider
+    - bar-color: string|tuple[int,int,int]
+    - cursor-color: string|tuple[int,int,int]
+- container: // Container
+- list: // ItemList
+- button: // Button
+- table: // Table
+
+
 ## Manager
 The Manager is a class who manages all the given elements.
 It chooses when their rendering are computed and when they are rendered.
