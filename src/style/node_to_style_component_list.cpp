@@ -86,6 +86,10 @@ std::list<StyleComponentDataList *> *NodeToStyleComponentList::convertStyleCompo
                     styleRelationToken = StyleRelation::DirectParent;
                     componentDeclaration = componentDeclaration->getNext();
                 }
+                else if (nextDeclarationToken == Token::AnyParent) {
+                    styleRelationToken = StyleRelation::AnyParent;
+                    componentDeclaration = componentDeclaration->getNext();
+                }
             }
             if (styleRelationToken != StyleRelation::Null) {
                 requiredStyleComponents->push_back(std::pair(StyleComponentData(currentValue, styleComponentType), styleRelationToken));

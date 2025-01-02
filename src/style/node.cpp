@@ -184,8 +184,8 @@ void Node::replaceChild(Node* child, Node* newChild) {
 }
 
 Node::~Node() {
-    if (next != nullptr) delete next;
-    if (child != nullptr) delete child;
+    delete next;
+    delete child;
 }
 
 Node* root(Node* node) {

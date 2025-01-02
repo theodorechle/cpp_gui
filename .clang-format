@@ -19,8 +19,10 @@ BraceWrapping:
   BeforeLambdaBody: false
   BeforeWhile: false
 IndentCaseLabels: false
-ColumnLimit: 0
+ColumnLimit: 150
 AccessModifierOffset: -4
 NamespaceIndentation: All
 FixNamespaceComments: false
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+BreakBeforeBinaryOperators: NonAssignment
+BreakBinaryOperations: OnePerLine

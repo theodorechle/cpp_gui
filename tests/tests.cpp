@@ -61,13 +61,13 @@ void Tests::resetErrorOutput() {
 }
 
 void Tests::startTest(const std::string &testName) {
-    results.push_back(std::pair(testName, Result::NOT_GIVEN));
     openFile();
     if (!alwaysShowLogMessages) {
         redirectStandardOutput();
         redirectErrorOutput();
     }
     std::cout << "Test n°" << getTestNumber();
+    results.push_back(std::pair(testName, Result::NOT_GIVEN));
     if (!results.back().first.empty()) {
         std::cout << " (" << results.back().first << ")";
     }
@@ -85,7 +85,7 @@ void Tests::endTest() {
         std::ifstream file(logFileName);
         std::stringstream buffer;
         buffer << file.rdbuf();
-        std::cerr << buffer.str();
+        std::cerr << buffer.str() << "\n";
     }
     closeFile();
     openFile(); // reopen it to erase the existing content

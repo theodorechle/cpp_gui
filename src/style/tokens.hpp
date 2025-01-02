@@ -14,6 +14,7 @@ enum class Token {
     Comma,
     Colon,
     SemiColon,
+    GreaterThan,
     OneLineComment,
     MultiLineComment,
     // Used only by the parser
@@ -22,6 +23,7 @@ enum class Token {
     Declaration,
     BlockDefinition,
     DirectParent,
+    AnyParent,
     StyleName,
     Assignment,
     ArgSeparator,

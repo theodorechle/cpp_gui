@@ -32,6 +32,14 @@ bool Parser::isValidModifier(const string &str) {
     return isValidName(str, 1, str.size());
 }
 
+bool Parser::isWhiteSpace(Token token) {
+    return (token == Token::Space || token == Token::LineReturn);
+}
+
+bool Parser::isComponentRelation(Token token) {
+    return (token == Token::AnyParent || token == Token::DirectParent);
+}
+
 void Parser::removeSpace() {
     Node *lastChild = expressionTree->getLastChild();
     if (lastChild != nullptr && lastChild->getTokenType() == Token::Space) expressionTree->removeSpecificChild(lastChild);
@@ -42,7 +50,7 @@ void Parser::removeLineReturn() {
     if (lastChild != nullptr && lastChild->getTokenType() == Token::LineReturn) expressionTree->removeSpecificChild(lastChild);
 }
 
-void Parser::removeSpacesAndLineReturns() {
+void Parser::removeWhiteSpaces() {
     Node *lastChild = expressionTree->getLastChild();
     while (lastChild != nullptr && (lastChild->getTokenType() == Token::Space || lastChild->getTokenType() == Token::LineReturn)) {
         expressionTree->removeSpecificChild(lastChild);
@@ -84,6 +92,9 @@ void Parser::parse() {
             case Token::SemiColon:
                 parseSemiColon();
                 break;
+            case Token::GreaterThan:
+                parseGreatherThan();
+                break;
             case Token::PercentageUnit:
             case Token::PixelUnit:
                 parseUnit();
@@ -111,7 +122,7 @@ void Parser::parse() {
             }
             expressionTokens = expressionTokens->getNext();
         }
-        removeSpacesAndLineReturns();
+        removeWhiteSpaces();
         if (settings->debug) {
             cerr << "Final parsed tree :\n";
             expressionTreeRoot->display(cerr);
@@ -126,8 +137,12 @@ void Parser::parse() {
 }
 
 void Parser::parseSpace() {
+    Node *lastChild;
     if (expressionTree->getTokenType() == Token::Declaration) {
-        if (expressionTree->getNbChilds() > 0) expressionTree->appendChild(new Node{Token::DirectParent});
+        if (expressionTree->getNbChilds() > 0) {
+            lastChild = expressionTree->getLastChild();
+            if (lastChild == nullptr || !isComponentRelation(lastChild->getTokenType())) expressionTree->appendChild(new Node{Token::AnyParent});
+        }
     }
     else expressionTree->appendChild(expressionTokens->copyNode());
 }
@@ -199,6 +214,36 @@ void Parser::parseSemiColon() {
     expressionTree = expressionTree->getParent();
 }
 
+void Parser::parseGreatherThan() {
+    Node *lastChild;
+    Node *lastChildCopy = nullptr;
+    Token token = expressionTree->getTokenType();
+    if (token == Token::NullRoot || token == Token::BlockDefinition) {
+        lastChild = expressionTree->getLastChild();
+        if (lastChild != nullptr) {
+            if (isWhiteSpace(lastChild->getTokenType())) removeWhiteSpaces();
+            else if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
+            else if (lastChild->getTokenType() == Token::AnyParent)
+                ; // do nothing, just ensure the node is being removed without being copied before
+            else lastChildCopy = lastChild->copyNodeWithChilds();
+            expressionTree->removeSpecificChild(lastChild);
+        }
+        expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
+        expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
+        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
+        expressionTree->appendChild(lastChildCopy);
+        expressionTree->appendChild(new Node{Token::DirectParent});
+    }
+    else if (token == Token::Declaration) {
+        lastChild = expressionTree->getLastChild();
+        if (lastChild->getTokenType() == Token::AnyParent) {
+            expressionTree->removeSpecificChild(lastChild);
+        }
+        expressionTree->appendChild(new Node{Token::DirectParent});
+    }
+    else throw MalformedExpression("A direct parent relation must be before a style block opening and at the root level of the style file or inside an other style block");
+}
+
 void Parser::parseOpeningParenthesis() {
     removeSpace();
 
@@ -240,7 +285,7 @@ void Parser::parseOpeningCurlyBracket() {
     Node *lastChildCopy;
     removeSpace();
     lastChild = expressionTree->getLastChild();
-    if (lastChild != nullptr && lastChild->getTokenType() == Token::DirectParent) {
+    if (lastChild != nullptr && lastChild->getTokenType() == Token::AnyParent) {
         expressionTree->removeSpecificChild(lastChild);
     }
     if (expressionTree->getTokenType() != Token::NullRoot && expressionTree->getTokenType() != Token::BlockDefinition && expressionTree->getTokenType() != Token::Declaration) throw MalformedExpression("A style block must be defined in an other style block or at the root level of the file");
@@ -259,7 +304,7 @@ void Parser::parseOpeningCurlyBracket() {
 }
 
 void Parser::parseClosingCurlyBracket() {
-    removeSpacesAndLineReturns();
+    removeWhiteSpaces();
 
     if (expressionTree->getTokenType() != Token::BlockDefinition) throw MalformedExpression("A closing curly bracket '}' needs an opening curly bracket '{'");
     expressionTree = expressionTree->getParent()->getParent();
@@ -308,7 +353,7 @@ void Parser::parseName() {
     Node *lastChild;
     Node *lastChildCopy;
     if (token == Token::NullRoot) {
-        removeSpacesAndLineReturns();
+        removeWhiteSpaces();
 
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
@@ -317,7 +362,7 @@ void Parser::parseName() {
         return;
     }
     if (token == Token::BlockDefinition) {
-        removeSpacesAndLineReturns();
+        removeWhiteSpaces();
         lastChild = expressionTree->getLastChild();
 
         if (lastChild != nullptr && lastChild->getTokenType() == Token::String) {
@@ -353,74 +398,44 @@ void Parser::parseName() {
     expressionTree->appendChild(expressionTokens->copyNode());
 }
 
-void Parser::parseClass() {
+Node *Parser::updateLastDeclarationComponentBeforeNewOne(Node *lastChild) {
+    Node *finalChild = nullptr;
+    if (lastChild != nullptr) {
+        if (isWhiteSpace(lastChild->getTokenType())) removeWhiteSpaces();
+        else if (lastChild->getTokenType() == Token::Name) finalChild = new Node{Token::ElementName, lastChild->getValue()};
+        else finalChild = lastChild->copyNodeWithChilds();
+        expressionTree->removeSpecificChild(lastChild);
+    }
+    return finalChild;
+}
+
+void Parser::parseDeclarationComponent(Token outputTokenType) {
     Node *lastChild;
     Node *lastChildCopy = nullptr;
     Token token = expressionTree->getTokenType();
     if (token == Token::NullRoot || token == Token::BlockDefinition) {
         lastChild = expressionTree->getLastChild();
-        if (lastChild != nullptr) {
-            if (lastChild->getTokenType() == Token::Space || lastChild->getTokenType() == Token::LineReturn) removeSpacesAndLineReturns();
-            else if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
-            else lastChildCopy = lastChild->copyNodeWithChilds();
-            expressionTree->removeSpecificChild(lastChild);
-        }
+        lastChildCopy = updateLastDeclarationComponentBeforeNewOne(lastChild);
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
         expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
         expressionTree->appendChild(lastChildCopy);
-        expressionTree->appendChild(new Node{Token::Class, expressionTokens->getValue().substr(1)});
+        expressionTree->appendChild(new Node{outputTokenType, expressionTokens->getValue().substr(1)});
     }
     else if (token == Token::Declaration) {
-        expressionTree->appendChild(new Node{Token::Class, expressionTokens->getValue().substr(1)});
+        expressionTree->appendChild(new Node{outputTokenType, expressionTokens->getValue().substr(1)});
     }
-    else throw MalformedExpression("A class|identifier must be before a style block opening and at the root level of the style file or inside an other style block");
+    else throw MalformedExpression("A " + tokenToString(outputTokenType) + "must be before a style block opening and at the root level of the style file or inside an other style block");
+}
+
+void Parser::parseClass() {
+    parseDeclarationComponent(Token::Class);
 }
 
 void Parser::parseIdentifier() {
-    Node *lastChild;
-    Node *lastChildCopy = nullptr;
-    Token token = expressionTree->getTokenType();
-    if (token == Token::NullRoot || token == Token::BlockDefinition) {
-        lastChild = expressionTree->getLastChild();
-        if (lastChild != nullptr) {
-            if (lastChild->getTokenType() == Token::Space || lastChild->getTokenType() == Token::LineReturn) removeSpacesAndLineReturns();
-            else if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
-            else lastChildCopy = lastChild->copyNodeWithChilds();
-            expressionTree->removeSpecificChild(lastChild);
-        }
-        expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
-        expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
-        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
-        expressionTree->appendChild(lastChildCopy);
-        expressionTree->appendChild(new Node{Token::Identifier, expressionTokens->getValue().substr(1)});
-    }
-    else if (token == Token::Declaration) {
-        expressionTree->appendChild(new Node{Token::Identifier, expressionTokens->getValue().substr(1)});
-    }
-    else throw MalformedExpression("An identifier must be before a style block opening and at the root level of the style file or inside an other style block");
+    parseDeclarationComponent(Token::Identifier);
 }
 
 void Parser::parseModifier() {
-    Node *lastChild;
-    Node *lastChildCopy = nullptr;
-    Token token = expressionTree->getTokenType();
-    if (token == Token::NullRoot || token == Token::BlockDefinition) {
-        lastChild = expressionTree->getLastChild();
-        if (lastChild != nullptr) {
-            if (lastChild->getTokenType() == Token::Space || lastChild->getTokenType() == Token::LineReturn) removeSpacesAndLineReturns();
-            else if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
-            else lastChildCopy = lastChild->copyNodeWithChilds();
-            expressionTree->removeSpecificChild(lastChild);
-        }
-        expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
-        expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
-        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
-        expressionTree->appendChild(lastChildCopy);
-        expressionTree->appendChild(new Node{Token::Modifier, expressionTokens->getValue().substr(1)});
-    }
-    else if (token == Token::Declaration) {
-        expressionTree->appendChild(new Node{Token::Modifier, expressionTokens->getValue().substr(1)});
-    }
-    else throw MalformedExpression("A modifier must be before a style block opening and at the root level of the style file or inside an other style block");
+    parseDeclarationComponent(Token::Modifier);
 }

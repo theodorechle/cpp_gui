@@ -2,8 +2,7 @@
 
 void Lexer::lexeSpace() {
     size_t i = 0;
-    while (index+i < expressionLength && (expression[index+i] == ' ' || expression[index+i] == '\t')
-        ) {
+    while (index + i < expressionLength && (expression[index + i] == ' ' || expression[index + i] == '\t')) {
         i++;
     }
     if (i > 0) {
@@ -15,7 +14,7 @@ void Lexer::lexeSpace() {
 
 void Lexer::lexeLineReturn() {
     size_t i = 0;
-    while (index+i < expressionLength && expression[index+i] == '\n') {
+    while (index + i < expressionLength && expression[index + i] == '\n') {
         i++;
     }
     if (i > 0) {
@@ -26,69 +25,52 @@ void Lexer::lexeLineReturn() {
 }
 
 void Lexer::lexeOneLineComment() {
-    if (expression[index] != '/' || expression[index+1] != '/') return;
+    if (expression[index] != '/' || expression[index + 1] != '/') return;
     int i = 1;
-    while (index + i + 1 < expression.size() && expression[index+i+1] != '\n') {
+    while (index + i + 1 < expression.size() && expression[index + i + 1] != '\n') {
         i++;
     }
-    expressionTree->appendNext(new Node{Token::OneLineComment, expression.substr(index+2, i-1)});
+    expressionTree->appendNext(new Node{Token::OneLineComment, expression.substr(index + 2, i - 1)});
     lexed = true;
     index += i + 1;
 }
 
 void Lexer::lexeMultiLineComment() {
-    if (expression[index] != '/' || expression[index+1] != '*') return;
+    if (expression[index] != '/' || expression[index + 1] != '*') return;
     int i = 1;
-    while (index + i + 2 < expression.size() && expression[index+i+1] != '*' && expression[index+i+2] != '/') {
+    while (index + i + 2 < expression.size() && expression[index + i + 1] != '*' && expression[index + i + 2] != '/') {
         i++;
     }
-    expressionTree->appendNext(new Node{Token::MultiLineComment, expression.substr(index+2, i-1)});
+    expressionTree->appendNext(new Node{Token::MultiLineComment, expression.substr(index + 2, i - 1)});
     lexed = true;
     index += i + 3;
 }
 
 void Lexer::lexeString() {
-    if (expression[index] == ','
-        || expression[index] == ';'
-        || expression[index] == ' '
-        || expression[index] == '\n'
-        || expression[index] == '\t'
-        || expression[index] == '{'
-        || expression[index] == '}'
-        || expression[index] == '('
-        || expression[index] == ')'
-        || expression[index] == '['
-        || expression[index] == ']') return;
-    
+    if (std::find(allowedSpecialFirstStringCharacters.cbegin(), allowedSpecialFirstStringCharacters.cend(), expression[index])
+        == allowedSpecialFirstStringCharacters.cend()) {
+        if (specialCharacters.find(expression[index]) != specialCharacters.cend()
+            || std::find(forbiddenFirstStringCharacters.cbegin(), forbiddenFirstStringCharacters.cend(), expression[index])
+                   != forbiddenFirstStringCharacters.cend())
+            return;
+    }
     size_t i = 1;
-    while (index + i < expressionLength && (
-        expression[index+i] != ','
-        && expression[index+i] != ';'
-        && expression[index+i] != ':'
-        && expression[index+i] != '#'
-        && expression[index+i] != '.'
-        && expression[index+i] != ' '
-        && expression[index+i] != '\n'
-        && expression[index+i] != '\t'
-        && expression[index+i] != '{'
-        && expression[index+i] != '}'
-        && expression[index+i] != '('
-        && expression[index+i] != ')'
-        && expression[index+i] != '['
-        && expression[index+i] != ']'
-        )) {
+    while (index + i < expressionLength && specialCharacters.find(expression[index + i]) == specialCharacters.cend()
+           && std::find(allowedSpecialFirstStringCharacters.cbegin(), allowedSpecialFirstStringCharacters.cend(), expression[index + i])
+                  == allowedSpecialFirstStringCharacters.cend()) {
         i++;
     }
     if (!isalpha(expression[index]) && i == 1) return;
     expressionTree->appendNext(new Node{Token::String, expression.substr(index, i)});
     index += i;
-    lexed = true;    
+    lexed = true;
 }
 
 void Lexer::lexeInt() {
     if (!isdigit(expression[index])) return;
     size_t i = 1;
-    while (index+i < expressionLength && isdigit(expression[index+i])) i++;
+    while (index + i < expressionLength && isdigit(expression[index + i]))
+        i++;
     expressionTree->appendNext(new Node{Token::Int, expression.substr(index, i)});
     index += i;
     lexed = true;
@@ -97,12 +79,12 @@ void Lexer::lexeInt() {
 void Lexer::lexeFloat() {
     bool dotFound = false;
     size_t i = 0;
-    while (index+i < expressionLength) {
-        if (expression[index+i] == '.') {
+    while (index + i < expressionLength) {
+        if (expression[index + i] == '.') {
             if (!dotFound) dotFound = true;
             else return;
         }
-        else if (!isdigit(expression[index+i])) return;
+        else if (!isdigit(expression[index + i])) return;
         i++;
     }
     if (!dotFound || i < 2) return; // < 2 because at least one int (0-9) and a dot
@@ -132,7 +114,7 @@ void Lexer::lexeUnit() {
     for (map_it = UNITS.cbegin(); map_it != UNITS.cend(); map_it++) {
         isEqual = true;
         for (i = 0; i < map_it->first.size(); i++) {
-            if (expression[index+i] != map_it->first[i]) {
+            if (expression[index + i] != map_it->first[i]) {
                 isEqual = false;
                 break;
             }
@@ -144,40 +126,15 @@ void Lexer::lexeUnit() {
             return;
         }
     }
-    
 }
 
 void Lexer::lexeSpecialCharacters() {
-    Token token;
-    switch (expression[index]) {
-    case '(':
-        token = Token::OpeningParenthesis;
-        break;
-    case ')':
-        token = Token::ClosingParenthesis;
-        break;
-    case '{':
-        token = Token::OpeningCurlyBracket;
-        break;
-    case '}':
-        token = Token::ClosingCurlyBracket;
-        break;
-    case ',':
-        token = Token::Comma;
-        break;
-    case ':':
-        token = Token::Colon;
-        break;
-    case ';':
-        token = Token::SemiColon;
-        break;
-        break;
-    default:
-        return;
+    std::map<char, Token>::const_iterator specialCharIt = specialCharacters.find(expression[index]);
+    if (specialCharIt != specialCharacters.cend()) {
+        expressionTree->appendNext(new Node{specialCharIt->second});
+        index++;
+        lexed = true;
     }
-    expressionTree->appendNext(new Node{token});
-    index++;
-    lexed = true;
 }
 
 void Lexer::lexe() {
@@ -201,7 +158,7 @@ void Lexer::lexe() {
         expressionTree = expressionTree->getNext();
     }
     // remove the NullRoot token at the start
-    Node* nextList = firstNode->getNext();
+    Node *nextList = firstNode->getNext();
     firstNode->setNext(nullptr);
     delete firstNode;
     firstNode = nextList;

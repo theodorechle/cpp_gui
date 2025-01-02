@@ -1,6 +1,5 @@
-label.blue:hovered, element.red#root {
-    text-color: #0000ff;
-    element {
-        text-color: (150,150,150);
-    }
+// should raise an error because you can't do block declaration on multiple lines
+element
+.blue {
+    text-color: #ffffff;
 }

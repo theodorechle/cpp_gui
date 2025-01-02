@@ -110,7 +110,73 @@ void StyleTests::tests() {
     style = ".container      label#red{text-color : #ff0000;}";
     fileNumber = 0;
     expectedData = StyleComponentDataList();
+    expectedStyleMap = StyleValuesMap();
     startTest("deserializing a single rule");
+    std::cout << "Tested file content:\n" << style << "\n";
+    components = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
+    if (ruleNumber != 1) {
+        std::cerr << "ruleNumber is " << ruleNumber << " instead of 1\n";
+        setTestResult(Result::KO);
+    }
+    else if (components->size() != 1) {
+        std::cerr << components->size() << " components instead of 1 expected\n";
+        setTestResult(Result::KO);
+    }
+    else {
+        expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::AnyParent));
+        expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
+        expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
+        result = testStyleComponentDataList(components->front()->getComponentsList(), &expectedData);
+        if (result != Result::OK) setTestResult(result);
+        else {
+            expectedStyleMap["text-color"] = StyleRule{new StyleValue("#ff0000", StyleValueType::String), true, 0, 0, 0};
+            setTestResult(testStyleMap(components->front()->getStyleMap(), &expectedStyleMap));
+        }
+    }
+
+    expectedData.clear();
+    for (StyleBlock *component : *components) {
+        for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
+            delete rule.second.value;
+        }
+        delete component;
+    }
+    delete components;
+    for (const std::pair<std::string, StyleRule> rule : expectedStyleMap) {
+        delete rule.second.value;
+    }
+
+    endTest();
+
+    style = ".container      label#red{text-color : #ff0000}";
+    fileNumber = 0;
+    expectedData = StyleComponentDataList();
+    startTest("raising an error for missing semi-colon after assignment");
+    std::cout << "Tested file content:\n" << style << "\n";
+    try {
+        components = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
+        setTestResult(Result::KO);
+
+        for (StyleBlock *component : *components) {
+            for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
+                delete rule.second.value;
+            }
+            delete component;
+        }
+        delete components;
+    }
+    catch (const MalformedExpression &e) {
+        setTestResult(Result::OK);
+    }
+
+    endTest();
+
+    style = ".container > label#red{text-color : #ff0000;}";
+    fileNumber = 0;
+    expectedData = StyleComponentDataList();
+    expectedStyleMap = StyleValuesMap();
+    startTest("testing direct parent");
+    std::cout << "Tested file content:\n" << style << "\n";
     components = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
     if (ruleNumber != 1) {
         std::cerr << "ruleNumber is " << ruleNumber << " instead of 1\n";
@@ -146,21 +212,43 @@ void StyleTests::tests() {
 
     endTest();
 
-    style = ".container      label#red{text-color : #ff0000}";
+    style = ".container>label#red{text-color : #ff0000;}";
     fileNumber = 0;
     expectedData = StyleComponentDataList();
-    startTest("raising an error for missing semi-colon after assignment");
-    try {
-        components = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
+    expectedStyleMap = StyleValuesMap();
+    startTest("testing direct parent without spaces");
+    std::cout << "Tested file content:\n" << style << "\n";
+    components = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
+    if (ruleNumber != 1) {
+        std::cerr << "ruleNumber is " << ruleNumber << " instead of 1\n";
         setTestResult(Result::KO);
-
-        for (StyleBlock *component : *components) {
-            delete component;
-        }
-        delete components;
     }
-    catch (const MalformedExpression &e) {
-        setTestResult(Result::OK);
+    else if (components->size() != 1) {
+        std::cerr << components->size() << " components instead of 1 expected\n";
+        setTestResult(Result::KO);
+    }
+    else {
+        expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::DirectParent));
+        expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
+        expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
+        result = testStyleComponentDataList(components->front()->getComponentsList(), &expectedData);
+        if (result != Result::OK) setTestResult(result);
+        else {
+            expectedStyleMap["text-color"] = StyleRule{new StyleValue("#ff0000", StyleValueType::String), true, 0, 0, 0};
+            setTestResult(testStyleMap(components->front()->getStyleMap(), &expectedStyleMap));
+        }
+    }
+
+    expectedData.clear();
+    for (StyleBlock *component : *components) {
+        for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
+            delete rule.second.value;
+        }
+        delete component;
+    }
+    delete components;
+    for (const std::pair<std::string, StyleRule> rule : expectedStyleMap) {
+        delete rule.second.value;
     }
 
     endTest();

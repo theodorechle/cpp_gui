@@ -1,5 +1,4 @@
-// should raise an error because you can't do block declaration on multiple lines
-element
-.blue {
-    text-color: #ffffff;
+element { /* test units */
+    width: 150px;
+    height: 40%;
 }

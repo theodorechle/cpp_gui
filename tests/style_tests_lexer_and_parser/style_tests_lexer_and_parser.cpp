@@ -1,5 +1,12 @@
 #include "style_tests_lexer_and_parser.hpp"
 
+StyleTestsLexerAndParser::StyleTestsLexerAndParser() : Tests{"Tests style lexer and parser"}, settings{new Settings()} {
+    settings->debug = true;
+}
+StyleTestsLexerAndParser::~StyleTestsLexerAndParser() {
+    delete settings;
+};
+
 void StyleTestsLexerAndParser::tests() {
     std::string fileContent;
 
@@ -7,8 +14,7 @@ void StyleTestsLexerAndParser::tests() {
     Node *expected;
 
     startTest("single rule");
-    settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR + "/test-1.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-0.txt");
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
     expected = expected->appendChild(new Node{Token::BlockDeclaration});
@@ -28,8 +34,7 @@ void StyleTestsLexerAndParser::tests() {
     endTest();
 
     startTest("two style blocks");
-    settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR + "/test-2.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-1.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -67,8 +72,7 @@ void StyleTestsLexerAndParser::tests() {
     endTest();
 
     startTest("nested modifier block");
-    settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR + "/test-3.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-2.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -104,8 +108,7 @@ void StyleTestsLexerAndParser::tests() {
     endTest();
 
     startTest("nested element name block");
-    settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR + "/test-4.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-3.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -140,9 +143,8 @@ void StyleTestsLexerAndParser::tests() {
     expected = nullptr;
     endTest();
 
-    startTest("apply style block to two distinct commponents");
-    settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR + "/test-5.txt");
+    startTest("apply style block using the any parent relation components");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-4.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -151,7 +153,7 @@ void StyleTestsLexerAndParser::tests() {
     expected->appendChild(new Node{Token::ElementName, "label"});
     expected->appendChild(new Node{Token::Class, "blue"});
     expected->appendChild(new Node{Token::Modifier, "hovered"});
-    expected->appendChild(new Node{Token::DirectParent});
+    expected->appendChild(new Node{Token::AnyParent});
     expected->appendChild(new Node{Token::ElementName, "element"});
     expected->appendChild(new Node{Token::Class, "red"});
     expected->appendChild(new Node{Token::Identifier, "root"});
@@ -182,9 +184,8 @@ void StyleTestsLexerAndParser::tests() {
     expected = nullptr;
     endTest();
 
-    startTest("apply style block to two distinct component with nested element name");
-    settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR + "/test-6.txt");
+    startTest("apply style block to any child component with nested element name");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-5.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -226,14 +227,12 @@ void StyleTestsLexerAndParser::tests() {
     endTest();
 
     startTest("raising an error for multi-line block declaration");
-    settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR + "/test-7.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-6.txt");
     invalidExpression(fileContent);
     endTest();
 
     startTest("test units for values");
-    settings->debug = true;
-    fileContent = getFileContent(TESTS_FILES_DIR + "/test-8.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-7.txt");
 
     rootExpected = new Node{Token::NullRoot};
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
@@ -258,8 +257,7 @@ void StyleTestsLexerAndParser::tests() {
     endTest();
 
     startTest("raising an error for no block declaration");
-    settings->debug = false;
-    fileContent = getFileContent(TESTS_FILES_DIR + "/test-9.txt");
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-8.txt");
     invalidExpression(fileContent);
     endTest();
 }

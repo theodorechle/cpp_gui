@@ -4,14 +4,11 @@
 int main() {
     int nbErrors;
     Tests *tests;
-    Settings *settings = new Settings();
-    settings->debug = true;
-    tests = new StyleTestsLexerAndParser(settings);
+    tests = new StyleTestsLexerAndParser();
     tests->runTests();
     nbErrors = tests->getNbErrors();
 
     delete tests;
-    delete settings;
 
     tests = new StyleTests();
     tests->runTests();

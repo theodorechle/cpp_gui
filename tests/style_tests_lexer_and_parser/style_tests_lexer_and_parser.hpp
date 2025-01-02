@@ -19,7 +19,8 @@ class StyleTestsLexerAndParser : public Tests {
     void tests() override;
 
 public:
-    StyleTestsLexerAndParser(Settings *settings = new Settings()) : Tests{"Tests style lexer and parser"}, settings{settings} {};
+    StyleTestsLexerAndParser();
+    ~StyleTestsLexerAndParser();
 
     void lexer(bool equal, const std::string &expr, const Node *expected);
     void parser(bool equal, Node *expr, const Node *expected);

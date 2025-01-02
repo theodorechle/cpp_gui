@@ -51,9 +51,13 @@ class Parser {
     bool isValidClass(const std::string &str);
     bool isValidIdentifier(const std::string &str);
     bool isValidModifier(const std::string &str);
+    bool isWhiteSpace(Token token);
+    // relations are direct parent, any parent, same element, ...
+    bool isComponentRelation(Token token);
     void removeSpace();
     void removeLineReturn();
-    void removeSpacesAndLineReturns();
+    // removes all spaces and line returns childs
+    void removeWhiteSpaces();
 
     void parse();
 
@@ -65,6 +69,7 @@ class Parser {
     void parseComma();
     void parseColon();
     void parseSemiColon();
+    void parseGreatherThan();
     void parseOpeningParenthesis();
     void parseClosingParenthesis();
     void parseOpeningCurlyBracket();
@@ -72,6 +77,10 @@ class Parser {
     void parseString();
     void parseName();
     void parseUnit();
+
+    // if you don't know how to use it, don't use it
+    Node *updateLastDeclarationComponentBeforeNewOne(Node *lastChild);
+    void parseDeclarationComponent(Token outputTokenType);
     void parseClass();
     void parseIdentifier();
     void parseModifier();
