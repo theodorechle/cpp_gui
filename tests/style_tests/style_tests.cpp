@@ -264,6 +264,7 @@ void StyleTests::tests() {
     result = testRuleNumberAndStyleBlocksNumber(ruleNumber, 1, styleBlocks, 1);
     if (result != Result::OK) setTestResult(result);
     else {
+        expectedData.push_back(std::pair(std::pair("container", StyleComponentType::ElementName), StyleRelation::DirectParent));
         expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
         expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Class), StyleRelation::SameElement));
         expectedData.push_back(std::pair(std::pair("test-label", StyleComponentType::Identifier), StyleRelation::SameElement));
