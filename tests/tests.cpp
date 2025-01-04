@@ -45,20 +45,12 @@ bool Tests::endTestSession() {
     return true;
 }
 
-void Tests::redirectStandardOutput() {
-    oldOutBuffer = std::cout.rdbuf(logFile.rdbuf());
-}
-void Tests::redirectErrorOutput() {
-    oldErrBuffer = std::cerr.rdbuf(logFile.rdbuf());
-}
+void Tests::redirectStandardOutput() { oldOutBuffer = std::cout.rdbuf(logFile.rdbuf()); }
+void Tests::redirectErrorOutput() { oldErrBuffer = std::cerr.rdbuf(logFile.rdbuf()); }
 
-void Tests::resetStandardOutput() {
-    std::cerr.rdbuf(oldErrBuffer);
-}
+void Tests::resetStandardOutput() { std::cerr.rdbuf(oldErrBuffer); }
 
-void Tests::resetErrorOutput() {
-    std::cout.rdbuf(oldOutBuffer);
-}
+void Tests::resetErrorOutput() { std::cout.rdbuf(oldOutBuffer); }
 
 void Tests::startTest(const std::string &testName) {
     openFile();
@@ -151,17 +143,13 @@ void Tests::showLogs(bool show) {
     if (!testsRunning) showLogMessages = show;
 }
 
-bool Tests::showLogs() const {
-    return showLogMessages;
-}
+bool Tests::showLogs() const { return showLogMessages; }
 
 void Tests::alwaysShowLogs(bool alwaysShow) {
     if (!testsRunning) alwaysShowLogMessages = alwaysShow;
 }
 
-bool Tests::alwaysShowLogs() const {
-    return alwaysShowLogMessages;
-}
+bool Tests::alwaysShowLogs() const { return alwaysShowLogMessages; }
 void Tests::displaySummary() const {
     std::cout << "Summary:\n";
     size_t index = 0;

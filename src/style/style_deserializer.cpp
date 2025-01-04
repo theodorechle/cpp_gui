@@ -3,6 +3,10 @@
 std::list<StyleBlock *> *StyleDeserializer::deserializeFromFile(const std::string &fileName, int fileNumber, int *ruleNumber, bool debug) {
     std::ifstream file(fileName);
     std::stringstream buffer;
+    if (!file.is_open()) {
+        std::cerr << "File '" << fileName << "' couldn't be opened\n";
+        return nullptr;
+    }
     buffer << file.rdbuf();
 
     return deserialize(buffer.str(), fileNumber, ruleNumber, debug);

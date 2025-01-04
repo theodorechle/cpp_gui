@@ -15,6 +15,8 @@ public:
     Result testStyleValue(StyleValue *testedValue, StyleValue *expectedValue);
     Result testStyleRule(const StyleRule *testedRule, const StyleRule *expectedRule);
     Result testStyleMap(const StyleValuesMap *testedStyleMap, const StyleValuesMap *expectedStyleMap);
+    Result testRuleNumberAndStyleBlocksNumber(int testedRuleNumber, int expectedRuleNumber,
+                                                          const std::list<StyleBlock *> *testedStyleBlocks, size_t expectedStyleBlocksNumber);
 };
 
 #endif // STYLE_TESTS_HPP

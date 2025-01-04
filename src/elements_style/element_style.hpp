@@ -21,7 +21,7 @@ class ElementStyle {
      *   second: ruleNumber
      */
     std::unordered_map<std::string, std::pair<bool, std::list<std::pair<int, int>>>> modifiers = {};
-    std::set<StyleComponentData> selectors;
+    std::set<StyleComponentData> selectors = {};
     ElementStyle *parent = nullptr;
     ElementStyle *child = nullptr;
     ElementStyle *next = nullptr;

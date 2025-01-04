@@ -1,8 +1,6 @@
 #include "ui_element.hpp"
 
-void UIElement::computeDesiredLayout() {
-    
-}
+void UIElement::computeDesiredLayout() {}
 
 void UIElement::computeLayout() {
     int w, h;

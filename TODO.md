@@ -1,1 +1,3 @@
 - detect when file does not exists
+- type converters
+- add tests

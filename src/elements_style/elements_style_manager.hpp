@@ -12,7 +12,7 @@
 
 class ElementsStyleManager {
     ElementStyle *elements = nullptr;
-    std::list<StyleBlock *> style = std::list<StyleBlock *>();
+    std::list<StyleBlock *> style = {};
     int fileCount = 0;
     // file number: <file name, rule number>
     std::unordered_map<int, std::pair<std::string, int>> files = {};

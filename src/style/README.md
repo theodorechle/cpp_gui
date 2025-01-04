@@ -2,7 +2,7 @@
 A program who pick files in a css like format and convert them to understandable style for the cpp_gui.
 
 ## FEATURES:
-### Style types (exprimed in pseudo regex)
+### Style types (expressed in pseudo regex)
 - int: [0-9]+
 - float: [0-9]+\.[0-9]\*
 - string: [^,;\s{}()[]]+

@@ -47,7 +47,8 @@ void ElementsStyleManager::applySpecificStyleToElement(std::list<StyleBlock *> s
             actualElementStyle->addModifier(modifier);
         }
         for (std::pair<std::string, StyleRule> styleRule : *styleMap) {
-            elementStyleMap[styleRule.first] = {StyleRule{styleRule.second.value, true, styleRule.second.priority + actualElementStyle->getPriority(), styleRule.second.fileNumber, styleRule.second.ruleNumber}};
+            elementStyleMap[styleRule.first] = {StyleRule{styleRule.second.value, true, styleRule.second.priority + actualElementStyle->getPriority(),
+                                                          styleRule.second.fileNumber, styleRule.second.ruleNumber}};
             if (!modifier.empty()) {
                 actualElementStyle->addRuleAffectedByModifier(styleRule.second.fileNumber, styleRule.second.ruleNumber, modifier);
             }
@@ -73,6 +74,10 @@ int ElementsStyleManager::addStyleFile(const std::string &fileName) {
     }
     std::ifstream file(fileName);
     std::stringstream buffer;
+    if (!file.is_open()) {
+        std::cerr << "File '" << fileName << "' couldn't be opened\n";
+        return -1;
+    }
     buffer << file.rdbuf();
     return addStyle(buffer.str());
 }
@@ -107,29 +112,30 @@ void ElementsStyleManager::removeStyle(int fileNumber) {
 }
 
 bool ElementsStyleManager::areElementSelectorsCompatibles(ElementStyle *elementStyle, const StyleComponentDataList *componentsList) {
+    if (elementStyle == nullptr || componentsList == nullptr) return false;
     bool selectorExists = false;
     ElementStyle *currentStyle = elementStyle;
-    StyleComponentDataList::const_iterator listEndIt = componentsList->cend();
+    StyleComponentDataList::const_reverse_iterator listEndIt = componentsList->crbegin();
     const std::set<StyleComponentData> *elementSelectors;
     elementSelectors = currentStyle->getSelectors();
     if (componentsList->back().first.second == StyleComponentType::Modifier) {
-        listEndIt = listEndIt--;
+        listEndIt = listEndIt++;
     }
-    for (StyleComponentDataList::const_iterator it = componentsList->cbegin(); it != listEndIt; it++) {
+    for (StyleComponentDataList::const_reverse_iterator it = listEndIt; it != componentsList->crend(); it++) {
         switch (it->second) {
         case StyleRelation::SameElement:
-            selectorExists = elementSelectors->find(it->first) != elementSelectors->end();
+            selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
             break;
         case StyleRelation::DirectParent:
             currentStyle = currentStyle->getParent();
             elementSelectors = currentStyle->getSelectors();
-            selectorExists = elementSelectors->find(it->first) != elementSelectors->end();
+            selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
             break;
         case StyleRelation::AnyParent:
-            while (currentStyle != nullptr) {
+            while (currentStyle != nullptr) { // FIXME: do the next steps with all compatible parents. The first found can be good for this step but not the next, but an other could work
                 currentStyle = currentStyle->getParent();
                 elementSelectors = currentStyle->getSelectors();
-                selectorExists = elementSelectors->find(it->first) != elementSelectors->end();
+                selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
                 if (selectorExists) break;
             }
             break;

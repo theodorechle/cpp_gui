@@ -13,13 +13,15 @@ class AbstractElement {
     virtual void computeLayout() = 0;
 
 protected:
-    ElementStyle *style;
+    ElementStyle *elementStyle;
 
 public:
     /**
      * If no style manager is given, the element can't have style
      */
-    AbstractElement(std::string elementName, ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr, const std::string &identifier = "", AbstractElement *parent = nullptr, AbstractElement *child = nullptr, AbstractElement *next = nullptr);
+    AbstractElement(std::string elementName, ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+                    const std::string &identifier = "", AbstractElement *parent = nullptr, AbstractElement *child = nullptr,
+                    AbstractElement *next = nullptr);
     void setParent(AbstractElement *parent) { this->parent = parent; }
     AbstractElement *getParent() { return this->parent; }
     void setChild(AbstractElement *child) { this->child = child; }

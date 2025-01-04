@@ -1,5 +1,4 @@
 - register where errors occurs to be able to signal them
 - enable modifiers who aren't at the end of the required components list
-- type converters
 - add tests
 - add priorities (element vs class vs ...)

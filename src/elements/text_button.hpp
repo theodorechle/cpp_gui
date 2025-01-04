@@ -3,9 +3,11 @@
 
 #include "button.hpp"
 
-class TextButton: public UIElement {
+class TextButton : public UIElement {
 public:
-    TextButton(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr, const std::string &identifier = "", AbstractElement *parent = nullptr, AbstractElement *child = nullptr, AbstractElement *next = nullptr) : UIElement{window, renderer, "label", elementsStyleManager, classes, identifier, parent, child, next} {}
+    TextButton(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *elementsStyleManager = nullptr,
+               std::vector<std::string> *classes = nullptr, const std::string &identifier = "", AbstractElement *parent = nullptr,
+               AbstractElement *child = nullptr, AbstractElement *next = nullptr);
     void render() const override;
 };
 
