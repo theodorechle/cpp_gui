@@ -38,13 +38,13 @@ Result StyleTests::checkStyleValue(StyleValue *testedValue, StyleValue *expected
         std::cerr << "One of the rule is null\n";
         return Result::KO;
     }
-    if (testedValue->getName() != expectedValue->getName()) {
-        std::cerr << "The name is different (have " << testedValue->getName() << ", expected " << expectedValue->getName() << "\n";
+    if (testedValue->getValue() != expectedValue->getValue()) {
+        std::cerr << "The name is different (have " << testedValue->getValue() << ", expected " << expectedValue->getValue() << ")\n";
         return Result::KO;
     }
     if (testedValue->getType() != expectedValue->getType()) {
         std::cerr << "The type is different (have " << styleValueTypeToString(testedValue->getType()) << ", expected "
-                  << styleValueTypeToString(expectedValue->getType()) << "\n";
+                  << styleValueTypeToString(expectedValue->getType()) << ")\n";
         return Result::KO;
     }
 
@@ -221,7 +221,7 @@ void StyleTests::tests() {
     expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::AnyParent));
     expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
     expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
-    styleValue = new StyleValue("#ff0000", StyleValueType::String);
+    styleValue = new StyleValue("ff0000", StyleValueType::Hex);
     expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
     styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
     expectedStyleBlocks = {styleBlock};
@@ -236,7 +236,7 @@ void StyleTests::tests() {
     expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::DirectParent));
     expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
     expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
-    styleValue = new StyleValue("#ff0000", StyleValueType::String);
+    styleValue = new StyleValue("ff0000", StyleValueType::Hex);
     expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
     styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
     expectedStyleBlocks = {styleBlock};
@@ -249,7 +249,7 @@ void StyleTests::tests() {
     expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::DirectParent));
     expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
     expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
-    styleValue = new StyleValue("#ff0000", StyleValueType::String);
+    styleValue = new StyleValue("ff0000", StyleValueType::Hex);
     expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
     styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
     expectedStyleBlocks = {styleBlock};
@@ -263,7 +263,7 @@ void StyleTests::tests() {
     expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
     expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Class), StyleRelation::SameElement));
     expectedData.push_back(std::pair(std::pair("test-label", StyleComponentType::Identifier), StyleRelation::SameElement));
-    styleValue = new StyleValue("#ff0000", StyleValueType::String);
+    styleValue = new StyleValue("ff0000", StyleValueType::Hex);
     expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
     styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
     expectedStyleBlocks = {styleBlock};

@@ -27,6 +27,7 @@ enum class StyleValueType {
     Function,
     PercentageUnit,
     PixelUnit,
+    Hex,
     Null
 };
 
@@ -50,19 +51,19 @@ std::string styleRelationToString(StyleRelation token);
  * That's why this class exists, to allow such elements who contains others to exists.
  */
 class StyleValue {
-    std::string name;
+    std::string value;
     StyleValueType type;
     StyleValue *child = nullptr;
     StyleValue *next = nullptr;
 
 public:
-    StyleValue(const std::string &name = "", const StyleValueType type = StyleValueType::Null) : name{name}, type{type} {};
-    void setName(const std::string &name) { this->name = name; }
+    StyleValue(const std::string &value = "", const StyleValueType type = StyleValueType::Null) : value{value}, type{type} {};
+    void setValue(const std::string &value) { this->value = value; }
     void setType(StyleValueType type) { this->type = type; }
     void setChild(StyleValue *child) { this->child = child; }
     void setNext(StyleValue *next) { this->next = next; }
-    std::string getName() { return name; }
-    StyleValueType getType() { return type; }
+    std::string getValue() const { return value; }
+    StyleValueType getType() const { return type; }
     StyleValue *getChild() { return child; }
     StyleValue *getNext() { return next; }
     ~StyleValue();

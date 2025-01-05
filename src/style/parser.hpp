@@ -5,6 +5,7 @@
 #include <exception>
 #include <string>
 #include <unordered_map>
+#include <algorithm>
 
 #include "settings.hpp"
 
@@ -51,6 +52,7 @@ class Parser {
     bool isValidClass(const std::string &str);
     bool isValidIdentifier(const std::string &str);
     bool isValidModifier(const std::string &str);
+    bool isValidHex(const std::string &str);
     bool isWhiteSpace(Token token);
     // relations are direct parent, any parent, same element, ...
     bool isComponentRelation(Token token);

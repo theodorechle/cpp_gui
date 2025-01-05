@@ -47,7 +47,8 @@ enum class Token {
     Float,
     Bool,
     PercentageUnit,
-    PixelUnit
+    PixelUnit,
+    Hex
 };
 
 const std::unordered_map<std::string, Token> UNITS{

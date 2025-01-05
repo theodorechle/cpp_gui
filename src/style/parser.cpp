@@ -32,6 +32,11 @@ bool Parser::isValidModifier(const string &str) {
     return isValidName(str, 1, str.size());
 }
 
+bool Parser::isValidHex(const std::string &str) {
+    if (str[0] != '#') return false;
+    return std::all_of(++str.cbegin(), str.cend(), ::isxdigit);
+}
+
 bool Parser::isWhiteSpace(Token token) {
     return (token == Token::Space || token == Token::LineReturn);
 }
@@ -328,7 +333,8 @@ void Parser::parseString() {
         removeSpace();
 
         if (expressionTree->getNbChilds() != 1) throw MalformedExpression("Can't have more than one rvalue in an assignment");
-        expressionTree->appendChild(new Node{Token::String, expressionTokens->getValue()});
+        if (isValidHex(expressionTokens->getValue())) expressionTree->appendChild(new Node{Token::Hex, expressionTokens->getValue().substr(1)});
+        else expressionTree->appendChild(new Node{Token::String, expressionTokens->getValue()});
     }
     else if (expressionTree->getTokenType() == Token::Tuple || expressionTree->getTokenType() == Token::Function) {
         removeSpace();

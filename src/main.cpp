@@ -28,6 +28,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
         return SDL_APP_FAILURE;
     }
 
+    SDL_SetRenderDrawBlendMode(sdl_renderer, SDL_BLENDMODE_BLEND);
+
     AbstractManager *manager = new UIManager(sdl_window, sdl_renderer);
 
     *appstate = new AppState(manager, sdl_window, sdl_renderer);
@@ -53,16 +55,22 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 }
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
+    Uint8 r, g, b, a;
     AppState *state = static_cast<AppState *>(appstate);
     AbstractManager *manager = state->getManager();
+    if (SDL_GetRenderDrawColor(state->getRenderer(), &r, &g, &b, &a)) {
+        SDL_SetRenderDrawColor(state->getRenderer(), 255, 255, 255, 255);
+        SDL_RenderClear(state->getRenderer());
+        SDL_SetRenderDrawColor(state->getRenderer(), r, g, b, a);
+    }
     manager->render();
     SDL_RenderPresent(state->getRenderer());
-    manager->removeAllElements();
-
-    return SDL_APP_SUCCESS;
+    return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     AppState *state = static_cast<AppState *>(appstate);
+    AbstractManager *manager = state->getManager();
+    manager->removeAllElements();
     delete state;
 }

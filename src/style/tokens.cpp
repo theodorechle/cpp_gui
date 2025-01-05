@@ -43,6 +43,7 @@ std::string tokenToString(const Token &type) {
         case Token::NullRoot: return "NullRoot";
         case Token::PercentageUnit: return "PercentageUnit";
         case Token::PixelUnit: return "PixelUnit";
+        case Token::Hex: return "Hex";
         default: return "Unknown";
     }
 }

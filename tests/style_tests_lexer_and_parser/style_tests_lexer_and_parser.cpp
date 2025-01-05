@@ -20,7 +20,7 @@ void StyleTestsLexerAndParser::tests() {
     expected = expected->appendChild(new Node{Token::BlockDefinition});
     expected = expected->appendChild(new Node{Token::Assignment});
     expected->appendChild(new Node{Token::StyleName, "background-color"});
-    expected->appendChild(new Node{Token::String, "#ff0000"});
+    expected->appendChild(new Node{Token::Hex, "ff0000"});
 
     testLexerAndParser(true, fileContent, rootExpected, "single rule");
 
@@ -40,7 +40,7 @@ void StyleTestsLexerAndParser::tests() {
     expected = expected->appendChild(new Node{Token::BlockDefinition});
     expected = expected->appendChild(new Node{Token::Assignment});
     expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::String, "#0000ff"});
+    expected->appendChild(new Node{Token::Hex, "0000ff"});
 
     expected = rootExpected->appendChild(new Node{Token::StyleBlock});
     expected = expected->appendChild(new Node{Token::BlockDeclaration});
@@ -76,7 +76,7 @@ void StyleTestsLexerAndParser::tests() {
     expected = expected->appendChild(new Node{Token::BlockDefinition});
     expected = expected->appendChild(new Node{Token::Assignment});
     expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::String, "#0000ff"});
+    expected->appendChild(new Node{Token::Hex, "0000ff"});
     expected = expected->getParent();
     expected = expected->appendChild(new Node{Token::StyleBlock});
     expected = expected->appendChild(new Node{Token::BlockDeclaration});
@@ -110,7 +110,7 @@ void StyleTestsLexerAndParser::tests() {
     expected = expected->appendChild(new Node{Token::BlockDefinition});
     expected = expected->appendChild(new Node{Token::Assignment});
     expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::String, "#0000ff"});
+    expected->appendChild(new Node{Token::Hex, "0000ff"});
     expected = expected->getParent();
     expected = expected->appendChild(new Node{Token::StyleBlock});
     expected = expected->appendChild(new Node{Token::BlockDeclaration});
@@ -149,7 +149,7 @@ void StyleTestsLexerAndParser::tests() {
     expected = expected->appendChild(new Node{Token::BlockDefinition});
     expected = expected->appendChild(new Node{Token::Assignment});
     expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::String, "#0000ff"});
+    expected->appendChild(new Node{Token::Hex, "0000ff"});
     expected = expected->getParent();
     expected = expected->appendChild(new Node{Token::StyleBlock});
     expected = expected->appendChild(new Node{Token::BlockDeclaration});
@@ -189,7 +189,7 @@ void StyleTestsLexerAndParser::tests() {
     expected = expected->appendChild(new Node{Token::BlockDefinition});
     expected = expected->appendChild(new Node{Token::Assignment});
     expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::String, "#0000ff"});
+    expected->appendChild(new Node{Token::Hex, "0000ff"});
     expected = expected->getParent();
     expected = expected->appendChild(new Node{Token::StyleBlock});
     expected = expected->appendChild(new Node{Token::BlockDeclaration});

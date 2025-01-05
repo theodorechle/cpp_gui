@@ -33,6 +33,8 @@ StyleValueType tokenTypeToStyleValueType(Token token) {
         return StyleValueType::PercentageUnit;
     case Token::PixelUnit:
         return StyleValueType::PixelUnit;
+    case Token::Hex:
+        return StyleValueType::Hex;
     default:
         return StyleValueType::Null;
     }
@@ -111,7 +113,7 @@ StyleValue *NodeToStyleComponentList::convertStyleNodeToStyleValue(Node *node) {
     if (type == StyleValueType::Null) return nullptr;
 
     appliedStyle = new StyleValue();
-    appliedStyle->setName(node->getValue());
+    appliedStyle->setValue(node->getValue());
     appliedStyle->setType(type);
 
     child = node->getChild();

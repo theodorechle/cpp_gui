@@ -7,7 +7,7 @@ SRC_DIR=src
 TESTS_DIR=tests
 
 # Subdirectories
-SUBDIRS=elements managers app_utils elements_style
+SUBDIRS=elements managers app_utils elements_style converters
 
 # Source files
 SRC_MAIN=$(SRC_DIR)/main.cpp

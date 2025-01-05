@@ -35,6 +35,8 @@ std::string styleValueTypeToString(StyleValueType token) {
         return "PercentageUnit";
     case StyleValueType::PixelUnit:
         return "PixelUnit";
+    case StyleValueType::Hex:
+        return "Hex";
     case StyleValueType::Null:
         return "Null";
     default:
