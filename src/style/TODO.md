@@ -2,3 +2,4 @@
 - enable modifiers who aren't at the end of the required components list
 - add tests
 - add priorities (element vs class vs ...)
+- check for multiple same identifiers

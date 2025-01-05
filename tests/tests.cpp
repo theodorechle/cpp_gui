@@ -59,21 +59,26 @@ void Tests::startTest(const std::string &testName) {
         redirectErrorOutput();
     }
     std::cout << "Test n°" << getTestNumber();
-    results.push_back(std::pair(testName, Result::NOT_GIVEN));
-    if (!results.back().first.empty()) {
-        std::cout << " (" << results.back().first << ")";
+    results.push_back(std::tuple(testName, Result::NOT_GIVEN, 0));
+    if (!std::get<0>(results.back()).empty()) {
+        std::cout << " (" << std::get<0>(results.back()) << ")";
     }
     std::cout << ":\n";
+    startTime = std::chrono::high_resolution_clock::now();
 }
 
-void Tests::endTest() {
+void Tests::endTest(Result result) {
+    std::chrono::_V2::system_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+
+    std::get<1>(results.back()) = result;
+    std::get<2>(results.back()) = std::chrono::duration<float>(endTime - startTime).count();
+
     std::stringstream buffer;
     if (!alwaysShowLogMessages) {
         resetStandardOutput();
         resetErrorOutput();
     }
-    resultEntered = false;
-    if (logFile.is_open() && results.back().second != Result::OK) {
+    if (logFile.is_open() && std::get<1>(results.back()) != Result::OK) {
         std::ifstream file(logFileName);
         std::stringstream buffer;
         buffer << file.rdbuf();
@@ -90,27 +95,18 @@ bool Tests::runTests() {
         tests();
     }
     catch (const std::exception &exception) {
-        if (resultEntered) results.pop_back();
-        setTestResult(Result::ERROR);
-        endTest();
+        endTest(Result::ERROR);
         std::cerr << "Tests stopped after an exception was raised: " << exception.what() << "\n";
         testsValid = false;
     }
     catch (...) {
-        if (resultEntered) results.pop_back();
-        setTestResult(Result::ERROR);
-        endTest();
+        endTest(Result::ERROR);
         std::cerr << "Tests stopped after an exception was raised who is not a subclass of std::exception\n";
         testsValid = false;
     }
 
     if (!endTestSession()) return false;
     return testsValid;
-}
-
-void Tests::setTestResult(Result r) {
-    results.back().second = r;
-    resultEntered = true;
 }
 
 std::string Tests::getFileContent(std::string fileName) {
@@ -150,15 +146,19 @@ void Tests::alwaysShowLogs(bool alwaysShow) {
 }
 
 bool Tests::alwaysShowLogs() const { return alwaysShowLogMessages; }
+
 void Tests::displaySummary() const {
     std::cout << "Summary:\n";
     size_t index = 0;
     std::string resultStr;
-    for (std::list<std::pair<std::string, Result>>::const_iterator it = results.cbegin(); it != results.cend(); it++) {
-        resultStr = resultToStr(it->second);
+    std::string chrono;
+    for (std::list<std::tuple<std::string, Result, float>>::const_iterator it = results.cbegin(); it != results.cend(); it++) {
+        resultStr = resultToStr(std::get<1>(*it));
         std::cout << "\tTest n°" << index << ": " << resultStr;
-        if (!it->first.empty()) {
-            std::cout << std::string(nbSpacesBeforeTestDescription - resultStr.size(), ' ') << " (" << it->first << ")";
+        chrono = std::to_string(std::get<2>(*it));
+        std::cout << std::string(NB_SPACES_BEFORE_CHRONO - resultStr.size(), ' ') << " " << chrono << "s";
+        if (!std::get<0>(*it).empty()) {
+            std::cout << " " << std::string(NB_SPACES_BEFORE_TEST_DESCRIPTION - chrono.size(), ' ') << "(" << std::get<0>(*it) << ")";
         }
         std::cout << "\n";
         index++;
@@ -168,8 +168,8 @@ void Tests::displaySummary() const {
 
 int Tests::getNbErrors() const {
     int nbErrors = 0;
-    for (std::pair<std::string, Result> result : results) {
-        if (result.second != Result::OK) nbErrors++;
+    for (std::tuple<std::string, Result, float> result : results) {
+        if (std::get<1>(result) != Result::OK) nbErrors++;
     }
     return nbErrors;
 }

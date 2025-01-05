@@ -26,3 +26,4 @@ FixNamespaceComments: false
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 BreakBeforeBinaryOperators: NonAssignment
 BreakBinaryOperations: OnePerLine
+BreakTemplateDeclarations: Yes

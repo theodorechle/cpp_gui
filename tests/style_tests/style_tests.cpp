@@ -1,6 +1,6 @@
 #include "style_tests.hpp"
 
-Result StyleTests::testStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData) {
+Result StyleTests::checkStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData) {
     if (testedData == nullptr && expectedData == nullptr) return Result::OK;
     if ((testedData == nullptr && expectedData != nullptr) || (testedData != nullptr && expectedData == nullptr)
         || (testedData->size() != expectedData->size())) {
@@ -30,7 +30,7 @@ Result StyleTests::testStyleComponentDataList(const StyleComponentDataList *test
     return Result::OK;
 }
 
-Result StyleTests::testStyleValue(StyleValue *testedValue, StyleValue *expectedValue) {
+Result StyleTests::checkStyleValue(StyleValue *testedValue, StyleValue *expectedValue) {
     Result result;
 
     if (testedValue == nullptr && expectedValue == nullptr) return Result::OK;
@@ -48,15 +48,15 @@ Result StyleTests::testStyleValue(StyleValue *testedValue, StyleValue *expectedV
         return Result::KO;
     }
 
-    result = testStyleValue(testedValue->getChild(), expectedValue->getChild());
+    result = checkStyleValue(testedValue->getChild(), expectedValue->getChild());
     if (result != Result::OK) return result;
 
-    result = testStyleValue(testedValue->getNext(), expectedValue->getNext());
+    result = checkStyleValue(testedValue->getNext(), expectedValue->getNext());
     if (result != Result::OK) return result;
     return Result::OK;
 }
 
-Result StyleTests::testStyleRule(const StyleRule *testedRule, const StyleRule *expectedRule) {
+Result StyleTests::checkStyleRule(const StyleRule *testedRule, const StyleRule *expectedRule) {
     if (testedRule == nullptr && expectedRule == nullptr) return Result::OK;
     if ((testedRule == nullptr && expectedRule != nullptr) || (testedRule != nullptr && expectedRule == nullptr)) {
         std::cerr << "One of the rule is null\n";
@@ -78,10 +78,10 @@ Result StyleTests::testStyleRule(const StyleRule *testedRule, const StyleRule *e
         std::cerr << "The enabled status is different (have " << testedRule->isEnabled << ", expected " << expectedRule->isEnabled << "\n";
         return Result::KO;
     }
-    return testStyleValue(testedRule->value, expectedRule->value);
+    return checkStyleValue(testedRule->value, expectedRule->value);
 }
 
-Result StyleTests::testStyleMap(const StyleValuesMap *testedStyleMap, const StyleValuesMap *expectedStyleMap) {
+Result StyleTests::checkStyleMap(const StyleValuesMap *testedStyleMap, const StyleValuesMap *expectedStyleMap) {
     StyleValuesMap::const_iterator ruleIt;
     Result styleRuleCheckResult;
     if (testedStyleMap == nullptr && expectedStyleMap == nullptr) return Result::OK;
@@ -97,57 +97,55 @@ Result StyleTests::testStyleMap(const StyleValuesMap *testedStyleMap, const Styl
             std::cerr << "Rule " << rule.first << " can't be found in the tested map\n";
             return Result::KO;
         }
-        styleRuleCheckResult = testStyleRule(&(rule.second), &(ruleIt->second));
+        styleRuleCheckResult = checkStyleRule(&(rule.second), &(ruleIt->second));
         if (styleRuleCheckResult != Result::OK) return styleRuleCheckResult;
     }
     return Result::OK;
 }
 
-Result StyleTests::testRuleNumberAndStyleBlocksNumber(int testedRuleNumber, int expectedRuleNumber, const std::list<StyleBlock *> *testedStyleBlocks,
-                                                      size_t expectedStyleBlocksNumber) {
+Result StyleTests::checkRuleNumberAndStyleBlocks(int testedRuleNumber, int expectedRuleNumber, const std::list<StyleBlock *> *testedStyleBlocks,
+                                                 const std::list<StyleBlock *> *expectedStyleBlocks) {
+    Result result;
+    std::list<StyleBlock *>::const_iterator testedStyleBlocksIt;
+    std::list<StyleBlock *>::const_iterator expectedStyleBlocksIt;
+    if (testedStyleBlocks == nullptr || expectedStyleBlocks == nullptr) {
+        std::cerr << "One of the two style blocks is nullptr\n";
+        return Result::KO;
+    }
     if (testedRuleNumber != expectedRuleNumber) {
         std::cerr << "ruleNumber is " << testedRuleNumber << " instead of " << expectedRuleNumber << "\n";
         return Result::KO;
     }
-    else if (testedStyleBlocks == nullptr || testedStyleBlocks->size() != expectedStyleBlocksNumber) {
-        std::cerr << testedStyleBlocks->size() << " styleBlocks instead of " << expectedStyleBlocksNumber << " expected\n";
+    else if (testedStyleBlocks == nullptr || testedStyleBlocks->size() != expectedStyleBlocks->size()) {
+        std::cerr << testedStyleBlocks->size() << " styleBlocks instead of " << expectedStyleBlocks->size() << " expected\n";
         return Result::KO;
+    }
+    else {
+        testedStyleBlocksIt = testedStyleBlocks->cbegin();
+        expectedStyleBlocksIt = expectedStyleBlocks->cbegin();
+        while (testedStyleBlocksIt != testedStyleBlocks->cend()) {
+            result = checkStyleComponentDataList((*testedStyleBlocksIt)->getComponentsList(), (*expectedStyleBlocksIt)->getComponentsList());
+            if (result != Result::OK) return result;
+            result = checkStyleMap((*testedStyleBlocksIt)->getStyleMap(), (*expectedStyleBlocksIt)->getStyleMap());
+            if (result != Result::OK) return result;
+            testedStyleBlocksIt++;
+            expectedStyleBlocksIt++;
+        }
     }
     return Result::OK;
 }
 
-void StyleTests::tests() {
-    std::string style;
-    std::string fileName;
-    int fileNumber;
+void StyleTests::testDeserializationFromFile(const std::string &fileName, const std::string &testName,
+                                             const std::list<StyleBlock *> *expectedStyleBlocks) {
+    int fileNumber = 0;
     int ruleNumber;
-    Result result;
-    StyleComponentDataList expectedData;
-    StyleValuesMap expectedStyleMap;
     std::list<StyleBlock *> *styleBlocks;
+    Result result;
+    startTest(testName);
+    std::cout << "Tested style file:\n" << fileName << "\n";
+    styleBlocks = StyleDeserializer::deserializeFromFile(fileName, fileNumber, &ruleNumber, true);
+    result = checkRuleNumberAndStyleBlocks(ruleNumber, 1, styleBlocks, expectedStyleBlocks);
 
-    style = ".container      label#red{text-color : #ff0000;}";
-    fileNumber = 0;
-    expectedData = StyleComponentDataList();
-    expectedStyleMap = StyleValuesMap();
-    startTest("deserializing a single rule");
-    std::cout << "Tested file content:\n" << style << "\n";
-    styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
-    result = testRuleNumberAndStyleBlocksNumber(ruleNumber, 1, styleBlocks, 1);
-    if (result != Result::OK) setTestResult(result);
-    else {
-        expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::AnyParent));
-        expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
-        expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
-        result = testStyleComponentDataList(styleBlocks->front()->getComponentsList(), &expectedData);
-        if (result != Result::OK) setTestResult(result);
-        else {
-            expectedStyleMap["text-color"] = StyleRule{new StyleValue("#ff0000", StyleValueType::String), true, 0, 0, 0};
-            setTestResult(testStyleMap(styleBlocks->front()->getStyleMap(), &expectedStyleMap));
-        }
-    }
-
-    expectedData.clear();
     for (StyleBlock *component : *styleBlocks) {
         for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
             delete rule.second.value;
@@ -155,20 +153,41 @@ void StyleTests::tests() {
         delete component;
     }
     delete styleBlocks;
-    for (const std::pair<std::string, StyleRule> rule : expectedStyleMap) {
-        delete rule.second.value;
+
+    endTest(result);
+}
+
+void StyleTests::testDeserialization(const std::string &style, const std::string &testName, const std::list<StyleBlock *> *expectedStyleBlocks) {
+    int fileNumber = 0;
+    int ruleNumber;
+    std::list<StyleBlock *> *styleBlocks;
+    Result result;
+    startTest(testName);
+    std::cout << "Tested style:\n" << style << "\n";
+    styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
+    result = checkRuleNumberAndStyleBlocks(ruleNumber, 1, styleBlocks, expectedStyleBlocks);
+
+    for (StyleBlock *component : *styleBlocks) {
+        for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
+            delete rule.second.value;
+        }
+        delete component;
     }
+    delete styleBlocks;
 
-    endTest();
+    endTest(result);
+}
 
-    style = ".container      label#red{text-color : #ff0000}";
-    fileNumber = 0;
-    expectedData = StyleComponentDataList();
-    startTest("raising an error for missing semi-colon after assignment");
-    std::cout << "Tested file content:\n" << style << "\n";
+template <typename T> void StyleTests::testDeserializationError(const std::string &style, const std::string &testName) {
+    int fileNumber = 0;
+    int ruleNumber;
+    Result result;
+    std::list<StyleBlock *> *styleBlocks;
+    startTest(testName);
+    std::cout << "Tested style:\n" << style << "\n";
     try {
         styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
-        setTestResult(Result::KO);
+        result = Result::KO;
 
         for (StyleBlock *component : *styleBlocks) {
             for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
@@ -178,115 +197,79 @@ void StyleTests::tests() {
         }
         delete styleBlocks;
     }
-    catch (const MalformedExpression &e) {
-        setTestResult(Result::OK);
-    }
-
-    endTest();
-
-    style = ".container > label#red{text-color : #ff0000;}";
-    fileNumber = 0;
-    expectedData = StyleComponentDataList();
-    expectedStyleMap = StyleValuesMap();
-    startTest("testing direct parent");
-    std::cout << "Tested file content:\n" << style << "\n";
-    styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
-    result = testRuleNumberAndStyleBlocksNumber(ruleNumber, 1, styleBlocks, 1);
-    if (result != Result::OK) setTestResult(result);
-    else {
-        expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::DirectParent));
-        expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
-        expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
-        result = testStyleComponentDataList(styleBlocks->front()->getComponentsList(), &expectedData);
-        if (result != Result::OK) setTestResult(result);
+    catch (std::exception &exception) {
+        if (dynamic_cast<T *>(&exception)) result = Result::OK;
         else {
-            expectedStyleMap["text-color"] = StyleRule{new StyleValue("#ff0000", StyleValueType::String), true, 0, 0, 0};
-            setTestResult(testStyleMap(styleBlocks->front()->getStyleMap(), &expectedStyleMap));
+            std::cerr << "Throwed invalid exception '" << exception.what() << "\n";
+            result = Result::KO;
         }
     }
+    catch (...) {
+        std::cerr << "Throwed invalid exception who were not a subclass of std::exception\n";
+        result = Result::KO;
+    }
+    endTest(result);
+}
 
+void StyleTests::tests() {
+    StyleComponentDataList expectedData = StyleComponentDataList();
+    StyleValuesMap expectedStyleMap = StyleValuesMap();
+    StyleValue *styleValue;
+    StyleBlock *styleBlock;
+    std::list<StyleBlock *> expectedStyleBlocks;
+
+    expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::AnyParent));
+    expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
+    expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
+    styleValue = new StyleValue("#ff0000", StyleValueType::String);
+    expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
+    styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
+    expectedStyleBlocks = {styleBlock};
+    testDeserialization(".container      label#red{text-color : #ff0000;}", "deserializing a single rule", &expectedStyleBlocks);
+    delete styleBlock;
+    delete styleValue;
+    expectedStyleMap.clear();
     expectedData.clear();
-    for (StyleBlock *component : *styleBlocks) {
-        for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
-            delete rule.second.value;
-        }
-        delete component;
-    }
-    delete styleBlocks;
-    for (const std::pair<std::string, StyleRule> rule : expectedStyleMap) {
-        delete rule.second.value;
-    }
 
-    endTest();
+    testDeserializationError<MalformedExpression>(".container      label#red{text-color : #ff0000}", "raising an error for missing semi-colon after assignment");
 
-    style = ".container>label#red{text-color : #ff0000;}";
-    fileNumber = 0;
-    expectedData = StyleComponentDataList();
-    expectedStyleMap = StyleValuesMap();
-    startTest("testing direct parent without spaces");
-    std::cout << "Tested file content:\n" << style << "\n";
-    styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
-    result = testRuleNumberAndStyleBlocksNumber(ruleNumber, 1, styleBlocks, 1);
-    if (result != Result::OK) setTestResult(result);
-    else {
-        expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::DirectParent));
-        expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
-        expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
-        result = testStyleComponentDataList(styleBlocks->front()->getComponentsList(), &expectedData);
-        if (result != Result::OK) setTestResult(result);
-        else {
-            expectedStyleMap["text-color"] = StyleRule{new StyleValue("#ff0000", StyleValueType::String), true, 0, 0, 0};
-            setTestResult(testStyleMap(styleBlocks->front()->getStyleMap(), &expectedStyleMap));
-        }
-    }
-
+    expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::DirectParent));
+    expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
+    expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
+    styleValue = new StyleValue("#ff0000", StyleValueType::String);
+    expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
+    styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
+    expectedStyleBlocks = {styleBlock};
+    testDeserialization(".container > label#red{text-color : #ff0000;}", "testing direct parent", &expectedStyleBlocks);
+    delete styleBlock;
+    delete styleValue;
+    expectedStyleMap.clear();
     expectedData.clear();
-    for (StyleBlock *component : *styleBlocks) {
-        for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
-            delete rule.second.value;
-        }
-        delete component;
-    }
-    delete styleBlocks;
-    for (const std::pair<std::string, StyleRule> rule : expectedStyleMap) {
-        delete rule.second.value;
-    }
 
-    endTest();
-
-    fileName = "tests/style_tests/tests-files/main-test.txt";
-    fileNumber = 0;
-    expectedData = StyleComponentDataList();
-    expectedStyleMap = StyleValuesMap();
-    startTest("testing main-test file");
-    std::cout << "Tested file content:\n" << style << "\n";
-    styleBlocks = StyleDeserializer::deserializeFromFile(fileName, fileNumber, &ruleNumber, true);
-    result = testRuleNumberAndStyleBlocksNumber(ruleNumber, 1, styleBlocks, 1);
-    if (result != Result::OK) setTestResult(result);
-    else {
-        expectedData.push_back(std::pair(std::pair("container", StyleComponentType::ElementName), StyleRelation::DirectParent));
-        expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
-        expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Class), StyleRelation::SameElement));
-        expectedData.push_back(std::pair(std::pair("test-label", StyleComponentType::Identifier), StyleRelation::SameElement));
-        result = testStyleComponentDataList(styleBlocks->front()->getComponentsList(), &expectedData);
-        if (result != Result::OK) setTestResult(result);
-        else {
-            expectedStyleMap["text-color"] = StyleRule{new StyleValue("#ff0000", StyleValueType::String), true, 0, 0, 0};
-            setTestResult(testStyleMap(styleBlocks->front()->getStyleMap(), &expectedStyleMap));
-        }
-    }
-
+    expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::DirectParent));
+    expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
+    expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
+    styleValue = new StyleValue("#ff0000", StyleValueType::String);
+    expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
+    styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
+    expectedStyleBlocks = {styleBlock};
+    testDeserialization(".container>label#red{text-color : #ff0000;}", "testing direct parent without spaces", &expectedStyleBlocks);
+    delete styleBlock;
+    delete styleValue;
+    expectedStyleMap.clear();
     expectedData.clear();
-    for (StyleBlock *component : *styleBlocks) {
-        for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
-            delete rule.second.value;
-        }
-        delete component;
-    }
-    delete styleBlocks;
-    for (const std::pair<std::string, StyleRule> rule : expectedStyleMap) {
-        delete rule.second.value;
-    }
 
-    endTest();
+    expectedData.push_back(std::pair(std::pair("red-container", StyleComponentType::Identifier), StyleRelation::AnyParent));
+    expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
+    expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Class), StyleRelation::SameElement));
+    expectedData.push_back(std::pair(std::pair("test-label", StyleComponentType::Identifier), StyleRelation::SameElement));
+    styleValue = new StyleValue("#ff0000", StyleValueType::String);
+    expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
+    styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
+    expectedStyleBlocks = {styleBlock};
+    testDeserializationFromFile("tests/style_tests/tests-files/main-test.txt", "testing main-test file", &expectedStyleBlocks);
+    delete styleBlock;
+    delete styleValue;
+    expectedStyleMap.clear();
+    expectedData.clear();
 }

@@ -22,15 +22,12 @@ public:
     StyleTestsLexerAndParser();
     ~StyleTestsLexerAndParser();
 
-    void lexer(bool equal, const std::string &expr, const Node *expected);
-    void parser(bool equal, Node *expr, const Node *expected);
-    void lexerAndParser(bool equal, const std::string &expr, const Node *expected);
+    void testLexer(bool equal, const std::string &expr, const Node *expected, const std::string &testName);
+    void testParser(bool equal, Node *expr, const Node *expected, const std::string &testName);
+    void testLexerAndParser(bool equal, const std::string &expr, const Node *expected, const std::string &testName);
 
-    // TODO: mettre en réference const
-    void invalidExpression(std::string expression);
-    void unknownToken(std::string expression);
-    void missingToken(std::string expression);
-    void unknownValue(std::string epxression);
+    template <typename T>
+    void testLexerAndParserException(const std::string &expression, const std::string &testName);
 };
 
 #endif // STYLE_TESTS_LEXER_AND_PARSER

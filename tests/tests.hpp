@@ -9,6 +9,7 @@
 #include <string>
 #include <sys/stat.h>
 #include <filesystem>
+#include <chrono>
 
 enum class Result {
     OK,
@@ -33,18 +34,21 @@ enum class Result {
  * If it's specified to always show log messages, all messages will be displayed when they are written.
  * If it's not, they will be shown only when a test ends.
  * If it's specified to not show log messages, they will not be registered and shown even if it's specified to always show log messages.
+ * 
+ * "check" functions should returns a Result and "test" functions should starts and ends a test.
  */
 class Tests {
     std::string testsName;
-    int nbSpacesBeforeTestDescription = 9;
+    const int NB_SPACES_BEFORE_CHRONO = 9;
+    const int NB_SPACES_BEFORE_TEST_DESCRIPTION = 8;
 
-    std::list<std::pair<std::string, Result>> results;
+    std::list<std::tuple<std::string, Result, float>> results;
     std::string logFileName = "logFile";
     std::ofstream logFile = std::ofstream();
     bool testsRunning = false;
-    bool resultEntered = false;
     bool showLogMessages = true;
     bool alwaysShowLogMessages = false;
+    std::chrono::_V2::system_clock::time_point startTime;
     std::streambuf *oldErrBuffer = nullptr;
     std::streambuf *oldOutBuffer = nullptr;
 
@@ -83,8 +87,7 @@ protected:
      * Ends a test.
      * Must be called after each test.
      */
-    void endTest();
-    void setTestResult(Result r);
+    void endTest(Result result=Result::NOT_GIVEN);
     static std::string getFileContent(std::string fileName);
     virtual void tests() = 0;
 

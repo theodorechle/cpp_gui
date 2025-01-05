@@ -5,18 +5,25 @@
 #include "../tests.hpp"
 
 class StyleTests : public Tests {
-
     void tests() override;
 
 public:
     StyleTests() : Tests{"Tests style"} {}
 
-    Result testStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData);
-    Result testStyleValue(StyleValue *testedValue, StyleValue *expectedValue);
-    Result testStyleRule(const StyleRule *testedRule, const StyleRule *expectedRule);
-    Result testStyleMap(const StyleValuesMap *testedStyleMap, const StyleValuesMap *expectedStyleMap);
-    Result testRuleNumberAndStyleBlocksNumber(int testedRuleNumber, int expectedRuleNumber,
-                                                          const std::list<StyleBlock *> *testedStyleBlocks, size_t expectedStyleBlocksNumber);
+    Result checkStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData);
+    Result checkStyleValue(StyleValue *testedValue, StyleValue *expectedValue);
+    Result checkStyleRule(const StyleRule *testedRule, const StyleRule *expectedRule);
+    Result checkStyleMap(const StyleValuesMap *testedStyleMap, const StyleValuesMap *expectedStyleMap);
+    Result checkRuleNumberAndStyleBlocks(int testedRuleNumber, int expectedRuleNumber, const std::list<StyleBlock *> *testedStyleBlocks,
+                                         const std::list<StyleBlock *> *expectedStyleBlocks);
+    void testDeserializationFromFile(const std::string &fileName, const std::string &testName, const std::list<StyleBlock *> *expectedStyleBlocks);
+    void testDeserialization(const std::string &style, const std::string &testName, const std::list<StyleBlock *> *expectedStyleBlocks);
+
+    /**
+     * This method will catch std::exception subclass exceptions but will not check if they are similar to T.
+     */
+    template <typename T>
+    void testDeserializationError(const std::string &style, const std::string &testName);
 };
 
 #endif // STYLE_TESTS_HPP

@@ -35,7 +35,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     ElementsStyleManager elementStyleManager = ElementsStyleManager();
     elementStyleManager.addStyleFile("tests/style_tests/tests-files/main-test.txt");
 
-    UIElement *container = new Container(sdl_window, sdl_renderer, &elementStyleManager);
+    UIElement *parentContainer = new Container(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "red-container");
+    manager->addElement(parentContainer);
+    UIElement *container = new Container(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "", parentContainer);
     manager->addElement(container);
     UIElement *label = new Label(sdl_window, sdl_renderer, &elementStyleManager, new std::vector<std::string>{"red"}, "test-label", container);
     manager->addElement(label);
