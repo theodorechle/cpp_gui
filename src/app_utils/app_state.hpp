@@ -4,6 +4,9 @@
 #include "../managers/abstract_manager.hpp"
 #include <SDL3/SDL.h>
 
+/**
+ * Only exists for testing the gui
+ */
 class AppState {
     AbstractManager *manager = nullptr;
     SDL_Window *window;

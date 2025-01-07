@@ -1,5 +1,3 @@
-
-
 #red-container label.red#test-label {
     text-color: #ff0000;
 }

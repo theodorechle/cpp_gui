@@ -1,11 +1,11 @@
 #include "element_style.hpp"
 
 bool ElementStyle::compareRulesLess(StyleRule rule1, StyleRule rule2) {
-    if (rule1.priority < rule2.priority) return true;
+    if (rule1.priority > rule2.priority) return true;
     if (rule1.priority == rule2.priority) {
-        if (rule1.fileNumber < rule2.fileNumber) return true;
+        if (rule1.fileNumber > rule2.fileNumber) return true;
         if (rule1.fileNumber == rule2.fileNumber) {
-            if (rule1.ruleNumber <= rule2.ruleNumber) return true;
+            if (rule1.ruleNumber > rule2.ruleNumber) return true;
         }
     }
     return false;
@@ -62,7 +62,7 @@ void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNum
     }
 }
 
-StyleValue *ElementStyle::getRule(const std::string &ruleName, StyleValue *defaultValue) {
+StyleValue *ElementStyle::getRule(const std::string &ruleName) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         if (it->first == ruleName) {
             for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) { // find first enabled rule
@@ -70,8 +70,7 @@ StyleValue *ElementStyle::getRule(const std::string &ruleName, StyleValue *defau
             }
         }
     }
-    if (parent == nullptr) return defaultValue;
-    return parent->getRule(ruleName, defaultValue); // cascade style, if not found, check parent
+    return parent->getRule(ruleName); // cascade style, if not found, check parent
 }
 
 bool ElementStyle::ruleExists(const std::string &ruleName) {
