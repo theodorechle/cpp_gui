@@ -1,6 +1,6 @@
 #include "style_tests_lexer_and_parser.hpp"
 
-StyleTestsLexerAndParser::StyleTestsLexerAndParser() : Tests{"Tests style lexer and parser"}, settings{new Settings()} { settings->debug = true; }
+StyleTestsLexerAndParser::StyleTestsLexerAndParser() : Tests{"Tests style lexer and parser"}, settings{new Settings()} { settings->debug = false; }
 StyleTestsLexerAndParser::~StyleTestsLexerAndParser() { delete settings; };
 
 void StyleTestsLexerAndParser::tests() {

@@ -6,9 +6,10 @@
 
 class StyleTests : public Tests {
     void tests() override;
+    Settings *settings;
 
 public:
-    StyleTests() : Tests{"Tests style"} {}
+    StyleTests();
 
     Result checkStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData);
     Result checkStyleValue(StyleValue *testedValue, StyleValue *expectedValue);

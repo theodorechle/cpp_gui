@@ -31,7 +31,7 @@ Node* Node::copyNodeWithChildsAndNexts() const {
 
 void Node::displayTree(ostream &flow, int level) const {
     for (int i=0; i<level; i++) flow << "\t";
-    flow << getValue() << " (" << getTokenType() << ")" << endl;
+    flow << getValue() << " (" << getTokenType() << ")\n";
     const Node*  child = getChild();
     while (child != nullptr) {
         child->displayTree(flow, level+1);
@@ -46,7 +46,7 @@ void Node::display(ostream &flow) const {
 void Node::displayNexts(ostream &flow) const {
     const Node* next = this;
     while (next != nullptr) {
-        flow << next->getValue() << " (" << next->getTokenType() << ")" << endl;
+        flow << next->getValue() << " (" << next->getTokenType() << ")\n";
         next = next->getNext();
     }
 }

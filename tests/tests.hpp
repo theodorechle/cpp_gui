@@ -48,7 +48,9 @@ class Tests {
     bool testsRunning = false;
     bool showLogMessages = true;
     bool alwaysShowLogMessages = false;
-    std::chrono::_V2::system_clock::time_point startTime;
+    std::chrono::_V2::system_clock::time_point startAllTestsTime;
+    std::chrono::_V2::system_clock::time_point endAllTestsTime;
+    std::chrono::_V2::system_clock::time_point startSingleTestTime;
     std::streambuf *oldErrBuffer = nullptr;
     std::streambuf *oldOutBuffer = nullptr;
 

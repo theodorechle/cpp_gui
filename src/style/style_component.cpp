@@ -59,6 +59,6 @@ std::string styleRelationToString(StyleRelation token) {
     }
 }
 
-StyleBlock::StyleBlock(StyleComponentDataList *componentsList, StyleValuesMap *styleMap) {
+StyleBlock::StyleBlock(StyleComponentDataList *componentsList, StyleValuesMap *styleMap) { // TODO: forbid null pointers (maybe get params as references ?)
     styleDef = new StyleDefinition(*componentsList, *styleMap);
 }

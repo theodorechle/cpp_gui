@@ -22,20 +22,16 @@ OBJ_STYLE=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_STYLE))
 OBJ_STYLE_TESTS=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_STYLE_TESTS))
 
 # Executable targets
-BIN_STYLE=$(BIN_DIR)/style
 BIN_ALL=$(BIN_DIR)/all
 BIN_STYLE_TESTS=$(BIN_DIR)/style-tests
 
 # Dependency files
 DEPS=$(OBJ_MAIN:.o=.d) $(OBJ_SUBDIRS:.o=.d) $(OBJ_STYLE:.o=.d) $(OBJ_TESTS:.o=.d)
 
-.PHONY: all clean style style-tests
+.PHONY: all clean style-tests
 
 # Build the final executable combining exe and style
 all: $(BIN_ALL)
-
-# Build style only
-style: $(BIN_STYLE)
 
 # Build tests only
 style-tests: $(BIN_STYLE_TESTS)
@@ -47,11 +43,6 @@ $(BIN_ALL): $(filter-out $(OBJ_DIR)/style/main.o, $(OBJ_STYLE)) $(OBJ_SUBDIRS) $
 
 # Build the main executable (main.cpp + elements + managers)
 $(BIN_MAIN): $(OBJ_MAIN) $(OBJ_SUBDIRS)
-	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) $^ -o $@ $(SDL_CMD)
-
-# Build the style executable (style sources only)
-$(BIN_STYLE): $(OBJ_STYLE)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o $@ $(SDL_CMD)
 

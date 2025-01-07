@@ -1,5 +1,7 @@
 #include "style_tests.hpp"
 
+StyleTests::StyleTests() : Tests{"Tests style"}, settings{new Settings()} { settings->debug = false; }
+
 Result StyleTests::checkStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData) {
     if (testedData == nullptr && expectedData == nullptr) return Result::OK;
     if ((testedData == nullptr && expectedData != nullptr) || (testedData != nullptr && expectedData == nullptr)
@@ -164,7 +166,7 @@ void StyleTests::testDeserialization(const std::string &style, const std::string
     Result result;
     startTest(testName);
     std::cout << "Tested style:\n" << style << "\n";
-    styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
+    styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, settings->debug);
     result = checkRuleNumberAndStyleBlocks(ruleNumber, 1, styleBlocks, expectedStyleBlocks);
 
     for (StyleBlock *component : *styleBlocks) {
@@ -186,7 +188,7 @@ template <typename T> void StyleTests::testDeserializationError(const std::strin
     startTest(testName);
     std::cout << "Tested style:\n" << style << "\n";
     try {
-        styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, true);
+        styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, settings->debug);
         result = Result::KO;
 
         for (StyleBlock *component : *styleBlocks) {

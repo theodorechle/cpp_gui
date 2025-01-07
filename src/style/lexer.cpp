@@ -47,20 +47,25 @@ void Lexer::lexeMultiLineComment() {
 }
 
 void Lexer::lexeString() {
+    // check for special characters who are allowed at the start of a string ('#', ':', '.', ...)
     if (std::find(allowedSpecialFirstStringCharacters.cbegin(), allowedSpecialFirstStringCharacters.cend(), expression[index])
         == allowedSpecialFirstStringCharacters.cend()) {
+        // if no special character allowed found,
+        // check for forbidden first special string character (syntax characters + others defnied in forbiddenFirstStringCharacters)
+        // if a forbidden character is not present, ensure that the char is an alpha character
         if (specialCharacters.find(expression[index]) != specialCharacters.cend()
             || std::find(forbiddenFirstStringCharacters.cbegin(), forbiddenFirstStringCharacters.cend(), expression[index])
-                   != forbiddenFirstStringCharacters.cend())
+                   != forbiddenFirstStringCharacters.cend() || !isalpha(expression[index]))
             return;
     }
     size_t i = 1;
+    // check that the string does not contains a special character who is part of the syntax or one of the first special allowed string characters
     while (index + i < expressionLength && specialCharacters.find(expression[index + i]) == specialCharacters.cend()
            && std::find(allowedSpecialFirstStringCharacters.cbegin(), allowedSpecialFirstStringCharacters.cend(), expression[index + i])
                   == allowedSpecialFirstStringCharacters.cend()) {
         i++;
     }
-    if (!isalpha(expression[index]) && i == 1) return;
+    if (i == 1) return;
     expressionTree->appendNext(new Node{Token::String, expression.substr(index, i)});
     index += i;
     lexed = true;
@@ -154,7 +159,7 @@ void Lexer::lexe() {
             delete expressionTree; // avoid memory leak
             throw UnknownValue(expression.substr(index, MAX_ERROR_COMPLEMENTARY_INFOS_SIZE));
         }
-        if (settings->debug) std::cerr << tokenToString(expressionTree->getTokenType()) << ": '" << expressionTree->getValue() << "'" << std::endl;
+        if (settings->debug) std::cerr << tokenToString(expressionTree->getTokenType()) << ": '" << expressionTree->getValue() << "'\n";
         expressionTree = expressionTree->getNext();
     }
     // remove the NullRoot token at the start

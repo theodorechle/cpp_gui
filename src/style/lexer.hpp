@@ -36,11 +36,12 @@ const std::map<char, Token> specialCharacters = {
 };
 
 const std::vector<char> forbiddenFirstStringCharacters = {
-    ' ', '\n', '\t', '[', ']',
+    '[', ']'
 };
 
+// these characters are only allowed at the beginning of a string
 const std::vector<char> allowedSpecialFirstStringCharacters = {
-    ':', ' ', '\n', '\t', '#', '.',
+    ':', ' ', '#', '.'
 };
 
 class Lexer {

@@ -27,6 +27,9 @@ bool Tests::startTestSession() {
     }
 
     std::cout << "Started test session \"" << testsName << "\"\n";
+
+    startAllTestsTime = std::chrono::high_resolution_clock::now();
+
     return true;
 }
 
@@ -34,6 +37,7 @@ bool Tests::endTestSession() {
     resetErrorOutput();
     resetStandardOutput();
     testsRunning = false;
+    endAllTestsTime = std::chrono::high_resolution_clock::now();
     std::cout << "Ended test session \"" << testsName << "\"\n";
     displaySummary();
 
@@ -42,6 +46,7 @@ bool Tests::endTestSession() {
         std::cerr << "Can't delete file '" << logFileName << "'\n";
         return false;
     }
+
     return true;
 }
 
@@ -64,14 +69,14 @@ void Tests::startTest(const std::string &testName) {
         std::cout << " (" << std::get<0>(results.back()) << ")";
     }
     std::cout << ":\n";
-    startTime = std::chrono::high_resolution_clock::now();
+    startSingleTestTime = std::chrono::high_resolution_clock::now();
 }
 
 void Tests::endTest(Result result) {
     std::chrono::_V2::system_clock::time_point endTime = std::chrono::high_resolution_clock::now();
 
     std::get<1>(results.back()) = result;
-    std::get<2>(results.back()) = std::chrono::duration<float>(endTime - startTime).count();
+    std::get<2>(results.back()) = std::chrono::duration<float>(endTime - startSingleTestTime).count();
 
     std::stringstream buffer;
     if (!alwaysShowLogMessages) {
@@ -163,6 +168,8 @@ void Tests::displaySummary() const {
         std::cout << "\n";
         index++;
     }
+    std::cout << "Total tests time: " << std::to_string(std::chrono::duration<float>(endAllTestsTime - startAllTestsTime).count()) << "s\n";
+
     std::cout << "End of summary\n";
 }
 

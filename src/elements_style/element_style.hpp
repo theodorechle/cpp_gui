@@ -11,6 +11,7 @@ typedef std::unordered_map<std::string, StyleRules> AppliedStyleMap;
 
 class ElementStyle {
     AppliedStyleMap style = {};
+    std::unordered_map<std::string, StyleRule> defaultStyle = {};
     /**
      * key:
      *  modifier name
@@ -26,6 +27,7 @@ class ElementStyle {
     ElementStyle *child = nullptr;
     ElementStyle *next = nullptr;
     int priority = 0;
+    
     static bool compareRulesLess(StyleRule rule1, StyleRule rule2);
 
 public:
