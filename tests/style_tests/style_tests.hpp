@@ -10,6 +10,7 @@ class StyleTests : public Tests {
 
 public:
     StyleTests();
+    ~StyleTests();
 
     Result checkStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData);
     Result checkStyleValue(StyleValue *testedValue, StyleValue *expectedValue);

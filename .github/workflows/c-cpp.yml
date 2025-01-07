@@ -16,4 +16,4 @@ jobs:
     - name: make style-tests
       run: make style-tests
     - name: bin/style-tests
-      run: bin/style-tests
+      run: valgrind --error-exitcode=1 --leak-check=full bin/style-tests

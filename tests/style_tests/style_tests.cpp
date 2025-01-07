@@ -1,6 +1,7 @@
 #include "style_tests.hpp"
 
 StyleTests::StyleTests() : Tests{"Tests style"}, settings{new Settings()} { settings->debug = false; }
+StyleTests::~StyleTests() {delete settings;}
 
 Result StyleTests::checkStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData) {
     if (testedData == nullptr && expectedData == nullptr) return Result::OK;
