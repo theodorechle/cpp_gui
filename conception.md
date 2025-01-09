@@ -8,7 +8,7 @@
 - adjust with parent size
 
 ### place elements:
-- get window size
 - compute position with margins
+- get window size
 - clip element (not sure it's needed)
 - ask element to draw itself given computed position

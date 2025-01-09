@@ -3,8 +3,9 @@
 void UIElement::computeDesiredLayout() {}
 
 void UIElement::computeLayout() {
-    int w, h;
-    SDL_GetRenderOutputSize(renderer, &w, &h);
+    // int w, h;
+    // SDL_GetCurrentRenderOutputSize(renderer, &w, &h);
+    // UIElement *child = getChild();
 }
 
 void UIElement::getCoords(int *x, int *y) const {
@@ -39,4 +40,10 @@ void UIElement::setRect(int x, int y, int width, int height) {
     elementRect.y = y;
     elementRect.w = width;
     elementRect.h = height;
+}
+
+void UIElement::render() {
+    computeLayout();
+    // TODO: compute margins
+    renderSelf();
 }

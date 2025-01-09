@@ -16,11 +16,25 @@ private:
     void computeDesiredLayout();
     void computeLayout() override final;
 
+protected:
+    /**
+     * Override this function to draw self element instead of render
+     */
+    virtual void renderSelf() const = 0;
+
 public:
     UIElement(SDL_Window *window, SDL_Renderer *renderer, std::string elementName, ElementsStyleManager *elementsStyleManager = nullptr,
-              std::vector<std::string> *classes = nullptr, const std::string &identifier = "", AbstractElement *parent = nullptr,
-              AbstractElement *child = nullptr, AbstractElement *next = nullptr)
+              std::vector<std::string> *classes = nullptr, const std::string &identifier = "", UIElement *parent = nullptr,
+              UIElement *child = nullptr, UIElement *next = nullptr)
         : AbstractElement{elementName, elementsStyleManager, classes, identifier, parent, child, next}, window{window}, renderer{renderer} {}
+
+    void setParent(UIElement *parent) { AbstractElement::setParent(parent); }
+    UIElement *getParent() { return static_cast<UIElement *>(AbstractElement::getParent()); }
+    void setChild(UIElement *child) { AbstractElement::setChild(child); }
+    UIElement *getChild() { return static_cast<UIElement *>(AbstractElement::getChild()); }
+    void setNext(UIElement *next) { AbstractElement::setNext(next); }
+    UIElement *getNext() { return static_cast<UIElement *>(AbstractElement::getNext()); }
+
     int getXpos() { return elementRect.x; }
     int getYpos() { return elementRect.y; }
     int getWidth() { return elementRect.w; }
@@ -38,6 +52,12 @@ public:
     void setCoords(int x, int y);
     void setSize(int width, int height);
     void setRect(int x, int y, int width, int height);
+
+    /**
+     * Computes the layout of the element and draw it.
+     * To override the rendering, see te renderSelf method.
+     */
+    void render() override final;
 };
 
 #endif // UI_ELEMENT_HPP

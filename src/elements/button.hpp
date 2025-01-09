@@ -6,9 +6,9 @@
 class Button : public UIElement {
 public:
     Button(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *elementsStyleManager = nullptr,
-           std::vector<std::string> *classes = nullptr, const std::string &identifier = "", AbstractElement *parent = nullptr,
-           AbstractElement *child = nullptr, AbstractElement *next = nullptr);
-    void render() const override;
+           std::vector<std::string> *classes = nullptr, const std::string &identifier = "", UIElement *parent = nullptr,
+           UIElement *child = nullptr, UIElement *next = nullptr);
+    void renderSelf() const override;
 };
 
 #endif // BUTTON_HPP

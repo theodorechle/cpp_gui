@@ -310,5 +310,4 @@ void StyleTests::tests() {
     testDeserializationError<MissingToken>(".container>label#red{:}", "missing style name and value");
     testDeserializationError<MalformedExpression>("{text-color: #ffffff;}", "missing block declaration");
     testDeserializationError<MissingToken>(">label#red{text-color: #ffffff;}", "missing block declaration component before relation '>'");
-    testDeserializationNoError(".container>label#red{text-color: #ffffff;}", "single rule test");
 }

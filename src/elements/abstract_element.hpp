@@ -29,7 +29,8 @@ public:
     void setNext(AbstractElement *next) { this->next = next; }
     AbstractElement *getNext() { return this->next; }
     virtual ~AbstractElement() = default;
-    virtual void render() const = 0;
+    
+    virtual void render() = 0;
 };
 
 #endif // ABSTRACT_ELEMENT_HPP
