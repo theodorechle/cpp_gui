@@ -144,7 +144,7 @@ void StyleTests::testDeserializationFromFile(const std::string &fileName, const 
     int ruleNumber;
     std::list<StyleBlock *> *styleBlocks;
     Result result;
-    startTest(testName);
+    startTest("DESERIALIZATION FROM FILE: " + testName);
     std::cout << "Tested style file:\n" << fileName << "\n";
     styleBlocks = StyleDeserializer::deserializeFromFile(fileName, fileNumber, &ruleNumber, true);
     result = checkRuleNumberAndStyleBlocks(ruleNumber, 1, styleBlocks, expectedStyleBlocks);
@@ -165,7 +165,7 @@ void StyleTests::testDeserialization(const std::string &style, const std::string
     int ruleNumber;
     std::list<StyleBlock *> *styleBlocks;
     Result result;
-    startTest(testName);
+    startTest("DESERIALIZATION: " + testName);
     std::cout << "Tested style:\n" << style << "\n";
     styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, settings->debug);
     result = checkRuleNumberAndStyleBlocks(ruleNumber, 1, styleBlocks, expectedStyleBlocks);
@@ -186,7 +186,7 @@ template <typename T> void StyleTests::testDeserializationError(const std::strin
     int ruleNumber;
     Result result;
     std::list<StyleBlock *> *styleBlocks;
-    startTest(testName);
+    startTest("DESERIALIZATION ERROR: " + testName);
     std::cout << "Tested style:\n" << style << "\n";
     try {
         styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, settings->debug);
@@ -206,6 +206,36 @@ template <typename T> void StyleTests::testDeserializationError(const std::strin
             std::cerr << "Throwed invalid exception '" << exception.what() << "\n";
             result = Result::KO;
         }
+    }
+    catch (...) {
+        std::cerr << "Throwed invalid exception who were not a subclass of std::exception\n";
+        result = Result::KO;
+    }
+    endTest(result);
+}
+
+void StyleTests::testDeserializationNoError(const std::string &style, const std::string &testName) {
+    int fileNumber = 0;
+    int ruleNumber;
+    Result result;
+    std::list<StyleBlock *> *styleBlocks;
+    startTest("DESERIALIZATION NO ERROR: " + testName);
+    std::cout << "Tested style:\n" << style << "\n";
+    try {
+        styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, settings->debug);
+        result = Result::OK;
+
+        for (StyleBlock *component : *styleBlocks) {
+            for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
+                delete rule.second.value;
+            }
+            delete component;
+        }
+        delete styleBlocks;
+    }
+    catch (std::exception &exception) {
+        std::cerr << "Throwed invalid exception '" << exception.what() << "\n";
+        result = Result::KO;
     }
     catch (...) {
         std::cerr << "Throwed invalid exception who were not a subclass of std::exception\n";
@@ -234,8 +264,6 @@ void StyleTests::tests() {
     expectedStyleMap.clear();
     expectedData.clear();
 
-    testDeserializationError<MalformedExpression>(".container      label#red{text-color : #ff0000}", "raising an error for missing semi-colon after assignment");
-
     expectedData.push_back(std::pair(std::pair("container", StyleComponentType::Class), StyleRelation::DirectParent));
     expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
     expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Identifier), StyleRelation::SameElement));
@@ -243,7 +271,7 @@ void StyleTests::tests() {
     expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
     styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
     expectedStyleBlocks = {styleBlock};
-    testDeserialization(".container > label#red{text-color : #ff0000;}", "testing direct parent", &expectedStyleBlocks);
+    testDeserialization(".container > label#red{text-color : #ff0000;}", "direct parent", &expectedStyleBlocks);
     delete styleBlock;
     delete styleValue;
     expectedStyleMap.clear();
@@ -256,7 +284,7 @@ void StyleTests::tests() {
     expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
     styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
     expectedStyleBlocks = {styleBlock};
-    testDeserialization(".container>label#red{text-color : #ff0000;}", "testing direct parent without spaces", &expectedStyleBlocks);
+    testDeserialization(".container>label#red{text-color : #ff0000;}", "direct parent without spaces", &expectedStyleBlocks);
     delete styleBlock;
     delete styleValue;
     expectedStyleMap.clear();
@@ -270,9 +298,17 @@ void StyleTests::tests() {
     expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
     styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
     expectedStyleBlocks = {styleBlock};
-    testDeserializationFromFile("tests/style_tests/tests-files/main-test.txt", "testing main-test file", &expectedStyleBlocks);
+    testDeserializationFromFile("tests/style_tests/tests-files/main-test.txt", "main-test file", &expectedStyleBlocks);
     delete styleBlock;
     delete styleValue;
     expectedStyleMap.clear();
     expectedData.clear();
+
+    testDeserializationError<MalformedExpression>(".container      label#red{text-color : #ff0000}", "missing semi-colon after assignment");
+    testDeserializationError<MalformedExpression>(".container>label#red{text-color;}", "missing style value");
+    testDeserializationError<MissingToken>(".container>label#red{: value}", "missing style name");
+    testDeserializationError<MissingToken>(".container>label#red{:}", "missing style name and value");
+    testDeserializationError<MalformedExpression>("{text-color: #ffffff;}", "missing block declaration");
+    testDeserializationError<MissingToken>(">label#red{text-color: #ffffff;}", "missing block declaration component before relation '>'");
+    testDeserializationNoError(".container>label#red{text-color: #ffffff;}", "single rule test");
 }

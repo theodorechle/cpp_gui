@@ -228,10 +228,12 @@ void Parser::parseGreatherThan() {
         if (lastChild != nullptr) {
             if (isWhiteSpace(lastChild->getTokenType())) removeWhiteSpaces();
             else if (lastChild->getTokenType() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
-            else if (lastChild->getTokenType() == Token::AnyParent)
-                ; // do nothing, just ensure the node is being removed without being copied before
+            else if (lastChild->getTokenType() == Token::AnyParent); // do nothing, just ensure the node is being removed without being copied before
             else lastChildCopy = lastChild->copyNodeWithChilds();
             expressionTree->removeSpecificChild(lastChild);
+        }
+        else {
+            if (token == Token::NullRoot) throw MissingToken("A '>' token must not be the first token of a block declaration if not a nested block");
         }
         expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
         expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});

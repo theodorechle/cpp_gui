@@ -26,6 +26,7 @@ public:
      */
     template <typename T>
     void testDeserializationError(const std::string &style, const std::string &testName);
+    void testDeserializationNoError(const std::string &style, const std::string &testName);
 };
 
 #endif // STYLE_TESTS_HPP
