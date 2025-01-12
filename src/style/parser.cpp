@@ -146,7 +146,7 @@ void Parser::parseSpace() {
     if (expressionTree->getTokenType() == Token::Declaration) {
         if (expressionTree->getNbChilds() > 0) {
             lastChild = expressionTree->getLastChild();
-            if (lastChild == nullptr || !isComponentRelation(lastChild->getTokenType())) expressionTree->appendChild(new Node{Token::AnyParent});
+            if (lastChild == nullptr || !isComponentRelation(lastChild->getTokenType())) expressionTree->appendChild(new Node(Token::AnyParent));
         }
     }
     else expressionTree->appendChild(expressionTokens->copyNode());
@@ -187,10 +187,10 @@ void Parser::parseComma() {
     removeSpace();
     switch (expressionTree->getTokenType()) {
     case Token::Tuple:
-        expressionTree->appendChild(new Node{Token::ArgSeparator});
+        expressionTree->appendChild(new Node(Token::ArgSeparator));
         break;
     case Token::Declaration:
-        expressionTree = expressionTree->getParent()->appendChild(new Node{Token::Declaration});
+        expressionTree = expressionTree->getParent()->appendChild(new Node(Token::Declaration));
         break;
     default:
         throw MalformedExpression("A comma must be inside of a tuple");
@@ -206,7 +206,7 @@ void Parser::parseColon() {
     lastChild = expressionTree->getLastChild();
     if (lastChild == nullptr) throw MissingToken("A colon must follow a style name");
     lastChild->setTokenType(Token::StyleName); // should be Token::Name before
-    newChild = new Node{Token::Assignment};
+    newChild = new Node(Token::Assignment);
     newChild->appendChild(lastChild->copyNodeWithChilds());
     expressionTree->replaceChild(lastChild, newChild);
     expressionTree = newChild;
@@ -235,18 +235,18 @@ void Parser::parseGreatherThan() {
         else {
             if (token == Token::NullRoot) throw MissingToken("A '>' token must not be the first token of a block declaration if not a nested block");
         }
-        expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
-        expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
-        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
+        expressionTree = expressionTree->appendChild(new Node(Token::StyleBlock));
+        expressionTree = expressionTree->appendChild(new Node(Token::BlockDeclaration));
+        expressionTree = expressionTree->appendChild(new Node(Token::Declaration));
         expressionTree->appendChild(lastChildCopy);
-        expressionTree->appendChild(new Node{Token::DirectParent});
+        expressionTree->appendChild(new Node(Token::DirectParent));
     }
     else if (token == Token::Declaration) {
         lastChild = expressionTree->getLastChild();
         if (lastChild->getTokenType() == Token::AnyParent) {
             expressionTree->removeSpecificChild(lastChild);
         }
-        expressionTree->appendChild(new Node{Token::DirectParent});
+        expressionTree->appendChild(new Node(Token::DirectParent));
     }
     else throw MalformedExpression("A direct parent relation must be before a style block opening and at the root level of the style file or inside an other style block");
 }
@@ -263,7 +263,7 @@ void Parser::parseOpeningParenthesis() {
             }
             else throw MalformedExpression("A tuple must be the only right value of an assignment");
         }
-        else expressionTree = expressionTree->appendChild(new Node{Token::Tuple});
+        else expressionTree = expressionTree->appendChild(new Node(Token::Tuple));
         return;
     }
     if (expressionTree->getTokenType() != Token::Tuple && expressionTree->getTokenType() != Token::Function) throw MalformedExpression("A tuple|function must follow an assignment symbol or be a function parameter or inside of a tuple");
@@ -277,7 +277,7 @@ void Parser::parseOpeningParenthesis() {
         else if (lastChild->getTokenType() != Token::ArgSeparator) throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");
     }
     expressionTree->removeSpecificChild(lastChild);
-    expressionTree = expressionTree->appendChild(new Node{Token::Tuple});
+    expressionTree = expressionTree->appendChild(new Node(Token::Tuple));
 }
 
 void Parser::parseClosingParenthesis() {
@@ -302,12 +302,12 @@ void Parser::parseOpeningCurlyBracket() {
         lastChildCopy = lastChild->copyNodeWithChilds();
         if (lastChildCopy->getTokenType() == Token::Name) lastChildCopy->setTokenType(Token::ElementName);
         expressionTree->removeSpecificChild(lastChild);
-        expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
-        expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
-        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
+        expressionTree = expressionTree->appendChild(new Node(Token::StyleBlock));
+        expressionTree = expressionTree->appendChild(new Node(Token::BlockDeclaration));
+        expressionTree = expressionTree->appendChild(new Node(Token::Declaration));
         expressionTree->appendChild(lastChildCopy);
     }
-    expressionTree = expressionTree->getParent()->getParent()->appendChild(new Node{Token::BlockDefinition});
+    expressionTree = expressionTree->getParent()->getParent()->appendChild(new Node(Token::BlockDefinition));
 }
 
 void Parser::parseClosingCurlyBracket() {
@@ -336,6 +336,8 @@ void Parser::parseString() {
 
         if (expressionTree->getNbChilds() != 1) throw MalformedExpression("Can't have more than one rvalue in an assignment");
         if (isValidHex(expressionTokens->getValue())) expressionTree->appendChild(new Node{Token::Hex, expressionTokens->getValue().substr(1)});
+        else if (expressionTokens->getValue() == "none") expressionTree->appendChild(new Node{Token::None, expressionTokens->getValue()});
+        else if (expressionTokens->getValue() == "auto") expressionTree->appendChild(new Node{Token::Auto, expressionTokens->getValue()});
         else expressionTree->appendChild(new Node{Token::String, expressionTokens->getValue()});
     }
     else if (expressionTree->getTokenType() == Token::Tuple || expressionTree->getTokenType() == Token::Function) {
@@ -363,9 +365,9 @@ void Parser::parseName() {
     if (token == Token::NullRoot) {
         removeWhiteSpaces();
 
-        expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
-        expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
-        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
+        expressionTree = expressionTree->appendChild(new Node(Token::StyleBlock));
+        expressionTree = expressionTree->appendChild(new Node(Token::BlockDeclaration));
+        expressionTree = expressionTree->appendChild(new Node(Token::Declaration));
         expressionTree->appendChild(new Node{Token::ElementName, expressionTokens->getValue()});
         return;
     }
@@ -376,9 +378,9 @@ void Parser::parseName() {
         if (lastChild != nullptr && lastChild->getTokenType() == Token::String) {
             lastChildCopy = lastChild->copyNodeWithChilds();
             expressionTree->removeSpecificChild(lastChild);
-            expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
-            expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
-            expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
+            expressionTree = expressionTree->appendChild(new Node(Token::StyleBlock));
+            expressionTree = expressionTree->appendChild(new Node(Token::BlockDeclaration));
+            expressionTree = expressionTree->appendChild(new Node(Token::Declaration));
             expressionTree->appendChild(lastChildCopy);
             expressionTree->appendChild(new Node{Token::ElementName, expressionTokens->getValue()});
         }
@@ -424,9 +426,9 @@ void Parser::parseDeclarationComponent(Token outputTokenType) {
     if (token == Token::NullRoot || token == Token::BlockDefinition) {
         lastChild = expressionTree->getLastChild();
         lastChildCopy = updateLastDeclarationComponentBeforeNewOne(lastChild);
-        expressionTree = expressionTree->appendChild(new Node{Token::StyleBlock});
-        expressionTree = expressionTree->appendChild(new Node{Token::BlockDeclaration});
-        expressionTree = expressionTree->appendChild(new Node{Token::Declaration});
+        expressionTree = expressionTree->appendChild(new Node(Token::StyleBlock));
+        expressionTree = expressionTree->appendChild(new Node(Token::BlockDeclaration));
+        expressionTree = expressionTree->appendChild(new Node(Token::Declaration));
         expressionTree->appendChild(lastChildCopy);
         expressionTree->appendChild(new Node{outputTokenType, expressionTokens->getValue().substr(1)});
     }

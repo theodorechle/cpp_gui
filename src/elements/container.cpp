@@ -5,3 +5,5 @@ Container::Container(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleMa
     : UIElement{window, renderer, "container", elementsStyleManager, classes, identifier, parent, child, next} {}
 
 void Container::renderSelf() const {}
+
+void Container::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}

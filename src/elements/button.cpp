@@ -5,3 +5,5 @@ Button::Button(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager 
     : UIElement{window, renderer, "button", elementsStyleManager, classes, identifier, parent, child, next} {}
 
 void Button::renderSelf() const {}
+
+void Button::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}

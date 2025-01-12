@@ -11,7 +11,6 @@ typedef std::unordered_map<std::string, StyleRules> AppliedStyleMap;
 
 class ElementStyle {
     AppliedStyleMap style = {};
-    std::unordered_map<std::string, StyleRule> defaultStyle = {};
     /**
      * key:
      *  modifier name
@@ -27,7 +26,7 @@ class ElementStyle {
     ElementStyle *child = nullptr;
     ElementStyle *next = nullptr;
     int priority = 0;
-    
+
     static bool compareRulesLess(StyleRule rule1, StyleRule rule2);
 
 public:
@@ -48,9 +47,16 @@ public:
     // returns the number of deleted rules
     int deleteStyleFromFile(int fileNumber);
     void updateStylePriorityFromFile(int oldFileNumber, int newFileNumber);
-    StyleValue *getRule(const std::string &ruleName);
-    bool ruleExists(const std::string &ruleName);
-    bool ruleExists(int fileNumber, int ruleNumber);
+    /**
+     * Set the value in the ruleValue parameter.
+     * Returns true if found.
+     * If no defaultStyle is given, returns false if no value were found.
+     * Else, returns fase if the defaultStyle is returned (can be used in case of dynamically allocated defaultValue to know when it should be
+     * deleted).
+     */
+    bool getRule(const std::string &ruleName, StyleValue **ruleValue, StyleValue *defaultStyle = nullptr) const;
+    bool ruleExists(const std::string &ruleName) const;
+    bool ruleExists(int fileNumber, int ruleNumber) const;
     const std::set<StyleComponentData> *getSelectors() { return &selectors; }
     void addSelector(std::string selectorName, StyleComponentType selectorType);
     void addModifier(std::string modifierName);

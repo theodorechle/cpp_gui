@@ -106,19 +106,17 @@ Result StyleTests::checkStyleMap(const StyleValuesMap *testedStyleMap, const Sty
     return Result::OK;
 }
 
-Result StyleTests::checkRuleNumberAndStyleBlocks(int testedRuleNumber, int expectedRuleNumber, const std::list<StyleBlock *> *testedStyleBlocks,
+Result StyleTests::checkStyleBlocks(const std::list<StyleBlock *> *testedStyleBlocks,
                                                  const std::list<StyleBlock *> *expectedStyleBlocks) {
     Result result;
     std::list<StyleBlock *>::const_iterator testedStyleBlocksIt;
     std::list<StyleBlock *>::const_iterator expectedStyleBlocksIt;
+
     if (testedStyleBlocks == nullptr || expectedStyleBlocks == nullptr) {
         std::cerr << "One of the two style blocks is nullptr\n";
         return Result::KO;
     }
-    if (testedRuleNumber != expectedRuleNumber) {
-        std::cerr << "ruleNumber is " << testedRuleNumber << " instead of " << expectedRuleNumber << "\n";
-        return Result::KO;
-    }
+
     else if (testedStyleBlocks == nullptr || testedStyleBlocks->size() != expectedStyleBlocks->size()) {
         std::cerr << testedStyleBlocks->size() << " styleBlocks instead of " << expectedStyleBlocks->size() << " expected\n";
         return Result::KO;
@@ -147,7 +145,7 @@ void StyleTests::testDeserializationFromFile(const std::string &fileName, const 
     startTest("DESERIALIZATION FROM FILE: " + testName);
     std::cout << "Tested style file:\n" << fileName << "\n";
     styleBlocks = StyleDeserializer::deserializeFromFile(fileName, fileNumber, &ruleNumber, true);
-    result = checkRuleNumberAndStyleBlocks(ruleNumber, 1, styleBlocks, expectedStyleBlocks);
+    result = checkStyleBlocks(styleBlocks, expectedStyleBlocks);
 
     for (StyleBlock *component : *styleBlocks) {
         for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
@@ -168,7 +166,7 @@ void StyleTests::testDeserialization(const std::string &style, const std::string
     startTest("DESERIALIZATION: " + testName);
     std::cout << "Tested style:\n" << style << "\n";
     styleBlocks = StyleDeserializer::deserialize(style, fileNumber, &ruleNumber, settings->debug);
-    result = checkRuleNumberAndStyleBlocks(ruleNumber, 1, styleBlocks, expectedStyleBlocks);
+    result = checkStyleBlocks(styleBlocks, expectedStyleBlocks);
 
     for (StyleBlock *component : *styleBlocks) {
         for (const std::pair<std::string, StyleRule> rule : *(component->getStyleMap())) {
@@ -295,12 +293,16 @@ void StyleTests::tests() {
     expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Class), StyleRelation::SameElement));
     expectedData.push_back(std::pair(std::pair("test-label", StyleComponentType::Identifier), StyleRelation::SameElement));
     styleValue = new StyleValue("ff0000", StyleValueType::Hex);
+    StyleValue *styleValue2 = new StyleValue("", StyleValueType::PixelUnit);
+    styleValue2->setChild(new StyleValue("5", StyleValueType::Int));
     expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
+    expectedStyleMap["padding"] = StyleRule{styleValue2, true, 0, 0, 1};
     styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
     expectedStyleBlocks = {styleBlock};
     testDeserializationFromFile("tests/style_tests/tests-files/main-test.txt", "main-test file", &expectedStyleBlocks);
     delete styleBlock;
     delete styleValue;
+    delete styleValue2;
     expectedStyleMap.clear();
     expectedData.clear();
 

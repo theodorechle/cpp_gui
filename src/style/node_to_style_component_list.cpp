@@ -35,6 +35,10 @@ StyleValueType tokenTypeToStyleValueType(Token token) {
         return StyleValueType::PixelUnit;
     case Token::Hex:
         return StyleValueType::Hex;
+    case Token::None:
+        return StyleValueType::None;
+    case Token::Auto:
+        return StyleValueType::Auto;
     default:
         return StyleValueType::Null;
     }
@@ -106,7 +110,9 @@ std::list<StyleComponentDataList *> *NodeToStyleComponentList::convertStyleCompo
 StyleValue *NodeToStyleComponentList::convertStyleNodeToStyleValue(Node *node) {
     StyleValueType type;
     Node *child;
+    Node *next;
     StyleValue *styleChild;
+    StyleValue *styleNext;
     StyleValue *appliedStyle;
 
     type = tokenTypeToStyleValueType(node->getTokenType());
@@ -121,17 +127,16 @@ StyleValue *NodeToStyleComponentList::convertStyleNodeToStyleValue(Node *node) {
     styleChild = convertStyleNodeToStyleValue(child);
     if (styleChild != nullptr) {
         appliedStyle->setChild(styleChild);
-        appliedStyle = styleChild;
     }
 
-    child = child->getNext();
-    while (child != nullptr) {
-        styleChild = convertStyleNodeToStyleValue(child);
-        if (styleChild != nullptr) {
-            appliedStyle->setNext(styleChild);
-            appliedStyle = styleChild;
+    next = node->getNext();
+    while (next != nullptr) {
+        styleNext = convertStyleNodeToStyleValue(next);
+        if (styleNext != nullptr) {
+            appliedStyle->setNext(styleNext);
+            appliedStyle = styleNext;
         }
-        child = child->getNext();
+        next = next->getNext();
     }
     return appliedStyle;
 }

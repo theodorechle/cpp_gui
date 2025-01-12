@@ -5,3 +5,5 @@ TextButton::TextButton(SDL_Window *window, SDL_Renderer *renderer, ElementsStyle
     : UIElement{window, renderer, "textbutton", elementsStyleManager, classes, identifier, parent, child, next} {}
 
 void TextButton::renderSelf() const {}
+
+void TextButton::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}

@@ -5,3 +5,5 @@ Slider::Slider(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager 
     : UIElement{window, renderer, "slider", elementsStyleManager, classes, identifier, parent, child, next} {}
 
 void Slider::renderSelf() const {}
+
+void Slider::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}

@@ -12,7 +12,8 @@ class ColorConverter {
 
 public:
     /**
-     * Returns true in case of successfull conversion, false else
+     * Returns true in case of successful conversion, false else.
+     * If not converted, color is not changed.
      */
     static bool convert(const StyleValue *value, SDL_Color *color);
 };

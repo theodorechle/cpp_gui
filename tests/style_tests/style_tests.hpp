@@ -16,7 +16,7 @@ public:
     Result checkStyleValue(StyleValue *testedValue, StyleValue *expectedValue);
     Result checkStyleRule(const StyleRule *testedRule, const StyleRule *expectedRule);
     Result checkStyleMap(const StyleValuesMap *testedStyleMap, const StyleValuesMap *expectedStyleMap);
-    Result checkRuleNumberAndStyleBlocks(int testedRuleNumber, int expectedRuleNumber, const std::list<StyleBlock *> *testedStyleBlocks,
+    Result checkStyleBlocks(const std::list<StyleBlock *> *testedStyleBlocks,
                                          const std::list<StyleBlock *> *expectedStyleBlocks);
     void testDeserializationFromFile(const std::string &fileName, const std::string &testName, const std::list<StyleBlock *> *expectedStyleBlocks);
     void testDeserialization(const std::string &style, const std::string &testName, const std::list<StyleBlock *> *expectedStyleBlocks);

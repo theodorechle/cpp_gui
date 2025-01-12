@@ -35,7 +35,8 @@ void ElementsStyleManager::applySpecificStyleToElement(std::list<StyleBlock *> s
     AppliedStyleMap elementStyleMap;
     std::string modifier = "";
     for (StyleBlock *styleComponent : specificStyle) {
-        for (StyleComponentDataList::const_iterator list = styleComponent->getComponentsList()->cbegin(); list != styleComponent->getComponentsList()->cend(); list++) {
+        for (StyleComponentDataList::const_iterator list = styleComponent->getComponentsList()->cbegin();
+             list != styleComponent->getComponentsList()->cend(); list++) {
         }
 
         const StyleComponentDataList *componentsList = styleComponent->getComponentsList();
@@ -132,8 +133,13 @@ bool ElementsStyleManager::areElementSelectorsCompatibles(ElementStyle *elementS
             selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
             break;
         case StyleRelation::AnyParent:
-            while (currentStyle != nullptr) { // FIXME: do the next steps with all compatible parents. The first found can be good for this step but not the next, but an other could work
+            while (currentStyle != nullptr) { // FIXME: do the next steps with all compatible parents. The first found can be good for this step but
+                                              // not the next, but an other could work
                 currentStyle = currentStyle->getParent();
+                if (currentStyle == nullptr) {
+                    selectorExists = false;
+                    break; // TODO: better handling
+                }
                 elementSelectors = currentStyle->getSelectors();
                 selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
                 if (selectorExists) break;

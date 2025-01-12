@@ -5,3 +5,5 @@ ImageButton::ImageButton(SDL_Window *window, SDL_Renderer *renderer, ElementsSty
     : UIElement{window, renderer, "imagebutton", elementsStyleManager, classes, identifier, parent, child, next} {}
 
 void ImageButton::renderSelf() const {}
+
+void ImageButton::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}

@@ -5,3 +5,5 @@ Table::Table(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *e
     : UIElement{window, renderer, "table", elementsStyleManager, classes, identifier, parent, child, next} {}
 
 void Table::renderSelf() const {}
+
+void Table::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}

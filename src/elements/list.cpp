@@ -5,3 +5,5 @@ List::List(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *ele
     : UIElement{window, renderer, "list", elementsStyleManager, classes, identifier, parent, child, next} {}
 
 void List::renderSelf() const {}
+
+void List::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}

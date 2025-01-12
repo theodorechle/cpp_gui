@@ -44,6 +44,8 @@ std::string tokenToString(const Token &type) {
         case Token::PercentageUnit: return "PercentageUnit";
         case Token::PixelUnit: return "PixelUnit";
         case Token::Hex: return "Hex";
+        case Token::None: return "None";
+        case Token::Auto: return "Auto";
         default: return "Unknown";
     }
 }

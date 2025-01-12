@@ -44,7 +44,7 @@ class Parser {
     Node *expressionTokens;
 
     // only used to avoid recalculating many times the root
-    Node *expressionTreeRoot = new Node{Token::NullRoot};
+    Node *expressionTreeRoot = new Node(Token::NullRoot);
     Node *expressionTree = expressionTreeRoot;
     Settings *settings;
     bool isValidName(const std::string &str, size_t start, size_t end);

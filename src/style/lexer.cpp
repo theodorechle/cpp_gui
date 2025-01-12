@@ -6,7 +6,7 @@ void Lexer::lexeSpace() {
         i++;
     }
     if (i > 0) {
-        expressionTree->appendNext(new Node{Token::Space});
+        expressionTree->appendNext(new Node(Token::Space));
         lexed = true;
         index += i;
     }
@@ -18,7 +18,7 @@ void Lexer::lexeLineReturn() {
         i++;
     }
     if (i > 0) {
-        expressionTree->appendNext(new Node{Token::LineReturn});
+        expressionTree->appendNext(new Node(Token::LineReturn));
         lexed = true;
         index += i;
     }
@@ -125,7 +125,7 @@ void Lexer::lexeUnit() {
             }
         }
         if (isEqual) {
-            expressionTree->appendNext(new Node{map_it->second});
+            expressionTree->appendNext(new Node(map_it->second));
             index += i;
             lexed = true;
             return;
@@ -136,7 +136,7 @@ void Lexer::lexeUnit() {
 void Lexer::lexeSpecialCharacters() {
     std::map<char, Token>::const_iterator specialCharIt = specialCharacters.find(expression[index]);
     if (specialCharIt != specialCharacters.cend()) {
-        expressionTree->appendNext(new Node{specialCharIt->second});
+        expressionTree->appendNext(new Node(specialCharIt->second));
         index++;
         lexed = true;
     }

@@ -62,27 +62,34 @@ void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNum
     }
 }
 
-StyleValue *ElementStyle::getRule(const std::string &ruleName) {
-    for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
+bool ElementStyle::getRule(const std::string &ruleName, StyleValue **ruleValue, StyleValue *defaultStyle) const {
+    for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {
         if (it->first == ruleName) {
-            for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) { // find first enabled rule
-                if (listIt->isEnabled) return listIt->value;
+            for (StyleRules::const_iterator listIt = it->second.cbegin(); listIt != it->second.cend(); listIt++) { // find first enabled rule
+                if (listIt->isEnabled) {
+                    *ruleValue = listIt->value;
+                    return true;
+                }
             }
         }
     }
-    return parent->getRule(ruleName); // cascade style, if not found, check parent
+    if (parent == nullptr) {
+        *ruleValue = defaultStyle;
+        return false;
+    }
+    return parent->getRule(ruleName, ruleValue, defaultStyle); // cascade style, if not found, check parent
 }
 
-bool ElementStyle::ruleExists(const std::string &ruleName) {
-    for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
+bool ElementStyle::ruleExists(const std::string &ruleName) const {
+    for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {
         if (it->first == ruleName) return true;
     }
     return false;
 }
 
-bool ElementStyle::ruleExists(int fileNumber, int ruleNumber) {
-    for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
-        for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
+bool ElementStyle::ruleExists(int fileNumber, int ruleNumber) const {
+    for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {
+        for (StyleRules::const_iterator listIt = it->second.cbegin(); listIt != it->second.cend(); listIt++) {
             if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
                 return true;
             }

@@ -1,3 +1,9 @@
 #red-container label.red#test-label {
     text-color: #ff0000;
+    padding: 150px;
+    border-left-color: #ff0000;
+    border-right-color: #000000;
+    border-top-color: #00ff00;
+    border-bottom-color: #0000ff;
+    border: 1px;
 }

@@ -49,7 +49,7 @@ class Lexer {
     size_t index = 0;
     const std::string &expression;
     size_t expressionLength;
-    Node *firstNode = new Node{Token::NullRoot};
+    Node *firstNode = new Node(Token::NullRoot);
     Node *expressionTree = firstNode;
     Settings *settings;
 

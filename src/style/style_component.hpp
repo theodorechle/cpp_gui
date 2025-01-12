@@ -28,6 +28,8 @@ enum class StyleValueType {
     PercentageUnit,
     PixelUnit,
     Hex,
+    None,
+    Auto,
     Null
 };
 
@@ -46,8 +48,7 @@ std::string styleValueTypeToString(StyleValueType token);
 std::string styleRelationToString(StyleRelation token);
 
 /**
- * All data types are not simple.
- * For example a tuple contains multiple elements.
+ * Some data types are containing others, for example a tuple contains multiple elements.
  * That's why this class exists, to allow such elements who contains others to exists.
  */
 class StyleValue {

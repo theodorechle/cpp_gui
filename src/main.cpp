@@ -12,7 +12,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-constexpr char const *DEFAULT_STYLE_FILE = "src/default-style.txt";
+// constexpr char const *DEFAULT_STYLE_FILE = "src/default-style.txt";
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     int windowLength = 500;
@@ -37,7 +37,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     *appstate = new AppState(manager, sdl_window, sdl_renderer);
 
     ElementsStyleManager elementStyleManager = ElementsStyleManager();
-    elementStyleManager.addStyleFile(DEFAULT_STYLE_FILE);
+//    elementStyleManager.addStyleFile(DEFAULT_STYLE_FILE);
     elementStyleManager.addStyleFile("tests/style_tests/tests-files/main-test.txt");
 
     UIElement *parentContainer = new Container(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "red-container");

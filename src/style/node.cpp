@@ -131,7 +131,7 @@ Node* Node::appendChild(Node &child) {
 }
 
 Node* Node::addEmptyChild() {
-    Node* child = new Node{};
+    Node* child = new Node();
     return appendChild(child);
 }
 

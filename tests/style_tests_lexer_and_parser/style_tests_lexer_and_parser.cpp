@@ -10,17 +10,17 @@ void StyleTestsLexerAndParser::tests() {
     Node *expected;
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-0.txt");
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "element"});
+    rootExpected = new Node(Token::NullRoot);
+    expected = rootExpected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "element"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "background-color"});
-    expected->appendChild(new Node{Token::Hex, "ff0000"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "background-color"));
+    expected->appendChild(new Node(Token::Hex, "ff0000"));
 
     testLexerAndParser(true, fileContent, rootExpected, "single rule");
 
@@ -29,34 +29,34 @@ void StyleTestsLexerAndParser::tests() {
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-1.txt");
 
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
+    rootExpected = new Node(Token::NullRoot);
+    expected = rootExpected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "label"));
+    expected->appendChild(new Node(Token::Class, "blue"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::Hex, "0000ff"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected->appendChild(new Node(Token::Hex, "0000ff"));
 
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
-    expected->appendChild(new Node{Token::Modifier, "hovered"});
+    expected = rootExpected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "label"));
+    expected->appendChild(new Node(Token::Class, "blue"));
+    expected->appendChild(new Node(Token::Modifier, "hovered"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected = expected->appendChild(new Node{Token::Tuple});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected = expected->appendChild(new Node(Token::Tuple));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
 
     testLexerAndParser(true, fileContent, rootExpected, "two style blocks");
 
@@ -65,32 +65,32 @@ void StyleTestsLexerAndParser::tests() {
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-2.txt");
 
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
+    rootExpected = new Node(Token::NullRoot);
+    expected = rootExpected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "label"));
+    expected->appendChild(new Node(Token::Class, "blue"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::Hex, "0000ff"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected->appendChild(new Node(Token::Hex, "0000ff"));
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::Modifier, "hovered"});
+    expected = expected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::Modifier, "hovered"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected = expected->appendChild(new Node{Token::Tuple});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected = expected->appendChild(new Node(Token::Tuple));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
 
     testLexerAndParser(true, fileContent, rootExpected, "nested modifier block");
 
@@ -99,32 +99,32 @@ void StyleTestsLexerAndParser::tests() {
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-3.txt");
 
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
+    rootExpected = new Node(Token::NullRoot);
+    expected = rootExpected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "label"));
+    expected->appendChild(new Node(Token::Class, "blue"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::Hex, "0000ff"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected->appendChild(new Node(Token::Hex, "0000ff"));
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "element"});
+    expected = expected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "element"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected = expected->appendChild(new Node{Token::Tuple});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected = expected->appendChild(new Node(Token::Tuple));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
 
     testLexerAndParser(true, fileContent, rootExpected, "nested element name block");
 
@@ -133,37 +133,37 @@ void StyleTestsLexerAndParser::tests() {
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-4.txt");
 
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
-    expected->appendChild(new Node{Token::Modifier, "hovered"});
-    expected->appendChild(new Node{Token::AnyParent});
-    expected->appendChild(new Node{Token::ElementName, "element"});
-    expected->appendChild(new Node{Token::Class, "red"});
-    expected->appendChild(new Node{Token::Identifier, "root"});
+    rootExpected = new Node(Token::NullRoot);
+    expected = rootExpected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "label"));
+    expected->appendChild(new Node(Token::Class, "blue"));
+    expected->appendChild(new Node(Token::Modifier, "hovered"));
+    expected->appendChild(new Node(Token::AnyParent));
+    expected->appendChild(new Node(Token::ElementName, "element"));
+    expected->appendChild(new Node(Token::Class, "red"));
+    expected->appendChild(new Node(Token::Identifier, "root"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::Hex, "0000ff"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected->appendChild(new Node(Token::Hex, "0000ff"));
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "element"});
+    expected = expected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "element"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected = expected->appendChild(new Node{Token::Tuple});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected = expected->appendChild(new Node(Token::Tuple));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
 
     testLexerAndParser(true, fileContent, rootExpected, "apply style block using the any parent relation components");
 
@@ -172,38 +172,38 @@ void StyleTestsLexerAndParser::tests() {
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-5.txt");
 
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "label"});
-    expected->appendChild(new Node{Token::Class, "blue"});
-    expected->appendChild(new Node{Token::Modifier, "hovered"});
+    rootExpected = new Node(Token::NullRoot);
+    expected = rootExpected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "label"));
+    expected->appendChild(new Node(Token::Class, "blue"));
+    expected->appendChild(new Node(Token::Modifier, "hovered"));
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "element"});
-    expected->appendChild(new Node{Token::Class, "red"});
-    expected->appendChild(new Node{Token::Identifier, "root"});
-    expected = expected->getParent();
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected->appendChild(new Node{Token::Hex, "0000ff"});
-    expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "element"});
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "element"));
+    expected->appendChild(new Node(Token::Class, "red"));
+    expected->appendChild(new Node(Token::Identifier, "root"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "text-color"});
-    expected = expected->appendChild(new Node{Token::Tuple});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
-    expected->appendChild(new Node{Token::Int, "150"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected->appendChild(new Node(Token::Hex, "0000ff"));
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "element"));
+    expected = expected->getParent();
+    expected = expected->getParent();
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "text-color"));
+    expected = expected->appendChild(new Node(Token::Tuple));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
+    expected->appendChild(new Node(Token::Int, "150"));
 
     testLexerAndParser(true, fileContent, rootExpected, "apply style block to any child component with nested element name");
 
@@ -215,21 +215,21 @@ void StyleTestsLexerAndParser::tests() {
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-7.txt");
 
-    rootExpected = new Node{Token::NullRoot};
-    expected = rootExpected->appendChild(new Node{Token::StyleBlock});
-    expected = expected->appendChild(new Node{Token::BlockDeclaration});
-    expected = expected->appendChild(new Node{Token::Declaration});
-    expected->appendChild(new Node{Token::ElementName, "element"});
+    rootExpected = new Node(Token::NullRoot);
+    expected = rootExpected->appendChild(new Node(Token::StyleBlock));
+    expected = expected->appendChild(new Node(Token::BlockDeclaration));
+    expected = expected->appendChild(new Node(Token::Declaration));
+    expected->appendChild(new Node(Token::ElementName, "element"));
     expected = expected->getParent();
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::BlockDefinition});
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "width"});
-    expected->appendChild(new Node{Token::PixelUnit})->appendChild(new Node{Token::Int, "150"});
+    expected = expected->appendChild(new Node(Token::BlockDefinition));
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "width"));
+    expected->appendChild(new Node(Token::PixelUnit))->appendChild(new Node(Token::Int, "150"));
     expected = expected->getParent();
-    expected = expected->appendChild(new Node{Token::Assignment});
-    expected->appendChild(new Node{Token::StyleName, "height"});
-    expected->appendChild(new Node{Token::PercentageUnit})->appendChild(new Node{Token::Int, "40"});
+    expected = expected->appendChild(new Node(Token::Assignment));
+    expected->appendChild(new Node(Token::StyleName, "height"));
+    expected->appendChild(new Node(Token::PercentageUnit))->appendChild(new Node(Token::Int, "40"));
 
     testLexerAndParser(true, fileContent, rootExpected, "test units for values");
 
