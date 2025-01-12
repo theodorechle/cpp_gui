@@ -6,6 +6,7 @@
 
 #include <SDL3/SDL.h>
 #include <iostream>
+#include <vector>
 
 class UIElement : public AbstractElement {
     SDL_Rect elementRect = SDL_Rect{};
@@ -18,18 +19,18 @@ private:
     void computeLayout() override final;
     virtual void computeDesiredLayoutWithoutMargins(int *width, int *height) const = 0;
     void computeDesiredLayout(int *width, int *height);
+    
     /**
-     * If styleName is found in current loaded style, returns the styleName corresponding value.
-     * If styleName is not found and globalStyleName is not empty and is found in the loaded style, returns its value.
+     * If any of the style names is found in current loaded style, returns the corresponding value.
      * Else returns default;
      */
-    int getSize(const std::string &styleName, const std::string &globalStyleName, int defaultSize = 0) const;
+    int getSize(const std::vector<const char *> &styleNames, int defaultSize = 0) const;
+
     /**
-     * If styleName is found in current loaded style, returns the styleName corresponding value.
-     * If styleName is not found and globalStyleName is not empty and is found in the loaded style, returns its value.
+     * If any of the style names is found in current loaded style, returns the corresponding value.
      * Else returns default;
      */
-    SDL_Color getColor(const std::string &styleName, const std::string &globalStyleName, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255}) const;
+    SDL_Color getColor(const std::vector<const char *> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255}) const;
 
     void setXpos(int x) { elementRect.x = x; }
     void setYpos(int y) { elementRect.y = y; }
