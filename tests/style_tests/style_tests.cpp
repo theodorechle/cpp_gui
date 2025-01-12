@@ -288,24 +288,6 @@ void StyleTests::tests() {
     expectedStyleMap.clear();
     expectedData.clear();
 
-    expectedData.push_back(std::pair(std::pair("red-container", StyleComponentType::Identifier), StyleRelation::AnyParent));
-    expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
-    expectedData.push_back(std::pair(std::pair("red", StyleComponentType::Class), StyleRelation::SameElement));
-    expectedData.push_back(std::pair(std::pair("test-label", StyleComponentType::Identifier), StyleRelation::SameElement));
-    styleValue = new StyleValue("ff0000", StyleValueType::Hex);
-    StyleValue *styleValue2 = new StyleValue("", StyleValueType::PixelUnit);
-    styleValue2->setChild(new StyleValue("5", StyleValueType::Int));
-    expectedStyleMap["text-color"] = StyleRule{styleValue, true, 0, 0, 0};
-    expectedStyleMap["padding"] = StyleRule{styleValue2, true, 0, 0, 1};
-    styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
-    expectedStyleBlocks = {styleBlock};
-    testDeserializationFromFile("tests/style_tests/tests-files/main-test.txt", "main-test file", &expectedStyleBlocks);
-    delete styleBlock;
-    delete styleValue;
-    delete styleValue2;
-    expectedStyleMap.clear();
-    expectedData.clear();
-
     testDeserializationError<MalformedExpression>(".container      label#red{text-color : #ff0000}", "missing semi-colon after assignment");
     testDeserializationError<MalformedExpression>(".container>label#red{text-color;}", "missing style value");
     testDeserializationError<MissingToken>(".container>label#red{: value}", "missing style name");

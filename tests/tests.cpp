@@ -168,8 +168,8 @@ void Tests::displaySummary() const {
         std::cout << "\n";
         index++;
     }
-    std::cout << "Total tests time: " << std::to_string(std::chrono::duration<float>(endAllTestsTime - startAllTestsTime).count()) << "s\n";
-
+    std::cout << results.size() << " tests in " << std::to_string(std::chrono::duration<float>(endAllTestsTime - startAllTestsTime).count()) << "s\n";
+    std::cout << "Errors in this run: " << getNbErrors() << "\n";
     std::cout << "End of summary\n";
 }
 
