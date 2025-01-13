@@ -43,7 +43,7 @@ class Tests {
     // TODO: run tests in other process to ensure not crashing
     // TODO: find a way to run a test in a simpler way (something like python decorators (maybe a macro))
     // TODO: tests summaries are not aligned when more than 10 tests
-    // TODO: as for a tmp file
+    // TODO: ask for a tmp file
     std::string testsName;
     const int NB_SPACES_BEFORE_CHRONO = 9;
     const int NB_SPACES_BEFORE_TEST_DESCRIPTION = 8;
