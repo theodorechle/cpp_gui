@@ -1,6 +1,6 @@
 #include "style_tests_lexer_and_parser.hpp"
 
-StyleTestsLexerAndParser::StyleTestsLexerAndParser() : Tests{"Tests style lexer and parser"}, settings{new Settings()} { settings->debug = false; }
+StyleTestsLexerAndParser::StyleTestsLexerAndParser() : Tests{"Tests style lexer and parser"}, settings{new Settings()} { settings->debug = true; }
 StyleTestsLexerAndParser::~StyleTestsLexerAndParser() { delete settings; };
 
 void StyleTestsLexerAndParser::tests() {
@@ -22,7 +22,7 @@ void StyleTestsLexerAndParser::tests() {
     expected->appendChild(new Node(Token::StyleName, "background-color"));
     expected->appendChild(new Node(Token::Hex, "ff0000"));
 
-    testLexerAndParser(true, fileContent, rootExpected, "single rule");
+    testLexerAndParser(true, fileContent, rootExpected, "Single rule");
 
     delete rootExpected;
     expected = nullptr;
@@ -58,7 +58,7 @@ void StyleTestsLexerAndParser::tests() {
     expected->appendChild(new Node(Token::Int, "150"));
     expected->appendChild(new Node(Token::Int, "150"));
 
-    testLexerAndParser(true, fileContent, rootExpected, "two style blocks");
+    testLexerAndParser(true, fileContent, rootExpected, "Two style blocks");
 
     delete rootExpected;
     expected = nullptr;
@@ -92,7 +92,7 @@ void StyleTestsLexerAndParser::tests() {
     expected->appendChild(new Node(Token::Int, "150"));
     expected->appendChild(new Node(Token::Int, "150"));
 
-    testLexerAndParser(true, fileContent, rootExpected, "nested modifier block");
+    testLexerAndParser(true, fileContent, rootExpected, "Nested modifier block");
 
     delete rootExpected;
     expected = nullptr;
@@ -126,7 +126,7 @@ void StyleTestsLexerAndParser::tests() {
     expected->appendChild(new Node(Token::Int, "150"));
     expected->appendChild(new Node(Token::Int, "150"));
 
-    testLexerAndParser(true, fileContent, rootExpected, "nested element name block");
+    testLexerAndParser(true, fileContent, rootExpected, "Nested element name block");
 
     delete rootExpected;
     expected = nullptr;
@@ -165,7 +165,7 @@ void StyleTestsLexerAndParser::tests() {
     expected->appendChild(new Node(Token::Int, "150"));
     expected->appendChild(new Node(Token::Int, "150"));
 
-    testLexerAndParser(true, fileContent, rootExpected, "apply style block using the any parent relation components");
+    testLexerAndParser(true, fileContent, rootExpected, "Apply style block using the any parent relation components");
 
     delete rootExpected;
     expected = nullptr;
@@ -205,13 +205,13 @@ void StyleTestsLexerAndParser::tests() {
     expected->appendChild(new Node(Token::Int, "150"));
     expected->appendChild(new Node(Token::Int, "150"));
 
-    testLexerAndParser(true, fileContent, rootExpected, "apply style block to any child component with nested element name");
+    testLexerAndParser(true, fileContent, rootExpected, "Apply style block to any child component with nested element name");
 
     delete rootExpected;
     expected = nullptr;
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-6.txt");
-    testLexerAndParserException<MalformedExpression>(fileContent, "raising an error for multi-line block declaration");
+    testLexerAndParserException<MalformedExpression>(fileContent, "Multi-line block declaration");
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-7.txt");
 
@@ -231,13 +231,16 @@ void StyleTestsLexerAndParser::tests() {
     expected->appendChild(new Node(Token::StyleName, "height"));
     expected->appendChild(new Node(Token::PercentageUnit))->appendChild(new Node(Token::Int, "40"));
 
-    testLexerAndParser(true, fileContent, rootExpected, "test units for values");
+    testLexerAndParser(true, fileContent, rootExpected, "Values units");
 
     delete rootExpected;
     expected = nullptr;
 
     fileContent = getFileContent(TESTS_FILES_DIR + "/test-8.txt");
-    testLexerAndParserException<MalformedExpression>(fileContent, "raising an error for no block declaration");
+    testLexerAndParserException<MalformedExpression>(fileContent, "No block declaration");
+
+    fileContent = getFileContent(TESTS_FILES_DIR + "/test-9.txt");
+    testLexerAndParserException<LexerError>(fileContent, "Multiline comment not closed");
 }
 
 void StyleTestsLexerAndParser::testLexer(bool equal, const std::string &expr, const Node *expected, const std::string &testName) {
@@ -322,7 +325,7 @@ void StyleTestsLexerAndParser::testLexerAndParser(bool equal, const std::string 
 template <typename T> void StyleTestsLexerAndParser::testLexerAndParserException(const std::string &expression, const std::string &testName) {
     Result testResult;
     startTest(testName);
-    std::cout << "Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises a UnknownValue exception : ";
+    std::cout << "Test if tokenizing and parsing\n'\n" << expression << "\n'\n raises an exception : ";
     Node *tokens = nullptr;
     Node *result = nullptr;
     try {

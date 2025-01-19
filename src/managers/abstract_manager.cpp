@@ -1,21 +1,9 @@
 #include "abstract_manager.hpp"
 
-void AbstractManager::addElement(AbstractElement* element) {
-    elementsList.push_back(element);
+void AbstractManager::setElementsTree(AbstractElement* element) {
+    elementsTree = element;
 }
 
-void AbstractManager::removeElement(AbstractElement* element, bool delete_if_found) {
-    if (delete_if_found && std::find(elementsList.cbegin(), elementsList.cend(), element) != elementsList.cend()) {
-        delete element;
-    }
-    elementsList.remove(element);
-}
-
-void AbstractManager::removeAllElements(bool delete_if_found) {
-    if (delete_if_found) {
-        for (AbstractElement* element : elementsList) {
-            delete element;
-        }
-    }
-    elementsList.clear();
+AbstractElement *AbstractManager::removeElementsTree() {
+    return elementsTree;
 }

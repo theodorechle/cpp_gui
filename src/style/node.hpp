@@ -30,6 +30,7 @@ public :
     void removeNext() {setNext(nullptr);};
     Node* getChild() const {return child;};
     Node* getLastChild() const;
+    Node* getSpecificChild(int childNumber) const;
     int getNbChilds() const;
     /*Set the child pointer*/
     void setChild(Node* child);

@@ -22,3 +22,9 @@ AbstractElement::AbstractElement(std::string elementName, ElementsStyleManager *
         elementsStyleManager->addElementStyle(elementStyle);
     }
 }
+
+AbstractElement::~AbstractElement() {
+    delete child;
+    delete next;
+    delete elementStyle;
+}

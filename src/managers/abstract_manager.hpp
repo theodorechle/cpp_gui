@@ -8,12 +8,11 @@ class AbstractElement;
 
 class AbstractManager {
 protected:
-    std::list<AbstractElement*> elementsList = std::list<AbstractElement*>();
+    AbstractElement* elementsTree = nullptr;
 public:
     virtual ~AbstractManager() = default;
-    void addElement(AbstractElement* element);
-    void removeElement(AbstractElement* element, bool delete_if_found=true);
-    void removeAllElements(bool delete_if_found=true);
+    void setElementsTree(AbstractElement* element);
+    AbstractElement *removeElementsTree();
     virtual void render() const = 0;
 };
 

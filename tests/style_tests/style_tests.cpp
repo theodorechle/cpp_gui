@@ -1,6 +1,6 @@
 #include "style_tests.hpp"
 
-StyleTests::StyleTests() : Tests{"Tests style"}, settings{new Settings()} { settings->debug = false; }
+StyleTests::StyleTests() : Tests{"Tests style"}, settings{new Settings()} { settings->debug = true; }
 StyleTests::~StyleTests() {delete settings;}
 
 Result StyleTests::checkStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData) {
@@ -42,12 +42,12 @@ Result StyleTests::checkStyleValue(StyleValue *testedValue, StyleValue *expected
         return Result::KO;
     }
     if (testedValue->getValue() != expectedValue->getValue()) {
-        std::cerr << "The name is different (have " << testedValue->getValue() << ", expected " << expectedValue->getValue() << ")\n";
+        std::cerr << "The name is different (have '" << testedValue->getValue() << "', expected '" << expectedValue->getValue() << "')\n";
         return Result::KO;
     }
     if (testedValue->getType() != expectedValue->getType()) {
-        std::cerr << "The type is different (have " << styleValueTypeToString(testedValue->getType()) << ", expected "
-                  << styleValueTypeToString(expectedValue->getType()) << ")\n";
+        std::cerr << "The type is different (have '" << styleValueTypeToString(testedValue->getType()) << "', expected '"
+                  << styleValueTypeToString(expectedValue->getType()) << "')\n";
         return Result::KO;
     }
 
@@ -66,19 +66,19 @@ Result StyleTests::checkStyleRule(const StyleRule *testedRule, const StyleRule *
         return Result::KO;
     }
     if (testedRule->fileNumber != expectedRule->fileNumber) {
-        std::cerr << "The file number is different (have " << testedRule->fileNumber << ", expected " << expectedRule->fileNumber << "\n";
+        std::cerr << "The file number is different (have '" << testedRule->fileNumber << "', expected '" << expectedRule->fileNumber << "'\n";
         return Result::KO;
     }
     if (testedRule->ruleNumber != expectedRule->ruleNumber) {
-        std::cerr << "The rule number is different (have " << testedRule->ruleNumber << ", expected " << expectedRule->ruleNumber << "\n";
+        std::cerr << "The rule number is different (have '" << testedRule->ruleNumber << "', expected '" << expectedRule->ruleNumber << "'\n";
         return Result::KO;
     }
     if (testedRule->priority != expectedRule->priority) {
-        std::cerr << "The priority is different (have " << testedRule->priority << ", expected " << expectedRule->priority << "\n";
+        std::cerr << "The priority is different (have '" << testedRule->priority << "', expected '" << expectedRule->priority << "'\n";
         return Result::KO;
     }
     if (testedRule->isEnabled != expectedRule->isEnabled) {
-        std::cerr << "The enabled status is different (have " << testedRule->isEnabled << ", expected " << expectedRule->isEnabled << "\n";
+        std::cerr << "The enabled status is different (have '" << testedRule->isEnabled << "', expected '" << expectedRule->isEnabled << "'\n";
         return Result::KO;
     }
     return checkStyleValue(testedRule->value, expectedRule->value);
@@ -100,7 +100,7 @@ Result StyleTests::checkStyleMap(const StyleValuesMap *testedStyleMap, const Sty
             std::cerr << "Rule " << rule.first << " can't be found in the tested map\n";
             return Result::KO;
         }
-        styleRuleCheckResult = checkStyleRule(&(rule.second), &(ruleIt->second));
+        styleRuleCheckResult = checkStyleRule(&(ruleIt->second), &(rule.second));
         if (styleRuleCheckResult != Result::OK) return styleRuleCheckResult;
     }
     return Result::OK;
@@ -288,10 +288,23 @@ void StyleTests::tests() {
     expectedStyleMap.clear();
     expectedData.clear();
 
+    expectedData.push_back(std::pair(std::pair("label", StyleComponentType::ElementName), StyleRelation::SameElement));
+    styleValue = new StyleValue("", StyleValueType::PixelUnit);
+    StyleValue *styleValue2 = new StyleValue("100", StyleValueType::Int);
+    styleValue->setChild(styleValue2);
+    expectedStyleMap["padding"] = StyleRule{styleValue, true, 0, 0, 0};
+    styleBlock = new StyleBlock(&expectedData, &expectedStyleMap);
+    expectedStyleBlocks = {styleBlock};
+    testDeserialization("label {padding:100px;}", "style name and value sticked to the assignment colon", &expectedStyleBlocks);
+    delete styleValue;
+    delete styleBlock;
+    expectedStyleMap.clear();
+    expectedData.clear();
+
     testDeserializationError<MalformedExpression>(".container      label#red{text-color : #ff0000}", "missing semi-colon after assignment");
     testDeserializationError<MalformedExpression>(".container>label#red{text-color;}", "missing style value");
-    testDeserializationError<MissingToken>(".container>label#red{: value}", "missing style name");
-    testDeserializationError<MissingToken>(".container>label#red{:}", "missing style name and value");
+    testDeserializationError<MalformedExpression>(".container>label#red{: value}", "missing style name");
+    testDeserializationError<MalformedExpression>(".container>label#red{:}", "missing style name and value");
     testDeserializationError<MalformedExpression>("{text-color: #ffffff;}", "missing block declaration");
     testDeserializationError<MissingToken>(">label#red{text-color: #ffffff;}", "missing block declaration component before relation '>'");
 }

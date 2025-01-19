@@ -124,9 +124,13 @@ SDL_Color UIElement::borderTopColor() const { return getColor({"border-top-color
 SDL_Color UIElement::borderBottomColor() const { return getColor({"border-bottom-color", "border-color"}); }
 
 void UIElement::render() {
+    if (renderer == nullptr) throw NoRendererException();
     computeLayout();
     // TODO: compute margins
-    renderSelf();
+    // TODO: give only a portion of the surface to the elements (and childs)
+    renderSelfBeforeChilds();
+    renderChilds();
+    renderSelfAfterChilds();
     renderBorder();
 }
 
@@ -142,6 +146,8 @@ void UIElement::renderBorder() const {
     }
 
     getRect(&x, &y, &w, &h);
+
+    // set border render order in the README
 
     // left border
     color = borderLeftColor();

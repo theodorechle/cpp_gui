@@ -40,12 +40,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 //    elementStyleManager.addStyleFile(DEFAULT_STYLE_FILE);
     elementStyleManager.addStyleFile("tests/style_tests/tests-files/main-test.txt");
 
-    UIElement *parentContainer = new Container(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "red-container");
-    manager->addElement(parentContainer);
-    UIElement *container = new Container(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "", parentContainer);
-    manager->addElement(container);
-    UIElement *label = new Label(sdl_window, sdl_renderer, &elementStyleManager, new std::vector<std::string>{"red"}, "test-label", container);
-    manager->addElement(label);
+    // UIElement *parentContainer = new Container(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "red-container");
+    // manager->setElementsTree(parentContainer);
+    // UIElement *container = new Container(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "", parentContainer);
+    // new Label(sdl_window, sdl_renderer, &elementStyleManager, new std::vector<std::string>{"red"}, "test-label", container);
+    manager->setElementsTree(new Label(sdl_window, sdl_renderer, &elementStyleManager, new std::vector<std::string>{"red"}, "test-label"));
 
     return SDL_APP_CONTINUE;
 }
@@ -74,6 +73,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     AppState *state = static_cast<AppState *>(appstate);
     AbstractManager *manager = state->getManager();
-    manager->removeAllElements();
+    delete manager->removeElementsTree();
     delete state;
 }

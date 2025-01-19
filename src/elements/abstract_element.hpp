@@ -28,7 +28,7 @@ public:
     AbstractElement *getChild() { return this->child; }
     void setNext(AbstractElement *next) { this->next = next; }
     AbstractElement *getNext() { return this->next; }
-    virtual ~AbstractElement() = default;
+    virtual ~AbstractElement();
     
     virtual void render() = 0;
 };

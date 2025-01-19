@@ -17,11 +17,10 @@ void Lexer::lexeLineReturn() {
     while (index + i < expressionLength && expression[index + i] == '\n') {
         i++;
     }
-    if (i > 0) {
-        expressionTree->appendNext(new Node(Token::LineReturn));
-        lexed = true;
-        index += i;
-    }
+    if (i == 0) return;
+    expressionTree->appendNext(new Node(Token::LineReturn));
+    lexed = true;
+    index += i;
 }
 
 void Lexer::lexeOneLineComment() {
@@ -41,47 +40,54 @@ void Lexer::lexeMultiLineComment() {
     while (index + i + 2 < expression.size() && expression[index + i + 1] != '*' && expression[index + i + 2] != '/') {
         i++;
     }
+    if (index + i + 2 >= expression.size()) throw LexerError("Multiline comment opened but never closed");
     expressionTree->appendNext(new Node{Token::MultiLineComment, expression.substr(index + 2, i - 1)});
     lexed = true;
     index += i + 3;
 }
 
 void Lexer::lexeString() {
-    // check for special characters who are allowed at the start of a string ('#', ':', '.', ...)
-    if (std::find(allowedSpecialFirstStringCharacters.cbegin(), allowedSpecialFirstStringCharacters.cend(), expression[index])
-        == allowedSpecialFirstStringCharacters.cend()) {
-        // if no special character allowed found,
-        // check for forbidden first special string character (syntax characters + others defnied in forbiddenFirstStringCharacters)
-        // if a forbidden character is not present, ensure that the char is an alpha character
-        if (specialCharacters.find(expression[index]) != specialCharacters.cend()
-            || std::find(forbiddenFirstStringCharacters.cbegin(), forbiddenFirstStringCharacters.cend(), expression[index])
-                   != forbiddenFirstStringCharacters.cend() || !isalpha(expression[index]))
-            return;
+    size_t i = 0;
+    // check that the string does not contains a special character who is part of the syntax or a forbidden character
+    while (index + i < expressionLength && SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend()
+           && std::find(FORBIDDEN_STRING_CHARACTERS.cbegin(), FORBIDDEN_STRING_CHARACTERS.cend(), expression[index + i])
+                  == FORBIDDEN_STRING_CHARACTERS.cend()) {
+        i++;
     }
+    if (i == 0) return;
+    expressionTree->appendNext(new Node{Token::String, expression.substr(index, i)});
+    index += i;
+    lexed = true;
+}
+
+void Lexer::lexeHex() {
+    if (expression[index] != '#') return;
     size_t i = 1;
-    // check that the string does not contains a special character who is part of the syntax or one of the first special allowed string characters
-    while (index + i < expressionLength && specialCharacters.find(expression[index + i]) == specialCharacters.cend()
-           && std::find(allowedSpecialFirstStringCharacters.cbegin(), allowedSpecialFirstStringCharacters.cend(), expression[index + i])
-                  == allowedSpecialFirstStringCharacters.cend()) {
+    while (std::isxdigit(expression[index + i])) {
         i++;
     }
     if (i == 1) return;
-    expressionTree->appendNext(new Node{Token::String, expression.substr(index, i)});
+    expressionTree->appendNext(new Node(Token::Hex, expression.substr(index + 1, i - 1)));
     index += i;
     lexed = true;
 }
 
 void Lexer::lexeInt() {
     if (!isdigit(expression[index])) return;
+    int tmpSize;
     size_t i = 1;
     while (index + i < expressionLength && isdigit(expression[index + i]))
         i++;
+    if (SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' ' && expression[index + i] != '\n'
+        && getUnit(i, &tmpSize) == Token::NullRoot)
+        return; // not an int
     expressionTree->appendNext(new Node{Token::Int, expression.substr(index, i)});
     index += i;
     lexed = true;
 }
 
 void Lexer::lexeFloat() {
+    int tmpSize;
     bool dotFound = false;
     size_t i = 0;
     while (index + i < expressionLength) {
@@ -92,7 +98,10 @@ void Lexer::lexeFloat() {
         else if (!isdigit(expression[index + i])) return;
         i++;
     }
-    if (!dotFound || i < 2) return; // < 2 because at least one int (0-9) and a dot
+    if (!dotFound || i < 2) return; // need at least one int (0-9) and a dot
+    if (SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' ' && expression[index + i] != '\n'
+        && getUnit(i, &tmpSize) == Token::NullRoot)
+        return; // not a float
     expressionTree->appendNext(new Node{Token::Float, expression.substr(index, i)});
     index += i;
     lexed = true;
@@ -111,35 +120,42 @@ void Lexer::lexeBool() {
     }
 }
 
-void Lexer::lexeUnit() {
-    std::unordered_map<std::string, Token>::const_iterator map_it;
+Token Lexer::getUnit(int expressionIndex, int *size) {
     size_t i;
-    bool isEqual;
-
-    for (map_it = UNITS.cbegin(); map_it != UNITS.cend(); map_it++) {
-        isEqual = true;
-        for (i = 0; i < map_it->first.size(); i++) {
-            if (expression[index + i] != map_it->first[i]) {
-                isEqual = false;
+    bool equal;
+    for (std::pair<std::string, Token> unit : UNITS) {
+        equal = true;
+        for (i = 0; i < unit.first.size(); i++) {
+            // std::cerr << expression[index + expressionIndex + i] << ", " << unit.first[i] << "\n";
+            if (expression[index + expressionIndex + i] != unit.first[i]) {
+                equal = false;
                 break;
             }
         }
-        if (isEqual) {
-            expressionTree->appendNext(new Node(map_it->second));
-            index += i;
-            lexed = true;
-            return;
+        if (equal) {
+            *size = i;
+            return unit.second;
         }
     }
+    *size = 0;
+    return Token::NullRoot;
+}
+
+void Lexer::lexeUnit() {
+    int size;
+    Token unit = getUnit(0, &size);
+    if (unit == Token::NullRoot) return;
+    index += size;
+    lexed = true;
+    expressionTree->appendNext(new Node(unit));
 }
 
 void Lexer::lexeSpecialCharacters() {
-    std::map<char, Token>::const_iterator specialCharIt = specialCharacters.find(expression[index]);
-    if (specialCharIt != specialCharacters.cend()) {
-        expressionTree->appendNext(new Node(specialCharIt->second));
-        index++;
-        lexed = true;
-    }
+    std::map<char, Token>::const_iterator specialCharIt = SPECIAL_CHARACTERS.find(expression[index]);
+    if (specialCharIt == SPECIAL_CHARACTERS.cend()) return;
+    expressionTree->appendNext(new Node(specialCharIt->second));
+    index++;
+    lexed = true;
 }
 
 void Lexer::lexe() {
@@ -149,8 +165,9 @@ void Lexer::lexe() {
         if (!lexed) lexeLineReturn();
         if (!lexed) lexeOneLineComment();
         if (!lexed) lexeMultiLineComment();
-        if (!lexed) lexeInt();
+        if (!lexed) lexeHex();
         if (!lexed) lexeFloat();
+        if (!lexed) lexeInt();
         if (!lexed) lexeBool();
         if (!lexed) lexeUnit();
         if (!lexed) lexeString();

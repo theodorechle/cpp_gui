@@ -24,7 +24,7 @@ public:
     UnknownValue(const std::string &value) : LexerError{"Error : Unknown value '" + value + "'"} {};
 };
 
-const std::map<char, Token> specialCharacters = {
+const std::map<char, Token> SPECIAL_CHARACTERS = {
     {'(', Token::OpeningParenthesis},
     {')', Token::ClosingParenthesis},
     {'{', Token::OpeningCurlyBracket},
@@ -33,15 +33,12 @@ const std::map<char, Token> specialCharacters = {
     {':', Token::Colon},
     {';', Token::SemiColon},
     {'>', Token::GreaterThan},
+    {'#', Token::Sharp},
+    {'.', Token::Dot},
 };
 
-const std::vector<char> forbiddenFirstStringCharacters = {
-    '[', ']'
-};
-
-// these characters are only allowed at the beginning of a string
-const std::vector<char> allowedSpecialFirstStringCharacters = {
-    ':', ' ', '#', '.'
+const std::vector<char> FORBIDDEN_STRING_CHARACTERS = {
+    '[', ']', ' ', '\n'
 };
 
 class Lexer {
@@ -62,11 +59,12 @@ public:
     void lexeLineReturn();
     void lexeOneLineComment();
     void lexeMultiLineComment();
-    void lexeClosingMultiLineComment();
     void lexeString();
+    void lexeHex();
     void lexeInt();
     void lexeFloat();
     void lexeBool();
+    Token getUnit(int expressionIndex, int *size);
     void lexeUnit();
     void lexeSpecialCharacters();
     Node *getResult() { return firstNode; }

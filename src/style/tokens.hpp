@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 enum class Token {
     // Used only by the lexer
@@ -17,6 +17,8 @@ enum class Token {
     GreaterThan,
     OneLineComment,
     MultiLineComment,
+    Sharp,
+    Dot,
     // Used only by the parser
     StyleBlock,
     BlockDeclaration,
@@ -53,7 +55,7 @@ enum class Token {
     Auto
 };
 
-const std::unordered_map<std::string, Token> UNITS{
+const std::map<std::string, Token> UNITS{
     {"%", Token::PercentageUnit},
     {"px", Token::PixelUnit}};
 

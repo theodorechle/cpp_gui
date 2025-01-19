@@ -32,6 +32,11 @@ public:
     MalformedExpression(const std::string &expression) : ParserError{"Malformed expression: \"" + expression + "\""} {};
 };
 
+const std::map<std::string, Token> specialAssignmentValues {
+    {"none", Token::None},
+    {"auto", Token::Auto}
+};
+
 /**
  * Transform a chain of trees (no childs) like the one the lexer function returns into a tree containing the entire expression
  */
@@ -49,10 +54,6 @@ class Parser {
     Settings *settings;
     bool isValidName(const std::string &str, size_t start, size_t end);
     bool isValidElementOrStyleName(const std::string &str);
-    bool isValidClass(const std::string &str);
-    bool isValidIdentifier(const std::string &str);
-    bool isValidModifier(const std::string &str);
-    bool isValidHex(const std::string &str);
     bool isWhiteSpace(Token token);
     // relations are direct parent, any parent, same element, ...
     bool isComponentRelation(Token token);
@@ -71,6 +72,8 @@ class Parser {
     void parseComma();
     void parseColon();
     void parseSemiColon();
+    void parseSharp();
+    void parseDot();
     void parseGreatherThan();
     void parseOpeningParenthesis();
     void parseClosingParenthesis();
@@ -79,6 +82,7 @@ class Parser {
     void parseString();
     void parseName();
     void parseUnit();
+    bool parseSpecialAssignmentValues();
 
     // if you don't know how to use it, don't use it
     Node *updateLastDeclarationComponentBeforeNewOne(Node *lastChild);

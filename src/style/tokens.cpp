@@ -15,6 +15,8 @@ std::string tokenToString(const Token &type) {
         case Token::GreaterThan: return "GreaterThan";
         case Token::OneLineComment: return "OneLineComment";
         case Token::MultiLineComment: return "MultiLineComment";
+        case Token::Sharp: return "Sharp";
+        case Token::Dot: return "Dot";
         // Used only by the parser
         case Token::StyleBlock: return "StyleBlock";
         case Token::BlockDeclaration: return "BlockDeclaration";

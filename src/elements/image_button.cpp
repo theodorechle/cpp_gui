@@ -4,6 +4,6 @@ ImageButton::ImageButton(SDL_Window *window, SDL_Renderer *renderer, ElementsSty
                          const std::string &identifier, UIElement *parent, UIElement *child, UIElement *next)
     : UIElement{window, renderer, "imagebutton", elementsStyleManager, classes, identifier, parent, child, next} {}
 
-void ImageButton::renderSelf() const {}
+void ImageButton::renderSelfBeforeChilds() const {}
 
 void ImageButton::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}

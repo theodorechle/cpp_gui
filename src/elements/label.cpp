@@ -6,7 +6,7 @@ Label::Label(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *e
              const std::string &identifier, UIElement *parent, UIElement *child, UIElement *next)
     : UIElement{window, renderer, "label", elementsStyleManager, classes, identifier, parent, child, next} {}
 
-void Label::renderSelf() const {
+void Label::renderSelfBeforeChilds() const {
     // SDL_FRect rect = SDL_FRect{0, 0, 50, 50};
     // SDL_Color color = SDL_Color();
     // Uint8 r, g, b, a;

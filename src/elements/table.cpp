@@ -4,6 +4,6 @@ Table::Table(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *e
              const std::string &identifier, UIElement *parent, UIElement *child, UIElement *next)
     : UIElement{window, renderer, "table", elementsStyleManager, classes, identifier, parent, child, next} {}
 
-void Table::renderSelf() const {}
+void Table::renderSelfBeforeChilds() const {}
 
 void Table::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
