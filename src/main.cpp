@@ -36,15 +36,14 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     *appstate = new AppState(manager, sdl_window, sdl_renderer);
 
-    ElementsStyleManager elementStyleManager = ElementsStyleManager();
-//    elementStyleManager.addStyleFile(DEFAULT_STYLE_FILE);
-    elementStyleManager.addStyleFile("tests/style_tests/tests-files/main-test.txt");
+    ElementsStyleManager elementsStyleManager = ElementsStyleManager();
+//    elementsStyleManager.addStyleFile(DEFAULT_STYLE_FILE);
+    elementsStyleManager.addStyleFile("tests/style_tests/tests-files/main-test.txt");
 
-    // UIElement *parentContainer = new Container(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "red-container");
-    // manager->setElementsTree(parentContainer);
-    // UIElement *container = new Container(sdl_window, sdl_renderer, &elementStyleManager, nullptr, "", parentContainer);
-    // new Label(sdl_window, sdl_renderer, &elementStyleManager, new std::vector<std::string>{"red"}, "test-label", container);
-    manager->setElementsTree(new Label(sdl_window, sdl_renderer, &elementStyleManager, new std::vector<std::string>{"red"}, "test-label"));
+    UIElement *parentContainer = new Container(sdl_window, sdl_renderer, &elementsStyleManager, nullptr, "red-container");
+    manager->setElementsTree(parentContainer);
+    parentContainer->addChild(new Label(sdl_window, sdl_renderer, &elementsStyleManager, new std::vector<std::string>{"red"}, "test-label"));
+    // manager->setElementsTree(new Label(sdl_window, sdl_renderer, &elementsStyleManager, new std::vector<std::string>{"red"}, "test-label"));
 
     return SDL_APP_CONTINUE;
 }

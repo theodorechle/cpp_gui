@@ -7,29 +7,31 @@
 
 class AbstractElement {
     std::string elementName;
-    AbstractElement *parent;
-    AbstractElement *child;
-    AbstractElement *next;
+    AbstractElement *parent = nullptr;
+    AbstractElement *child = nullptr;
+    AbstractElement *next = nullptr;
+    ElementsStyleManager *elementsStyleManager;
     virtual void computeLayout() = 0;
 
 protected:
     ElementStyle *elementStyle;
+    void setParent(AbstractElement *parent);
+    void updateStyle();
 
 public:
     /**
      * If no style manager is given, the element can't have style
      */
     AbstractElement(std::string elementName, ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
-                    const std::string &identifier = "", AbstractElement *parent = nullptr, AbstractElement *child = nullptr,
-                    AbstractElement *next = nullptr);
-    void setParent(AbstractElement *parent) { this->parent = parent; }
-    AbstractElement *getParent() { return this->parent; }
-    void setChild(AbstractElement *child) { this->child = child; }
-    AbstractElement *getChild() { return this->child; }
+                    const std::string &identifier = "");
+    const std::string &getName() const { return elementName; }
+    AbstractElement *getParent() { return parent; }
+    void addChild(AbstractElement *child);
+    AbstractElement *getChild() { return child; }
     void setNext(AbstractElement *next) { this->next = next; }
-    AbstractElement *getNext() { return this->next; }
+    AbstractElement *getNext() { return next; }
     virtual ~AbstractElement();
-    
+
     virtual void render() = 0;
 };
 

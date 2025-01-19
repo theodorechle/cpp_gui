@@ -34,6 +34,7 @@ void ElementsStyleManager::applySpecificStyleToElement(std::list<StyleBlock *> s
     const StyleValuesMap *styleMap;
     AppliedStyleMap elementStyleMap;
     std::string modifier = "";
+    actualElementStyle->clear();
     for (StyleBlock *styleComponent : specificStyle) {
         for (StyleComponentDataList::const_iterator list = styleComponent->getComponentsList()->cbegin();
              list != styleComponent->getComponentsList()->cend(); list++) {
@@ -129,6 +130,10 @@ bool ElementsStyleManager::areElementSelectorsCompatibles(ElementStyle *elementS
             break;
         case StyleRelation::DirectParent:
             currentStyle = currentStyle->getParent();
+            if (currentStyle == nullptr) {
+                selectorExists = false;
+                break;
+            }
             elementSelectors = currentStyle->getSelectors();
             selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
             break;

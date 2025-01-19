@@ -3,8 +3,8 @@
 #include "../converters/color_converter.hpp"
 
 Label::Label(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
-             const std::string &identifier, UIElement *parent, UIElement *child, UIElement *next)
-    : UIElement{window, renderer, "label", elementsStyleManager, classes, identifier, parent, child, next} {}
+             const std::string &identifier)
+    : UIElement{window, renderer, "label", elementsStyleManager, classes, identifier} {}
 
 void Label::renderSelfBeforeChilds() const {
     // SDL_FRect rect = SDL_FRect{0, 0, 50, 50};

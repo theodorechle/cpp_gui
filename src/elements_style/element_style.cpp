@@ -11,6 +11,25 @@ bool ElementStyle::compareRulesLess(StyleRule rule1, StyleRule rule2) {
     return false;
 }
 
+ElementStyle::~ElementStyle() {}
+
+void ElementStyle::addChild(ElementStyle *child) {
+    ElementStyle *nextChild = getChild();
+    ElementStyle *selfChild;
+    if (nextChild == nullptr) {
+        this->child = child;
+    }
+    else {
+        do {
+            selfChild = nextChild;
+            nextChild = selfChild->getNext();
+        } while (nextChild != nullptr);
+        selfChild->setNext(child);
+    }
+    if (child == nullptr) return;
+    child->setParent(this);
+}
+
 void ElementStyle::addStyle(AppliedStyleMap &newStyle) {
     AppliedStyleMap::iterator actualStyleIt;
     for (AppliedStyleMap::iterator it = newStyle.begin(); it != newStyle.end(); it++) {
@@ -30,7 +49,7 @@ bool ElementStyle::deleteStyle(int fileNumber, int ruleNumber) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
             if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
-                style.erase(it);
+                it->second.erase(listIt);
                 return true; // should not have multiple rules with same file and rule number
             }
         }
@@ -43,7 +62,7 @@ int ElementStyle::deleteStyleFromFile(int fileNumber) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
             if (listIt->fileNumber == fileNumber) {
-                style.erase(it);
+                it->second.erase(listIt);
                 nbDeletedRules++;
             }
         }
@@ -60,6 +79,16 @@ void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNum
         }
         it->second.sort(compareRulesLess);
     }
+}
+
+int ElementStyle::clear() {
+    int nbDeletedRules = 0;
+    for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
+        nbDeletedRules += it->second.size();
+        it->second.clear();
+    }
+    style.clear();
+    return nbDeletedRules;
 }
 
 bool ElementStyle::getRule(const std::string &ruleName, StyleValue **ruleValue, StyleValue *defaultStyle) const {

@@ -30,7 +30,7 @@ int UIElement::getSize(const std::vector<const char *> &styleNames, int defaultS
     }
 
     if (rule->getType() == StyleValueType::PixelUnit) {
-        return (rule->getChild()->getType() == StyleValueType::Int) ? (std::stoul(rule->getChild()->getValue(), nullptr, 10)) : 0;
+        return (rule->getChild()->getType() == StyleValueType::Int) ? (std::stoul(rule->getChild()->getValue(), nullptr, 10)) : defaultSize;
     }
     // TODO: add support for other values
     return defaultSize;

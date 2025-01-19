@@ -28,14 +28,15 @@ class ElementStyle {
     int priority = 0;
 
     static bool compareRulesLess(StyleRule rule1, StyleRule rule2);
+    void setParent(ElementStyle *parent) { this->parent = parent; }
 
 public:
     ElementStyle() { updatePriority(); }
+    virtual ~ElementStyle();
     void updatePriority() { this->priority = (parent == nullptr) ? 0 : parent->getPriority() + 1; }
     int getPriority() { return priority; }
-    void setParent(ElementStyle *parent) { this->parent = parent; }
     ElementStyle *getParent() { return parent; }
-    void setChild(ElementStyle *child) { this->child = child; }
+    void addChild(ElementStyle *child);
     ElementStyle *getChild() { return child; }
     void setNext(ElementStyle *next) { this->next = next; }
     ElementStyle *getNext() { return next; }
@@ -47,6 +48,7 @@ public:
     // returns the number of deleted rules
     int deleteStyleFromFile(int fileNumber);
     void updateStylePriorityFromFile(int oldFileNumber, int newFileNumber);
+    int clear();
     /**
      * Set the value in the ruleValue parameter.
      * Returns true if found.

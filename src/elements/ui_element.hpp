@@ -42,6 +42,7 @@ private:
     void setRect(const SDL_Rect &rect);
 
     static SDL_FRect createFRect(int x, int y, int width, int height);
+    void setParent(UIElement *parent) { AbstractElement::setParent(parent); }
 
 protected:
     /**
@@ -63,13 +64,11 @@ protected:
 
 public:
     UIElement(SDL_Window *window, SDL_Renderer *renderer, std::string elementName, ElementsStyleManager *elementsStyleManager = nullptr,
-              std::vector<std::string> *classes = nullptr, const std::string &identifier = "", UIElement *parent = nullptr,
-              UIElement *child = nullptr, UIElement *next = nullptr)
-        : AbstractElement{elementName, elementsStyleManager, classes, identifier, parent, child, next} {}
+              std::vector<std::string> *classes = nullptr, const std::string &identifier = "")
+        : AbstractElement{elementName, elementsStyleManager, classes, identifier} {}
 
-    void setParent(UIElement *parent) { AbstractElement::setParent(parent); }
     UIElement *getParent() { return static_cast<UIElement *>(AbstractElement::getParent()); }
-    void setChild(UIElement *child) { AbstractElement::setChild(child); }
+    void addChild(UIElement *child) { AbstractElement::addChild(child); }
     UIElement *getChild() { return static_cast<UIElement *>(AbstractElement::getChild()); }
     void setNext(UIElement *next) { AbstractElement::setNext(next); }
     UIElement *getNext() { return static_cast<UIElement *>(AbstractElement::getNext()); }
@@ -119,7 +118,7 @@ public:
 
 class NoRendererException : public std::logic_error {
 public:
-    NoRendererException():  std::logic_error{"No renderer available"} {};
+    NoRendererException() : std::logic_error{"No renderer available"} {};
 };
 
 #endif // UI_ELEMENT_HPP
