@@ -5,7 +5,7 @@
 
 class Container : public UIElement {
 public:
-    Container(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *elementsStyleManager = nullptr,
+    Container(ElementsStyleManager *elementsStyleManager = nullptr,
               std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
     void renderChilds() override;
     void computeDesiredLayoutWithoutMargins(int *width, int *height) const override;

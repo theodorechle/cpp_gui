@@ -91,6 +91,11 @@ void UIElement::setRect(const SDL_Rect &rect) { elementRect = rect; }
 
 SDL_FRect UIElement::createFRect(int x, int y, int width, int height) { return SDL_FRect{(float)x, (float)y, (float)width, (float)height}; }
 
+void UIElement::addChild(UIElement *child) {
+    AbstractElement::addChild(child);
+    child->setRenderer(renderer);
+    }
+
 int UIElement::marginLeft() const { return getSize({"margin-left", "margin"}); }
 
 int UIElement::marginRight() const { return getSize({"margin-right", "margin"}); }
@@ -124,6 +129,16 @@ SDL_Color UIElement::borderTopColor() const { return getColor({"border-top-color
 SDL_Color UIElement::borderBottomColor() const { return getColor({"border-bottom-color", "border-color"}); }
 
 void UIElement::render() {
+    SDL_Rect oldClipRect;
+    SDL_Rect clipRect = getRect();
+    if (!SDL_GetRenderClipRect(renderer, &oldClipRect)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't get clip rect: '%s'", SDL_GetError());
+        return;
+    }
+    if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect '%s'", SDL_GetError());
+        return;
+    }
     if (renderer == nullptr) throw NoRendererException();
     computeLayout();
     // TODO: compute margins
@@ -132,6 +147,10 @@ void UIElement::render() {
     renderChilds();
     renderSelfAfterChilds();
     renderBorder();
+    if (!SDL_SetRenderClipRect(renderer, &oldClipRect)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't restore clip rect '%s'", SDL_GetError());
+        return;
+    }
 }
 
 void UIElement::renderBorder() const {
@@ -141,7 +160,7 @@ void UIElement::renderBorder() const {
     int x, y, w, h;
 
     if (!SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't get draw color");
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't get draw color '%s'", SDL_GetError());
         return;
     }
 

@@ -1,8 +1,8 @@
 #include "image_button.hpp"
 
-ImageButton::ImageButton(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
+ImageButton::ImageButton(ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
                          const std::string &identifier)
-    : UIElement{window, renderer, "imagebutton", elementsStyleManager, classes, identifier} {}
+    : UIElement{"imagebutton", elementsStyleManager, classes, identifier} {}
 
 void ImageButton::renderSelfBeforeChilds() const {}
 

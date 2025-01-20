@@ -18,6 +18,23 @@ protected:
     void setParent(AbstractElement *parent);
     void updateStyle();
 
+    /**
+     * Override this function to draw self element.
+     * Only draw element content (no border / background)
+     */
+    virtual void renderSelfBeforeChilds() const {};
+
+    /**
+     * Override this function to draw self element.
+     * Only draw element content (no border / background)
+     */
+    virtual void renderSelfAfterChilds() const {};
+
+    /**
+     * Should call each child with a portion of the element surface
+     */
+    virtual void renderChilds() {};
+
 public:
     /**
      * If no style manager is given, the element can't have style

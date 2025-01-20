@@ -10,11 +10,8 @@
 
 class UIElement : public AbstractElement {
     SDL_Rect elementRect = SDL_Rect{};
-
-protected:
     SDL_Renderer *renderer = nullptr;
 
-private:
     void computeLayout() override final;
     virtual void computeDesiredLayoutWithoutMargins(int *width, int *height) const = 0;
     void computeDesiredLayout(int *width, int *height);
@@ -44,34 +41,19 @@ private:
     static SDL_FRect createFRect(int x, int y, int width, int height);
     void setParent(UIElement *parent) { AbstractElement::setParent(parent); }
 
-protected:
-    /**
-     * Override this function to draw self element.
-     * Only draw element content (no border / background)
-     */
-    virtual void renderSelfBeforeChilds() const {};
-
-    /**
-     * Override this function to draw self element.
-     * Only draw element content (no border / background)
-     */
-    virtual void renderSelfAfterChilds() const {};
-
-    /**
-     * Should call each child with a portion of the element surface
-     */
-    virtual void renderChilds() {};
-
 public:
-    UIElement(SDL_Window *window, SDL_Renderer *renderer, std::string elementName, ElementsStyleManager *elementsStyleManager = nullptr,
-              std::vector<std::string> *classes = nullptr, const std::string &identifier = "")
+    UIElement(std::string elementName, ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+              const std::string &identifier = "")
         : AbstractElement{elementName, elementsStyleManager, classes, identifier} {}
 
     UIElement *getParent() { return static_cast<UIElement *>(AbstractElement::getParent()); }
-    void addChild(UIElement *child) { AbstractElement::addChild(child); }
+    void addChild(UIElement *child);
     UIElement *getChild() { return static_cast<UIElement *>(AbstractElement::getChild()); }
     void setNext(UIElement *next) { AbstractElement::setNext(next); }
     UIElement *getNext() { return static_cast<UIElement *>(AbstractElement::getNext()); }
+
+    void setRenderer(SDL_Renderer *renderer) { this->renderer = renderer; }
+    SDL_Renderer *getRenderer() const { return renderer; }
 
     int getXPos() const { return elementRect.x; }
     int getYPos() const { return elementRect.y; }
@@ -102,9 +84,6 @@ public:
     SDL_Color borderRightColor() const;
     SDL_Color borderTopColor() const;
     SDL_Color borderBottomColor() const;
-
-    void setRenderer(SDL_Renderer *elementRenderer) { renderer = elementRenderer; }
-    SDL_Renderer *getRenderer() { return renderer; }
 
     /**
      * Computes the layout of the element and draw it.

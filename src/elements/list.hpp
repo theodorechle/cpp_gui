@@ -5,7 +5,7 @@
 
 class List : public UIElement {
 public:
-    List(SDL_Window *window, SDL_Renderer *renderer, ElementsStyleManager *elementsStyleManager = nullptr,
+    List(ElementsStyleManager *elementsStyleManager = nullptr,
          std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
     void renderSelfBeforeChilds() const override;
     void computeDesiredLayoutWithoutMargins(int *width, int *height) const override;

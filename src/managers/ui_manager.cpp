@@ -9,6 +9,5 @@ UIElement *UIManager::removeElementsTree() {
 }
 
 void UIManager::render() const {
-    static_cast<UIElement *>(elementsTree)->setRenderer(renderer);
     elementsTree->render();
 }
