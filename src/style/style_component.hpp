@@ -72,14 +72,14 @@ public:
 
 /**
  *   style value
- *   isEnabled
+ *   enabled
  *   priority
  *   file number
  *   rule number (file dependant)
  */
 struct StyleRule {
     StyleValue *value;
-    bool isEnabled;
+    bool enabled;
     int priority;
     int fileNumber;
     int ruleNumber;

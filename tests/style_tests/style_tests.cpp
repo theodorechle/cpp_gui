@@ -77,8 +77,8 @@ Result StyleTests::checkStyleRule(const StyleRule *testedRule, const StyleRule *
         std::cerr << "The priority is different (have '" << testedRule->priority << "', expected '" << expectedRule->priority << "'\n";
         return Result::KO;
     }
-    if (testedRule->isEnabled != expectedRule->isEnabled) {
-        std::cerr << "The enabled status is different (have '" << testedRule->isEnabled << "', expected '" << expectedRule->isEnabled << "'\n";
+    if (testedRule->enabled != expectedRule->enabled) {
+        std::cerr << "The enabled status is different (have '" << testedRule->enabled << "', expected '" << expectedRule->enabled << "'\n";
         return Result::KO;
     }
     return checkStyleValue(testedRule->value, expectedRule->value);

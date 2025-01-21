@@ -62,9 +62,11 @@ public:
     const std::set<StyleComponentData> *getSelectors() { return &selectors; }
     void addSelector(std::string selectorName, StyleComponentType selectorType);
     void addModifier(std::string modifierName);
+    void toggleModifier(std::string modifierName, bool enabled);
+    void deactivateAllModifiers();
     void addRuleAffectedByModifier(int fileNumber, int ruleNumber, std::string modifierName);
     void toggleRule(int fileNumber, int ruleNumber);
-    void toggleRule(int fileNumber, int ruleNumber, bool isEnabled);
+    void toggleRule(int fileNumber, int ruleNumber, bool enabled);
 };
 
 #endif // ELEMENT_STYLE_HPP

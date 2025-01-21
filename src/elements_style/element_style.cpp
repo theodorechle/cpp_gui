@@ -95,7 +95,7 @@ bool ElementStyle::getRule(const std::string &ruleName, StyleValue **ruleValue, 
     for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {
         if (it->first == ruleName) {
             for (StyleRules::const_iterator listIt = it->second.cbegin(); listIt != it->second.cend(); listIt++) { // find first enabled rule
-                if (listIt->isEnabled) {
+                if (listIt->enabled) {
                     *ruleValue = listIt->value;
                     return true;
                 }
@@ -135,6 +135,23 @@ void ElementStyle::addModifier(std::string modifierName) {
     modifiers.emplace(modifierName, std::pair<bool, std::list<std::pair<int, int>>>(false, {}));
 }
 
+void ElementStyle::toggleModifier(std::string modifierName, bool enabled) {
+    std::unordered_map<std::string, std::pair<bool, std::list<std::pair<int, int>>>>::iterator modifier;
+    modifier = modifiers.find(modifierName);
+    if (modifier == modifiers.end() || modifier->second.first == enabled) return;
+    modifier->second.first = enabled;
+    for (std::pair<int, int> ruleIds : modifier->second.second) {
+        toggleRule(ruleIds.first, ruleIds.second, enabled);
+    }
+}
+
+void ElementStyle::deactivateAllModifiers() {
+    std::unordered_map<std::string, std::pair<bool, std::list<std::pair<int, int>>>>::const_iterator modifiersIt;
+    for (modifiersIt = modifiers.cbegin(); modifiersIt != modifiers.cend(); modifiersIt++) {
+        toggleModifier(modifiersIt->first, false);
+    }
+}
+
 void ElementStyle::addRuleAffectedByModifier(int fileNumber, int ruleNumber, std::string modifierName) {
     std::unordered_map<std::string, std::pair<bool, std::list<std::pair<int, int>>>>::iterator modifier;
     modifier = modifiers.find(modifierName);
@@ -147,17 +164,17 @@ void ElementStyle::toggleRule(int fileNumber, int ruleNumber) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
             if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
-                listIt->isEnabled = !listIt->isEnabled;
+                listIt->enabled = !listIt->enabled;
             }
         }
     }
 }
 
-void ElementStyle::toggleRule(int fileNumber, int ruleNumber, bool isEnabled) {
+void ElementStyle::toggleRule(int fileNumber, int ruleNumber, bool enabled) {
     for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
         for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
             if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
-                listIt->isEnabled = isEnabled;
+                listIt->enabled = enabled;
             }
         }
     }

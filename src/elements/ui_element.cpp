@@ -14,8 +14,8 @@ void UIElement::computeDesiredLayout(int *width, int *height) {
     computeDesiredLayoutWithoutMargins(width, height);
     (*width) += paddingLeft() + paddingRight();
     (*height) += paddingTop() + paddingBottom();
-    (*width) -= borderLeft() + borderRight();
-    (*height) -= borderTop() + borderBottom();
+    (*width) += borderLeft() + borderRight();
+    (*height) += borderTop() + borderBottom();
 }
 
 int UIElement::getSize(const std::vector<const char *> &styleNames, int defaultSize) const {
@@ -43,9 +43,6 @@ SDL_Color UIElement::getColor(const std::vector<const char *> &styleNames, SDL_C
         if (elementStyle->getRule(styleName, &rule)) {
             break;
         }
-    }
-    if (rule == nullptr) {
-        return defaultColor;
     }
     if (!ColorConverter::convert(rule, &color)) {
         return defaultColor;
@@ -94,7 +91,7 @@ SDL_FRect UIElement::createFRect(int x, int y, int width, int height) { return S
 void UIElement::addChild(UIElement *child) {
     AbstractElement::addChild(child);
     child->setRenderer(renderer);
-    }
+}
 
 int UIElement::marginLeft() const { return getSize({"margin-left", "margin"}); }
 
@@ -128,24 +125,45 @@ SDL_Color UIElement::borderTopColor() const { return getColor({"border-top-color
 
 SDL_Color UIElement::borderBottomColor() const { return getColor({"border-bottom-color", "border-color"}); }
 
+SDL_Color UIElement::backgroundColor() const { return getColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
+
 void UIElement::render() {
+    if (renderer == nullptr) throw NoRendererException();
     SDL_Rect oldClipRect;
     SDL_Rect clipRect = getRect();
+    SDL_Rect newClipRect;
+    SDL_Rect clipRectNoBordersAndPaddingsAndMargins;
+
     if (!SDL_GetRenderClipRect(renderer, &oldClipRect)) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't get clip rect: '%s'", SDL_GetError());
         return;
     }
-    if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect '%s'", SDL_GetError());
+
+    clipRect.x += oldClipRect.x;
+    clipRect.y += oldClipRect.y;
+    if (!SDL_GetRectIntersection(&oldClipRect, &clipRect, &newClipRect)) newClipRect = clipRect;
+
+    clipRectNoBordersAndPaddingsAndMargins.x = newClipRect.x + borderLeft();
+    clipRectNoBordersAndPaddingsAndMargins.w = newClipRect.w - borderLeft() - borderRight();
+    clipRectNoBordersAndPaddingsAndMargins.y = newClipRect.y + borderTop();
+    clipRectNoBordersAndPaddingsAndMargins.h = newClipRect.h - borderTop() - borderBottom();
+
+    if (!SDL_SetRenderClipRect(renderer, &clipRectNoBordersAndPaddingsAndMargins)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect no borders and margins and paddings '%s'", SDL_GetError());
         return;
     }
-    if (renderer == nullptr) throw NoRendererException();
     computeLayout();
     // TODO: compute margins
     // TODO: give only a portion of the surface to the elements (and childs)
+    renderBackground();
     renderSelfBeforeChilds();
     renderChilds();
     renderSelfAfterChilds();
+
+    if (!SDL_SetRenderClipRect(renderer, &newClipRect)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect '%s'", SDL_GetError());
+        return;
+    }
     renderBorder();
     if (!SDL_SetRenderClipRect(renderer, &oldClipRect)) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't restore clip rect '%s'", SDL_GetError());
@@ -157,41 +175,83 @@ void UIElement::renderBorder() const {
     SDL_Color color;
     Uint8 r, g, b, a;
     SDL_FRect fRect;
+    SDL_Rect rect;
     int x, y, w, h;
 
     if (!SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't get draw color '%s'", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't get draw color '%s'", SDL_GetError());
         return;
     }
 
     getRect(&x, &y, &w, &h);
+    SDL_GetRenderClipRect(renderer, &rect);
+    x += rect.x;
+    y += rect.y;
 
     // set border render order in the README
 
     // left border
     color = borderLeftColor();
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    if (!SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+        return;
+    }
     fRect = createFRect(x, y, borderLeft(), h);
     SDL_RenderFillRect(renderer, &fRect);
 
     // right border
     color = borderRightColor();
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    if (!SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+        return;
+    }
     fRect = createFRect(x + w - borderRight(), y, borderRight(), h);
     SDL_RenderFillRect(renderer, &fRect);
 
     // top border
     color = borderTopColor();
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    if (!SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+        return;
+    }
     fRect = createFRect(x, y, w, borderTop());
     SDL_RenderFillRect(renderer, &fRect);
 
     // bottom border
     color = borderBottomColor();
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    if (!SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+        return;
+    }
     fRect = createFRect(x, y + h - borderBottom(), w, borderBottom());
     SDL_RenderFillRect(renderer, &fRect);
 
     // restore previous color
-    SDL_SetRenderDrawColor(renderer, r, g, b, a);
+    if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+        return;
+    }
+}
+
+void UIElement::renderBackground() const {
+    Uint8 r, g, b, a;
+    SDL_Rect rect;
+    SDL_FRect fRect;
+
+    if (!SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't get draw color '%s'", SDL_GetError());
+        return;
+    }
+
+    SDL_Color color = backgroundColor();
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_GetRenderClipRect(renderer, &rect);
+
+    SDL_RectToFRect(&rect, &fRect);
+    SDL_RenderFillRect(renderer, &fRect);
+
+    if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+        return;
+    }
 }

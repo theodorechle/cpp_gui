@@ -1,19 +1,19 @@
 #red-container {
-    padding: 500px;
-}
-
-label {
-    padding:100px;
-    padding: 100px;
-    border: 1px;
+    padding: 200px;
+    border: 10px;
 }
 
 #red-container > label.red#test-label {
     text-color: #ff0000;
-    padding: 150px;
+    padding: 50px;
     border-left-color: #ff0000;
     border-right-color: #000000;
     border-top-color: #00ff00;
     border-bottom-color: #0000ff;
     border: 2px;
+    background-color: #555555;
+}
+
+label:hovered {
+    border-color: #aaaaaa;
 }

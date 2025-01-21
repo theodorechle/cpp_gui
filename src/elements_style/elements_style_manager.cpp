@@ -49,7 +49,7 @@ void ElementsStyleManager::applySpecificStyleToElement(std::list<StyleBlock *> s
             actualElementStyle->addModifier(modifier);
         }
         for (std::pair<std::string, StyleRule> styleRule : *styleMap) {
-            elementStyleMap[styleRule.first] = {StyleRule{styleRule.second.value, true, styleRule.second.priority + actualElementStyle->getPriority(),
+            elementStyleMap[styleRule.first] = {StyleRule{styleRule.second.value, modifier.empty(), styleRule.second.priority + actualElementStyle->getPriority(),
                                                           styleRule.second.fileNumber, styleRule.second.ruleNumber}};
             if (!modifier.empty()) {
                 actualElementStyle->addRuleAffectedByModifier(styleRule.second.fileNumber, styleRule.second.ruleNumber, modifier);

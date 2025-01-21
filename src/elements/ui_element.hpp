@@ -85,6 +85,8 @@ public:
     SDL_Color borderTopColor() const;
     SDL_Color borderBottomColor() const;
 
+    SDL_Color backgroundColor() const;
+
     /**
      * Computes the layout of the element and draw it.
      * Draw the border and call renderSelf to render the element content.
@@ -92,6 +94,7 @@ public:
      */
     void render() override final;
 
+    void renderBackground() const;
     void renderBorder() const;
 };
 
