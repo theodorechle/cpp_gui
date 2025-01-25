@@ -39,7 +39,7 @@ namespace style {
         {'.', Token::Dot},
     };
 
-    const std::vector<char> FORBIDDEN_STRING_CHARACTERS = {'[', ']', ' ', '\n'};
+    const std::vector<char> FORBIDDEN_STRING_CHARACTERS = {'[', ']', ' ', '\n', '/'};
 
     class Lexer {
         bool lexed;

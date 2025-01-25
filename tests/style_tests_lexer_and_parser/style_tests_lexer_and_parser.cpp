@@ -242,7 +242,7 @@ namespace test {
         testLexerAndParserException<style::MalformedExpression>(fileContent, "No block declaration");
 
         fileContent = getFileContent(TESTS_FILES_DIR + "/test-9.txt");
-        testLexerAndParserException<style::LexerError>(fileContent, "Multiline comment not closed"); // FIXME: memory leak
+        testLexerAndParserException<style::UnknownValue>(fileContent, "Multiline comment not closed"); // FIXME: memory leak
     }
 
     void StyleTestsLexerAndParser::testLexer(bool equal, const std::string &expr, const style::Node *expected, const std::string &testName) {
