@@ -4,29 +4,32 @@
 #include "../../src/style/style_deserializer.hpp"
 #include "../tests.hpp"
 
-class StyleTests : public Tests {
-    void tests() override;
-    Settings *settings;
+namespace test {
 
-public:
-    StyleTests();
-    ~StyleTests();
+    class StyleTests : public Tests {
+        void tests() override;
+        style::Settings *settings;
 
-    Result checkStyleComponentDataList(const StyleComponentDataList *testedData, const StyleComponentDataList *expectedData);
-    Result checkStyleValue(StyleValue *testedValue, StyleValue *expectedValue);
-    Result checkStyleRule(const StyleRule *testedRule, const StyleRule *expectedRule);
-    Result checkStyleMap(const StyleValuesMap *testedStyleMap, const StyleValuesMap *expectedStyleMap);
-    Result checkStyleBlocks(const std::list<StyleBlock *> *testedStyleBlocks,
-                                         const std::list<StyleBlock *> *expectedStyleBlocks);
-    void testDeserializationFromFile(const std::string &fileName, const std::string &testName, const std::list<StyleBlock *> *expectedStyleBlocks);
-    void testDeserialization(const std::string &style, const std::string &testName, const std::list<StyleBlock *> *expectedStyleBlocks);
+    public:
+        StyleTests();
+        ~StyleTests();
 
-    /**
-     * This method will catch std::exception subclass exceptions but will not check if they are similar to T.
-     */
-    template <typename T>
-    void testDeserializationError(const std::string &style, const std::string &testName);
-    void testDeserializationNoError(const std::string &style, const std::string &testName);
-};
+        Result checkStyleComponentDataList(const style::StyleComponentDataList *testedData, const style::StyleComponentDataList *expectedData);
+        Result checkStyleValue(style::StyleValue *testedValue, style::StyleValue *expectedValue);
+        Result checkStyleRule(const style::StyleRule *testedRule, const style::StyleRule *expectedRule);
+        Result checkStyleMap(const style::StyleValuesMap *testedStyleMap, const style::StyleValuesMap *expectedStyleMap);
+        Result checkStyleBlocks(const std::list<style::StyleBlock *> *testedStyleBlocks, const std::list<style::StyleBlock *> *expectedStyleBlocks);
+        void testDeserializationFromFile(const std::string &fileName, const std::string &testName,
+                                         const std::list<style::StyleBlock *> *expectedStyleBlocks);
+        void testDeserialization(const std::string &style, const std::string &testName, const std::list<style::StyleBlock *> *expectedStyleBlocks);
+
+        /**
+         * This method will catch std::exception subclass exceptions but will not check if they are similar to T.
+         */
+        template <typename T> void testDeserializationError(const std::string &style, const std::string &testName);
+        void testDeserializationNoError(const std::string &style, const std::string &testName);
+    };
+
+} // namespace test
 
 #endif // STYLE_TESTS_HPP

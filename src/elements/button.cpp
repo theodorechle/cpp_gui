@@ -1,9 +1,14 @@
 #include "button.hpp"
 
-Button::Button(ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
-               const std::string &identifier)
-    : UIElement{"button", elementsStyleManager, classes, identifier} {}
+namespace gui {
+    namespace element {
 
-void Button::renderSelfBeforeChilds() const {}
+        Button::Button(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
+            : UIElement{"button", elementsStyleManager, classes, identifier} {}
 
-void Button::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+        void Button::renderSelfBeforeChilds() const {}
+
+        void Button::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+
+    } // namespace element
+} // namespace gui

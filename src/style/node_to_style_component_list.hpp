@@ -8,28 +8,33 @@
 #include <list>
 #include <tuple>
 
-class NodeToStyleComponentList {
-    Node *tree;
-    // for each inner style block, multiple components list definitions (separated by commas in the style files)
-    std::list<std::list<StyleComponentDataList *> *> requiredStyleComponentsLists;
-    std::list<StyleBlock *> *styleDefinitions;
+namespace style {
 
-    std::list<StyleComponentDataList *> *convertStyleComponents();
+    class NodeToStyleComponentList {
+        Node *tree;
+        // for each inner style block, multiple components list definitions (separated by commas in the style files)
+        std::list<std::list<StyleComponentDataList *> *> requiredStyleComponentsLists;
+        std::list<StyleBlock *> *styleDefinitions;
 
-    /**
-     * Be aware that the method does not check if the given node is instanciated for performance reasons
-     */
-    StyleValue * convertStyleNodeToStyleValue(Node *node);
+        std::list<StyleComponentDataList *> *convertStyleComponents();
 
-    StyleValuesMap *convertAppliedStyle(int fileNumber, int *ruleNumber);
-    /**
-     * Does not accept a null pointer for "components" parameter
-     */
-    std::list<StyleBlock *> *createStyleComponents(std::list<std::list<StyleComponentDataList *> *>::const_iterator componentsListIt, StyleComponentDataList *components, StyleValuesMap *appliedStyle);
-    void convertStyleBlock(int fileNumber, int *ruleNumber);
+        /**
+         * Be aware that the method does not check if the given node is instanciated for performance reasons
+         */
+        StyleValue *convertStyleNodeToStyleValue(Node *node);
 
-public:
-    std::list<StyleBlock *> *convert(Node *tree, int fileNumber, int *ruleNumber);
-};
+        StyleValuesMap *convertAppliedStyle(int fileNumber, int *ruleNumber);
+        /**
+         * Does not accept a null pointer for "components" parameter
+         */
+        std::list<StyleBlock *> *createStyleComponents(std::list<std::list<StyleComponentDataList *> *>::const_iterator componentsListIt,
+                                                       StyleComponentDataList *components, StyleValuesMap *appliedStyle);
+        void convertStyleBlock(int fileNumber, int *ruleNumber);
+
+    public:
+        std::list<StyleBlock *> *convert(Node *tree, int fileNumber, int *ruleNumber);
+    };
+
+} // namespace style
 
 #endif // NODE_TO_STYLE_COMPONENT_LIST_HPP

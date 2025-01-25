@@ -1,9 +1,14 @@
 #include "table.hpp"
 
-Table::Table(ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
-             const std::string &identifier)
-    : UIElement{"table", elementsStyleManager, classes, identifier} {}
+namespace gui {
+    namespace element {
 
-void Table::renderSelfBeforeChilds() const {}
+        Table::Table(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
+            : UIElement{"table", elementsStyleManager, classes, identifier} {}
 
-void Table::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+        void Table::renderSelfBeforeChilds() const {}
+
+        void Table::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+
+    } // namespace element
+} // namespace gui

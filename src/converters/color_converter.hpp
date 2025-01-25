@@ -6,16 +6,22 @@
 #include <string>
 #include <tuple>
 
-class ColorConverter {
-    static bool convertFromHex(const StyleValue *value, SDL_Color *color);
-    static bool convertFromTuple(const StyleValue *value, SDL_Color *color);
+namespace gui {
+    namespace converter {
 
-public:
-    /**
-     * Returns true in case of successful conversion, false else.
-     * If not converted, color is not changed.
-     */
-    static bool convert(const StyleValue *value, SDL_Color *color);
-};
+        class ColorConverter {
+            static bool convertFromHex(const style::StyleValue *value, SDL_Color *color);
+            static bool convertFromTuple(const style::StyleValue *value, SDL_Color *color);
+
+        public:
+            /**
+             * Returns true in case of successful conversion, false else.
+             * If not converted, color is not changed.
+             */
+            static bool convert(const style::StyleValue *value, SDL_Color *color);
+        };
+
+    } // namespace converter
+} // namespace gui
 
 #endif // COLOR_CONVERTER_HPP

@@ -1,15 +1,21 @@
 #include "container.hpp"
 
-Container::Container(ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
-                     const std::string &identifier)
-    : UIElement{"container", elementsStyleManager, classes, identifier} {}
+namespace gui {
+    namespace element {
 
-void Container::renderChilds() {
-    UIElement *child = getChild();
-    while (child != nullptr) {
-        child->render();
-        child = child->getNext();
-    }
-}
+        Container::Container(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
+                             const std::string &identifier)
+            : UIElement{"container", elementsStyleManager, classes, identifier} {}
 
-void Container::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+        void Container::renderChilds() {
+            UIElement *child = getChild();
+            while (child != nullptr) {
+                child->render();
+                child = child->getNext();
+            }
+        }
+        
+        void Container::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+
+    } // namespace element
+} // namespace gui

@@ -1,9 +1,14 @@
 #include "list.hpp"
 
-List::List(ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
-           const std::string &identifier)
-    : UIElement{"list", elementsStyleManager, classes, identifier} {}
+namespace gui {
+    namespace element {
 
-void List::renderSelfBeforeChilds() const {}
+        List::List(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
+            : UIElement{"list", elementsStyleManager, classes, identifier} {}
 
-void List::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+        void List::renderSelfBeforeChilds() const {}
+
+        void List::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+
+    } // namespace element
+} // namespace gui

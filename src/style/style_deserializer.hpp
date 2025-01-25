@@ -11,10 +11,14 @@
 #include <sstream>
 #include <string>
 
-class StyleDeserializer {
-public:
-    static std::list<StyleBlock *> *deserializeFromFile(const std::string &fileName, int fileNumber, int *ruleNumber, bool debug = false);
-    static std::list<StyleBlock *> *deserialize(const std::string &style, int fileNumber, int *ruleNumber, bool debug = false);
-};
+namespace style {
+
+    class StyleDeserializer {
+    public:
+        static std::list<StyleBlock *> *deserializeFromFile(const std::string &fileName, int fileNumber, int *ruleNumber, bool debug = false);
+        static std::list<StyleBlock *> *deserialize(const std::string &style, int fileNumber, int *ruleNumber, bool debug = false);
+    };
+
+} // namespace Style
 
 #endif // STYLE_DESERIALIZER_HPP

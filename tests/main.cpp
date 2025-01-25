@@ -3,14 +3,14 @@
 
 int main() {
     int nbErrors;
-    Tests *tests;
-    tests = new StyleTestsLexerAndParser();
+    test::Tests *tests;
+    tests = new test::StyleTestsLexerAndParser();
     tests->runTests();
     nbErrors = tests->getNbErrors();
 
     delete tests;
 
-    tests = new StyleTests();
+    tests = new test::StyleTests();
     tests->runTests();
     nbErrors += tests->getNbErrors();
 

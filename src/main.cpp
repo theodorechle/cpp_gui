@@ -1,11 +1,11 @@
 #include "app_utils/app_state.hpp"
 #include "elements/container.hpp"
 #include "elements/label.hpp"
+#include "elements/managers/abstract_manager.hpp"
+#include "elements/managers/ui_manager.hpp"
 #include "elements/ui_element.hpp"
 #include "elements_style/element_style.hpp"
-#include "elements_style/elements_style_manager.hpp"
-#include "managers/abstract_manager.hpp"
-#include "managers/ui_manager.hpp"
+#include "elements_style/managers/elements_style_manager.hpp"
 #include "style/style_deserializer.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
@@ -32,22 +32,29 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     SDL_SetRenderDrawBlendMode(sdl_renderer, SDL_BLENDMODE_BLEND);
 
-    AbstractManager *manager = new UIManager(sdl_window, sdl_renderer);
+    gui::element::manager::AbstractManager *manager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
-    *appstate = new AppState(manager, sdl_window, sdl_renderer);
+    gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = new gui::elementStyle::manager::ElementsStyleManager();
 
-    ElementsStyleManager elementsStyleManager = ElementsStyleManager();
-    elementsStyleManager.addStyleFile("tests/style_tests/tests-files/main-test.txt");
+    *appstate = new AppState(manager, sdl_window, sdl_renderer, elementsStyleManager);
 
-    UIElement *parentContainer = new Container(&elementsStyleManager, nullptr, "red-container");
+    elementsStyleManager->addStyleFile("tests/style_tests/tests-files/main-test.txt");
+
+    gui::element::UIElement *parentContainer = new gui::element::Container(elementsStyleManager, nullptr, "red-container");
     parentContainer->setRenderer(sdl_renderer);
     manager->setElementsTree(parentContainer);
-    parentContainer->addChild(new Label(&elementsStyleManager, new std::vector<std::string>{"red"}, "test-label"));
+
+    std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
+
+    parentContainer->addChild(new gui::element::Label(elementsStyleManager, &labelClasses, "test-label"));
 
     return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
+    AppState *state = static_cast<AppState *>(appstate);
+    gui::element::manager::AbstractManager *manager = state->getManager();
+    static_cast<gui::element::manager::UIManager *>(manager)->processEvent(*event);
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;
     }
@@ -55,22 +62,13 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 }
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
-    Uint8 r, g, b, a;
     AppState *state = static_cast<AppState *>(appstate);
-    AbstractManager *manager = state->getManager();
-    if (SDL_GetRenderDrawColor(state->getRenderer(), &r, &g, &b, &a)) {
-        SDL_SetRenderDrawColor(state->getRenderer(), 255, 255, 255, 255);
-        SDL_RenderClear(state->getRenderer());
-        SDL_SetRenderDrawColor(state->getRenderer(), r, g, b, a);
-    }
+    gui::element::manager::AbstractManager *manager = state->getManager();
     manager->render();
-    SDL_RenderPresent(state->getRenderer());
     return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     AppState *state = static_cast<AppState *>(appstate);
-    AbstractManager *manager = state->getManager();
-    delete manager->removeElementsTree();
     delete state;
 }

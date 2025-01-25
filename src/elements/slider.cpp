@@ -1,9 +1,14 @@
 #include "slider.hpp"
 
-Slider::Slider(ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
-               const std::string &identifier)
-    : UIElement{"slider", elementsStyleManager, classes, identifier} {}
+namespace gui {
+    namespace element {
 
-void Slider::renderSelfBeforeChilds() const {}
+        Slider::Slider(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
+            : UIElement{"slider", elementsStyleManager, classes, identifier} {}
 
-void Slider::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+        void Slider::renderSelfBeforeChilds() const {}
+
+        void Slider::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+
+    } // namespace element
+} // namespace gui

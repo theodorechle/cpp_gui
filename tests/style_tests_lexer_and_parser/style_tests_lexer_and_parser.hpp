@@ -13,21 +13,24 @@
 #include "../../src/style/parser.hpp"
 #include "../tests.hpp"
 
-class StyleTestsLexerAndParser : public Tests {
-    Settings *settings;
-    const std::string TESTS_FILES_DIR = "tests/style_tests_lexer_and_parser/tests-files";
-    void tests() override;
+namespace test {
 
-public:
-    StyleTestsLexerAndParser();
-    ~StyleTestsLexerAndParser();
+    class StyleTestsLexerAndParser : public Tests {
+        style::Settings *settings;
+        const std::string TESTS_FILES_DIR = "tests/style_tests_lexer_and_parser/tests-files";
+        void tests() override;
 
-    void testLexer(bool equal, const std::string &expr, const Node *expected, const std::string &testName);
-    void testParser(bool equal, Node *expr, const Node *expected, const std::string &testName);
-    void testLexerAndParser(bool equal, const std::string &expr, const Node *expected, const std::string &testName);
+    public:
+        StyleTestsLexerAndParser();
+        ~StyleTestsLexerAndParser();
 
-    template <typename T>
-    void testLexerAndParserException(const std::string &expression, const std::string &testName);
-};
+        void testLexer(bool equal, const std::string &expr, const style::Node *expected, const std::string &testName);
+        void testParser(bool equal, style::Node *expr, const style::Node *expected, const std::string &testName);
+        void testLexerAndParser(bool equal, const std::string &expr, const style::Node *expected, const std::string &testName);
+
+        template <typename T> void testLexerAndParserException(const std::string &expression, const std::string &testName);
+    };
+
+} // namespace test
 
 #endif // STYLE_TESTS_LEXER_AND_PARSER

@@ -1,9 +1,14 @@
 #include "image_button.hpp"
 
-ImageButton::ImageButton(ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
-                         const std::string &identifier)
-    : UIElement{"imagebutton", elementsStyleManager, classes, identifier} {}
+namespace gui {
+    namespace element {
 
-void ImageButton::renderSelfBeforeChilds() const {}
+        ImageButton::ImageButton(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
+            : UIElement{"imagebutton", elementsStyleManager, classes, identifier} {}
 
-void ImageButton::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+        void ImageButton::renderSelfBeforeChilds() const {}
+
+        void ImageButton::computeDesiredLayoutWithoutMargins(int *width, int *height) const {}
+
+    } // namespace element
+} // namespace gui
