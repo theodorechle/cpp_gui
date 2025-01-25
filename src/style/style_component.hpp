@@ -27,7 +27,7 @@ namespace style {
 
     /**
      * Some data types are containing others, for example a tuple contains multiple elements.
-     * That's why this class exists, to allow such elements who contains others to exists.
+     * This class allows such elements who contains others to exists.
      */
     class StyleValue {
         std::string value;

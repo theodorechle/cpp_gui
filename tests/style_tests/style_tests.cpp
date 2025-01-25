@@ -149,9 +149,6 @@ namespace test {
         result = checkStyleBlocks(styleBlocks, expectedStyleBlocks);
 
         for (style::StyleBlock *component : *styleBlocks) {
-            for (const std::pair<std::string, style::StyleRule> rule : *(component->getStyleMap())) {
-                delete rule.second.value;
-            }
             delete component;
         }
         delete styleBlocks;
@@ -170,9 +167,6 @@ namespace test {
         result = checkStyleBlocks(styleBlocks, expectedStyleBlocks);
 
         for (style::StyleBlock *component : *styleBlocks) {
-            for (const std::pair<std::string, style::StyleRule> rule : *(component->getStyleMap())) {
-                delete rule.second.value;
-            }
             delete component;
         }
         delete styleBlocks;
@@ -192,9 +186,6 @@ namespace test {
             result = Result::KO;
 
             for (style::StyleBlock *component : *styleBlocks) {
-                for (const std::pair<std::string, style::StyleRule> rule : *(component->getStyleMap())) {
-                    delete rule.second.value;
-                }
                 delete component;
             }
             delete styleBlocks;
@@ -225,9 +216,6 @@ namespace test {
             result = Result::OK;
 
             for (style::StyleBlock *component : *styleBlocks) {
-                for (const std::pair<std::string, style::StyleRule> rule : *(component->getStyleMap())) {
-                    delete rule.second.value;
-                }
                 delete component;
             }
             delete styleBlocks;
@@ -259,7 +247,6 @@ namespace test {
         expectedStyleBlocks = {styleBlock};
         testDeserialization(".container      label#red{text-color : #ff0000;}", "deserializing a single rule", &expectedStyleBlocks);
         delete styleBlock;
-        delete styleValue;
         expectedStyleMap.clear();
         expectedData.clear();
 
@@ -272,7 +259,6 @@ namespace test {
         expectedStyleBlocks = {styleBlock};
         testDeserialization(".container > label#red{text-color : #ff0000;}", "direct parent", &expectedStyleBlocks);
         delete styleBlock;
-        delete styleValue;
         expectedStyleMap.clear();
         expectedData.clear();
 
@@ -285,7 +271,6 @@ namespace test {
         expectedStyleBlocks = {styleBlock};
         testDeserialization(".container>label#red{text-color : #ff0000;}", "direct parent without spaces", &expectedStyleBlocks);
         delete styleBlock;
-        delete styleValue;
         expectedStyleMap.clear();
         expectedData.clear();
 
@@ -297,7 +282,6 @@ namespace test {
         styleBlock = new style::StyleBlock(&expectedData, &expectedStyleMap);
         expectedStyleBlocks = {styleBlock};
         testDeserialization("label {padding:100px;}", "style name and value sticked to the assignment colon", &expectedStyleBlocks);
-        delete styleValue;
         delete styleBlock;
         expectedStyleMap.clear();
         expectedData.clear();
