@@ -232,9 +232,6 @@ namespace gui {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't get clip rect: '%s'", SDL_GetError());
                 return;
             }
-            std::cerr << "parent rendering childs " << getName() << ": " << clipRect.x << ", " << clipRect.y << ", " << clipRect.w << ", "
-                      << clipRect.h << "\n";
-
             while (child != nullptr) {
                 childClipRect = SDL_Rect{clipRect.x, clipRect.y, child->getWidth(), child->getHeight()};
                 childClipRect.x += child->marginLeft();
@@ -243,10 +240,6 @@ namespace gui {
                 childClipRect.h += child->marginBottom();
                 if (!SDL_GetRectIntersection(&clipRect, &childClipRect, &childFinalClipRect)) childFinalClipRect = clipRect;
                 childFinalClipRect = childClipRect;
-                std::cerr << "child clipRect " << child->getName() << ": " << clipRect.x << ", " << clipRect.y << ", " << clipRect.w << ", "
-                          << clipRect.h << "\n";
-                std::cerr << "child final clipRect " << child->getName() << ": " << childFinalClipRect.x << ", " << childFinalClipRect.y << ", "
-                          << childFinalClipRect.w << ", " << childFinalClipRect.h << "\n";
                 if (!SDL_SetRenderClipRect(renderer, &childFinalClipRect)) {
                     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect '%s'", SDL_GetError());
                     break;
@@ -276,8 +269,6 @@ namespace gui {
             SDL_GetRenderClipRect(renderer, &rect);
             x = rect.x;
             y = rect.y;
-            std::cerr << "border render size " << getName() << ": " << x << ", " << y << ", " << w << ", " << h << "\n";
-
             // set border render order in the README
 
             // left border
