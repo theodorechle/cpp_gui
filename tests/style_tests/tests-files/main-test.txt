@@ -1,5 +1,5 @@
 #red-container {
-    padding: 200px;
+//    padding: 100px;
     border: 10px;
 }
 
@@ -12,6 +12,7 @@
     border-bottom-color: #0000ff;
     border: 2px;
     background-color: #555555;
+    margin: 10px;
 }
 
 label:hovered {

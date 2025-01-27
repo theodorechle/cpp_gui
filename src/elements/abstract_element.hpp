@@ -14,10 +14,9 @@ namespace gui {
             AbstractElement *child = nullptr;
             AbstractElement *next = nullptr;
             gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager;
-            virtual void computeLayout() = 0;
 
         protected:
-            gui::elementStyle::ElementStyle *elementStyle;
+            gui::elementStyle::ElementStyle *elementStyle = nullptr;
             void setParent(AbstractElement *parent);
             void updateStyle();
 
@@ -46,6 +45,7 @@ namespace gui {
                             std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
             const std::string &getName() const { return elementName; }
             AbstractElement *getParent() { return parent; }
+            const AbstractElement *getConstParent() const { return parent; }
             void addChild(AbstractElement *child);
             AbstractElement *getChild() { return child; }
             void setNext(AbstractElement *next) { this->next = next; }
@@ -53,6 +53,11 @@ namespace gui {
             virtual ~AbstractElement();
 
             virtual void render() = 0;
+
+            virtual void computeLayout(int availableWidth, int availableHeight) = 0;
+            virtual void computeDesiredLayout(int *desiredWidth, int *desiredHeight) = 0;
+
+            bool styleManagerAvailable() { return elementsStyleManager != nullptr; }
         };
 
     } // namespace element

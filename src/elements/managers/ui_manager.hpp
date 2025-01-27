@@ -2,6 +2,7 @@
 #define UIMANAGER_HPP
 
 #include "../ui_element.hpp"
+#include "../button.hpp"
 #include "abstract_manager.hpp"
 #include <SDL3/SDL.h>
 
@@ -15,9 +16,10 @@ namespace gui {
 
             public:
                 UIManager(SDL_Window *window, SDL_Renderer *renderer) : window{window}, renderer{renderer} {}
-                void setElementsTree(gui::element::UIElement *element);
 
-                using AbstractManager::setElementsTree;
+                void setElementsTree(gui::element::AbstractElement *element) override;
+
+                void computeElementsLayout() override;
 
                 void renderElements() const override;
 

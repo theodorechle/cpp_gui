@@ -10,15 +10,15 @@ namespace gui {
     namespace converter {
 
         class ColorConverter {
-            static bool convertFromHex(const style::StyleValue *value, SDL_Color *color);
-            static bool convertFromTuple(const style::StyleValue *value, SDL_Color *color);
+            static bool convertFromHex(style::StyleValue *value, SDL_Color *color);
+            static bool convertFromTuple(style::StyleValue *value, SDL_Color *color);
 
         public:
             /**
              * Returns true in case of successful conversion, false else.
              * If not converted, color is not changed.
              */
-            static bool convert(const style::StyleValue *value, SDL_Color *color);
+            static bool convert(style::StyleValue *value, SDL_Color *color);
         };
 
     } // namespace converter

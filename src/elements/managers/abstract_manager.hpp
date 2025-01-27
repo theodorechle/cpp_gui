@@ -30,9 +30,10 @@ namespace gui {
 
             public:
                 virtual ~AbstractManager();
-                void setElementsTree(gui::element::AbstractElement *element);
+                virtual void setElementsTree(gui::element::AbstractElement *element);
                 void deleteElementsTree();
                 void render();
+                virtual void computeElementsLayout() = 0;
 
                 Status status() { return _currentStatus; }
                 bool needRendering() { return _needRendering; }

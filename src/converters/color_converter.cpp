@@ -3,7 +3,7 @@
 namespace gui {
     namespace converter {
 
-        bool ColorConverter::convertFromHex(const style::StyleValue *value, SDL_Color *color) {
+        bool ColorConverter::convertFromHex(style::StyleValue *value, SDL_Color *color) {
             std::string valueStr = value->getValue();
             switch (valueStr.size()) {
             case 3:
@@ -29,9 +29,9 @@ namespace gui {
             }
         }
 
-        bool ColorConverter::convertFromTuple(const style::StyleValue *value, SDL_Color *color) { return false; }
+        bool ColorConverter::convertFromTuple(style::StyleValue *value, SDL_Color *color) { return false; }
 
-        bool ColorConverter::convert(const style::StyleValue *value, SDL_Color *color) {
+        bool ColorConverter::convert(style::StyleValue *value, SDL_Color *color) {
             if (value == nullptr || color == nullptr) return false;
             switch (value->getType()) {
             case style::StyleValueType::Hex:

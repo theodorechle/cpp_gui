@@ -28,6 +28,7 @@ namespace gui {
                 }
             }
             if (!identifier.empty()) elementStyle->addSelector(identifier, style::StyleComponentType::Identifier);
+            if (elementsStyleManager == nullptr) return;
             elementsStyleManager->addElementStyle(elementStyle);
         }
 

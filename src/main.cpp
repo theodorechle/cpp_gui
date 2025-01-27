@@ -47,6 +47,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
     parentContainer->addChild(new gui::element::Label(elementsStyleManager, &labelClasses, "test-label"));
+    manager->computeElementsLayout();
 
     return SDL_APP_CONTINUE;
 }
