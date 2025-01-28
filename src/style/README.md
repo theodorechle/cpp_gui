@@ -74,7 +74,7 @@ A class can be used to apply style to multiple elements at once
 ```
 
 ### Examples
-<a href="src/tests/style_tests_lexer_and_parser/tests-files">See example files</a>
+<a href="../../tests/style_tests_lexer_and_parser/tests-files">See example files</a>
 
 ## Others:
 Note that to many recursive style blocks can lead to a stack overflow error.
