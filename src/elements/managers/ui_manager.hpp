@@ -2,7 +2,7 @@
 #define UIMANAGER_HPP
 
 #include "../ui_element.hpp"
-#include "../button.hpp"
+#include "../root_element.hpp"
 #include "abstract_manager.hpp"
 #include <SDL3/SDL.h>
 

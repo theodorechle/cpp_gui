@@ -5,7 +5,7 @@ namespace gui {
         namespace manager {
 
             void UIManager::setElementsTree(gui::element::AbstractElement *element) {
-                AbstractManager::setElementsTree(new gui::element::Button()); // TODO: replace with a special element
+                AbstractManager::setElementsTree(new gui::element::RootElement()); // TODO: replace with a special element
                 static_cast<gui::element::UIElement *>(elementsTree)->setRenderer(static_cast<gui::element::UIElement *>(element)->getRenderer());
                 elementsTree->addChild(static_cast<gui::element::UIElement *>(element));
             }
