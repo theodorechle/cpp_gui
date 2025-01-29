@@ -94,7 +94,7 @@ namespace gui {
             return nbDeletedRules;
         }
 
-        bool ElementStyle::getRule(const std::string &ruleName, style::StyleValue **ruleValue, style::StyleValue *defaultStyle) const {
+        bool ElementStyle::getRule(const std::string &ruleName, style::StyleValue **ruleValue, bool canInherit, style::StyleValue *defaultStyle) const {
             for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {
                 if (it->first == ruleName) {
                     for (StyleRules::const_iterator listIt = it->second.cbegin(); listIt != it->second.cend(); listIt++) { // find first enabled rule
@@ -105,7 +105,7 @@ namespace gui {
                     }
                 }
             }
-            if (parent == nullptr) {
+            if (!canInherit || parent == nullptr) {
                 *ruleValue = defaultStyle;
                 return false;
             }

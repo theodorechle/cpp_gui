@@ -59,7 +59,7 @@ namespace gui {
              * Else, returns fase if the defaultStyle is returned (can be used in case of dynamically allocated defaultValue to know when it should be
              * deleted).
              */
-            bool getRule(const std::string &ruleName, style::StyleValue **ruleValue, style::StyleValue *defaultStyle = nullptr) const;
+            bool getRule(const std::string &ruleName, style::StyleValue **ruleValue, bool canInherit = false, style::StyleValue *defaultStyle = nullptr) const;
             bool ruleExists(const std::string &ruleName) const;
             bool ruleExists(int fileNumber, int ruleNumber) const;
             const std::set<style::StyleComponentData> *getSelectors() { return &selectors; }

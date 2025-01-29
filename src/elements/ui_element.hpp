@@ -29,13 +29,13 @@ namespace gui {
              * If any of the style names is found in current loaded style, returns the corresponding value.
              * Else returns default;
              */
-            int computeSize(const std::vector<const char *> &styleNames, int defaultSize = 0, int parentSize = 0) const;
+            int computeSize(const std::vector<const char *> &styleNames, int defaultSize = 0, bool canInherit = false, int parentSize = 0) const;
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
              * Else returns default;
              */
-            SDL_Color computeColor(const std::vector<const char *> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255}) const;
+            SDL_Color computeColor(const std::vector<const char *> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255}, bool canInherit = false) const;
 
             void setWidth(int width) { this->elementWidth = width; }
             void setHeight(int height) { this->elementHeight = height; }

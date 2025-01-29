@@ -48,12 +48,12 @@ namespace gui {
             setDesiredSize(*desiredWidth, *desiredHeight);
         }
 
-        int UIElement::computeSize(const std::vector<const char *> &styleNames, int defaultSize, int parentSize) const {
+        int UIElement::computeSize(const std::vector<const char *> &styleNames, int defaultSize, bool canInherit, int parentSize) const {
             if (elementStyle == nullptr) return defaultSize;
             style::StyleValue *rule = nullptr;
             int size = 0;
             for (const char *styleName : styleNames) {
-                if (elementStyle->getRule(styleName, &rule)) {
+                if (elementStyle->getRule(styleName, &rule, canInherit)) {
                     break;
                 }
             }
@@ -67,12 +67,12 @@ namespace gui {
             return size;
         }
 
-        SDL_Color UIElement::computeColor(const std::vector<const char *> &styleNames, SDL_Color defaultColor) const {
+        SDL_Color UIElement::computeColor(const std::vector<const char *> &styleNames, SDL_Color defaultColor, bool canInherit) const {
             if (elementStyle == nullptr) return defaultColor;
             style::StyleValue *rule = nullptr;
             SDL_Color color = SDL_Color();
             for (const char *styleName : styleNames) {
-                if (elementStyle->getRule(styleName, &rule)) {
+                if (elementStyle->getRule(styleName, &rule, canInherit)) {
                     break;
                 }
             }
