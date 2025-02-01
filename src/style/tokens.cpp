@@ -31,6 +31,8 @@ namespace style {
             return "Sharp";
         case Token::Dot:
             return "Dot";
+        case Token::Ampersand:
+            return "Ampersand";
         // Used only by the parser
         case Token::StyleBlock:
             return "StyleBlock";
@@ -46,6 +48,8 @@ namespace style {
             return "DirectParent";
         case Token::AnyParent:
             return "AnyParent";
+        case Token::SameElement:
+            return "SameElement";
         case Token::Function:
             return "Function";
         case Token::ElementName:

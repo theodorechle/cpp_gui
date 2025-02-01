@@ -37,6 +37,7 @@ namespace style {
         {'>', Token::GreaterThan},
         {'#', Token::Sharp},
         {'.', Token::Dot},
+        {'&', Token::Ampersand},
     };
 
     const std::vector<char> FORBIDDEN_STRING_CHARACTERS = {'[', ']', ' ', '\n', '/'};

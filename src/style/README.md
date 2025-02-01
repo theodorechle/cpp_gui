@@ -53,6 +53,7 @@ A class can be used to apply style to multiple elements at once
 - same element
 
 ## SYNTAX:
+Ampersand (&) at first element in nested style means to apply following style in same element instead of a child.
 
 ### Syntax
 
@@ -62,7 +63,7 @@ A class can be used to apply style to multiple elements at once
     <style-name>: <int|float> +|-|/|*|% <int|float>;
     <style-name>: function(<string|int|float|bool|tuple[string|int|float|bool,...]>, ...);
 
-    <element-name|.class|#id|:modifier><<.class|#id|:modifier>| element-name>[...] {
+    <&|element-name|.class|#id|:modifier><<.class|#id|:modifier>| element-name>[...] {
         // recursive (styles, inner elements|classes|ids|modifiers)
         [...]
     }

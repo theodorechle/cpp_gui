@@ -53,6 +53,8 @@ namespace style {
             return StyleRelation::DirectParent;
         case Token::AnyParent:
             return StyleRelation::AnyParent;
+        case Token::SameElement:
+            return StyleRelation::SameElement;
         default:
             return StyleRelation::Null;
         }
@@ -72,6 +74,8 @@ namespace style {
             secondDeclarationsIt = secondDeclarations;
             while (secondDeclarationsIt != nullptr) {
                 actualDeclaration = newDeclarations->appendNext(firstDeclarations->copyNodeWithChilds());
+                if (tokenTypeToStyleRelation(secondDeclarationsIt->getChild()->getToken()) == StyleRelation::Null) actualDeclaration->appendChild(new Node(Token::AnyParent));
+                if (tokenTypeToStyleRelation(secondDeclarationsIt->getChild()->getToken()) == StyleRelation::SameElement) secondDeclarationsIt->deleteSpecificChild(secondDeclarationsIt->getChild());
                 actualDeclaration->appendChild(secondDeclarationsIt->getChild()->copyNodeWithChildsAndNexts());
                 secondDeclarationsIt = secondDeclarationsIt->getNext();
             }

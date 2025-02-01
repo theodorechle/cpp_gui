@@ -21,6 +21,7 @@ namespace style {
         MultiLineComment,
         Sharp,
         Dot,
+        Ampersand,
         // Used only by the parser
         StyleBlock,
         BlockDeclaration,
@@ -28,6 +29,7 @@ namespace style {
         BlockDefinition,
         DirectParent,
         AnyParent,
+        SameElement,
         StyleName,
         Assignment,
         ArgSeparator,

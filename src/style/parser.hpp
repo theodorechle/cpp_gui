@@ -73,6 +73,7 @@ namespace style {
         void parseSemiColon();
         void parseSharp();
         void parseDot();
+        void parseAmpersand();
         void parseGreatherThan();
         void parseOpeningParenthesis();
         void parseClosingParenthesis();

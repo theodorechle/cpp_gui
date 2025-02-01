@@ -84,6 +84,9 @@ namespace style {
                 case Token::Dot:
                     parseDot();
                     break;
+                case Token::Ampersand:
+                    parseAmpersand();
+                    break;
                 case Token::GreaterThan:
                     parseGreatherThan();
                     break;
@@ -228,6 +231,45 @@ namespace style {
         else throw MalformedExpression("Illegal '.' placement");
     }
 
+    void Parser::parseAmpersand() {
+        Node *lastChild;
+        Node *lastChildCopy = nullptr;
+        Token token = expressionTree->getToken();
+        if (token == Token::NullRoot || token == Token::BlockDefinition) {
+            lastChild = expressionTree->getLastChild();
+            if (lastChild != nullptr) {
+                if (isWhiteSpace(lastChild->getToken())) {
+                    removeWhiteSpaces();
+                    lastChild = nullptr;
+                }
+                else if (lastChild->getToken() == Token::Name) lastChildCopy = new Node{Token::ElementName, lastChild->getValue()};
+                else if (lastChild->getToken() == Token::AnyParent)
+                    ; // do nothing, just ensure the node is being removed without being copied before
+                else lastChildCopy = lastChild->copyNodeWithChilds();
+                expressionTree->deleteSpecificChild(lastChild);
+            }
+            else {
+                if (token == Token::NullRoot)
+                    throw MissingToken("A '&' token must not be the first token of a block declaration if not a nested block");
+            }
+            expressionTree = expressionTree->appendChild(new Node(Token::StyleBlock));
+            expressionTree = expressionTree->appendChild(new Node(Token::BlockDeclaration));
+            expressionTree = expressionTree->appendChild(new Node(Token::Declaration));
+            expressionTree->appendChild(lastChildCopy);
+            expressionTree->appendChild(new Node(Token::SameElement));
+        }
+        else if (token == Token::Declaration) {
+            lastChild = expressionTree->getLastChild();
+            if (lastChild->getToken() == Token::AnyParent) {
+                expressionTree->deleteSpecificChild(lastChild);
+            }
+            expressionTree->appendChild(new Node(Token::SameElement));
+        }
+        else
+            throw MalformedExpression("A same element relation ('&') must be before a style block opening and at the root level of the style file or "
+                                      "inside an other style block");
+    }
+
     void Parser::parseGreatherThan() {
         Node *lastChild;
         Node *lastChildCopy = nullptr;
@@ -263,7 +305,7 @@ namespace style {
             expressionTree->appendChild(new Node(Token::DirectParent));
         }
         else
-            throw MalformedExpression("A direct parent relation must be before a style block opening and at the root level of the style file or "
+            throw MalformedExpression("A direct parent relation ('>') must be before a style block opening and at the root level of the style file or "
                                       "inside an other style block");
     }
 

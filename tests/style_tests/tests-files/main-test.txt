@@ -13,7 +13,7 @@
         background-color: #555555;
         margin: 10px;
         
-        :hovered {
+        &:hovered {
             background-color: #ff0000;
         }
     }
