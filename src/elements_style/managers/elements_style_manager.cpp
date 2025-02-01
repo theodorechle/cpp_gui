@@ -11,7 +11,8 @@ namespace gui {
                 return -1;
             }
 
-            void ElementsStyleManager::updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber, gui::elementStyle::ElementStyle *element) {
+            void ElementsStyleManager::updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber,
+                                                                       gui::elementStyle::ElementStyle *element) {
                 gui::elementStyle::ElementStyle *child;
                 element->updateStylePriorityFromFile(oldFileNumber, newFileNumber);
                 child = element->getChild();
@@ -32,8 +33,8 @@ namespace gui {
                 }
             }
 
-            void ElementsStyleManager::applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle, gui::elementStyle::ElementStyle *elementStyle,
-                                                                   bool recursive) {
+            void ElementsStyleManager::applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle,
+                                                                   gui::elementStyle::ElementStyle *elementStyle, bool recursive) {
                 if (elementStyle == nullptr) return;
                 gui::elementStyle::ElementStyle *actualElementStyle = elementStyle;
                 const style::StyleValuesMap *styleMap;
@@ -41,21 +42,19 @@ namespace gui {
                 std::string modifier = "";
                 actualElementStyle->clear();
                 for (style::StyleBlock *styleComponent : specificStyle) {
-                    for (style::StyleComponentDataList::const_iterator list = styleComponent->getComponentsList()->cbegin();
-                         list != styleComponent->getComponentsList()->cend(); list++) {
-                    }
 
                     const style::StyleComponentDataList *componentsList = styleComponent->getComponentsList();
+
                     if (!areElementSelectorsCompatibles(actualElementStyle, componentsList)) continue;
                     styleMap = styleComponent->getStyleMap();
                     elementStyleMap = AppliedStyleMap();
+
                     if (componentsList->back().first.second == style::StyleComponentType::Modifier) {
                         modifier = componentsList->back().first.first;
                         actualElementStyle->addModifier(modifier);
                     }
                     for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
-                        elementStyleMap[styleRule.first] = {style::StyleRule{styleRule.second.value, modifier.empty(),
-                                                                             styleRule.second.priority + actualElementStyle->getPriority(),
+                        elementStyleMap[styleRule.first] = {style::StyleRule{styleRule.second.value, modifier.empty(), styleRule.second.specificity,
                                                                              styleRule.second.fileNumber, styleRule.second.ruleNumber}};
                         if (!modifier.empty()) {
                             actualElementStyle->addRuleAffectedByModifier(styleRule.second.fileNumber, styleRule.second.ruleNumber, modifier);
@@ -75,7 +74,7 @@ namespace gui {
             }
 
             ElementsStyleManager::~ElementsStyleManager() {
-                for (style::StyleBlock *styleBlock: style) {
+                for (style::StyleBlock *styleBlock : style) {
                     delete styleBlock;
                 }
             }
@@ -134,8 +133,8 @@ namespace gui {
                 style::StyleComponentDataList::const_reverse_iterator listEndIt = componentsList->crbegin();
                 const std::set<style::StyleComponentData> *elementSelectors;
                 elementSelectors = currentStyle->getSelectors();
-                if (componentsList->back().first.second == style::StyleComponentType::Modifier) {
-                    listEndIt = listEndIt++;
+                if (listEndIt->first.second == style::StyleComponentType::Modifier) {
+                    listEndIt++;
                 }
                 for (style::StyleComponentDataList::const_reverse_iterator it = listEndIt; it != componentsList->crend(); it++) {
                     switch (it->second) {

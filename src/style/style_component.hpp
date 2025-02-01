@@ -20,6 +20,7 @@ namespace style {
 
     StyleComponentType tokenTypeToStyleComponentType(Token token);
     StyleValueType tokenTypeToStyleValueType(Token token);
+    StyleRelation tokenTypeToStyleRelation(Token token);
 
     std::string styleComponentTypeToString(StyleComponentType token);
     std::string styleValueTypeToString(StyleValueType token);
@@ -51,14 +52,14 @@ namespace style {
     /**
      *   style value
      *   enabled
-     *   priority
+     *   specificity
      *   file number
      *   rule number (file dependant)
      */
     struct StyleRule {
         StyleValue *value;
         bool enabled;
-        int priority;
+        int specificity;
         int fileNumber;
         int ruleNumber;
     };
@@ -82,6 +83,6 @@ namespace style {
         const StyleValuesMap *getStyleMap() const { return &styleDef->second; }
     };
 
-} // namespace Style
+} // namespace style
 
 #endif // STYLE_COMPONENT_HPP

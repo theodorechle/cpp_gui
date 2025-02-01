@@ -128,7 +128,6 @@ namespace style {
         for (std::pair<std::string, Token> unit : UNITS) {
             equal = true;
             for (i = 0; i < unit.first.size(); i++) {
-                // std::cerr << expression[index + expressionIndex + i] << ", " << unit.first[i] << "\n";
                 if (expression[index + expressionIndex + i] != unit.first[i]) {
                     equal = false;
                     break;
@@ -179,7 +178,7 @@ namespace style {
                 firstNode = nullptr;
                 throw UnknownValue(expression.substr(index, MAX_ERROR_COMPLEMENTARY_INFOS_SIZE));
             }
-            if (settings->debug) std::cerr << tokenToString(expressionTree->getTokenType()) << ": '" << expressionTree->getValue() << "'\n";
+            if (settings->debug) std::cerr << tokenToString(expressionTree->getToken()) << ": '" << expressionTree->getValue() << "'\n";
             expressionTree = expressionTree->getNext();
         }
         // remove the NullRoot token at the start

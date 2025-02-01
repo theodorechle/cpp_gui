@@ -56,5 +56,9 @@ namespace gui {
             delete next;
         }
 
+        void AbstractElement::setModifierState(std::string modifierName, bool enabled) {
+            elementStyle->setModifierState(modifierName, enabled);
+        }
+
     } // namespace element
 } // namespace gui

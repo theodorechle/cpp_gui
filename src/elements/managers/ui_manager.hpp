@@ -1,8 +1,9 @@
 #ifndef UIMANAGER_HPP
 #define UIMANAGER_HPP
 
-#include "../ui_element.hpp"
 #include "../root_element.hpp"
+#include "../ui_element.hpp"
+#include "../../events.hpp"
 #include "abstract_manager.hpp"
 #include <SDL3/SDL.h>
 
@@ -13,6 +14,8 @@ namespace gui {
             class UIManager : public AbstractManager {
                 SDL_Window *window = nullptr;
                 SDL_Renderer *renderer = nullptr;
+                UIElement *clickedElement = nullptr;
+                UIElement *hoveredElement = nullptr;
 
             public:
                 UIManager(SDL_Window *window, SDL_Renderer *renderer) : window{window}, renderer{renderer} {}
@@ -24,6 +27,14 @@ namespace gui {
                 void renderElements() const override;
 
                 void processEvent(const SDL_Event &event);
+                
+                void processMouseEvents();
+
+                /**
+                 * set the modifier's state (enabled, disabled) on leafElement and all its parents
+                 * if enabled is true, it will also throw the given event on each concerned elements
+                 */
+                void setElementsModifierState(const std::string &modifier, UIElement *leafElement, bool enabled, gui::Event event);
             };
 
         } // namespace manager

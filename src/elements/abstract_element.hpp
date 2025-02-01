@@ -2,6 +2,8 @@
 #define ABSTRACT_ELEMENT_HPP
 
 #include "../elements_style/managers/elements_style_manager.hpp"
+#include "../events.hpp"
+
 #include <string>
 #include <vector>
 
@@ -54,10 +56,17 @@ namespace gui {
 
             virtual void render() = 0;
 
-            virtual void computeLayout(int availableWidth, int availableHeight) = 0;
+            virtual void computeLayout(int x, int y, int availableWidth, int availableHeight) = 0;
             virtual void computeDesiredLayout(int *desiredWidth, int *desiredHeight) = 0;
 
             bool styleManagerAvailable() { return elementsStyleManager != nullptr; }
+
+            virtual void catchEvent(gui::Event event) {}
+
+            /**
+             * true if should propagate to the parent, false else
+             */
+            void setModifierState(std::string modifierName, bool enabled);
         };
 
     } // namespace element

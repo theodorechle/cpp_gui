@@ -21,7 +21,7 @@ namespace style {
 
     class UnknownToken : public ParserError {
     public:
-        UnknownToken(const Node token) : ParserError{"Unknown token: \"" + token.getValue() + " (" + tokenToString(token.getTokenType()) + ")\""} {};
+        UnknownToken(const Node token) : ParserError{"Unknown token: \"" + token.getValue() + " (" + tokenToString(token.getToken()) + ")\""} {};
     };
 
     class MissingToken : public ParserError {

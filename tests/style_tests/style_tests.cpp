@@ -68,19 +68,19 @@ namespace test {
             return Result::KO;
         }
         if (testedRule->fileNumber != expectedRule->fileNumber) {
-            std::cerr << "The file number is different (have '" << testedRule->fileNumber << "', expected '" << expectedRule->fileNumber << "'\n";
+            std::cerr << "The file number is different (have '" << testedRule->fileNumber << "', expected '" << expectedRule->fileNumber << "')\n";
             return Result::KO;
         }
         if (testedRule->ruleNumber != expectedRule->ruleNumber) {
-            std::cerr << "The rule number is different (have '" << testedRule->ruleNumber << "', expected '" << expectedRule->ruleNumber << "'\n";
+            std::cerr << "The rule number is different (have '" << testedRule->ruleNumber << "', expected '" << expectedRule->ruleNumber << "')\n";
             return Result::KO;
         }
-        if (testedRule->priority != expectedRule->priority) {
-            std::cerr << "The priority is different (have '" << testedRule->priority << "', expected '" << expectedRule->priority << "'\n";
+        if (testedRule->specificity != expectedRule->specificity) {
+            std::cerr << "The specificity is different (have '" << testedRule->specificity << "', expected '" << expectedRule->specificity << "')\n";
             return Result::KO;
         }
         if (testedRule->enabled != expectedRule->enabled) {
-            std::cerr << "The enabled status is different (have '" << testedRule->enabled << "', expected '" << expectedRule->enabled << "'\n";
+            std::cerr << "The enabled status is different (have '" << testedRule->enabled << "', expected '" << expectedRule->enabled << "')\n";
             return Result::KO;
         }
         return checkStyleValue(testedRule->value, expectedRule->value);
@@ -242,7 +242,7 @@ namespace test {
         expectedData.push_back(std::pair(std::pair("label", style::StyleComponentType::ElementName), style::StyleRelation::SameElement));
         expectedData.push_back(std::pair(std::pair("red", style::StyleComponentType::Identifier), style::StyleRelation::SameElement));
         styleValue = new style::StyleValue("ff0000", style::StyleValueType::Hex);
-        expectedStyleMap["text-color"] = style::StyleRule{styleValue, true, 0, 0, 0};
+        expectedStyleMap["text-color"] = style::StyleRule{styleValue, true, 111, 0, 0};
         styleBlock = new style::StyleBlock(&expectedData, &expectedStyleMap);
         expectedStyleBlocks = {styleBlock};
         testDeserialization(".container      label#red{text-color : #ff0000;}", "deserializing a single rule", &expectedStyleBlocks);
@@ -254,7 +254,7 @@ namespace test {
         expectedData.push_back(std::pair(std::pair("label", style::StyleComponentType::ElementName), style::StyleRelation::SameElement));
         expectedData.push_back(std::pair(std::pair("red", style::StyleComponentType::Identifier), style::StyleRelation::SameElement));
         styleValue = new style::StyleValue("ff0000", style::StyleValueType::Hex);
-        expectedStyleMap["text-color"] = style::StyleRule{styleValue, true, 0, 0, 0};
+        expectedStyleMap["text-color"] = style::StyleRule{styleValue, true, 111, 0, 0};
         styleBlock = new style::StyleBlock(&expectedData, &expectedStyleMap);
         expectedStyleBlocks = {styleBlock};
         testDeserialization(".container > label#red{text-color : #ff0000;}", "direct parent", &expectedStyleBlocks);
@@ -266,7 +266,7 @@ namespace test {
         expectedData.push_back(std::pair(std::pair("label", style::StyleComponentType::ElementName), style::StyleRelation::SameElement));
         expectedData.push_back(std::pair(std::pair("red", style::StyleComponentType::Identifier), style::StyleRelation::SameElement));
         styleValue = new style::StyleValue("ff0000", style::StyleValueType::Hex);
-        expectedStyleMap["text-color"] = style::StyleRule{styleValue, true, 0, 0, 0};
+        expectedStyleMap["text-color"] = style::StyleRule{styleValue, true, 111, 0, 0};
         styleBlock = new style::StyleBlock(&expectedData, &expectedStyleMap);
         expectedStyleBlocks = {styleBlock};
         testDeserialization(".container>label#red{text-color : #ff0000;}", "direct parent without spaces", &expectedStyleBlocks);
@@ -278,7 +278,7 @@ namespace test {
         styleValue = new style::StyleValue("", style::StyleValueType::PixelUnit);
         style::StyleValue *styleValue2 = new style::StyleValue("100", style::StyleValueType::Int);
         styleValue->setChild(styleValue2);
-        expectedStyleMap["padding"] = style::StyleRule{styleValue, true, 0, 0, 0};
+        expectedStyleMap["padding"] = style::StyleRule{styleValue, true, 1, 0, 0};
         styleBlock = new style::StyleBlock(&expectedData, &expectedStyleMap);
         expectedStyleBlocks = {styleBlock};
         testDeserialization("label {padding:100px;}", "style name and value sticked to the assignment colon", &expectedStyleBlocks);

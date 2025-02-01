@@ -9,7 +9,7 @@ namespace style {
 
     Node *Node::copyNode() const {
         Node *n = createNewNode();
-        n->setTokenType(getTokenType());
+        n->setToken(getToken());
         n->setValue(getValue());
         return n;
     }
@@ -34,7 +34,7 @@ namespace style {
     void Node::displayTree(ostream &flow, int level) const {
         for (int i = 0; i < level; i++)
             flow << "\t";
-        flow << getValue() << " (" << getTokenType() << ")\n";
+        flow << getValue() << " (" << getToken() << ")\n";
         const Node *child = getChild();
         while (child != nullptr) {
             child->displayTree(flow, level + 1);
@@ -47,7 +47,7 @@ namespace style {
     void Node::displayNexts(ostream &flow) const {
         const Node *next = this;
         while (next != nullptr) {
-            flow << next->getValue() << " (" << next->getTokenType() << ")\n";
+            flow << next->getValue() << " (" << next->getToken() << ")\n";
             next = next->getNext();
         }
     }
@@ -102,7 +102,6 @@ namespace style {
         if (child == getChild()) {
             setChild(child->getNext());
             child->setNext(nullptr);
-            delete child;
             return;
         }
         Node *nextChild = getChild();
@@ -110,21 +109,26 @@ namespace style {
             if (nextChild->getNext() == child) {
                 nextChild->setNext(child->getNext());
                 child->setNext(nullptr);
-                delete child;
                 return;
             }
             nextChild = nextChild->getNext();
         }
     }
 
-    void Node::appendNext(Node *next) {
-        if (next == nullptr) return;
+    void Node::deleteSpecificChild(Node *child) {
+        removeSpecificChild(child);
+        delete child;
+    }
+
+    Node *Node::appendNext(Node *next) {
+        if (next == nullptr) return next;
         Node *c = this;
         while (c->getNext() != nullptr) {
             c = c->getNext();
         }
         c->setNext(next);
         next->setParent(getParent());
+        return next;
     }
 
     Node *Node::appendChild(Node *child) {
@@ -132,14 +136,6 @@ namespace style {
         if (c == nullptr) setChild(child);
         else c->appendNext(child);
         return child;
-    }
-
-    Node *Node::appendChild(Node &child) {
-        Node *c = getChild();
-        if (c == nullptr) setChild(&child);
-        else c->appendNext(&child);
-        child.parent = this;
-        return &child;
     }
 
     Node *Node::addEmptyChild() {
@@ -152,7 +148,7 @@ namespace style {
         tree = tree->copyNodeWithChildsAndNexts();
         // copy node
         setValue(tree->getValue());
-        setTokenType(tree->getTokenType());
+        setToken(tree->getToken());
         // replace child
         delete getChild();
         setChild(tree->getChild());
@@ -228,10 +224,10 @@ namespace style {
         node->setParent(nullptr);
     }
 
-    bool isNodeNull(Node *node) { return (node == nullptr || node->getTokenType() == Token::NullRoot); }
+    bool isNodeNull(Node *node) { return (node == nullptr || node->getToken() == Token::NullRoot); }
 
-    bool operator==(const Node &n1, const Node &n2) { return (n1.getValue() == n2.getValue() && n1.getTokenType() == n2.getTokenType()); }
+    bool operator==(const Node &n1, const Node &n2) { return (n1.getValue() == n2.getValue() && n1.getToken() == n2.getToken()); }
 
-    bool operator!=(const Node &n1, const Node &n2) { return (n1.getValue() != n2.getValue() || n1.getTokenType() != n2.getTokenType()); }
+    bool operator!=(const Node &n1, const Node &n2) { return (n1.getValue() != n2.getValue() || n1.getToken() != n2.getToken()); }
 
 } // namespace style

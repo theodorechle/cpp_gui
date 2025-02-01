@@ -21,8 +21,8 @@ namespace style {
         virtual ~Node();
         virtual void setValue(const std::string &s) { value = s; };
         virtual const std::string &getValue() const { return value; };
-        void setTokenType(const Token &t) { type = t; };
-        const Token &getTokenType() const { return type; };
+        void setToken(const Token &t) { type = t; };
+        const Token &getToken() const { return type; };
         Node *getParent() const { return parent; };
         /**
          *Set parent for the node and the nexts nodes
@@ -39,12 +39,12 @@ namespace style {
         void setChild(Node *child);
         void removeFirstChild() { setChild(nullptr); };
         void removeSpecificChild(Node *child);
-        void appendNext(Node *next);
+        void deleteSpecificChild(Node *child);
+        Node *appendNext(Node *next);
         /**add a child at the end of them
          *Return the child
          */
         Node *appendChild(Node *child);
-        Node *appendChild(Node &child);
         Node *addEmptyChild();
 
         /**
