@@ -1,7 +1,9 @@
 ![build status](https://github.com/theodorechle/cpp_gui/actions/workflows/c-cpp.yml/badge.svg)
 
 # cpp_gui
-A cpp improvement of the python_gui ![https://github.com/theodorechle/python_gui](https://github.com/theodorechle/python_gui)
+A cpp replacement and improvement of my ![python_gui](https://github.com/theodorechle/python_gui)
+
+This GUI is made on top of the ![SDL3 library](https://wiki.libsdl.org/SDL3/FrontPage)
 
 ![Readme for the gui's style](src/style/README.md)
 
@@ -9,9 +11,9 @@ A cpp improvement of the python_gui ![https://github.com/theodorechle/python_gui
 
 To use this program, you need g++ and make.
 
-Install SDL
+![Install SDL](https://github.com/libsdl-org/SDL/blob/main/INSTALL.md)
 
-<a href="https://wiki.libsdl.org/SDL3/Installation">https://wiki.libsdl.org/SDL3/Installation</a>
+![Install SDL_ttf](https://github.com/libsdl-org/SDL_ttf/blob/main/INSTALL.md)
 
 ## Elements
 The gui is designed so you can implements easily your own elements
