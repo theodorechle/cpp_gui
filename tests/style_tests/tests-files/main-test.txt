@@ -1,5 +1,5 @@
 #red-container {
-//    padding: 100px;
+    padding: 100px;
     border: 10px;
     
     > label.red#test-label {
@@ -16,6 +16,11 @@
         &:hovered {
             background-color: #ff0000;
         }
+    }
+
+    &:hovered {
+        border-color:#aa0099;
+        background-color: #dddddd;
     }
 }
 

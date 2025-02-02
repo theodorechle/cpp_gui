@@ -40,10 +40,12 @@ namespace gui {
                 SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
                 SDL_Point mousePos = SDL_Point{(int)x, (int)y};
                 UIElement *currentElement = static_cast<UIElement *>(elementsTree);
+                UIElement *currentHoveredElement = nullptr;
                 SDL_Rect currentElementRect;
                 while (currentElement != nullptr) {
                     currentElement->getRect(&currentElementRect);
                     if (SDL_PointInRect(&mousePos, &currentElementRect)) {
+                        currentHoveredElement = currentElement;
                         if (currentElement->getChild() == nullptr) {
                             break;
                         }
@@ -54,7 +56,7 @@ namespace gui {
 
                 if (mouseFlags) {
                     if (clickedElement == nullptr) {
-                        clickedElement = currentElement;
+                        clickedElement = currentHoveredElement;
                         setElementsModifierState("clicked", clickedElement, true, gui::Event::Clicked);
                     }
                 }
@@ -63,10 +65,10 @@ namespace gui {
                         setElementsModifierState("clicked", clickedElement, false, gui::Event::Hovered);
                         clickedElement = nullptr;
                     }
-                    if (hoveredElement != currentElement) {
+                    if (hoveredElement != currentHoveredElement) {
                         setElementsModifierState("hovered", hoveredElement, false, gui::Event::Clicked); // FIXME: doesn't work
-                        setElementsModifierState("hovered", currentElement, true, gui::Event::Clicked);
-                        hoveredElement = currentElement;
+                        setElementsModifierState("hovered", currentHoveredElement, true, gui::Event::Clicked);
+                        hoveredElement = currentHoveredElement;
                     }
                 }
             }
