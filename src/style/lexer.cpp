@@ -37,9 +37,9 @@ namespace style {
     }
 
     void Lexer::lexeMultiLineComment() {
-        if (expression[index] != '/' || expression[index + 1] != '*') return;
+        if (expression[index] != '/' || index + 1 == expression.size() || expression[index + 1] != '*') return;
         int i = 1;
-        while (index + i + 2 < expression.size() && expression[index + i + 1] != '*' && expression[index + i + 2] != '/') {
+        while (index + i + 2 < expression.size() && !(expression[index + i + 1] == '*' && expression[index + i + 2] == '/')) {
             i++;
         }
         if (index + i + 2 >= expression.size()) return;
@@ -48,18 +48,30 @@ namespace style {
         index += i + 3;
     }
 
-    void Lexer::lexeString() {
+    void Lexer::lexePseudoName() {
         size_t i = 0;
-        // check that the string does not contains a special character who is part of the syntax or a forbidden character
+        // check that the pseudo name does not contains a special character who is part of the syntax or a forbidden character
         while (index + i < expressionLength && SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend()
                && std::find(FORBIDDEN_STRING_CHARACTERS.cbegin(), FORBIDDEN_STRING_CHARACTERS.cend(), expression[index + i])
                       == FORBIDDEN_STRING_CHARACTERS.cend()) {
             i++;
         }
         if (i == 0) return;
-        expressionTree->appendNext(new Node(Token::String, expression.substr(index, i)));
+        expressionTree->appendNext(new Node(Token::PseudoName, expression.substr(index, i)));
         index += i;
         lexed = true;
+    }
+
+    void Lexer::lexeString() {
+        if (expression[index] != '"') return;
+        int i = 1;
+        while (index + i + 1 < expression.size() && expression[index + i + 1] != '"') {
+            i++;
+        }
+        if (index + i >= expression.size()) return;
+        expressionTree->appendNext(new Node(Token::String, expression.substr(index + 1, i)));
+        lexed = true;
+        index += i + 2;
     }
 
     void Lexer::lexeHex() {
@@ -166,12 +178,13 @@ namespace style {
             if (!lexed) lexeLineReturn();
             if (!lexed) lexeOneLineComment();
             if (!lexed) lexeMultiLineComment();
+            if (!lexed) lexeString();
             if (!lexed) lexeHex();
             if (!lexed) lexeFloat();
             if (!lexed) lexeInt();
             if (!lexed) lexeBool();
             if (!lexed) lexeUnit();
-            if (!lexed) lexeString();
+            if (!lexed) lexePseudoName();
             if (!lexed) lexeSpecialCharacters();
             if (!lexed) {
                 delete firstNode;

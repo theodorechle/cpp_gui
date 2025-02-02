@@ -54,9 +54,9 @@ namespace gui {
             TTF_CloseFont(ttfFont);
         }
 
-        SDL_Color Label::textColor() const { return computeColor({"text-color"}); }
+        SDL_Color Label::textColor() const { return computeColor({"text-color"}, SDL_Color{0, 0, 0, 0}, true); }
         int Label::fontSize() const { return getIntFromRule({"font-size"}, 15, true); }
-        std::string Label::fontName() const { return getStringFromRule({"font-name"}, "", true); }
+        std::string Label::fontName() const { return FONT_PATH + getStringFromRule({"font-name"}, "", true); }
 
     } // namespace element
 } // namespace gui

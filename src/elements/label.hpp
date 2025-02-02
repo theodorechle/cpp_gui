@@ -3,6 +3,8 @@
 
 #include "ui_element.hpp"
 
+constexpr const char *FONT_PATH = "src/fonts/";
+
 namespace gui {
     namespace element {
         class Label : public UIElement {

@@ -64,10 +64,11 @@ namespace style {
                 case Token::Int:
                 case Token::Float:
                 case Token::Bool:
+                case Token::String:
                     parseValue();
                     break;
-                case Token::String:
-                    parseString();
+                case Token::PseudoName:
+                    parsePseudoName();
                     break;
                 case Token::Comma:
                     parseComma();
@@ -200,7 +201,7 @@ namespace style {
             expressionTree->replaceChild(lastChild, newChild);
             expressionTree = newChild;
         }
-        else if (expressionTokens->getNext()->getToken() == Token::String) {
+        else if (expressionTokens->getNext()->getToken() == Token::PseudoName) {
             expressionTokens = expressionTokens->getNext();
             parseModifier();
         }
@@ -215,7 +216,7 @@ namespace style {
 
     void Parser::parseSharp() {
         removeSpace();
-        if (expressionTokens->getNext()->getToken() == Token::String) {
+        if (expressionTokens->getNext()->getToken() == Token::PseudoName) {
             expressionTokens = expressionTokens->getNext();
             parseIdentifier();
         }
@@ -224,7 +225,7 @@ namespace style {
 
     void Parser::parseDot() {
         removeSpace();
-        if (expressionTokens->getNext()->getToken() == Token::String) {
+        if (expressionTokens->getNext()->getToken() == Token::PseudoName) {
             expressionTokens = expressionTokens->getNext();
             parseClass();
         }
@@ -382,13 +383,13 @@ namespace style {
         expressionTree = expressionTree->getParent()->getParent();
     }
 
-    void Parser::parseString() {
+    void Parser::parsePseudoName() {
         Node *lastChild;
         if (expressionTree->getToken() == Token::Assignment) {
             removeSpace();
 
             if (expressionTree->getNbChilds() != 1) throw MalformedExpression("Can't have more than one rvalue in an assignment");
-            else if (!parseSpecialAssignmentValues()) expressionTree->appendChild(new Node{Token::String, expressionTokens->getValue()});
+            else if (!parseSpecialAssignmentValues()) expressionTree->appendChild(new Node{Token::PseudoName, expressionTokens->getValue()});
         }
         else if (expressionTree->getToken() == Token::Tuple || expressionTree->getToken() == Token::Function) {
             removeSpace();
@@ -398,7 +399,7 @@ namespace style {
             if (lastChild != nullptr && lastChild->getToken() != Token::ArgSeparator)
                 throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");
             expressionTree->deleteSpecificChild(lastChild);
-            expressionTree->appendChild(new Node{Token::String, expressionTree->getValue()});
+            expressionTree->appendChild(new Node{Token::PseudoName, expressionTree->getValue()});
         }
         else {
             if (isValidElementOrStyleName(expressionTokens->getValue())) parseName();
@@ -423,7 +424,7 @@ namespace style {
             removeWhiteSpaces();
             lastChild = expressionTree->getLastChild();
 
-            if (lastChild != nullptr && lastChild->getToken() == Token::String) {
+            if (lastChild != nullptr && lastChild->getToken() == Token::PseudoName) {
                 lastChildCopy = lastChild->copyNodeWithChilds();
                 expressionTree->deleteSpecificChild(lastChild);
                 expressionTree = expressionTree->appendChild(new Node(Token::StyleBlock));

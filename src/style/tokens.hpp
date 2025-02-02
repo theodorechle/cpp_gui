@@ -13,6 +13,7 @@ namespace style {
         ClosingParenthesis,
         OpeningCurlyBracket,
         ClosingCurlyBracket,
+        PseudoName,
         Comma,
         Colon,
         SemiColon,
@@ -38,10 +39,6 @@ namespace style {
         Class,
         Modifier,
         Identifier,
-        // value types
-        Tuple,
-        String,
-        Function,
         // Used by both the lexer and the parser
         Space,
         LineReturn,
@@ -49,6 +46,9 @@ namespace style {
         // NullRoot is used only when an algorithm must start with an existing node
         NullRoot,
         // value types
+        Tuple,
+        String,
+        Function,
         Int,
         Float,
         Bool,

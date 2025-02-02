@@ -2,6 +2,11 @@
     // padding: 100px;
     border: 10px;
     font-size: 10;
+    /*
+    fonts must be provided in /src/fonts
+    so the gui can find them
+    */
+    font-name: "Courgette-Regular.ttf";
     
     > label.red#test-label {
         text-color: #ff0000;
