@@ -60,11 +60,6 @@ namespace style {
         }
     }
 
-    StyleValue::~StyleValue() {
-        delete child;
-        delete next;
-    }
-
     Node *NodeToStyleComponentList::joinStyleDeclarations(Node *firstDeclarations, Node *secondDeclarations) {
         Node *newDeclarations = new Node(Token::NullRoot);
         Node *actualDeclaration;
@@ -74,8 +69,10 @@ namespace style {
             secondDeclarationsIt = secondDeclarations;
             while (secondDeclarationsIt != nullptr) {
                 actualDeclaration = newDeclarations->appendNext(firstDeclarations->copyNodeWithChilds());
-                if (tokenTypeToStyleRelation(secondDeclarationsIt->getChild()->getToken()) == StyleRelation::Null) actualDeclaration->appendChild(new Node(Token::AnyParent));
-                if (tokenTypeToStyleRelation(secondDeclarationsIt->getChild()->getToken()) == StyleRelation::SameElement) secondDeclarationsIt->deleteSpecificChild(secondDeclarationsIt->getChild());
+                if (tokenTypeToStyleRelation(secondDeclarationsIt->getChild()->getToken()) == StyleRelation::Null)
+                    actualDeclaration->appendChild(new Node(Token::AnyParent));
+                if (tokenTypeToStyleRelation(secondDeclarationsIt->getChild()->getToken()) == StyleRelation::SameElement)
+                    secondDeclarationsIt->deleteSpecificChild(secondDeclarationsIt->getChild());
                 actualDeclaration->appendChild(secondDeclarationsIt->getChild()->copyNodeWithChildsAndNexts());
                 secondDeclarationsIt = secondDeclarationsIt->getNext();
             }
@@ -175,36 +172,30 @@ namespace style {
     StyleValue *NodeToStyleComponentList::convertStyleNodeToStyleValue(Node *node) {
         if (node == nullptr) return nullptr;
         StyleValueType type;
-        Node *child;
         Node *next;
-        StyleValue *styleChild;
+        StyleValue *styleValue;
+        StyleValue *tmpStyleValue;
         StyleValue *styleNext;
-        StyleValue *appliedStyle;
 
         type = tokenTypeToStyleValueType(node->getToken());
         if (type == StyleValueType::Null) return nullptr;
 
-        appliedStyle = new StyleValue();
-        appliedStyle->setValue(node->getValue());
-        appliedStyle->setType(type);
+        styleValue = new StyleValue();
+        styleValue->setValue(node->getValue());
+        styleValue->setType(type);
 
-        child = node->getChild();
-        if (child == nullptr) return appliedStyle;
-        styleChild = convertStyleNodeToStyleValue(child);
-        if (styleChild != nullptr) {
-            appliedStyle->setChild(styleChild);
-        }
+        styleValue->setChild(convertStyleNodeToStyleValue(node->getChild()));
 
         next = node->getNext();
+        tmpStyleValue = styleValue;
         while (next != nullptr) {
             styleNext = convertStyleNodeToStyleValue(next);
-            if (styleNext != nullptr) {
-                appliedStyle->setNext(styleNext);
-                appliedStyle = styleNext;
-            }
+            if (styleNext == nullptr) break;
+            tmpStyleValue->setNext(styleNext);
+            tmpStyleValue = styleNext;
             next = next->getNext();
         }
-        return appliedStyle;
+        return styleValue;
     }
 
     StyleValuesMap *NodeToStyleComponentList::convertAppliedStyle(int fileNumber, int *ruleNumber) {

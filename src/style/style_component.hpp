@@ -46,6 +46,7 @@ namespace style {
         StyleValueType getType() const { return type; }
         StyleValue *getChild() { return child; }
         StyleValue *getNext() { return next; }
+        int nbChilds() const;
         ~StyleValue();
     };
 

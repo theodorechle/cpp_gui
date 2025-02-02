@@ -2,6 +2,7 @@
 #define SIZE_CONVERTER_HPP
 
 #include "../style/style_component.hpp"
+#include "number_converter.hpp"
 #include <string>
 
 namespace gui {

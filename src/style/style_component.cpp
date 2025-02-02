@@ -65,6 +65,21 @@ namespace style {
         }
     }
 
+    int StyleValue::nbChilds() const {
+        int nb = 0;
+        StyleValue *currentChild = this->child;
+        while (currentChild != nullptr) {
+            nb++;
+            currentChild = currentChild->next;
+        }
+        return nb;
+    }
+
+    StyleValue::~StyleValue() {
+        delete child;
+        delete next;
+    }
+
     StyleBlock::StyleBlock(StyleComponentDataList *componentsList,
                            StyleValuesMap *styleMap) { // TODO: forbid null pointers (maybe get params as references ?)
         styleDef = new StyleDefinition(*componentsList, *styleMap);

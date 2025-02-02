@@ -29,7 +29,38 @@ namespace gui {
             }
         }
 
-        bool ColorConverter::convertFromTuple(style::StyleValue *value, SDL_Color *color) { return false; }
+        bool ColorConverter::convertFromTuple(style::StyleValue *value, SDL_Color *color) {
+            style::StyleValue *child = value->getChild();
+            int intResult;
+            switch (value->nbChilds()) {
+            case 3:
+                if (!NumberConverter::convertToInt(child, &intResult)) return false;
+                color->r = intResult;
+                child = child->getNext();
+                if (!NumberConverter::convertToInt(child, &intResult)) return false;
+                color->g = intResult;
+                child = child->getNext();
+                if (!NumberConverter::convertToInt(child, &intResult)) return false;
+                color->b = intResult;
+                color->a = 255;
+                return true;
+            case 4:
+                if (!NumberConverter::convertToInt(child, &intResult)) return false;
+                color->r = intResult;
+                child = child->getNext();
+                if (!NumberConverter::convertToInt(child, &intResult)) return false;
+                color->g = intResult;
+                child = child->getNext();
+                if (!NumberConverter::convertToInt(child, &intResult)) return false;
+                color->b = intResult;
+                child = child->getNext();
+                if (!NumberConverter::convertToInt(child, &intResult)) return false;
+                color->a = intResult;
+                return true;
+            default:
+                return false;
+            }
+        }
 
         bool ColorConverter::convert(style::StyleValue *value, SDL_Color *color) {
             if (value == nullptr || color == nullptr) return false;

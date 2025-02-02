@@ -57,8 +57,8 @@ namespace test {
         expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
         expected = expected->appendChild(new style::Node(style::Token::Tuple));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
-        expected->appendChild(new style::Node(style::Token::Int, "150"));
-        expected->appendChild(new style::Node(style::Token::Int, "150"));
+        expected->appendChild(new style::Node(style::Token::Int, "255"));
+        expected->appendChild(new style::Node(style::Token::Int, "112"));
 
         testLexerAndParser(true, fileContent, rootExpected, "Two style blocks");
 

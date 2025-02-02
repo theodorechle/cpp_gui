@@ -9,7 +9,7 @@
     font-name: "Courgette-Regular.ttf";
     
     > label.red#test-label {
-        text-color: #ff0000;
+        text-color: (255, 102, 102);
         padding: 50px;
         border-left-color: #ff0000;
         border-right-color: #000000;
