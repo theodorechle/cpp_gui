@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-std=c++17 -Wall -g -MMD -MP
-SDL_CMD=`pkg-config sdl3 --cflags --libs`
+SDL_CMD=`pkg-config sdl3 sdl3-ttf --cflags --libs`
 BIN_DIR=bin
 OBJ_DIR=obj
 SRC_DIR=src
