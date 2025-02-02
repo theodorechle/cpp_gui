@@ -3,6 +3,20 @@
 namespace gui {
     namespace element {
 
+        void UIElement::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
+            (*desiredWidth) = 0;
+            (*desiredHeight) = 0;
+            int childDesiredWidth = 0;
+            int childDesiredHeight = 0;
+            UIElement *child = getChild();
+            while (child != nullptr) {
+                child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
+                (*desiredWidth) += childDesiredWidth;
+                (*desiredHeight) += childDesiredHeight;
+                child = child->getNext();
+            }
+        }
+
         void UIElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
             int childWidth = 0;
             int childHeight = 0;
@@ -16,20 +30,6 @@ namespace gui {
             while (child != nullptr) {
                 child->getDesiredSize(&childWidth, &childHeight);
                 child->computeLayout(x, y, std::min(childWidth, availableWidth), std::min(childHeight, availableHeight));
-                child = child->getNext();
-            }
-        }
-
-        void UIElement::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
-            (*desiredWidth) = 0;
-            (*desiredHeight) = 0;
-            int childDesiredWidth = 0;
-            int childDesiredHeight = 0;
-            UIElement *child = getChild();
-            while (child != nullptr) {
-                child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
-                (*desiredWidth) += childDesiredWidth;
-                (*desiredHeight) += childDesiredHeight;
                 child = child->getNext();
             }
         }
@@ -49,34 +49,6 @@ namespace gui {
                 child = child->getNext();
             }
             setDesiredSize(*desiredWidth, *desiredHeight);
-        }
-
-        int UIElement::computeSize(const std::vector<std::string> &styleNames, int defaultSize, bool canInherit, int parentSize) const {
-            if (elementStyle == nullptr) return defaultSize;
-            style::StyleValue *rule = nullptr;
-            int size = 0;
-            elementStyle->getRule(styleNames, &rule, canInherit);
-            if (rule == nullptr) {
-                return defaultSize;
-            }
-            if (!converter::SizeConverter::convert(rule, &size, parentSize)) {
-                return defaultSize;
-            }
-            return size;
-        }
-
-        SDL_Color UIElement::computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor, bool canInherit) const {
-            if (elementStyle == nullptr) return defaultColor;
-            style::StyleValue *rule = nullptr;
-            SDL_Color color = SDL_Color();
-            elementStyle->getRule(styleNames, &rule, canInherit);
-            if (rule == nullptr) {
-                return defaultColor;
-            }
-            if (!converter::ColorConverter::convert(rule, &color)) {
-                return defaultColor;
-            }
-            return color;
         }
 
         void UIElement::setRect(SDL_Rect rect) { elementRect = rect; }
@@ -114,6 +86,59 @@ namespace gui {
         }
 
         SDL_FRect UIElement::createFRect(int x, int y, int width, int height) { return SDL_FRect{(float)x, (float)y, (float)width, (float)height}; }
+
+        int UIElement::getIntFromRule(const std::vector<std::string> &styleNames, int defaultSize, bool canInherit) const {
+            if (elementStyle == nullptr) return defaultSize;
+            style::StyleValue *rule = nullptr;
+            int size = 0;
+            elementStyle->getRule(styleNames, &rule, canInherit);
+            if (rule == nullptr) {
+                return defaultSize;
+            }
+            if (!converter::NumberConverter::convertToInt(rule, &size)) {
+                return defaultSize;
+            }
+            return size;
+        }
+
+        std::string UIElement::getStringFromRule(const std::vector<std::string> &styleNames, const std::string &defaultString,
+                                                 bool canInherit) const {
+            if (elementStyle == nullptr) return defaultString;
+            style::StyleValue *rule = nullptr;
+            elementStyle->getRule(styleNames, &rule, canInherit);
+            if (rule == nullptr) {
+                return defaultString;
+            }
+            return rule->getValue();
+        }
+
+        int UIElement::computeSize(const std::vector<std::string> &styleNames, int defaultSize, bool canInherit, int parentSize) const {
+            if (elementStyle == nullptr) return defaultSize;
+            style::StyleValue *rule = nullptr;
+            int size = 0;
+            elementStyle->getRule(styleNames, &rule, canInherit);
+            if (rule == nullptr) {
+                return defaultSize;
+            }
+            if (!converter::SizeConverter::convert(rule, &size, parentSize)) {
+                return defaultSize;
+            }
+            return size;
+        }
+
+        SDL_Color UIElement::computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor, bool canInherit) const {
+            if (elementStyle == nullptr) return defaultColor;
+            style::StyleValue *rule = nullptr;
+            SDL_Color color = SDL_Color();
+            elementStyle->getRule(styleNames, &rule, canInherit);
+            if (rule == nullptr) {
+                return defaultColor;
+            }
+            if (!converter::ColorConverter::convert(rule, &color)) {
+                return defaultColor;
+            }
+            return color;
+        }
 
         void UIElement::addChild(UIElement *child) {
             AbstractElement::addChild(child);
@@ -198,21 +223,33 @@ namespace gui {
             if (renderer == nullptr) throw NoRendererException();
             SDL_Rect clipRect;
             SDL_Rect newClipRect;
-            SDL_Rect clipRectNoBordersAndPaddings;
+            SDL_Rect clipRectNoBorders;
+            SDL_Rect clipRectNoPaddings;
 
             clipRect = SDL_Rect{oldClipRect.x, oldClipRect.y, this->elementRect.w, this->elementRect.h};
             if (!SDL_GetRectIntersection(&oldClipRect, &clipRect, &newClipRect)) newClipRect = clipRect;
 
-            clipRectNoBordersAndPaddings.x = newClipRect.x + borderLeft();
-            clipRectNoBordersAndPaddings.w = newClipRect.w - borderLeft() - borderRight();
-            clipRectNoBordersAndPaddings.y = newClipRect.y + borderTop();
-            clipRectNoBordersAndPaddings.h = newClipRect.h - borderTop() - borderBottom();
+            clipRectNoBorders.x = newClipRect.x + borderLeft();
+            clipRectNoBorders.w = newClipRect.w - borderLeft() - borderRight();
+            clipRectNoBorders.y = newClipRect.y + borderTop();
+            clipRectNoBorders.h = newClipRect.h - borderTop() - borderBottom();
 
-            if (!SDL_SetRenderClipRect(renderer, &clipRectNoBordersAndPaddings)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect no borders and margins and paddings '%s'", SDL_GetError());
+            if (!SDL_SetRenderClipRect(renderer, &clipRectNoBorders)) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect no borders '%s'", SDL_GetError());
                 return;
             }
             renderBackground();
+
+            clipRectNoPaddings.x = clipRectNoBorders.x + paddingLeft();
+            clipRectNoPaddings.w = clipRectNoBorders.w - paddingLeft() - paddingRight();
+            clipRectNoPaddings.y = clipRectNoBorders.y + paddingTop();
+            clipRectNoPaddings.h = clipRectNoBorders.h - paddingTop() - paddingBottom();
+
+            if (!SDL_SetRenderClipRect(renderer, &clipRectNoPaddings)) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect no paddings '%s'", SDL_GetError());
+                return;
+            }
+
             renderSelfBeforeChilds();
             renderChilds();
             renderSelfAfterChilds();
@@ -221,7 +258,7 @@ namespace gui {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect '%s'", SDL_GetError());
                 return;
             }
-            renderBorder();
+            renderBorders();
         }
 
         void UIElement::render() {
@@ -270,7 +307,7 @@ namespace gui {
             }
         }
 
-        void UIElement::renderBorder() const {
+        void UIElement::renderBorders() const {
             SDL_Color color;
             Uint8 r, g, b, a;
             SDL_FRect fRect;

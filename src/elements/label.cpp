@@ -1,11 +1,62 @@
 #include "label.hpp"
-#include "../converters/color_converter.hpp"
-#include <SDL3/SDL.h>
 
 namespace gui {
     namespace element {
+        void Label::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
+            TTF_CloseFont(ttfFont);
+            ttfFont = TTF_OpenFont(fontName().c_str(), fontSize());
+            if (ttfFont == nullptr) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't open font: %s", SDL_GetError());
+                return;
+            }
+            TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), 0, desiredWidth, desiredHeight);
+        }
 
-        Label::Label(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
-            : UIElement{"label", elementsStyleManager, classes, identifier} {}
+        void Label::renderSelfAfterChilds() {
+            SDL_Rect rect;
+            SDL_Color color;
+            TTF_DestroyText(ttfText);
+
+            SDL_GetRenderClipRect(getRenderer(), &rect);
+            if (getTextEngine() == nullptr) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Text engine is not defined.");
+                return;
+            }
+
+            if (ttfFont == nullptr) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Font is not defined.");
+                return;
+            }
+
+            ttfText = TTF_CreateText(getTextEngine(), ttfFont, text.c_str(), text.size());
+            if (ttfText == nullptr) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't create text: %s", SDL_GetError());
+                return;
+            }
+
+            color = textColor();
+            if (!TTF_SetTextColor(ttfText, color.r, color.g, color.b, color.a)) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set text color: %s", SDL_GetError());
+                return;
+            }
+
+            if (!TTF_DrawRendererText(ttfText, rect.x, rect.y)) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't render text: %s", SDL_GetError());
+            }
+        }
+
+        Label::Label(const std::string &text, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager,
+                     std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
+            : UIElement{"label", elementsStyleManager, classes, identifier, textEngine}, text{text} {}
+
+        Label::~Label() {
+            TTF_DestroyText(ttfText);
+            TTF_CloseFont(ttfFont);
+        }
+
+        SDL_Color Label::textColor() const { return computeColor({"text-color"}); }
+        int Label::fontSize() const { return getIntFromRule({"font-size"}, 15, true); }
+        std::string Label::fontName() const { return getStringFromRule({"font-name"}, "", true); }
+
     } // namespace element
 } // namespace gui

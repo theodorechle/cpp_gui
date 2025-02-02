@@ -3,9 +3,11 @@
 
 #include "../converters/color_converter.hpp"
 #include "../converters/size_converter.hpp"
+#include "../converters/number_converter.hpp"
 #include "abstract_element.hpp"
 
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -18,11 +20,37 @@ namespace gui {
             int elementDesiredWidth = 0;
             int elementDesiredHeight = 0;
             SDL_Renderer *renderer = nullptr;
+            TTF_TextEngine *textEngine = nullptr;
 
             /**
              * compute desired layout without margins, paddings, borders, ...
              */
             virtual void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight);
+
+            void setRect(SDL_Rect rect);
+            void setPos(int x, int y);
+            void setSize(int width, int height);
+            void setDesiredSize(int width, int height);
+
+            void setParent(UIElement *parent) { AbstractElement::setParent(parent); }
+
+            /**
+             * Calls the rendering methods in this order:
+             * - renderBackground
+             * - renderSelfBeforeChilds
+             * - renderChilds
+             * - renderSelfAfterChilds
+             * - renderBorders
+             * Also manages the clip rect for borders and content
+             */
+            void tryRender(SDL_Rect oldClipRect);
+
+        protected:
+            TTF_TextEngine *getTextEngine() { return textEngine; }
+            static SDL_FRect createFRect(int x, int y, int width, int height);
+
+            int getIntFromRule(const std::vector<std::string> &styleNames, int defaultSize = 0, bool canInherit = false) const;
+            std::string getStringFromRule(const std::vector<std::string> &styleNames, const std::string &defaultString = "", bool canInherit = false) const;
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
@@ -37,20 +65,10 @@ namespace gui {
             SDL_Color computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
                                    bool canInherit = false) const;
 
-            void setRect(SDL_Rect rect);
-            void setPos(int x, int y);
-            void setSize(int width, int height);
-            void setDesiredSize(int width, int height);
-
-            static SDL_FRect createFRect(int x, int y, int width, int height);
-            void setParent(UIElement *parent) { AbstractElement::setParent(parent); }
-
-            void tryRender(SDL_Rect oldClipRect);
-
         public:
             UIElement(std::string elementName, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
-                      std::vector<std::string> *classes = nullptr, const std::string &identifier = "")
-                : AbstractElement{elementName, elementsStyleManager, classes, identifier} {}
+                      std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
+                : AbstractElement{elementName, elementsStyleManager, classes, identifier}, textEngine{textEngine} {}
 
             UIElement *getParent() { return static_cast<UIElement *>(AbstractElement::getParent()); }
             const UIElement *getConstParent() const { return static_cast<const UIElement *>(AbstractElement::getConstParent()); }
@@ -98,14 +116,12 @@ namespace gui {
             void computeDesiredLayout(int *desiredWidth, int *desiredHeight) final;
 
             /**
-             * Computes the layout of the element and draw it.
-             * Draw the border and call renderSelf to render the element content.
-             * To override the rendering, see te renderSelf method.
+             * Updates the renderer clip rect and call tryRender
              */
             void render() override final;
             void renderChilds() override;
             void renderBackground() const;
-            void renderBorder() const;
+            void renderBorders() const;
         };
 
         class NoRendererException : public std::logic_error {

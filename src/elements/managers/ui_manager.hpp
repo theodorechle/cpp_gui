@@ -1,9 +1,9 @@
 #ifndef UIMANAGER_HPP
 #define UIMANAGER_HPP
 
+#include "../../events.hpp"
 #include "../root_element.hpp"
 #include "../ui_element.hpp"
-#include "../../events.hpp"
 #include "abstract_manager.hpp"
 #include <SDL3/SDL.h>
 
@@ -16,6 +16,7 @@ namespace gui {
                 SDL_Renderer *renderer = nullptr;
                 UIElement *clickedElement = nullptr;
                 UIElement *hoveredElement = nullptr;
+                bool mouseEventsOccurred = false;
 
             public:
                 UIManager(SDL_Window *window, SDL_Renderer *renderer) : window{window}, renderer{renderer} {}
@@ -27,7 +28,7 @@ namespace gui {
                 void renderElements() const override;
 
                 void processEvent(const SDL_Event &event);
-                
+
                 void processMouseEvents();
 
                 /**

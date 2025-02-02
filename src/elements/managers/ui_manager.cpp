@@ -29,13 +29,22 @@ namespace gui {
             }
 
             void UIManager::processEvent(const SDL_Event &event) {
-                if (event.type == SDL_EVENT_QUIT) {
+                switch (event.type) {
+                case SDL_EVENT_QUIT:
                     status(Status::ENDED);
-                    return;
+                    break;
+                case SDL_EVENT_MOUSE_MOTION:
+                case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                case SDL_EVENT_MOUSE_BUTTON_UP:
+                    mouseEventsOccurred = true;
+                default:
+                    break;
                 }
             }
 
             void UIManager::processMouseEvents() {
+                if (!mouseEventsOccurred) return;
+                mouseEventsOccurred = false;
                 float x, y;
                 SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
                 SDL_Point mousePos = SDL_Point{(int)x, (int)y};

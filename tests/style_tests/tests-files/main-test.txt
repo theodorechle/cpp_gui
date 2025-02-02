@@ -1,6 +1,7 @@
 #red-container {
-    padding: 100px;
+    // padding: 100px;
     border: 10px;
+    font-size: 10;
     
     > label.red#test-label {
         text-color: #ff0000;

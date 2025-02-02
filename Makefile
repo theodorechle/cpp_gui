@@ -44,17 +44,17 @@ $(BIN_ALL): $(filter-out $(OBJ_DIR)/style/main.o, $(OBJ_STYLE)) $(OBJ_SUBDIRS) $
 # Build the main executable (main.cpp + elements + managers)
 $(BIN_MAIN): $(OBJ_MAIN) $(OBJ_SUBDIRS)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) $^ -o $@ $(SDL_CMD)
+	$(CC) $(CFLAGS) $^ -o $@
 
 # Build the style tests executable (style tests + all style sources except src/style/main.cpp)
 $(BIN_STYLE_TESTS): $(OBJ_STYLE_TESTS)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) $^ -o $@ $(SDL_CMD)
+	$(CC) $(CFLAGS) $^ -o $@
 
 # Rule for compiling all object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@ $(SDL_CMD)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Include dependency files if they exist
 -include $(DEPS)

@@ -11,6 +11,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     int windowLength = 500;
@@ -20,6 +21,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL! %s", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+
+    if (!TTF_Init()) {
+        SDL_Log("Couldn't initialize SDL TTF! %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
@@ -33,8 +39,13 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     gui::element::manager::AbstractManager *manager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
     gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = new gui::elementStyle::manager::ElementsStyleManager();
+    TTF_TextEngine *textEngine = TTF_CreateRendererTextEngine(sdl_renderer);
 
-    *appstate = new AppState(manager, sdl_window, sdl_renderer, elementsStyleManager);
+    if (textEngine == nullptr) {
+        SDL_Log("Can't create a renderer text engine %s", SDL_GetError());
+    }
+
+    *appstate = new AppState(manager, sdl_window, sdl_renderer, elementsStyleManager, textEngine);
 
     elementsStyleManager->addStyleFile("tests/style_tests/tests-files/main-test.txt");
 
@@ -44,7 +55,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
-    parentContainer->addChild(new gui::element::Label(elementsStyleManager, &labelClasses, "test-label"));
+    parentContainer->addChild(new gui::element::Label("a text to render\non multiple lines", elementsStyleManager, &labelClasses, "test-label", textEngine));
     manager->computeElementsLayout();
 
     return SDL_APP_CONTINUE;
@@ -71,4 +82,5 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     AppState *state = static_cast<AppState *>(appstate);
     delete state;
+    TTF_Quit();
 }

@@ -5,11 +5,22 @@
 
 namespace gui {
     namespace element {
-
         class Label : public UIElement {
+            std::string text;
+            TTF_Font *ttfFont = nullptr;
+            TTF_Text *ttfText = nullptr;
+
+            void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) override;
+            void renderSelfAfterChilds() override;
         public:
-            Label(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
-                  const std::string &identifier = "");
+            Label(const std::string &text, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+                  const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
+                
+            ~Label() override;
+
+            SDL_Color textColor() const;
+            int fontSize() const;
+            std::string fontName() const;
         };
 
     } // namespace element

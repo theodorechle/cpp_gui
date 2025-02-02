@@ -516,7 +516,7 @@ namespace style {
         else
             throw MalformedExpression(
                 "A " + tokenToString(outputTokenType)
-                + "must be before a style block opening and at the root level of the style file or inside an other style block");
+                + " must be before a style block opening and at the root level of the style file or inside an other style block");
     }
 
     void Parser::parseClass() { parseDeclarationComponent(Token::Class); }
