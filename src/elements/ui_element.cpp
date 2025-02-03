@@ -17,23 +17,6 @@ namespace gui {
             }
         }
 
-        void UIElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
-            int childWidth = 0;
-            int childHeight = 0;
-            setPos(x, y);
-            setSize(availableWidth, availableHeight);
-            x += borderLeft();
-            y += borderRight();
-            availableWidth -= borderLeft() + borderRight();
-            availableHeight -= borderTop() + borderBottom();
-            UIElement *child = getChild();
-            while (child != nullptr) {
-                child->getDesiredSize(&childWidth, &childHeight);
-                child->computeLayout(x, y, std::min(childWidth, availableWidth), std::min(childHeight, availableHeight));
-                child = child->getNext();
-            }
-        }
-
         void UIElement::computeDesiredLayout(int *desiredWidth, int *desiredHeight) {
             *desiredWidth = 0;
             *desiredHeight = 0;
@@ -49,6 +32,24 @@ namespace gui {
                 child = child->getNext();
             }
             setDesiredSize(*desiredWidth, *desiredHeight);
+        }
+
+        void UIElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
+            int childWidth = 0;
+            int childHeight = 0;
+            setPos(x, y);
+            setSize(availableWidth, availableHeight);
+            x += borderLeft() + marginLeft();
+            y += borderTop() + marginTop();
+            availableWidth -= borderLeft() + borderRight();
+            availableHeight -= borderTop() + borderBottom();
+            UIElement *child = getChild();
+            while (child != nullptr) {
+                child->computeDesiredLayout(&childWidth, &childHeight);
+                child->getDesiredSize(&childWidth, &childHeight);
+                child->computeLayout(x, y, std::min(childWidth, availableWidth), std::min(childHeight, availableHeight));
+                child = child->getNext();
+            }
         }
 
         void UIElement::setRect(SDL_Rect rect) { elementRect = rect; }
@@ -147,62 +148,62 @@ namespace gui {
 
         int UIElement::marginLeft() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"margin-left", "margin"}, 0, (parent == nullptr) ? 0 : parent->getWidth());
+            return computeSize({"margin-left", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth());
         }
 
         int UIElement::marginRight() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"margin-right", "margin"}, 0, (parent == nullptr) ? 0 : parent->getWidth());
+            return computeSize({"margin-right", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth());
         }
 
         int UIElement::marginTop() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"margin-top", "margin"}, 0, (parent == nullptr) ? 0 : parent->getHeight());
+            return computeSize({"margin-top", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight());
         }
 
         int UIElement::marginBottom() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"margin-bottom", "margin"}, 0, (parent == nullptr) ? 0 : parent->getHeight());
+            return computeSize({"margin-bottom", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight());
         }
 
         int UIElement::paddingLeft() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"padding-left", "padding"}, 0, (parent == nullptr) ? 0 : parent->getWidth());
+            return computeSize({"padding-left", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth());
         }
 
         int UIElement::paddingRight() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"padding-right", "padding"}, 0, (parent == nullptr) ? 0 : parent->getWidth());
+            return computeSize({"padding-right", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth());
         }
 
         int UIElement::paddingTop() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"padding-top", "padding"}, 0, (parent == nullptr) ? 0 : parent->getHeight());
+            return computeSize({"padding-top", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight());
         }
 
         int UIElement::paddingBottom() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"padding-bottom", "padding"}, 0, (parent == nullptr) ? 0 : parent->getHeight());
+            return computeSize({"padding-bottom", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight());
         }
 
         int UIElement::borderLeft() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"border-left", "border"}, 0, (parent == nullptr) ? 0 : parent->getWidth());
+            return computeSize({"border-left", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth());
         }
 
         int UIElement::borderRight() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"border-right", "border"}, 0, (parent == nullptr) ? 0 : parent->getWidth());
+            return computeSize({"border-right", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth());
         }
 
         int UIElement::borderTop() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"border-top", "border"}, 0, (parent == nullptr) ? 0 : parent->getHeight());
+            return computeSize({"border-top", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight());
         }
 
         int UIElement::borderBottom() const {
             const UIElement *parent = getConstParent();
-            return computeSize({"border-bottom", "border"}, 0, (parent == nullptr) ? 0 : parent->getHeight());
+            return computeSize({"border-bottom", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight());
         }
 
         SDL_Color UIElement::borderLeftColor() const { return computeColor({"border-left-color", "border-color"}); }
@@ -222,19 +223,22 @@ namespace gui {
             }
             if (renderer == nullptr) throw NoRendererException();
             SDL_Rect clipRect;
-            SDL_Rect newClipRect;
+            SDL_Rect finalClipRect;
             SDL_Rect clipRectNoBorders;
+            SDL_Rect finalClipRectNoBorders;
             SDL_Rect clipRectNoPaddings;
+            SDL_Rect finalClipRectNoPaddings;
 
             clipRect = SDL_Rect{oldClipRect.x, oldClipRect.y, this->elementRect.w, this->elementRect.h};
-            if (!SDL_GetRectIntersection(&oldClipRect, &clipRect, &newClipRect)) newClipRect = clipRect;
+            if (!SDL_GetRectIntersection(&oldClipRect, &clipRect, &finalClipRect)) finalClipRect = clipRect;
 
-            clipRectNoBorders.x = newClipRect.x + borderLeft();
-            clipRectNoBorders.w = newClipRect.w - borderLeft() - borderRight();
-            clipRectNoBorders.y = newClipRect.y + borderTop();
-            clipRectNoBorders.h = newClipRect.h - borderTop() - borderBottom();
+            clipRectNoBorders.x = clipRect.x + borderLeft();
+            clipRectNoBorders.w = clipRect.w - borderLeft() - borderRight();
+            clipRectNoBorders.y = clipRect.y + borderTop();
+            clipRectNoBorders.h = clipRect.h - borderTop() - borderBottom();
+            if (!SDL_GetRectIntersection(&clipRectNoBorders, &oldClipRect, &finalClipRectNoBorders)) finalClipRectNoBorders = clipRectNoBorders;
 
-            if (!SDL_SetRenderClipRect(renderer, &clipRectNoBorders)) {
+            if (!SDL_SetRenderClipRect(renderer, &finalClipRectNoBorders)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect no borders '%s'", SDL_GetError());
                 return;
             }
@@ -244,8 +248,9 @@ namespace gui {
             clipRectNoPaddings.w = clipRectNoBorders.w - paddingLeft() - paddingRight();
             clipRectNoPaddings.y = clipRectNoBorders.y + paddingTop();
             clipRectNoPaddings.h = clipRectNoBorders.h - paddingTop() - paddingBottom();
+            if (!SDL_GetRectIntersection(&clipRectNoPaddings, &oldClipRect, &finalClipRectNoPaddings)) finalClipRectNoPaddings = clipRectNoPaddings;
 
-            if (!SDL_SetRenderClipRect(renderer, &clipRectNoPaddings)) {
+            if (!SDL_SetRenderClipRect(renderer, &finalClipRectNoPaddings)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect no paddings '%s'", SDL_GetError());
                 return;
             }
@@ -254,7 +259,7 @@ namespace gui {
             renderChilds();
             renderSelfAfterChilds();
 
-            if (!SDL_SetRenderClipRect(renderer, &newClipRect)) {
+            if (!SDL_SetRenderClipRect(renderer, &finalClipRect)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect '%s'", SDL_GetError());
                 return;
             }
@@ -293,7 +298,6 @@ namespace gui {
                 childClipRect.w += child->marginRight();
                 childClipRect.h += child->marginBottom();
                 if (!SDL_GetRectIntersection(&clipRect, &childClipRect, &childFinalClipRect)) childFinalClipRect = clipRect;
-                childFinalClipRect = childClipRect;
                 if (!SDL_SetRenderClipRect(renderer, &childFinalClipRect)) {
                     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect '%s'", SDL_GetError());
                     break;

@@ -13,6 +13,8 @@ namespace gui {
         }
 
         bool gui::converter::SizeConverter::convertFromPercentage(style::StyleValue *value, int *size, int parentSize) {
+            (*size) = 0;
+            return false; // FIXME: don't work because parent's size is null on first iteration
             if (!NumberConverter::convertToInt(value->getChild(), size)) return false;
             (*size) = ((*size) * parentSize / 100);
             return true;

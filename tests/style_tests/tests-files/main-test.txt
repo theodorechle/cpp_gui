@@ -1,7 +1,7 @@
 #red-container {
     // padding: 100px;
     border: 10px;
-    font-size: 10;
+    font-size: 20;
     /*
     fonts must be provided in /src/fonts
     so the gui can find them
@@ -15,12 +15,14 @@
         border-right-color: #000000;
         border-top-color: #00ff00;
         border-bottom-color: #0000ff;
-        border: 2px;
+        border: 10%;
         background-color: #555555;
-        margin: 10px;
+        margin: 20px;
+        max-height: 10px;
         
         &:hovered {
             background-color: #ff0000;
+            border: 50px;
         }
     }
 

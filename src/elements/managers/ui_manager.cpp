@@ -11,6 +11,7 @@ namespace gui {
             }
 
             void UIManager::computeElementsLayout() {
+                if (elementsTree == nullptr) return;
                 int width = 0, height = 0;
                 elementsTree->computeDesiredLayout(&width, &height);
                 SDL_GetCurrentRenderOutputSize(renderer, &width, &height);
@@ -74,11 +75,11 @@ namespace gui {
                         setElementsModifierState("clicked", clickedElement, false, gui::Event::Hovered);
                         clickedElement = nullptr;
                     }
-                    if (hoveredElement != currentHoveredElement) {
-                        setElementsModifierState("hovered", hoveredElement, false, gui::Event::Clicked); // FIXME: doesn't work
-                        setElementsModifierState("hovered", currentHoveredElement, true, gui::Event::Clicked);
-                        hoveredElement = currentHoveredElement;
-                    }
+                }
+                if (hoveredElement != currentHoveredElement) {
+                    setElementsModifierState("hovered", hoveredElement, false, gui::Event::Clicked);
+                    setElementsModifierState("hovered", currentHoveredElement, true, gui::Event::Clicked);
+                    hoveredElement = currentHoveredElement;
                 }
             }
 
@@ -91,6 +92,7 @@ namespace gui {
                     if (enabled) element->catchEvent(event);
                     element = element->getParent();
                 }
+                computeElementsLayout();
             }
 
         } // namespace manager
