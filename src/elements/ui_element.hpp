@@ -2,8 +2,8 @@
 #define UI_ELEMENT_HPP
 
 #include "../converters/color_converter.hpp"
-#include "../converters/size_converter.hpp"
 #include "../converters/number_converter.hpp"
+#include "../converters/size_converter.hpp"
 #include "abstract_element.hpp"
 
 #include <SDL3/SDL.h>
@@ -19,6 +19,7 @@ namespace gui {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
             int elementDesiredWidth = 0;
             int elementDesiredHeight = 0;
+            bool sizeParentRelative = false;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
 
@@ -45,18 +46,24 @@ namespace gui {
              */
             void tryRender(SDL_Rect oldClipRect);
 
+            /**
+             * Return a modified version of wantedNewClipRect who fits in oldClipRect
+             */
+            static SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
         protected:
             TTF_TextEngine *getTextEngine() { return textEngine; }
             static SDL_FRect createFRect(int x, int y, int width, int height);
 
             int getIntFromRule(const std::vector<std::string> &styleNames, int defaultSize = 0, bool canInherit = false) const;
-            std::string getStringFromRule(const std::vector<std::string> &styleNames, const std::string &defaultString = "", bool canInherit = false) const;
+            std::string getStringFromRule(const std::vector<std::string> &styleNames, const std::string &defaultString = "",
+                                          bool canInherit = false) const;
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
              * Else returns default;
              */
-            int computeSize(const std::vector<std::string> &styleNames, int defaultSize = 0, bool canInherit = false, int parentSize = 0) const;
+            int computeSize(const std::vector<std::string> &styleNames, int defaultSize = 0, bool canInherit = false, int parentSize = 0,
+                            bool *relativeSize = nullptr) const;
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
@@ -64,7 +71,6 @@ namespace gui {
              */
             SDL_Color computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
                                    bool canInherit = false) const;
-
         public:
             UIElement(std::string elementName, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
@@ -90,20 +96,20 @@ namespace gui {
             void getSize(int *width, int *height) const;
             void getDesiredSize(int *width, int *height) const;
 
-            int marginLeft() const;
-            int marginRight() const;
-            int marginTop() const;
-            int marginBottom() const;
+            int marginLeft(bool *relativeSize = nullptr) const;
+            int marginRight(bool *relativeSize = nullptr) const;
+            int marginTop(bool *relativeSize = nullptr) const;
+            int marginBottom(bool *relativeSize = nullptr) const;
 
-            int paddingLeft() const;
-            int paddingRight() const;
-            int paddingTop() const;
-            int paddingBottom() const;
+            int paddingLeft(bool *relativeSize = nullptr) const;
+            int paddingRight(bool *relativeSize = nullptr) const;
+            int paddingTop(bool *relativeSize = nullptr) const;
+            int paddingBottom(bool *relativeSize = nullptr) const;
 
-            int borderLeft() const;
-            int borderRight() const;
-            int borderTop() const;
-            int borderBottom() const;
+            int borderLeft(bool *relativeSize = nullptr) const;
+            int borderRight(bool *relativeSize = nullptr) const;
+            int borderTop(bool *relativeSize = nullptr) const;
+            int borderBottom(bool *relativeSize = nullptr) const;
 
             SDL_Color borderLeftColor() const;
             SDL_Color borderRightColor() const;
@@ -111,6 +117,9 @@ namespace gui {
             SDL_Color borderBottomColor() const;
 
             SDL_Color backgroundColor() const;
+
+            bool isSizeParentRelative() const { return sizeParentRelative; }
+            bool areAllParentSizesParentRelative() const;
 
             void computeLayout(int x, int y, int availableWidth, int availableHeight) override;
             void computeDesiredLayout(int *desiredWidth, int *desiredHeight) final;

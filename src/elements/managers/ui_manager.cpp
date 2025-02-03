@@ -20,11 +20,16 @@ namespace gui {
 
             void UIManager::renderElements() const {
                 Uint8 r, g, b, a;
+                int width = 0, height = 0;
+                SDL_Rect rect;
                 if (SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                     SDL_RenderClear(renderer);
                     SDL_SetRenderDrawColor(renderer, r, g, b, a);
                 }
+                SDL_GetCurrentRenderOutputSize(renderer, &width, &height);
+                rect = SDL_Rect{0, 0, width, height};
+                SDL_SetRenderClipRect(renderer, &rect);
                 elementsTree->render();
                 SDL_RenderPresent(renderer);
             }

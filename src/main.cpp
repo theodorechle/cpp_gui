@@ -55,7 +55,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
-    parentContainer->addChild(new gui::element::Label("a text to render\non multiple lines", elementsStyleManager, &labelClasses, "test-label", textEngine));
+    parentContainer->addChild(new gui::element::Label("a text rendered\non multiple lines", elementsStyleManager, &labelClasses, "test-label", textEngine));
     manager->computeElementsLayout();
 
     return SDL_APP_CONTINUE;

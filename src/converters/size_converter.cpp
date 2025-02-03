@@ -13,19 +13,22 @@ namespace gui {
         }
 
         bool gui::converter::SizeConverter::convertFromPercentage(style::StyleValue *value, int *size, int parentSize) {
-            (*size) = 0;
-            return false; // FIXME: don't work because parent's size is null on first iteration
+            // (*size) = 0;
+            // return false; // FIXME: don't work because parent's size is null on first iteration
             if (!NumberConverter::convertToInt(value->getChild(), size)) return false;
             (*size) = ((*size) * parentSize / 100);
             return true;
         }
 
-        bool gui::converter::SizeConverter::convert(style::StyleValue *value, int *size, int parentSize) {
+        bool gui::converter::SizeConverter::convert(style::StyleValue *value, int *size, int parentSize, bool *relativeSize,
+                                                    bool allParentSizeParentRelative) {
             if (value == nullptr || size == nullptr) return false;
             switch (value->getType()) {
             case style::StyleValueType::PixelUnit:
                 return convertFromPixel(value, size);
             case style::StyleValueType::PercentageUnit:
+                if (relativeSize != nullptr) (*relativeSize) = true;
+                if (allParentSizeParentRelative) return false;
                 return convertFromPercentage(value, size, parentSize);
             default:
                 return false;

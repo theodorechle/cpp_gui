@@ -16,8 +16,9 @@ namespace gui {
             /**
              * Returns true in case of successful conversion, false else.
              * If not converted, size is not changed.
+             * If relative size (%) and rellativeSize is not nullptr, sets relativeSize to true. Does not set relativeSize to false at any time
              */
-            static bool convert(style::StyleValue *value, int *size, int parentSize);
+            static bool convert(style::StyleValue *value, int *size, int parentSize, bool *relativeSize, bool allParentSizeParentRelative = false);
         };
 
     } // namespace converter

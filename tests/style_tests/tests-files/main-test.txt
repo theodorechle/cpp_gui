@@ -15,19 +15,19 @@
         border-right-color: #000000;
         border-top-color: #00ff00;
         border-bottom-color: #0000ff;
-        border: 10%;
+        border: 10px;
         background-color: #555555;
-        margin: 20px;
+        margin: 20%;
         max-height: 10px;
         
         &:hovered {
             background-color: #ff0000;
-            border: 50px;
+            // border: 50px;
         }
     }
 
     &:hovered {
-        border-color:#aa0099;
+        border-color: #aa0099;
         background-color: #dddddd;
     }
 }
