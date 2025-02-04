@@ -50,6 +50,7 @@ namespace gui {
              * Return a modified version of wantedNewClipRect who fits in oldClipRect
              */
             static SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
+
         protected:
             TTF_TextEngine *getTextEngine() { return textEngine; }
             static SDL_FRect createFRect(int x, int y, int width, int height);
@@ -63,7 +64,7 @@ namespace gui {
              * Else returns default;
              */
             int computeSize(const std::vector<std::string> &styleNames, int defaultSize = 0, bool canInherit = false, int parentSize = 0,
-                            bool *relativeSize = nullptr) const;
+                            bool *relativeSize = nullptr, bool *found = nullptr) const;
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
@@ -71,6 +72,7 @@ namespace gui {
              */
             SDL_Color computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
                                    bool canInherit = false) const;
+
         public:
             UIElement(std::string elementName, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
@@ -96,20 +98,27 @@ namespace gui {
             void getSize(int *width, int *height) const;
             void getDesiredSize(int *width, int *height) const;
 
-            int marginLeft(bool *relativeSize = nullptr) const;
-            int marginRight(bool *relativeSize = nullptr) const;
-            int marginTop(bool *relativeSize = nullptr) const;
-            int marginBottom(bool *relativeSize = nullptr) const;
+            int marginLeft(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int marginRight(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int marginTop(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int marginBottom(bool *relativeSize = nullptr, bool *found = nullptr) const;
 
-            int paddingLeft(bool *relativeSize = nullptr) const;
-            int paddingRight(bool *relativeSize = nullptr) const;
-            int paddingTop(bool *relativeSize = nullptr) const;
-            int paddingBottom(bool *relativeSize = nullptr) const;
+            int paddingLeft(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int paddingRight(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int paddingTop(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int paddingBottom(bool *relativeSize = nullptr, bool *found = nullptr) const;
 
-            int borderLeft(bool *relativeSize = nullptr) const;
-            int borderRight(bool *relativeSize = nullptr) const;
-            int borderTop(bool *relativeSize = nullptr) const;
-            int borderBottom(bool *relativeSize = nullptr) const;
+            int borderLeft(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int borderRight(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int borderTop(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int borderBottom(bool *relativeSize = nullptr, bool *found = nullptr) const;
+
+            int width(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int height(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int maxWidth(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int minWidth(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int maxHeight(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int minHeight(bool *relativeSize = nullptr, bool *found = nullptr) const;
 
             SDL_Color borderLeftColor() const;
             SDL_Color borderRightColor() const;

@@ -10,15 +10,17 @@
     
     > label.red#test-label {
         text-color: (255, 102, 102);
-        padding: 50px;
+        // padding: 50px;
         border-left-color: #ff0000;
         border-right-color: #000000;
         border-top-color: #00ff00;
         border-bottom-color: #0000ff;
         border: 10px;
         background-color: #555555;
-        margin: 20%;
-        max-height: 10px;
+        margin: 20px;
+        max-height: 100px;
+        min-width: 500px;
+        height: 200px;
         
         &:hovered {
             background-color: #ff0000;

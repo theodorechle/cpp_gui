@@ -3,5 +3,4 @@
 - allow re-computing the layout only of modified elements and their parents
 
 Recompute on size changing (modifiers, ...)
-Add width, height, max and min
 text overflow?

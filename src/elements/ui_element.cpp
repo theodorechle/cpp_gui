@@ -21,25 +21,56 @@ namespace gui {
 
         void UIElement::computeDesiredLayout(int *desiredWidth, int *desiredHeight) {
             sizeParentRelative = false;
-            *desiredWidth = 0;
-            *desiredHeight = 0;
+            (*desiredWidth) = 0;
+            (*desiredHeight) = 0;
             int childDesiredWidth = 0;
             int childDesiredHeight = 0;
-            computeDesiredInnerLayout(desiredWidth, desiredHeight);
-            (*desiredWidth) += paddingLeft(&sizeParentRelative) + paddingRight(&sizeParentRelative);
-            (*desiredHeight) += paddingTop(&sizeParentRelative) + paddingBottom(&sizeParentRelative);
-            (*desiredWidth) += borderLeft(&sizeParentRelative) + borderRight(&sizeParentRelative);
-            (*desiredHeight) += borderTop(&sizeParentRelative) + borderBottom(&sizeParentRelative);
-            UIElement *child = getChild();
-            while (child != nullptr) {
-                childDesiredWidth = child->marginLeft(&child->sizeParentRelative) + child->marginRight(&child->sizeParentRelative);
-                childDesiredHeight = child->marginTop(&child->sizeParentRelative) + child->marginBottom(&child->sizeParentRelative);
-                if (!child->sizeParentRelative) {
-                    (*desiredWidth) += childDesiredWidth;
-                    (*desiredHeight) += childDesiredHeight;
-                }
-                child = child->getNext();
+            int elementWidth = 0;
+            int elementHeight = 0;
+            bool widthFound = false;
+            bool heightFound = false;
+            elementWidth = width(&sizeParentRelative, &widthFound);
+            elementHeight = height(&sizeParentRelative, &heightFound);
+
+            if (!widthFound || !heightFound) computeDesiredInnerLayout(desiredWidth, desiredHeight);
+
+            if (widthFound) (*desiredWidth) = elementWidth;
+            if (heightFound) (*desiredHeight) = elementHeight;
+
+            if (!widthFound) {
+                (*desiredWidth) += paddingLeft(&sizeParentRelative) + paddingRight(&sizeParentRelative);
+                (*desiredWidth) += borderLeft(&sizeParentRelative) + borderRight(&sizeParentRelative);
             }
+            if (!heightFound) {
+                (*desiredHeight) += paddingTop(&sizeParentRelative) + paddingBottom(&sizeParentRelative);
+                (*desiredHeight) += borderTop(&sizeParentRelative) + borderBottom(&sizeParentRelative);
+            }
+
+            if (!heightFound || !widthFound) {
+                UIElement *child = getChild();
+                while (child != nullptr) {
+                    if (!widthFound)
+                        childDesiredWidth = child->marginLeft(&child->sizeParentRelative) + child->marginRight(&child->sizeParentRelative);
+                    if (!heightFound)
+                        childDesiredHeight = child->marginTop(&child->sizeParentRelative) + child->marginBottom(&child->sizeParentRelative);
+                    if (!child->sizeParentRelative) {
+                        if (!widthFound) (*desiredWidth) += childDesiredWidth;
+                        if (!heightFound) (*desiredHeight) += childDesiredHeight;
+                    }
+                    child = child->getNext();
+                }
+            }
+            bool found = false;
+            int size;
+            size = minWidth(&sizeParentRelative, &found);
+            if (found) (*desiredWidth) = std::max(*desiredWidth, size);
+            size = maxWidth(&sizeParentRelative, &found);
+            if (found) (*desiredWidth) = std::min(*desiredWidth, size);
+            size = minHeight(&sizeParentRelative, &found);
+            if (found) (*desiredHeight) = std::max(*desiredHeight, size);
+            size = maxHeight(&sizeParentRelative, &found);
+            if (found) (*desiredHeight) = std::min(*desiredHeight, size);
+
             setDesiredSize(*desiredWidth, *desiredHeight);
         }
 
@@ -135,12 +166,13 @@ namespace gui {
             return rule->getValue();
         }
 
-        int UIElement::computeSize(const std::vector<std::string> &styleNames, int defaultSize, bool canInherit, int parentSize,
-                                   bool *relativeSize) const {
+        int UIElement::computeSize(const std::vector<std::string> &styleNames, int defaultSize, bool canInherit, int parentSize, bool *relativeSize,
+                                   bool *found) const {
             if (elementStyle == nullptr) return defaultSize;
             style::StyleValue *rule = nullptr;
             int size = 0;
             elementStyle->getRule(styleNames, &rule, canInherit);
+            if (found != nullptr) (*found) = (rule != nullptr);
             if (rule == nullptr) {
                 return defaultSize;
             }
@@ -169,65 +201,95 @@ namespace gui {
             child->setRenderer(renderer);
         }
 
-        int UIElement::marginLeft(bool *relativeSize) const {
+        int UIElement::marginLeft(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"margin-left", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize);
+            return computeSize({"margin-left", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize, found);
         }
 
-        int UIElement::marginRight(bool *relativeSize) const {
+        int UIElement::marginRight(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"margin-right", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize);
+            return computeSize({"margin-right", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize, found);
         }
 
-        int UIElement::marginTop(bool *relativeSize) const {
+        int UIElement::marginTop(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"margin-top", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize);
+            return computeSize({"margin-top", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
         }
 
-        int UIElement::marginBottom(bool *relativeSize) const {
+        int UIElement::marginBottom(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"margin-bottom", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize);
+            return computeSize({"margin-bottom", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
         }
 
-        int UIElement::paddingLeft(bool *relativeSize) const {
+        int UIElement::paddingLeft(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"padding-left", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize);
+            return computeSize({"padding-left", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize, found);
         }
 
-        int UIElement::paddingRight(bool *relativeSize) const {
+        int UIElement::paddingRight(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"padding-right", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize);
+            return computeSize({"padding-right", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize, found);
         }
 
-        int UIElement::paddingTop(bool *relativeSize) const {
+        int UIElement::paddingTop(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"padding-top", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize);
+            return computeSize({"padding-top", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
         }
 
-        int UIElement::paddingBottom(bool *relativeSize) const {
+        int UIElement::paddingBottom(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"padding-bottom", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize);
+            return computeSize({"padding-bottom", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
         }
 
-        int UIElement::borderLeft(bool *relativeSize) const {
+        int UIElement::borderLeft(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"border-left", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize);
+            return computeSize({"border-left", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize, found);
         }
 
-        int UIElement::borderRight(bool *relativeSize) const {
+        int UIElement::borderRight(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"border-right", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize);
+            return computeSize({"border-right", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), relativeSize, found);
         }
 
-        int UIElement::borderTop(bool *relativeSize) const {
+        int UIElement::borderTop(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"border-top", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize);
+            return computeSize({"border-top", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
         }
 
-        int UIElement::borderBottom(bool *relativeSize) const {
+        int UIElement::borderBottom(bool *relativeSize, bool *found) const {
             const UIElement *parent = getConstParent();
-            return computeSize({"border-bottom", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize);
+            return computeSize({"border-bottom", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
         }
+
+        int UIElement::width(bool *relativeSize, bool *found) const {
+            const UIElement *parent = getConstParent();
+            return computeSize({"width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
+        };
+
+        int UIElement::height(bool *relativeSize, bool *found) const {
+            const UIElement *parent = getConstParent();
+            return computeSize({"height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
+        };
+
+        int UIElement::maxWidth(bool *relativeSize, bool *found) const {
+            const UIElement *parent = getConstParent();
+            return computeSize({"max-width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
+        };
+
+        int UIElement::minWidth(bool *relativeSize, bool *found) const {
+            const UIElement *parent = getConstParent();
+            return computeSize({"min-width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
+        };
+
+        int UIElement::maxHeight(bool *relativeSize, bool *found) const {
+            const UIElement *parent = getConstParent();
+            return computeSize({"max-height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
+        };
+
+        int UIElement::minHeight(bool *relativeSize, bool *found) const {
+            const UIElement *parent = getConstParent();
+            return computeSize({"min-height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), relativeSize, found);
+        };
 
         SDL_Color UIElement::borderLeftColor() const { return computeColor({"border-left-color", "border-color"}); }
 
