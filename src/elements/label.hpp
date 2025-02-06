@@ -13,7 +13,9 @@ namespace gui {
             TTF_Text *ttfText = nullptr;
 
             void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) override;
+            void getTextSize(int *width, int *height);
             void renderSelfAfterChilds() override;
+
         public:
             Label(const std::string &text, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                   const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);

@@ -74,18 +74,6 @@ namespace style {
         index += i + 2;
     }
 
-    void Lexer::lexeHex() {
-        if (expression[index] != '#') return;
-        size_t i = 1;
-        while (std::isxdigit(expression[index + i])) {
-            i++;
-        }
-        if (i == 1) return;
-        expressionTree->appendNext(new Node(Token::Hex, expression.substr(index + 1, i - 1)));
-        index += i;
-        lexed = true;
-    }
-
     void Lexer::lexeInt() {
         if (!isdigit(expression[index])) return;
         int tmpSize;
@@ -179,7 +167,6 @@ namespace style {
             if (!lexed) lexeOneLineComment();
             if (!lexed) lexeMultiLineComment();
             if (!lexed) lexeString();
-            if (!lexed) lexeHex();
             if (!lexed) lexeFloat();
             if (!lexed) lexeInt();
             if (!lexed) lexeBool();

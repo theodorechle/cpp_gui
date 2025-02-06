@@ -62,7 +62,6 @@ namespace style {
         void lexeMultiLineComment();
         void lexePseudoName();
         void lexeString();
-        void lexeHex();
         void lexeInt();
         void lexeFloat();
         void lexeBool();

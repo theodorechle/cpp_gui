@@ -21,6 +21,7 @@
         max-height: 100px;
         // min-width: 500px;
         height: 200px;
+        vertical-alignment: end;
 
         &:hovered {
             background-color: #ff0000;
@@ -44,6 +45,11 @@ list {
     childs-size: biggest;
 }
 
+#aaaaa-label {
+    vertical-alignment: centered;
+    horizontal-alignment: centered;
+}
+
 #hello-world-button {
 
     :hovered {
@@ -56,6 +62,7 @@ list {
         label {
             border: 1px;
             border-left: 0px;
+            horizontal-alignment: centered;
 
             &.last {
                 border-right: 0px;

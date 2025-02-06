@@ -60,7 +60,6 @@ namespace style {
                 case Token::MultiLineComment:
                     parseMultiLineComment();
                     break;
-                case Token::Hex:
                 case Token::Int:
                 case Token::Float:
                 case Token::Bool:
@@ -215,12 +214,26 @@ namespace style {
     }
 
     void Parser::parseSharp() {
+        Node *lastChild;
         removeSpace();
-        if (expressionTokens->getNext()->getToken() == Token::PseudoName) {
-            expressionTokens = expressionTokens->getNext();
-            parseIdentifier();
+        expressionTokens = expressionTokens->getNext();
+        if (expressionTree->getToken() != Token::Assignment) {
+            if (expressionTree->getToken() != Token::Tuple && expressionTree->getToken() != Token::Function) {
+                parseIdentifier();
+                return;
+            }
+            lastChild = expressionTree->getLastChild();
+            if (lastChild != nullptr && lastChild->getToken() != Token::ArgSeparator) {
+                parseIdentifier();
+                return;
+            }
+            expressionTree->deleteSpecificChild(lastChild);
+            expressionTree->appendChild(new Node{Token::Hex, expressionTokens->getValue()});
         }
-        else throw MalformedExpression("Illegal '#' placement");
+        else {
+            if (expressionTree->getNbChilds() > 1) throw MalformedExpression("Can only have one rvalue in an assignment");
+            expressionTree->appendChild(new Node{Token::Hex, expressionTokens->getValue()});
+        }
     }
 
     void Parser::parseDot() {
@@ -306,8 +319,9 @@ namespace style {
             expressionTree->appendChild(new Node(Token::DirectParent));
         }
         else
-            throw MalformedExpression("A direct parent relation ('>') must be before a style block opening and at the root level of the style file or "
-                                      "inside an other style block");
+            throw MalformedExpression(
+                "A direct parent relation ('>') must be before a style block opening and at the root level of the style file or "
+                "inside an other style block");
     }
 
     void Parser::parseOpeningParenthesis() {

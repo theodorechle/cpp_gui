@@ -55,7 +55,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     elementsStyleManager->addStyleFile("tests/style_tests/tests-files/main-test.txt");
 
-    // gui::element::UIElement *parentContainer = new gui::element::Container(elementsStyleManager, nullptr, "red-container");
     gui::element::UIElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
     parentContainer->setRenderer(sdl_renderer);
     manager->setElementsTree(parentContainer);
@@ -63,7 +62,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
     parentContainer->addChild(new gui::element::Label("a text rendered\non multiple lines", elementsStyleManager, &labelClasses, "test-label", textEngine));
-    parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "ll", textEngine));
+    parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
     gui::element::UIElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
     parentContainer->addChild(button);
     gui::element::UIElement *list = new gui::element::List(elementsStyleManager);

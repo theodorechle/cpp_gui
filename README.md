@@ -56,6 +56,8 @@ The gui is designed so you can implements easily your own elements
     - text-color: string|tuple[int,int,int]
     - font: string
     - font-size: int
+    - horizontal-alignment: start|centered|end
+    - vertical-alignment: start|centered|end
     - // TODO antialias: bool
 - // TODO input: // InputTextBox
     - // TODO caret-color: string|tuple[int,int,int]
