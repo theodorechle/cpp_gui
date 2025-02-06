@@ -293,7 +293,7 @@ namespace gui {
 
         int UIElement::width(bool *found) {
             const UIElement *parent = getConstParent();
-            return computeSize({"width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            return computeSize({"width"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         };
 
         int UIElement::height(bool *found) {
