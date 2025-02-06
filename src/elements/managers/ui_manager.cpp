@@ -54,11 +54,13 @@ namespace gui {
                 float x, y;
                 SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
                 SDL_Point mousePos = SDL_Point{(int)x, (int)y};
-                UIElement *currentElement = static_cast<UIElement *>(elementsTree);
+                UIElement *currentElement = static_cast<UIElement *>(elementsTree->getChild());
                 UIElement *currentHoveredElement = nullptr;
                 SDL_Rect currentElementRect;
                 while (currentElement != nullptr) {
                     currentElement->getRect(&currentElementRect);
+                    currentElementRect.x += currentElement->marginLeft();
+                    currentElementRect.y += currentElement->marginTop();
                     if (SDL_PointInRect(&mousePos, &currentElementRect)) {
                         currentHoveredElement = currentElement;
                         if (currentElement->getChild() == nullptr) {

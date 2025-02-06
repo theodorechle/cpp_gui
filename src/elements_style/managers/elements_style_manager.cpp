@@ -42,10 +42,11 @@ namespace gui {
                 std::string modifier = "";
                 actualElementStyle->clear();
                 for (style::StyleBlock *styleComponent : specificStyle) {
-
+                    modifier = "";
                     const style::StyleComponentDataList *componentsList = styleComponent->getComponentsList();
 
                     if (!areElementSelectorsCompatibles(actualElementStyle, componentsList)) continue;
+
                     styleMap = styleComponent->getStyleMap();
                     elementStyleMap = AppliedStyleMap();
 
@@ -152,7 +153,7 @@ namespace gui {
                         break;
                     case style::StyleRelation::AnyParent:
                         while (currentStyle != nullptr) { // FIXME: do the next steps with all compatible parents. The first found can be good for
-                                                          // this step but not the next, but an other could work
+                                                          // this step but not the next, and an other could work
                             currentStyle = currentStyle->getParent();
                             if (currentStyle == nullptr) {
                                 selectorExists = false;

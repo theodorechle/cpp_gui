@@ -34,8 +34,6 @@ namespace style {
         MalformedExpression(const std::string &expression) : ParserError{"Malformed expression: \"" + expression + "\""} {};
     };
 
-    const std::map<std::string, Token> specialAssignmentValues{{"none", Token::None}, {"auto", Token::Auto}};
-
     /**
      * Transform a chain of trees (no childs) like the one the lexer function returns into a tree containing the entire expression
      */
@@ -82,7 +80,6 @@ namespace style {
         void parsePseudoName();
         void parseName();
         void parseUnit();
-        bool parseSpecialAssignmentValues();
 
         // if you don't know how to use it, don't use it
         Node *updateLastDeclarationComponentBeforeNewOne(Node *lastChild);

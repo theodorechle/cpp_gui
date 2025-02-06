@@ -38,10 +38,8 @@ namespace style {
             return StyleValueType::PixelUnit;
         case Token::Hex:
             return StyleValueType::Hex;
-        case Token::None:
-            return StyleValueType::None;
-        case Token::Auto:
-            return StyleValueType::Auto;
+        case Token::NameString:
+            return StyleValueType::NameString;
         default:
             return StyleValueType::Null;
         }

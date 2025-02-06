@@ -14,8 +14,8 @@ namespace gui {
             }
         }
 
-        AbstractElement::AbstractElement(std::string elementName, elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
-                                         const std::string &identifier)
+        AbstractElement::AbstractElement(std::string elementName, elementStyle::manager::ElementsStyleManager *elementsStyleManager,
+                                         std::vector<std::string> *classes, const std::string &identifier)
             : elementName{elementName}, elementsStyleManager{elementsStyleManager} {
 
             elementStyle = new gui::elementStyle::ElementStyle();
@@ -33,6 +33,7 @@ namespace gui {
         }
 
         void AbstractElement::addChild(AbstractElement *child) {
+            if (child == nullptr) return;
             AbstractElement *nextChild = getChild();
             AbstractElement *selfChild;
             if (nextChild == nullptr) {
@@ -46,8 +47,8 @@ namespace gui {
                 selfChild->setNext(child);
             }
             elementStyle->addChild(child->elementStyle);
-            if (child == nullptr) return;
             child->setParent(this);
+            if (child != nullptr) nbChilds++;
         }
 
         AbstractElement::~AbstractElement() {
@@ -56,9 +57,7 @@ namespace gui {
             delete next;
         }
 
-        void AbstractElement::setModifierState(std::string modifierName, bool enabled) {
-            elementStyle->setModifierState(modifierName, enabled);
-        }
+        void AbstractElement::setModifierState(std::string modifierName, bool enabled) { elementStyle->setModifierState(modifierName, enabled); }
 
     } // namespace element
 } // namespace gui

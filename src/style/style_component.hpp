@@ -14,7 +14,7 @@ namespace style {
 
     enum class StyleComponentType { ElementName, Class, Modifier, Identifier, Null };
 
-    enum class StyleValueType { Int, Float, Bool, String, Tuple, Function, PercentageUnit, PixelUnit, Hex, None, Auto, Null };
+    enum class StyleValueType { Int, Float, Bool, String, Tuple, Function, PercentageUnit, PixelUnit, Hex, NameString, Null };
 
     enum class StyleRelation { SameElement, DirectParent, AnyParent, Null };
 

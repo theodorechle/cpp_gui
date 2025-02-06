@@ -46,6 +46,7 @@ namespace style {
         // NullRoot is used only when an algorithm must start with an existing node
         NullRoot,
         // value types
+        NameString,
         Tuple,
         String,
         Function,
@@ -55,8 +56,6 @@ namespace style {
         PercentageUnit,
         PixelUnit,
         Hex,
-        None,
-        Auto
     };
 
     const std::map<std::string, Token> UNITS{{"%", Token::PercentageUnit}, {"px", Token::PixelUnit}};

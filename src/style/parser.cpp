@@ -389,7 +389,7 @@ namespace style {
             removeSpace();
 
             if (expressionTree->getNbChilds() != 1) throw MalformedExpression("Can't have more than one rvalue in an assignment");
-            else if (!parseSpecialAssignmentValues()) expressionTree->appendChild(new Node{Token::PseudoName, expressionTokens->getValue()});
+            expressionTree->appendChild(new Node{Token::NameString, expressionTokens->getValue()});
         }
         else if (expressionTree->getToken() == Token::Tuple || expressionTree->getToken() == Token::Function) {
             removeSpace();
@@ -472,16 +472,6 @@ namespace style {
         newChild = new Node{expressionTokens->getToken(), expressionTokens->getValue()};
         newChild->appendChild(lastChild->copyNodeWithChilds());
         expressionTree->replaceChild(lastChild, newChild);
-    }
-
-    bool Parser::parseSpecialAssignmentValues() {
-        for (std::pair<std::string, Token> assignmentValue : specialAssignmentValues) {
-            if (assignmentValue.first == expressionTokens->getValue()) {
-                expressionTree->appendChild(new Node(assignmentValue.second));
-                return true;
-            }
-        }
-        return false;
     }
 
     Node *Parser::updateLastDeclarationComponentBeforeNewOne(Node *lastChild) {

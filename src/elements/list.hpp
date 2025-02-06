@@ -7,6 +7,15 @@ namespace gui {
     namespace element {
 
         class List : public UIElement {
+            bool vertical = false;
+            std::string childsSize = "auto";
+
+            void getTotalDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical);
+            void getMaxDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical);
+
+            void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) override;
+            void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) override;
+
         public:
             List(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                  const std::string &identifier = "");

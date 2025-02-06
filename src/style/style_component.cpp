@@ -39,10 +39,8 @@ namespace style {
             return "PixelUnit";
         case StyleValueType::Hex:
             return "Hex";
-        case StyleValueType::None:
-            return "None";
-        case StyleValueType::Auto:
-            return "Auto";
+        case StyleValueType::NameString:
+            return "NameString";
         case StyleValueType::Null:
             return "Null";
         default:

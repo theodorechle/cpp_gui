@@ -1,6 +1,7 @@
 #ifndef UI_ELEMENT_HPP
 #define UI_ELEMENT_HPP
 
+#include "../converters/bool_converter.hpp"
 #include "../converters/color_converter.hpp"
 #include "../converters/number_converter.hpp"
 #include "../converters/size_converter.hpp"
@@ -22,6 +23,7 @@ namespace gui {
             bool sizeParentRelative = false;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
+            bool marginsActive = true;
 
             /**
              * compute desired layout without margins, paddings, borders, ...
@@ -60,6 +62,23 @@ namespace gui {
                                           bool canInherit = false) const;
 
             /**
+             * Name strings are values who are valid rule names, but since they are values, they are considered as strings without quotes.
+             * For example, in
+             * ```
+             * list {
+             *      childs-size: biggest;
+             * }
+             * ```
+             * 'biggest' would be a valid rule name, as 'childs-size' is, but is considered as a string because it's a value.
+             *
+             * If no allowed value is given, it will return the found value.
+             */
+            std::string getNameStringFromRule(const std::vector<std::string> &styleNames, const std::vector<std::string> &allowedValues,
+                                              const std::string &defaultString = "", bool canInherit = false) const;
+
+            bool getBoolFromRule(const std::vector<std::string> &styleNames, bool defaultBool = false, bool canInherit = false) const;
+
+            /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
              * Else returns default;
              */
@@ -72,6 +91,7 @@ namespace gui {
              */
             SDL_Color computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
                                    bool canInherit = false) const;
+
 
         public:
             UIElement(std::string elementName, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
@@ -88,6 +108,8 @@ namespace gui {
             void setRenderer(SDL_Renderer *renderer) { this->renderer = renderer; }
             SDL_Renderer *getRenderer() const { return renderer; }
 
+            void setMarginsActive(bool active) { marginsActive = active; }
+            
             int getWidth() const { return elementRect.w; };
             int getHeight() const { return elementRect.h; };
             int getXPos() const { return elementRect.x; };
@@ -130,7 +152,9 @@ namespace gui {
             bool isSizeParentRelative() const { return sizeParentRelative; }
             bool areAllParentSizesParentRelative() const;
 
-            void computeLayout(int x, int y, int availableWidth, int availableHeight) override;
+            void computeLayout(int x, int y, int availableWidth, int availableHeight) override final;
+            void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) override;
+
             void computeDesiredLayout(int *desiredWidth, int *desiredHeight) final;
 
             /**

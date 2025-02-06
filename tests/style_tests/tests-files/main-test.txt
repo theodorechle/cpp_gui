@@ -21,7 +21,7 @@
         max-height: 100px;
         min-width: 500px;
         height: 200px;
-        
+
         &:hovered {
             background-color: #ff0000;
             // border: 50px;
@@ -32,8 +32,19 @@
         border-color: #aa0099;
         background-color: #dddddd;
     }
+  
 }
 
 #red-container label.red#test-label:clicked {
     border-color: #00ff00;
 }
+
+list {
+    vertical: true;
+    childs-size: biggest;
+}
+/*
+#ll {
+    margin-top: 20px;
+    margin-left: 20px;
+}*/

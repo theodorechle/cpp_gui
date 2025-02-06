@@ -16,6 +16,7 @@ namespace gui {
             AbstractElement *child = nullptr;
             AbstractElement *next = nullptr;
             gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager;
+            int nbChilds = 0;
 
         protected:
             gui::elementStyle::ElementStyle *elementStyle = nullptr;
@@ -39,6 +40,8 @@ namespace gui {
              */
             virtual void renderChilds() {};
 
+            int getNbChilds() { return nbChilds; }
+
         public:
             /**
              * If no style manager is given, the element can't have style
@@ -56,8 +59,10 @@ namespace gui {
 
             virtual void render() = 0;
 
-            virtual void computeLayout(int x, int y, int availableWidth, int availableHeight) = 0;
             virtual void computeDesiredLayout(int *desiredWidth, int *desiredHeight) = 0;
+
+            virtual void computeLayout(int x, int y, int availableWidth, int availableHeight) = 0;
+            virtual void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) = 0;
 
             bool styleManagerAvailable() { return elementsStyleManager != nullptr; }
 

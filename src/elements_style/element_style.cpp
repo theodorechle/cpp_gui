@@ -134,7 +134,6 @@ namespace gui {
 
         bool ElementStyle::getRule(const std::vector<std::string> &rulesNames, style::StyleValue **ruleValue, bool canInherit,
                                    style::StyleValue *defaultStyle) const {
-
             const style::StyleRule *currentRule = nullptr;
             for (const std::string &ruleName : rulesNames) {
                 for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {

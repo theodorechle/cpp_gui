@@ -40,11 +40,11 @@ The gui is designed so you can implements easily your own elements
     - background-color: string|tuple[int,int,int]
     - border-color: string|tuple[int,int,int]
     - border-width: int
-    - border-radius: int
-    - border-top-left-radius: int
-    - border-top-right-radius: int
-    - border-bottom-left-radius: int
-    - border-bottom-right-radius: int
+    - // TODO border-radius: int
+    - // TODO border-top-left-radius: int
+    - // TODO border-top-right-radius: int
+    - // TODO border-bottom-left-radius: int
+    - // TODO border-bottom-right-radius: int
     - height: int
     - min-height: int
     - max-height: int
@@ -56,17 +56,18 @@ The gui is designed so you can implements easily your own elements
     - text-color: string|tuple[int,int,int]
     - font: string
     - font-size: int
-    - antialias: bool
-- input: // InputTextBox
-    - caret-color: string|tuple[int,int,int]
-    - placeholder-color: string|tuple[int,int,int]
-- slider: // Slider
-    - bar-color: string|tuple[int,int,int]
-    - cursor-color: string|tuple[int,int,int]
+    - // TODO antialias: bool
+- // TODO input: // InputTextBox
+    - // TODO caret-color: string|tuple[int,int,int]
+    - // TODO placeholder-color: string|tuple[int,int,int]
+- // TODO slider: // Slider
+    - // TODO bar-color: string|tuple[int,int,int]
+    - // TODO cursor-color: string|tuple[int,int,int]
 - container: // Container
-- list: // ItemList
-- button: // Button
-- table: // Table
+- // TODO list: // ItemList
+    - vertical: bool
+    - childs-size: biggest|auto
+- // TODO button: // Button
 
 
 ## Manager

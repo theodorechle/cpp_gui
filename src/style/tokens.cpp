@@ -95,10 +95,8 @@ namespace style {
             return "PixelUnit";
         case Token::Hex:
             return "Hex";
-        case Token::None:
-            return "None";
-        case Token::Auto:
-            return "Auto";
+        case Token::NameString:
+            return "NameString";
         default:
             return "Unknown";
         }

@@ -1,5 +1,6 @@
 #include "app_utils/app_state.hpp"
 #include "elements/container.hpp"
+#include "elements/list.hpp"
 #include "elements/label.hpp"
 #include "elements/managers/abstract_manager.hpp"
 #include "elements/managers/ui_manager.hpp"
@@ -49,13 +50,15 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     elementsStyleManager->addStyleFile("tests/style_tests/tests-files/main-test.txt");
 
-    gui::element::UIElement *parentContainer = new gui::element::Container(elementsStyleManager, nullptr, "red-container");
+    // gui::element::UIElement *parentContainer = new gui::element::Container(elementsStyleManager, nullptr, "red-container");
+    gui::element::UIElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
     parentContainer->setRenderer(sdl_renderer);
     manager->setElementsTree(parentContainer);
 
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
     parentContainer->addChild(new gui::element::Label("a text rendered\non multiple lines", elementsStyleManager, &labelClasses, "test-label", textEngine));
+    parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "ll", textEngine));
     manager->computeElementsLayout();
 
     return SDL_APP_CONTINUE;

@@ -16,7 +16,6 @@ namespace gui {
             SDL_Rect rect;
             SDL_Color color;
             TTF_DestroyText(ttfText);
-
             SDL_GetRenderClipRect(getRenderer(), &rect);
             if (getTextEngine() == nullptr) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Text engine is not defined.");
@@ -54,7 +53,7 @@ namespace gui {
             TTF_CloseFont(ttfFont);
         }
 
-        SDL_Color Label::textColor() const { return computeColor({"text-color"}, SDL_Color{0, 0, 0, 0}, true); }
+        SDL_Color Label::textColor() const { return computeColor({"text-color"}, SDL_Color{0, 0, 0, 255}, true); }
         int Label::fontSize() const { return getIntFromRule({"font-size"}, 15, true); }
         std::string Label::fontName() const { return FONT_PATH + getStringFromRule({"font-name"}, "", true); }
 
