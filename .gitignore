@@ -2,7 +2,6 @@
 bin/**
 !bin/**/.gitkeep
 obj/**
-obj/**
 !obj/**/.gitkeep
 
 log*
