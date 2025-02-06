@@ -83,7 +83,7 @@ namespace gui {
              * Else returns default;
              */
             int computeSize(const std::vector<std::string> &styleNames, int defaultSize = 0, bool canInherit = false, int parentSize = 0,
-                            bool *relativeSize = nullptr, bool *found = nullptr) const;
+                            bool *found = nullptr);
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
@@ -91,7 +91,6 @@ namespace gui {
              */
             SDL_Color computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
                                    bool canInherit = false) const;
-
 
         public:
             UIElement(std::string elementName, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
@@ -109,7 +108,7 @@ namespace gui {
             SDL_Renderer *getRenderer() const { return renderer; }
 
             void setMarginsActive(bool active) { marginsActive = active; }
-            
+
             int getWidth() const { return elementRect.w; };
             int getHeight() const { return elementRect.h; };
             int getXPos() const { return elementRect.x; };
@@ -120,27 +119,27 @@ namespace gui {
             void getSize(int *width, int *height) const;
             void getDesiredSize(int *width, int *height) const;
 
-            int marginLeft(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int marginRight(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int marginTop(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int marginBottom(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int marginLeft(bool *found = nullptr);
+            int marginRight(bool *found = nullptr);
+            int marginTop(bool *found = nullptr);
+            int marginBottom(bool *found = nullptr);
 
-            int paddingLeft(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int paddingRight(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int paddingTop(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int paddingBottom(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int paddingLeft(bool *found = nullptr);
+            int paddingRight(bool *found = nullptr);
+            int paddingTop(bool *found = nullptr);
+            int paddingBottom(bool *found = nullptr);
 
-            int borderLeft(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int borderRight(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int borderTop(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int borderBottom(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int borderLeft(bool *found = nullptr);
+            int borderRight(bool *found = nullptr);
+            int borderTop(bool *found = nullptr);
+            int borderBottom(bool *found = nullptr);
 
-            int width(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int height(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int maxWidth(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int minWidth(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int maxHeight(bool *relativeSize = nullptr, bool *found = nullptr) const;
-            int minHeight(bool *relativeSize = nullptr, bool *found = nullptr) const;
+            int width(bool *found = nullptr);
+            int height(bool *found = nullptr);
+            int maxWidth(bool *found = nullptr);
+            int minWidth(bool *found = nullptr);
+            int maxHeight(bool *found = nullptr);
+            int minHeight(bool *found = nullptr);
 
             SDL_Color borderLeftColor() const;
             SDL_Color borderRightColor() const;
@@ -163,7 +162,7 @@ namespace gui {
             void render() override final;
             void renderChilds() override;
             void renderBackground() const;
-            void renderBorders() const;
+            void renderBorders();
         };
 
         class NoRendererException : public std::logic_error {

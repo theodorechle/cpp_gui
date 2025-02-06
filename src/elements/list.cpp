@@ -51,11 +51,17 @@ namespace gui {
             childsSize = getNameStringFromRule({"childs-size"}, {"biggest", "auto"}, "auto");
             if (childsSize == "biggest") getMaxDesiredChildsSize(desiredWidth, desiredHeight, vertical);
             else getTotalDesiredChildsSize(desiredWidth, desiredHeight, vertical);
+            if (vertical)
+                (*desiredHeight) += computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight()) * (getNbChilds() - 1);
+            else (*desiredWidth) += computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight()) * (getNbChilds() - 1);
         }
 
         void List::computeChildsLayout(int x, int y, int availableWidth, int availableHeight) {
             int childWidth = 0;
             int childHeight = 0;
+            int gap;
+            if (vertical) gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight());
+            else gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight());
             if (childsSize == "biggest") {
                 if (vertical) {
                     childWidth = availableWidth;
@@ -71,8 +77,8 @@ namespace gui {
                 if (childsSize == "auto") child->getDesiredSize(&childWidth, &childHeight);
                 child->computeLayout(x, y, std::min(childWidth, availableWidth), std::min(childHeight, availableHeight));
                 child = child->getNext();
-                if (vertical) y += childHeight;
-                else x += childWidth;
+                if (vertical) y += childHeight + gap;
+                else x += childWidth + gap;
             }
         }
 
