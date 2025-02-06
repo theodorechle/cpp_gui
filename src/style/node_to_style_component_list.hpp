@@ -17,7 +17,7 @@ namespace style {
         std::list<std::list<StyleComponentDataList *> *> requiredStyleComponentsLists = std::list<std::list<StyleComponentDataList *> *>();
         std::list<StyleBlock *> *styleDefinitions = nullptr;
 
-        static Node *joinStyleDeclarations(Node *firstDeclarations, Node *secondDeclarations);        
+        static Node *joinStyleDeclarations(Node *firstDeclarations, Node *secondDeclarations);
         static void moveNestedBlocksToRoot(Node *style);
         static void flattenStyle(Node *style);
 
@@ -38,7 +38,7 @@ namespace style {
         void convertStyleBlock(int fileNumber, int *ruleNumber);
 
     public:
-        std::list<StyleBlock *> *convert(Node *tree, int fileNumber, int *ruleNumber);
+        std::list<StyleBlock *> *convert(Node *tree, int fileNumber, int *ruleNumber, bool debug = false);
     };
 
 } // namespace style

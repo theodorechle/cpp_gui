@@ -330,12 +330,13 @@ namespace style {
         }
     }
 
-    std::list<StyleBlock *> *NodeToStyleComponentList::convert(Node *styleTree, int fileNumber, int *ruleNumber) {
+    std::list<StyleBlock *> *NodeToStyleComponentList::convert(Node *styleTree, int fileNumber, int *ruleNumber, bool debug) {
         *ruleNumber = 0;
         if (styleTree->getToken() != Token::NullRoot) return nullptr;
         styleDefinitions = new std::list<StyleBlock *>();
 
         flattenStyle(styleTree);
+        if (debug) styleTree->display();
         tree = styleTree->getChild();
 
         while (tree != nullptr) {

@@ -23,7 +23,7 @@ namespace style {
         try {
             tokens = Lexer(style, settings).getResult();
             result = Parser(tokens, settings).getFinalTree();
-            deserializedStyle = NodeToStyleComponentList().convert(result, fileNumber, ruleNumber);
+            deserializedStyle = NodeToStyleComponentList().convert(result, fileNumber, ruleNumber, debug);
         }
         catch (...) {
             delete tokens;

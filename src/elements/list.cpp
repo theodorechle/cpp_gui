@@ -43,7 +43,7 @@ namespace gui {
                 child = child->getNext();
             }
             if (vertical) (*desiredHeight) *= nbChilds;
-            else (*desiredHeight) *= nbChilds;
+            else (*desiredWidth) *= nbChilds;
         }
 
         void List::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {

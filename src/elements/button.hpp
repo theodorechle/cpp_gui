@@ -7,9 +7,12 @@ namespace gui {
     namespace element {
 
         class Button : public UIElement {
+            void (*onClickFunction)();
         public:
-            Button(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+            Button(void (*onClick)(), gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                    const std::string &identifier = "");
+
+        void catchEvent(gui::Event event) override;
         };
 
     } // namespace element

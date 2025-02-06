@@ -54,6 +54,7 @@ namespace gui {
                         modifier = componentsList->back().first.first;
                         actualElementStyle->addModifier(modifier);
                     }
+
                     for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
                         elementStyleMap[styleRule.first] = {style::StyleRule{styleRule.second.value, modifier.empty(), styleRule.second.specificity,
                                                                              styleRule.second.fileNumber, styleRule.second.ruleNumber}};

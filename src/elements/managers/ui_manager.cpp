@@ -79,13 +79,13 @@ namespace gui {
                 }
                 else {
                     if (clickedElement != nullptr) {
-                        setElementsModifierState("clicked", clickedElement, false, gui::Event::Hovered);
+                        setElementsModifierState("clicked", clickedElement, false, gui::Event::Clicked);
                         clickedElement = nullptr;
                     }
                 }
                 if (hoveredElement != currentHoveredElement) {
-                    setElementsModifierState("hovered", hoveredElement, false, gui::Event::Clicked);
-                    setElementsModifierState("hovered", currentHoveredElement, true, gui::Event::Clicked);
+                    setElementsModifierState("hovered", hoveredElement, false, gui::Event::Hovered);
+                    setElementsModifierState("hovered", currentHoveredElement, true, gui::Event::Hovered);
                     hoveredElement = currentHoveredElement;
                 }
             }

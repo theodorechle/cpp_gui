@@ -19,7 +19,7 @@
         background-color: #555555;
         margin: 20px;
         max-height: 100px;
-        min-width: 500px;
+        // min-width: 500px;
         height: 200px;
 
         &:hovered {
@@ -43,8 +43,23 @@ list {
     vertical: true;
     childs-size: biggest;
 }
-/*
-#ll {
-    margin-top: 20px;
-    margin-left: 20px;
-}*/
+
+#hello-world-button {
+
+    :hovered {
+        background-color: #aaaaaa;
+    }
+
+    list {
+        vertical: false;
+
+        label {
+            border: 1px;
+            border-left: 0px;
+
+            &.last {
+                border-right: 0px;
+            }
+        }
+    }
+}
