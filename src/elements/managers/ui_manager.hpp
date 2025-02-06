@@ -16,6 +16,7 @@ namespace gui {
                 SDL_Renderer *renderer = nullptr;
                 UIElement *clickedElement = nullptr;
                 UIElement *hoveredElement = nullptr;
+                UIElement *focusedElement = nullptr;
                 bool mouseEventsOccurred = false;
 
             public:
@@ -30,6 +31,8 @@ namespace gui {
                 void processEvent(const SDL_Event &event);
 
                 void processMouseEvents();
+
+                void sendEvent(gui::Event event, UIElement *leafElement);
 
                 /**
                  * set the modifier's state (enabled, disabled) on leafElement and all its parents

@@ -59,22 +59,34 @@ namespace gui {
         void List::computeChildsLayout(int x, int y, int availableWidth, int availableHeight) {
             int childWidth = 0;
             int childHeight = 0;
+            int tmpChildWidth = 0;
+            int tmpChildHeight = 0;
             int gap;
             if (vertical) gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight());
             else gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight());
+
+            if (vertical) {
+                childWidth = availableWidth;
+            }
+            else {
+                childHeight = availableHeight;
+            }
+
             if (childsSize == "biggest") {
                 if (vertical) {
-                    childWidth = availableWidth;
                     childHeight = availableHeight / getNbChilds();
                 }
                 else {
                     childWidth = availableWidth / getNbChilds();
-                    childHeight = availableHeight;
                 }
             }
             UIElement *child = getChild();
             while (child != nullptr) {
-                if (childsSize == "auto") child->getDesiredSize(&childWidth, &childHeight);
+                if (childsSize == "auto") {
+                    child->getDesiredSize(&tmpChildWidth, &tmpChildHeight);
+                    if (vertical) childHeight = tmpChildHeight;
+                    else childWidth = tmpChildWidth;
+                }
                 child->computeLayout(x, y, std::min(childWidth, availableWidth), std::min(childHeight, availableHeight));
                 child = child->getNext();
                 if (vertical) y += childHeight + gap;

@@ -35,6 +35,7 @@ namespace gui {
             }
 
             void UIManager::processEvent(const SDL_Event &event) {
+                gui::Event guiEvent = gui::Event::None;
                 switch (event.type) {
                 case SDL_EVENT_QUIT:
                     status(Status::ENDED);
@@ -43,9 +44,14 @@ namespace gui {
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
                 case SDL_EVENT_MOUSE_BUTTON_UP:
                     mouseEventsOccurred = true;
+                case SDL_EVENT_WINDOW_RESIZED:
+                    computeElementsLayout();
+                    needRendering(true);
                 default:
                     break;
                 }
+
+                sendEvent(guiEvent, focusedElement);
             }
 
             void UIManager::processMouseEvents() {
@@ -74,6 +80,7 @@ namespace gui {
                 if (mouseFlags) {
                     if (clickedElement == nullptr) {
                         clickedElement = currentHoveredElement;
+                        focusedElement = clickedElement;
                         setElementsModifierState("clicked", clickedElement, true, gui::Event::Clicked);
                     }
                 }
@@ -81,6 +88,7 @@ namespace gui {
                     if (clickedElement != nullptr) {
                         setElementsModifierState("clicked", clickedElement, false, gui::Event::Clicked);
                         clickedElement = nullptr;
+                        focusedElement = nullptr;
                     }
                 }
                 if (hoveredElement != currentHoveredElement) {
@@ -90,16 +98,25 @@ namespace gui {
                 }
             }
 
+            void UIManager::sendEvent(gui::Event event, UIElement *leafElement) {
+                UIElement *element = leafElement;
+                if (element == nullptr || event == gui::Event::None) return;
+                while (element != nullptr) {
+                    element->catchEvent(event);
+                    element = element->getParent();
+                }
+            }
+
             void UIManager::setElementsModifierState(const std::string &modifier, UIElement *leafElement, bool enabled, gui::Event event) {
                 UIElement *element = leafElement;
                 if (element == nullptr) return;
-                needRendering(true);
                 while (element != nullptr) {
                     element->setModifierState(modifier, enabled);
                     if (enabled) element->catchEvent(event);
                     element = element->getParent();
                 }
-                computeElementsLayout();
+                computeElementsLayout(); // TODO: don't recalculate the entire tree
+                needRendering(true);     // TODO: recalculate and re-render only when an element has changed
             }
 
         } // namespace manager

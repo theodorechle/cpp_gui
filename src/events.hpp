@@ -3,6 +3,7 @@
 
 namespace gui {
     enum class Event {
+        None,
         Hovered,
         Clicked
     };

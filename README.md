@@ -36,7 +36,7 @@ The gui is designed so you can implements easily your own elements
 
 
 ### Default styles:
-- element: // UIElement
+- UIElement
     - background-color: string|tuple[int,int,int]
     - border-color: string|tuple[int,int,int]
     - border-width: int
@@ -52,24 +52,25 @@ The gui is designed so you can implements easily your own elements
     - min-width: int
     - max-width: int
     - padding: int
-- label: // Label
+- Label
     - text-color: string|tuple[int,int,int]
     - font: string
     - font-size: int
     - horizontal-alignment: start|centered|end
     - vertical-alignment: start|centered|end
     - // TODO antialias: bool
-- // TODO input: // InputTextBox
+- // TODO Input
     - // TODO caret-color: string|tuple[int,int,int]
     - // TODO placeholder-color: string|tuple[int,int,int]
-- // TODO slider: // Slider
+- // TODO Slider
     - // TODO bar-color: string|tuple[int,int,int]
     - // TODO cursor-color: string|tuple[int,int,int]
 - container: // Container
-- // TODO list: // ItemList
+- List
     - vertical: bool
     - childs-size: biggest|auto
-- // TODO button: // Button
+    - gap: int
+- // Button
 
 
 ## Manager
