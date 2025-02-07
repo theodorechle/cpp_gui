@@ -34,6 +34,12 @@ namespace gui {
             elementWidth = width(&widthFound);
             elementHeight = height(&heightFound);
 
+            UIElement *child = getChild();
+            while (child != nullptr) {
+                child->initBeforeLayoutComputing();
+                child = child->getNext();
+            }
+
             if (!widthFound || !heightFound) computeDesiredInnerLayout(desiredWidth, desiredHeight);
 
             if (widthFound) (*desiredWidth) = elementWidth;
@@ -85,12 +91,14 @@ namespace gui {
 
         void UIElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
             SDL_Rect newRect = SDL_Rect{x, y, availableWidth, availableHeight};
-            if (managerActionsService != nullptr && !SDL_RectsEqual(&elementRect, &newRect)) managerActionsService->askRendering();
+            std::cerr << getName() << ": " << x << ", " << y << ", " << availableWidth << ", " << availableHeight << "\n";
             setRect(newRect);
+            if (managerActionsService != nullptr && !SDL_RectsEqual(&elementRect, &newRect)) managerActionsService->askRendering();
             x += borderLeft() + marginLeft();
             y += borderTop() + marginTop();
             availableWidth -= borderLeft() + borderRight();
             availableHeight -= borderTop() + borderBottom();
+
             computeChildsLayout(x, y, availableWidth, availableHeight);
         }
 

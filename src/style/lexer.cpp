@@ -8,7 +8,7 @@ namespace style {
             i++;
         }
         if (i > 0) {
-            expressionTree->appendNext(new Node(Token::Space));
+            parsedTree->appendNext(new Node(Token::Space));
             lexed = true;
             index += i;
         }
@@ -20,7 +20,7 @@ namespace style {
             i++;
         }
         if (i == 0) return;
-        expressionTree->appendNext(new Node(Token::LineReturn));
+        parsedTree->appendNext(new Node(Token::LineReturn));
         lexed = true;
         index += i;
     }
@@ -31,7 +31,7 @@ namespace style {
         while (index + i + 1 < expression.size() && expression[index + i + 1] != '\n') {
             i++;
         }
-        expressionTree->appendNext(new Node(Token::OneLineComment, expression.substr(index + 2, i - 1)));
+        parsedTree->appendNext(new Node(Token::OneLineComment, expression.substr(index + 2, i - 1)));
         lexed = true;
         index += i + 1;
     }
@@ -43,21 +43,20 @@ namespace style {
             i++;
         }
         if (index + i + 2 >= expression.size()) return;
-        expressionTree->appendNext(new Node(Token::MultiLineComment, expression.substr(index + 2, i - 1)));
+        parsedTree->appendNext(new Node(Token::MultiLineComment, expression.substr(index + 2, i - 1)));
         lexed = true;
         index += i + 3;
     }
 
     void Lexer::lexePseudoName() {
         size_t i = 0;
-        // check that the pseudo name does not contains a special character who is part of the syntax or a forbidden character
-        while (index + i < expressionLength && SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend()
-               && std::find(FORBIDDEN_STRING_CHARACTERS.cbegin(), FORBIDDEN_STRING_CHARACTERS.cend(), expression[index + i])
-                      == FORBIDDEN_STRING_CHARACTERS.cend()) {
+        while (std::isalnum(expression[index + i])
+               || std::find(PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS.cbegin(), PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS.cend(), expression[index + i])
+                      != PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS.cend()) {
             i++;
         }
         if (i == 0) return;
-        expressionTree->appendNext(new Node(Token::PseudoName, expression.substr(index, i)));
+        parsedTree->appendNext(new Node(Token::PseudoName, expression.substr(index, i)));
         index += i;
         lexed = true;
     }
@@ -69,7 +68,7 @@ namespace style {
             i++;
         }
         if (index + i >= expression.size()) return;
-        expressionTree->appendNext(new Node(Token::String, expression.substr(index + 1, i)));
+        parsedTree->appendNext(new Node(Token::String, expression.substr(index + 1, i)));
         lexed = true;
         index += i + 2;
     }
@@ -83,7 +82,7 @@ namespace style {
         if (SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' '
             && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
             return; // not an int
-        expressionTree->appendNext(new Node(Token::Int, expression.substr(index, i)));
+        parsedTree->appendNext(new Node(Token::Int, expression.substr(index, i)));
         index += i;
         lexed = true;
     }
@@ -104,19 +103,19 @@ namespace style {
         if (SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' '
             && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
             return; // not a float
-        expressionTree->appendNext(new Node(Token::Float, expression.substr(index, i)));
+        parsedTree->appendNext(new Node(Token::Float, expression.substr(index, i)));
         index += i;
         lexed = true;
     }
 
     void Lexer::lexeBool() {
         if (expression.substr(index, TRUE.size()) == TRUE) {
-            expressionTree->appendNext(new Node(Token::Bool, expression.substr(index, TRUE.size())));
+            parsedTree->appendNext(new Node(Token::Bool, expression.substr(index, TRUE.size())));
             index += TRUE.size();
             lexed = true;
         }
         else if (expression.substr(index, FALSE.size()) == FALSE) {
-            expressionTree->appendNext(new Node(Token::Bool, expression.substr(index, FALSE.size())));
+            parsedTree->appendNext(new Node(Token::Bool, expression.substr(index, FALSE.size())));
             index += FALSE.size();
             lexed = true;
         }
@@ -148,13 +147,13 @@ namespace style {
         if (unit == Token::NullRoot) return;
         index += size;
         lexed = true;
-        expressionTree->appendNext(new Node(unit));
+        parsedTree->appendNext(new Node(unit));
     }
 
     void Lexer::lexeSpecialCharacters() {
         std::map<char, Token>::const_iterator specialCharIt = SPECIAL_CHARACTERS.find(expression[index]);
         if (specialCharIt == SPECIAL_CHARACTERS.cend()) return;
-        expressionTree->appendNext(new Node(specialCharIt->second));
+        parsedTree->appendNext(new Node(specialCharIt->second));
         index++;
         lexed = true;
     }
@@ -178,8 +177,8 @@ namespace style {
                 firstNode = nullptr;
                 throw UnknownValue(expression.substr(index, MAX_ERROR_COMPLEMENTARY_INFOS_SIZE));
             }
-            if (settings->debug) std::cerr << tokenToString(expressionTree->getToken()) << ": '" << expressionTree->getValue() << "'\n";
-            expressionTree = expressionTree->getNext();
+            if (settings->debug) std::cerr << tokenToString(parsedTree->getToken()) << ": '" << parsedTree->getValue() << "'\n";
+            parsedTree = parsedTree->getNext();
         }
         // remove the NullRoot token at the start
         Node *nextList = firstNode->getNext();

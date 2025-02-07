@@ -58,6 +58,38 @@ namespace style {
         }
     }
 
+    Node *NodeToStyleComponentList::importStyle(const std::string &fileName) {
+        Node *tokens = nullptr;
+        Node *result = nullptr;
+        std::ifstream file(fileName);
+        std::stringstream buffer;
+        if (!file.is_open()) {
+            std::cerr << "File '" << fileName << "' couldn't be opened\n";
+            return nullptr;
+        }
+        Settings *settings = new Settings();
+        buffer << file.rdbuf();
+        try {
+            tokens = Lexer(buffer.str(), settings).getResult();
+            result = Parser(tokens, settings).getFinalTree();
+        }
+        catch (const ParserError &) {
+            delete tokens;
+            delete result;
+            delete settings;
+            throw;
+        }
+        catch (const LexerError &) {
+            delete tokens;
+            delete result;
+            delete settings;
+            throw;
+        }
+        delete tokens;
+        delete settings;
+        return result;
+    }
+
     Node *NodeToStyleComponentList::joinStyleDeclarations(Node *firstDeclarations, Node *secondDeclarations) {
         Node *newDeclarations = new Node(Token::NullRoot);
         Node *actualDeclaration;
@@ -110,7 +142,16 @@ namespace style {
         if (style == nullptr) return;
         if (style->getToken() == Token::NullRoot) style = style->getChild();
         while (style != nullptr) {
-            moveNestedBlocksToRoot(style);
+            if (style->getToken() == Token::StyleBlock) moveNestedBlocksToRoot(style);
+            else if (style->getToken() == Token::Import) {
+                Node *importedStyle = importStyle(style->getValue());
+                if (importedStyle != nullptr) {
+                    importedStyle->appendChild(style->getNext());
+                    style->setNext(importedStyle->getChild());
+                    importedStyle->setChild(nullptr);
+                    delete importedStyle;
+                }
+            }
             style = style->getNext();
         }
     }
@@ -336,7 +377,8 @@ namespace style {
         styleDefinitions = new std::list<StyleBlock *>();
 
         flattenStyle(styleTree);
-        if (debug) styleTree->display();
+        if (debug) std::cerr << "flattened style\n";
+        if (debug) styleTree->display(std::cerr);
         tree = styleTree->getChild();
 
         while (tree != nullptr) {

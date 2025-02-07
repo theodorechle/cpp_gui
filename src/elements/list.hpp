@@ -9,9 +9,11 @@ namespace gui {
         class List : public UIElement {
             bool vertical = false;
             std::string childsSize = "auto";
+            int gap = 0;
 
-            void getTotalDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical);
             void getMaxDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical);
+            void getKeepDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical);
+            void getAutoDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical);
 
             void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) override;
             void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) override;

@@ -35,6 +35,8 @@ namespace style {
             return "Dot";
         case Token::Ampersand:
             return "Ampersand";
+        case Token::At:
+            return "At";
         // Used only by the parser
         case Token::StyleBlock:
             return "StyleBlock";
@@ -66,6 +68,8 @@ namespace style {
             return "Modifier";
         case Token::Identifier:
             return "Identifier";
+        case Token::Import:
+            return "Import";
         // Used by both the lexer and the parser
         case Token::Space:
             return "Space";

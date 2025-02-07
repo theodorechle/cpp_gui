@@ -25,7 +25,13 @@ namespace style {
             result = Parser(tokens, settings).getFinalTree();
             deserializedStyle = NodeToStyleComponentList().convert(result, fileNumber, ruleNumber, debug);
         }
-        catch (...) {
+        catch (const ParserError &) {
+            delete tokens;
+            delete result;
+            delete settings;
+            throw;
+        }
+        catch (const LexerError &) {
             delete tokens;
             delete result;
             delete settings;

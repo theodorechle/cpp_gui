@@ -23,6 +23,7 @@ namespace style {
         Sharp,
         Dot,
         Ampersand,
+        At,
         // Used only by the parser
         StyleBlock,
         BlockDeclaration,
@@ -39,6 +40,7 @@ namespace style {
         Class,
         Modifier,
         Identifier,
+        Import,
         // Used by both the lexer and the parser
         Space,
         LineReturn,

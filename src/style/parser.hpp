@@ -21,7 +21,7 @@ namespace style {
 
     class UnknownToken : public ParserError {
     public:
-        UnknownToken(const Node token) : ParserError{"Unknown token: \"" + token.getValue() + " (" + tokenToString(token.getToken()) + ")\""} {};
+        UnknownToken(const Node &token) : ParserError{"Unknown token: \"" + token.getValue() + " (" + tokenToString(token.getToken()) + ")\""} {};
     };
 
     class MissingToken : public ParserError {
@@ -39,15 +39,15 @@ namespace style {
      */
     class Parser {
         /**
-         * The expressionTreeRoot should never contains a pointer pointing to expressionTokens in any way,
+         * The expressionTreeRoot should never contains a pointer pointing to currentToken in any way,
          * because it could be used and freed in the calling program after the parser call.
-         * Consider expressionTokens has const
+         * Consider currentToken has const
          */
-        Node *expressionTokens;
+        Node *currentToken;
 
         // only used to avoid recalculating many times the root
         Node *expressionTreeRoot = new Node(Token::NullRoot);
-        Node *expressionTree = expressionTreeRoot;
+        Node *parsedTree = expressionTreeRoot;
         Settings *settings;
         bool isValidName(const std::string &str, size_t start, size_t end);
         bool isValidElementOrStyleName(const std::string &str);
@@ -72,6 +72,8 @@ namespace style {
         void parseSharp();
         void parseDot();
         void parseAmpersand();
+        void parseAt();
+        void parseString();
         void parseGreatherThan();
         void parseOpeningParenthesis();
         void parseClosingParenthesis();
@@ -89,7 +91,7 @@ namespace style {
         void parseModifier();
 
     public:
-        Parser(Node *expressionTokens, Settings *settings) : expressionTokens{expressionTokens}, settings{settings} { parse(); };
+        Parser(Node *currentToken, Settings *settings) : currentToken{currentToken}, settings{settings} { parse(); };
         Node *getFinalTree() { return expressionTreeRoot; }
     };
 

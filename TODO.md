@@ -5,3 +5,5 @@
 Recompute on size changing (modifiers, ...)
 text overflow
 element overflow
+add width and height auto (100% parent)
+force style file reloading

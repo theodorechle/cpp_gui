@@ -3,7 +3,14 @@
 
 #include "node.hpp"
 #include "style_component.hpp"
+#include "settings.hpp"
+#include "lexer.hpp"
+#include "parser.hpp"
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <algorithm>
 #include <iterator>
 #include <list>
@@ -16,6 +23,8 @@ namespace style {
         // for each inner style block, multiple components list definitions (separated by commas in the style files)
         std::list<std::list<StyleComponentDataList *> *> requiredStyleComponentsLists = std::list<std::list<StyleComponentDataList *> *>();
         std::list<StyleBlock *> *styleDefinitions = nullptr;
+
+        static Node *importStyle(const std::string &fileName);
 
         static Node *joinStyleDeclarations(Node *firstDeclarations, Node *secondDeclarations);
         static void moveNestedBlocksToRoot(Node *style);

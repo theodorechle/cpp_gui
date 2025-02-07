@@ -21,7 +21,7 @@ namespace gui {
                 if (!needRecompute()) return;
                 needRecompute(false);
                 computeElementsLayout();
-                needRendering(true); // TODO: ask rendering onyl if layout changed
+                needRendering(true); // TODO: ask rendering only if layout changed
             }
 
         } // namespace manager

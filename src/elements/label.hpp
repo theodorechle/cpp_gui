@@ -12,6 +12,8 @@ namespace gui {
             TTF_Font *ttfFont = nullptr;
             TTF_Text *ttfText = nullptr;
 
+            void initBeforeLayoutComputing() override;
+
             void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) override;
             void getTextSize(int *width, int *height);
             void renderSelfAfterChilds() override;

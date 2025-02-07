@@ -58,6 +58,7 @@ namespace gui {
 
             virtual void render() = 0;
 
+            virtual void initBeforeLayoutComputing() {}
             virtual void computeDesiredLayout(int *desiredWidth, int *desiredHeight) = 0;
 
             virtual void computeLayout(int x, int y, int availableWidth, int availableHeight) = 0;

@@ -1,3 +1,5 @@
+@import "tests/style_tests/tests-files/imported-file.txt";
+
 #red-container {
     // padding: 100px;
     border: 10px;
@@ -58,6 +60,7 @@ list {
 
     list {
         vertical: false;
+        childs-size: biggest;
 
         label {
             border: 1px;

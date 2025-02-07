@@ -2,7 +2,28 @@
 
 namespace gui {
     namespace element {
-        void List::getTotalDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical) {
+        void List::getMaxDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical) {
+            int nbChilds = 0;
+            (*desiredWidth) = 0;
+            (*desiredHeight) = 0;
+            int childDesiredWidth = 0;
+            int childDesiredHeight = 0;
+            UIElement *child = getChild();
+            while (child != nullptr) {
+                child->setMarginsActive(false);
+                child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
+                if (!child->isSizeParentRelative()) {
+                    (*desiredWidth) = std::max(childDesiredWidth, *desiredWidth);
+                    (*desiredHeight) = std::max(childDesiredHeight, *desiredHeight);
+                    nbChilds++;
+                }
+                child = child->getNext();
+            }
+            if (vertical) (*desiredHeight) *= nbChilds;
+            else (*desiredWidth) *= nbChilds;
+        }
+
+        void List::getKeepDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical) {
             (*desiredWidth) = 0;
             (*desiredHeight) = 0;
             int childDesiredWidth = 0;
@@ -25,8 +46,7 @@ namespace gui {
             }
         }
 
-        void List::getMaxDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical) {
-            int nbChilds = 0;
+        void List::getAutoDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical) {
             (*desiredWidth) = 0;
             (*desiredHeight) = 0;
             int childDesiredWidth = 0;
@@ -36,24 +56,31 @@ namespace gui {
                 child->setMarginsActive(false);
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
                 if (!child->isSizeParentRelative()) {
-                    (*desiredWidth) = std::max(childDesiredWidth, *desiredWidth);
-                    (*desiredHeight) = std::max(childDesiredHeight, *desiredHeight);
-                    nbChilds++;
+                    if (vertical) {
+                        (*desiredWidth) = std::max(*desiredWidth, childDesiredWidth);
+                    }
+                    else {
+                        (*desiredHeight) = std::max(*desiredHeight, childDesiredHeight);
+                    }
                 }
                 child = child->getNext();
             }
-            if (vertical) (*desiredHeight) *= nbChilds;
-            else (*desiredWidth) *= nbChilds;
         }
 
         void List::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
             vertical = getBoolFromRule({"vertical"});
-            childsSize = getNameStringFromRule({"childs-size"}, {"biggest", "auto"}, "auto");
+            childsSize = getNameStringFromRule({"childs-size"}, {"biggest", "auto", "keep"}, "auto");
             if (childsSize == "biggest") getMaxDesiredChildsSize(desiredWidth, desiredHeight, vertical);
-            else getTotalDesiredChildsSize(desiredWidth, desiredHeight, vertical);
-            if (vertical)
-                (*desiredHeight) += computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight()) * (getNbChilds() - 1);
-            else (*desiredWidth) += computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight()) * (getNbChilds() - 1);
+            else if (childsSize == "keep") getKeepDesiredChildsSize(desiredWidth, desiredHeight, vertical);
+            else if (childsSize == "auto") getAutoDesiredChildsSize(desiredWidth, desiredHeight, vertical);
+            if (vertical) {
+                gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight()) * (getNbChilds() - 1);
+                (*desiredHeight) += gap;
+            }
+            else {
+                gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getWidth()) * (getNbChilds() - 1);
+                (*desiredWidth) += gap;
+            }
         }
 
         void List::computeChildsLayout(int x, int y, int availableWidth, int availableHeight) {
@@ -61,9 +88,6 @@ namespace gui {
             int childHeight = 0;
             int tmpChildWidth = 0;
             int tmpChildHeight = 0;
-            int gap;
-            if (vertical) gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight());
-            else gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight());
 
             if (vertical) {
                 childWidth = availableWidth;
@@ -72,7 +96,7 @@ namespace gui {
                 childHeight = availableHeight;
             }
 
-            if (childsSize == "biggest") {
+            if (childsSize == "biggest" || childsSize == "auto") {
                 if (vertical) {
                     childHeight = availableHeight / getNbChilds();
                 }
@@ -82,7 +106,7 @@ namespace gui {
             }
             UIElement *child = getChild();
             while (child != nullptr) {
-                if (childsSize == "auto") {
+                if (childsSize == "keep") {
                     child->getDesiredSize(&tmpChildWidth, &tmpChildHeight);
                     if (vertical) childHeight = tmpChildHeight;
                     else childWidth = tmpChildWidth;

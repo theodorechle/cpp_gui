@@ -2,17 +2,24 @@
 
 namespace gui {
     namespace element {
-        void Label::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
+        void Label::initBeforeLayoutComputing() {
             TTF_CloseFont(ttfFont);
             ttfFont = TTF_OpenFont(fontName().c_str(), fontSize());
             if (ttfFont == nullptr) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't open font: %s", SDL_GetError());
                 return;
             }
-            getTextSize(desiredWidth, desiredHeight);
         }
 
-        void Label::getTextSize(int *width, int *height) { TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), 0, width, height); }
+        void Label::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) { getTextSize(desiredWidth, desiredHeight); }
+
+        void Label::getTextSize(int *width, int *height) {
+            if (ttfFont) TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), 0, width, height);
+            else {
+                (*width) = 0;
+                (*height) = 0;
+            }
+        }
 
         void Label::renderSelfAfterChilds() {
             SDL_Rect rect;

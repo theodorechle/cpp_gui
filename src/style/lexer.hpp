@@ -38,9 +38,10 @@ namespace style {
         {'#', Token::Sharp},
         {'.', Token::Dot},
         {'&', Token::Ampersand},
+        {'@', Token::At}
     };
 
-    const std::vector<char> FORBIDDEN_STRING_CHARACTERS = {'[', ']', ' ', '\n', '/'};
+    const std::vector<char> PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS = {'-', '_'};
 
     class Lexer {
         bool lexed;
@@ -48,7 +49,7 @@ namespace style {
         const std::string &expression;
         size_t expressionLength;
         Node *firstNode = new Node(Token::NullRoot);
-        Node *expressionTree = firstNode;
+        Node *parsedTree = firstNode;
         Settings *settings;
 
     public:

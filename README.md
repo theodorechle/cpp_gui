@@ -68,7 +68,7 @@ The gui is designed so you can implements easily your own elements
 - container: // Container
 - List
     - vertical: bool
-    - childs-size: biggest|auto
+    - childs-size: biggest|auto|keep
     - gap: int
 - // Button
 
