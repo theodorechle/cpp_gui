@@ -6,8 +6,12 @@ namespace gui {
 
             void UIManager::setElementsTree(gui::element::AbstractElement *element) {
                 AbstractManager::setElementsTree(new gui::element::RootElement());
-                static_cast<gui::element::UIElement *>(elementsTree)->setRenderer(static_cast<gui::element::UIElement *>(element)->getRenderer());
+                static_cast<gui::element::UIElement *>(elementsTree)->setRenderer(renderer);
+                static_cast<gui::element::UIElement *>(elementsTree)->setWindow(window);
+                static_cast<gui::element::UIElement *>(element)->setRenderer(renderer);
+                static_cast<gui::element::UIElement *>(element)->setWindow(window);
                 elementsTree->addChild(static_cast<gui::element::UIElement *>(element));
+                static_cast<gui::element::UIElement *>(elementsTree)->setManagerActionsService(getRedrawRequester());
             }
 
             void UIManager::computeElementsLayout() {
@@ -35,7 +39,6 @@ namespace gui {
             }
 
             void UIManager::processEvent(const SDL_Event &event) {
-                gui::Event guiEvent = gui::Event::None;
                 switch (event.type) {
                 case SDL_EVENT_QUIT:
                     status(Status::ENDED);
@@ -44,14 +47,21 @@ namespace gui {
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
                 case SDL_EVENT_MOUSE_BUTTON_UP:
                     mouseEventsOccurred = true;
+                    break;
                 case SDL_EVENT_WINDOW_RESIZED:
                     computeElementsLayout();
-                    needRendering(true);
+                    break;
+                case SDL_EVENT_TEXT_INPUT:
+                    // case SDL_EVENT_KEY_DOWN:
+                    // guiEvent = gui::Event::KeyDown;
+                    // std::cerr << SDL_GetKeyName(event.key.key) << "\n";
+                    // std::cerr << event.text.text << "\n";
+                    break;
                 default:
                     break;
                 }
 
-                sendEvent(guiEvent, focusedElement);
+                sendEvent(event, focusedElement);
             }
 
             void UIManager::processMouseEvents() {
@@ -80,34 +90,35 @@ namespace gui {
                 if (mouseFlags) {
                     if (clickedElement == nullptr) {
                         clickedElement = currentHoveredElement;
+                        if (focusedElement != nullptr) focusedElement->focus(false);
                         focusedElement = clickedElement;
-                        setElementsModifierState("clicked", clickedElement, true, gui::Event::Clicked);
+                        if (focusedElement != nullptr) focusedElement->focus(true);
+                        setElementsModifierState("clicked", clickedElement, true, SDL_Event{SDL_EVENT_MOUSE_BUTTON_DOWN});
                     }
                 }
                 else {
                     if (clickedElement != nullptr) {
-                        setElementsModifierState("clicked", clickedElement, false, gui::Event::Clicked);
+                        setElementsModifierState("clicked", clickedElement, false, SDL_Event{SDL_EVENT_MOUSE_BUTTON_DOWN});
                         clickedElement = nullptr;
-                        focusedElement = nullptr;
                     }
                 }
                 if (hoveredElement != currentHoveredElement) {
-                    setElementsModifierState("hovered", hoveredElement, false, gui::Event::Hovered);
-                    setElementsModifierState("hovered", currentHoveredElement, true, gui::Event::Hovered);
+                    setElementsModifierState("hovered", hoveredElement, false, SDL_Event{SDL_EVENT_MOUSE_MOTION});
+                    setElementsModifierState("hovered", currentHoveredElement, true, SDL_Event{SDL_EVENT_MOUSE_MOTION});
                     hoveredElement = currentHoveredElement;
                 }
             }
 
-            void UIManager::sendEvent(gui::Event event, UIElement *leafElement) {
+            void UIManager::sendEvent(const SDL_Event &event, UIElement *leafElement) {
                 UIElement *element = leafElement;
-                if (element == nullptr || event == gui::Event::None) return;
+                if (element == nullptr) return;
                 while (element != nullptr) {
                     element->catchEvent(event);
                     element = element->getParent();
                 }
             }
 
-            void UIManager::setElementsModifierState(const std::string &modifier, UIElement *leafElement, bool enabled, gui::Event event) {
+            void UIManager::setElementsModifierState(const std::string &modifier, UIElement *leafElement, bool enabled, const SDL_Event &event) {
                 UIElement *element = leafElement;
                 if (element == nullptr) return;
                 while (element != nullptr) {

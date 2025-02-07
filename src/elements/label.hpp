@@ -16,15 +16,25 @@ namespace gui {
             void getTextSize(int *width, int *height);
             void renderSelfAfterChilds() override;
 
-        public:
-            Label(const std::string &text, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+        protected:
+            Label(const std::string &elementName, const std::string &text,
+                  gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                   const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
-                
+
+        public:
+            Label(const std::string &text, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
+                  std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
+
             ~Label() override;
 
             SDL_Color textColor() const;
             int fontSize() const;
             std::string fontName() const;
+            const std::string &getText() { return text; }
+            void setText(const std::string &newText);
+            void addText(const std::string &toAdd);
+            void removeText(int nbChars);
+            void clearText();
         };
 
     } // namespace element

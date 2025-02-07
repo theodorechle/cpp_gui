@@ -51,10 +51,8 @@ namespace gui {
             if (marginsActive && (!heightFound || !widthFound)) {
                 UIElement *child = getChild();
                 while (child != nullptr) {
-                    if (!widthFound)
-                        childDesiredWidth = child->marginLeft() + child->marginRight();
-                    if (!heightFound)
-                        childDesiredHeight = child->marginTop() + child->marginBottom();
+                    if (!widthFound) childDesiredWidth = child->marginLeft() + child->marginRight();
+                    if (!heightFound) childDesiredHeight = child->marginTop() + child->marginBottom();
                     if (!child->sizeParentRelative) {
                         if (!widthFound) (*desiredWidth) += childDesiredWidth;
                         if (!heightFound) (*desiredHeight) += childDesiredHeight;
@@ -86,8 +84,9 @@ namespace gui {
         }
 
         void UIElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
-            setPos(x, y);
-            setSize(availableWidth, availableHeight);
+            SDL_Rect newRect = SDL_Rect{x, y, availableWidth, availableHeight};
+            if (managerActionsService != nullptr && !SDL_RectsEqual(&elementRect, &newRect)) managerActionsService->askRendering();
+            setRect(newRect);
             x += borderLeft() + marginLeft();
             y += borderTop() + marginTop();
             availableWidth -= borderLeft() + borderRight();
@@ -106,7 +105,7 @@ namespace gui {
             }
         }
 
-        void UIElement::setRect(SDL_Rect rect) { elementRect = rect; }
+        void UIElement::setRect(const SDL_Rect &rect) { elementRect = rect; }
 
         void UIElement::setPos(int x, int y) {
             elementRect.x = x;
@@ -222,9 +221,19 @@ namespace gui {
             return color;
         }
 
+        void UIElement::askRendering() const {
+            if (managerActionsService != nullptr) managerActionsService->askRendering();
+        }
+
+        void UIElement::askRecomputingLayout() const {
+            if (managerActionsService != nullptr) managerActionsService->askRecomputeLayout();
+        }
+
         void UIElement::addChild(UIElement *child) {
             AbstractElement::addChild(child);
             child->setRenderer(renderer);
+            child->setWindow(window);
+            child->setManagerActionsService(managerActionsService);
         }
 
         int UIElement::marginLeft(bool *found) {
@@ -488,6 +497,21 @@ namespace gui {
             if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
                 return;
+            }
+        }
+
+        void UIElement::focus(bool focused) {
+            _focus = focused;
+            if (focused) onFocusGet();
+            else onFocusLoose();
+        }
+
+        void UIElement::setManagerActionsService(gui::element::ManagerActionsService *managerActionsService) {
+            this->managerActionsService = managerActionsService;
+            UIElement *child = getChild();
+            while (child != nullptr) {
+                child->setManagerActionsService(managerActionsService);
+                child = child->getChild();
             }
         }
 

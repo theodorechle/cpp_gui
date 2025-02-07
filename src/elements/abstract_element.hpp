@@ -2,7 +2,6 @@
 #define ABSTRACT_ELEMENT_HPP
 
 #include "../elements_style/managers/elements_style_manager.hpp"
-#include "../events.hpp"
 
 #include <string>
 #include <vector>
@@ -65,8 +64,6 @@ namespace gui {
             virtual void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) = 0;
 
             bool styleManagerAvailable() { return elementsStyleManager != nullptr; }
-
-            virtual void catchEvent(gui::Event event) {}
 
             /**
              * true if should propagate to the parent, false else

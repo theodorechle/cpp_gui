@@ -6,6 +6,7 @@
 #include "../converters/number_converter.hpp"
 #include "../converters/size_converter.hpp"
 #include "abstract_element.hpp"
+#include "managers/manager_actions_service.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -21,16 +22,19 @@ namespace gui {
             int elementDesiredWidth = 0;
             int elementDesiredHeight = 0;
             bool sizeParentRelative = false;
+            SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
             bool marginsActive = true;
+            bool _focus = false;
+            ManagerActionsService *managerActionsService = nullptr;
 
             /**
              * compute desired layout without margins, paddings, borders, ...
              */
             virtual void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight);
 
-            void setRect(SDL_Rect rect);
+            void setRect(const SDL_Rect &rect);
             void setPos(int x, int y);
             void setSize(int width, int height);
             void setDesiredSize(int width, int height);
@@ -52,6 +56,9 @@ namespace gui {
              * Return a modified version of wantedNewClipRect who fits in oldClipRect
              */
             static SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
+
+            virtual void onFocusGet() {}
+            virtual void onFocusLoose() {}
 
         protected:
             TTF_TextEngine *getTextEngine() { return textEngine; }
@@ -92,6 +99,9 @@ namespace gui {
             SDL_Color computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
                                    bool canInherit = false) const;
 
+            void askRendering() const;
+            void askRecomputingLayout() const;
+
         public:
             UIElement(std::string elementName, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
@@ -104,8 +114,10 @@ namespace gui {
             void setNext(UIElement *next) { AbstractElement::setNext(next); }
             UIElement *getNext() { return static_cast<UIElement *>(AbstractElement::getNext()); }
 
+            void setWindow(SDL_Window *window) { this->window = window; }
             void setRenderer(SDL_Renderer *renderer) { this->renderer = renderer; }
             SDL_Renderer *getRenderer() const { return renderer; }
+            SDL_Window *getWindow() const { return window; }
 
             void setMarginsActive(bool active) { marginsActive = active; }
 
@@ -156,6 +168,8 @@ namespace gui {
 
             void computeDesiredLayout(int *desiredWidth, int *desiredHeight) final;
 
+            virtual void catchEvent(const SDL_Event &event) {}
+
             /**
              * Updates the renderer clip rect and call tryRender
              */
@@ -163,6 +177,11 @@ namespace gui {
             void renderChilds() override;
             void renderBackground() const;
             void renderBorders();
+
+            void focus(bool focused);
+            bool focus() { return _focus; }
+
+            void setManagerActionsService(gui::element::ManagerActionsService *managerActionsService);
         };
 
         class NoRendererException : public std::logic_error {

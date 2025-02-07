@@ -3,6 +3,7 @@
 #include "elements/list.hpp"
 #include "elements/label.hpp"
 #include "elements/button.hpp"
+#include "elements/input.hpp"
 #include "elements/managers/abstract_manager.hpp"
 #include "elements/managers/ui_manager.hpp"
 #include "elements/ui_element.hpp"
@@ -56,7 +57,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     elementsStyleManager->addStyleFile("tests/style_tests/tests-files/main-test.txt");
 
     gui::element::UIElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
-    parentContainer->setRenderer(sdl_renderer);
     manager->setElementsTree(parentContainer);
 
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
@@ -64,15 +64,15 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     parentContainer->addChild(new gui::element::Label("a text rendered\non multiple lines", elementsStyleManager, &labelClasses, "test-label", textEngine));
     parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
     gui::element::UIElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
+    // FIXME: button click zone is bigger than displayed
     parentContainer->addChild(button);
     gui::element::UIElement *list = new gui::element::List(elementsStyleManager);
     button->addChild(list);
     list->addChild(new gui::element::Label("press this button", elementsStyleManager, {}, "", textEngine));
     list->addChild(new gui::element::Label("to display", elementsStyleManager, {}, "", textEngine));
-
     std::vector<std::string> lastLabelClasses = std::vector<std::string>{"last"};
     list->addChild(new gui::element::Label("hello world!", elementsStyleManager, &lastLabelClasses, "", textEngine));
-    manager->computeElementsLayout();
+    parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
 
     return SDL_APP_CONTINUE;
 }

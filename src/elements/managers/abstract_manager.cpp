@@ -11,9 +11,17 @@ namespace gui {
             void AbstractManager::deleteElementsTree() { delete elementsTree; }
 
             void AbstractManager::render() {
+                computeLayout();
                 if (!needRendering()) return;
                 needRendering(false);
                 renderElements();
+            }
+
+            void AbstractManager::computeLayout() {
+                if (!needRecompute()) return;
+                needRecompute(false);
+                computeElementsLayout();
+                needRendering(true); // TODO: ask rendering onyl if layout changed
             }
 
         } // namespace manager

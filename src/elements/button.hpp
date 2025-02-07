@@ -12,7 +12,7 @@ namespace gui {
             Button(void (*onClick)(), gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                    const std::string &identifier = "");
 
-        void catchEvent(gui::Event event) override;
+        void catchEvent(const SDL_Event &event) override;
         };
 
     } // namespace element

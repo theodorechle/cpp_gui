@@ -70,3 +70,7 @@ list {
         }
     }
 }
+
+input {
+    border-top: 1px;
+}

@@ -72,6 +72,10 @@ namespace gui {
             }
         }
 
+        Label::Label(const std::string &elementName, const std::string &text, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager,
+                     std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
+            : UIElement{elementName, elementsStyleManager, classes, identifier, textEngine}, text{text} {}
+
         Label::Label(const std::string &text, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager,
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : UIElement{"label", elementsStyleManager, classes, identifier, textEngine}, text{text} {}
@@ -84,6 +88,27 @@ namespace gui {
         SDL_Color Label::textColor() const { return computeColor({"text-color"}, SDL_Color{0, 0, 0, 255}, true); }
         int Label::fontSize() const { return getIntFromRule({"font-size"}, 15, true); }
         std::string Label::fontName() const { return FONT_PATH + getStringFromRule({"font-name"}, "", true); }
+
+        void Label::setText(const std::string &newText) {
+            text = newText;
+            askRecomputingLayout();
+        }
+
+        void Label::addText(const std::string &toAdd) {
+            text.append(toAdd);
+            askRecomputingLayout();
+        }
+
+        void Label::removeText(int nbChars) {
+            if (text.empty()) return;
+            text.resize(text.size() - nbChars);
+            askRecomputingLayout();
+        }
+
+        void Label::clearText() {
+            text.clear();
+            askRecomputingLayout();
+        }
 
     } // namespace element
 } // namespace gui
