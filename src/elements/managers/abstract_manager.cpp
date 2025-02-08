@@ -18,8 +18,8 @@ namespace gui {
             }
 
             void AbstractManager::computeLayout() {
-                if (!needRecompute()) return;
-                needRecompute(false);
+                if (!needRecomputeLayout()) return;
+                needRecomputeLayout(false);
                 computeElementsLayout();
                 needRendering(true); // TODO: ask rendering only if layout changed
             }

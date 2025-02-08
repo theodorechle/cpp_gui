@@ -91,7 +91,6 @@ namespace gui {
 
         void UIElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
             SDL_Rect newRect = SDL_Rect{x, y, availableWidth, availableHeight};
-            std::cerr << getName() << ": " << x << ", " << y << ", " << availableWidth << ", " << availableHeight << "\n";
             setRect(newRect);
             if (managerActionsService != nullptr && !SDL_RectsEqual(&elementRect, &newRect)) managerActionsService->askRendering();
             x += borderLeft() + marginLeft();

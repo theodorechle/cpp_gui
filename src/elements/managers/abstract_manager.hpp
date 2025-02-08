@@ -30,7 +30,7 @@ namespace gui {
             protected:
                 gui::element::AbstractElement *elementsTree = nullptr;
                 void status(Status s) { _currentStatus = s; }
-                void needRecompute(bool needRecompute) { _needRecomputeLayout = needRecompute; }
+                void needRecomputeLayout(bool needRecomputeLayout) { _needRecomputeLayout = needRecomputeLayout; }
                 void needRendering(bool needRendering) { _needRendering = needRendering; }
                 virtual void computeElementsLayout() = 0;
             public:
@@ -46,7 +46,7 @@ namespace gui {
                 void askRendering() { this->_needRendering = true; }
                 bool needRendering() { return _needRendering; }
                 void askRecomputeLayout() { this->_needRecomputeLayout = true; }
-                bool needRecompute() { return _needRecomputeLayout; }
+                bool needRecomputeLayout() { return _needRecomputeLayout; }
             };
 
         } // namespace manager

@@ -49,13 +49,7 @@ namespace gui {
                     mouseEventsOccurred = true;
                     break;
                 case SDL_EVENT_WINDOW_RESIZED:
-                    computeElementsLayout();
-                    break;
-                case SDL_EVENT_TEXT_INPUT:
-                    // case SDL_EVENT_KEY_DOWN:
-                    // guiEvent = gui::Event::KeyDown;
-                    // std::cerr << SDL_GetKeyName(event.key.key) << "\n";
-                    // std::cerr << event.text.text << "\n";
+                    askRecomputeLayout();
                     break;
                 default:
                     break;
