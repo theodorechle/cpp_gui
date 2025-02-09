@@ -16,7 +16,7 @@ namespace style {
 
     bool Parser::isValidElementOrStyleName(const string &str) {
         if (!isalpha(str[0])) return false;
-        return isValidName(str, 1, str.size());
+        return str.size() == 1 || isValidName(str, 1, str.size());
     }
 
     bool Parser::isWhiteSpace(Token token) { return (token == Token::Space || token == Token::LineReturn); }
@@ -440,7 +440,7 @@ namespace style {
         }
         else {
             if (isValidElementOrStyleName(currentToken->getValue())) parseName();
-            else throw MalformedExpression("Illegal string placement");
+            else throw MalformedExpression("Illegal pseudo name placement");
         }
     }
 

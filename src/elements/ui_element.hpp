@@ -22,6 +22,10 @@ namespace gui {
             int elementDesiredWidth = 0;
             int elementDesiredHeight = 0;
             bool sizeParentRelative = false;
+            struct {
+                int x;
+                int y;
+            } currentScrollPos = {0, 0};
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
@@ -60,6 +64,12 @@ namespace gui {
             virtual void onFocusGet() {}
             virtual void onFocusLoose() {}
 
+            void renderChilds() override;
+            void renderBackground() const;
+            void renderScrollBar(int currentSize, int desiredSize) const;
+            void renderScrollBars() const;
+            void renderBorders();
+
         protected:
             TTF_TextEngine *getTextEngine() { return textEngine; }
             static SDL_FRect createFRect(int x, int y, int width, int height);
@@ -71,11 +81,12 @@ namespace gui {
             /**
              * Name strings are values who are valid rule names, but since they are values, they are considered as strings without quotes.
              * For example, in
-             * ```
-             * list {
-             *      childs-size: biggest;
-             * }
-             * ```
+             ```
+             list {
+                
+        childs-size: biggest;
+        }
+             ```
              * 'biggest' would be a valid rule name, as 'childs-size' is, but is considered as a string because it's a value.
              *
              * If no allowed value is given, it will return the found value.
@@ -174,9 +185,6 @@ namespace gui {
              * Updates the renderer clip rect and call tryRender
              */
             void render() override final;
-            void renderChilds() override;
-            void renderBackground() const;
-            void renderBorders();
 
             void focus(bool focused);
             bool focus() { return _focus; }

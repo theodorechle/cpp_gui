@@ -52,6 +52,10 @@ The gui is designed so you can implements easily your own elements
     - min-width: int
     - max-width: int
     - padding: int
+    - overflow: hidden|scroll
+    - overflow-x: hidden|scroll
+    - overflow-y: hidden|scroll
+    - scroll-bar: scroll|always
 - Label
     - text-color: string|tuple[int,int,int]
     - font: string

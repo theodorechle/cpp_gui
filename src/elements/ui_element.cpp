@@ -12,11 +12,11 @@ namespace gui {
             UIElement *child = getChild();
             while (child != nullptr) {
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
-                if (!child->isSizeParentRelative()) {
-                    (*desiredWidth) = std::max(childDesiredWidth, *desiredWidth);
-                    (*desiredHeight) = std::max(childDesiredHeight, *desiredHeight);
-                    nbChilds++;
-                }
+                // if (!child->isSizeParentRelative()) {
+                (*desiredWidth) = std::max(childDesiredWidth, *desiredWidth);
+                (*desiredHeight) = std::max(childDesiredHeight, *desiredHeight);
+                nbChilds++;
+                // }
                 child = child->getNext();
             }
         }
@@ -59,10 +59,10 @@ namespace gui {
                 while (child != nullptr) {
                     if (!widthFound) childDesiredWidth = child->marginLeft() + child->marginRight();
                     if (!heightFound) childDesiredHeight = child->marginTop() + child->marginBottom();
-                    if (!child->sizeParentRelative) {
-                        if (!widthFound) (*desiredWidth) += childDesiredWidth;
-                        if (!heightFound) (*desiredHeight) += childDesiredHeight;
-                    }
+                    // if (!child->sizeParentRelative) {
+                    if (!widthFound) (*desiredWidth) += childDesiredWidth;
+                    if (!heightFound) (*desiredHeight) += childDesiredHeight;
+                    // }
                     child = child->getNext();
                 }
             }
@@ -361,6 +361,8 @@ namespace gui {
             SDL_Rect finalClipRectNoPaddings;
 
             clipRect = SDL_Rect{oldClipRect.x, oldClipRect.y, this->elementRect.w, this->elementRect.h};
+            renderScrollBars();
+
             finalClipRect = computeNewClipRect(&oldClipRect, &clipRect);
 
             clipRectNoBorders.x = clipRect.x + borderLeft();
@@ -507,21 +509,6 @@ namespace gui {
             }
         }
 
-        void UIElement::focus(bool focused) {
-            _focus = focused;
-            if (focused) onFocusGet();
-            else onFocusLoose();
-        }
-
-        void UIElement::setManagerActionsService(gui::element::ManagerActionsService *managerActionsService) {
-            this->managerActionsService = managerActionsService;
-            UIElement *child = getChild();
-            while (child != nullptr) {
-                child->setManagerActionsService(managerActionsService);
-                child = child->getChild();
-            }
-        }
-
         void UIElement::renderBackground() const {
             Uint8 r, g, b, a;
             SDL_Rect rect;
@@ -542,6 +529,30 @@ namespace gui {
             if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
                 return;
+            }
+        }
+
+        void UIElement::renderScrollBar(int currentSize, int desiredSize) const {
+            if (currentSize >= desiredSize && getNameStringFromRule({"scroll-bar"}, {"always"}) == "") return;
+        }
+
+        void UIElement::renderScrollBars() const {
+            // renderScrollBar();
+            // renderScrollBar();
+        }
+
+        void UIElement::focus(bool focused) {
+            _focus = focused;
+            if (focused) onFocusGet();
+            else onFocusLoose();
+        }
+
+        void UIElement::setManagerActionsService(gui::element::ManagerActionsService *managerActionsService) {
+            this->managerActionsService = managerActionsService;
+            UIElement *child = getChild();
+            while (child != nullptr) {
+                child->setManagerActionsService(managerActionsService);
+                child = child->getChild();
             }
         }
 

@@ -3,7 +3,6 @@
 - allow re-computing the layout only of modified elements and their parents
 
 Recompute on size changing (modifiers, ...)
-text overflow
-element overflow
+add overflow (scroll)
 add width and height auto (100% parent)
 force style file reloading

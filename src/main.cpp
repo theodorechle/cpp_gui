@@ -61,7 +61,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
-    parentContainer->addChild(new gui::element::Label("a text rendered\non multiple lines", elementsStyleManager, &labelClasses, "test-label", textEngine));
+    parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager, &labelClasses, "test-label", textEngine));
     parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
     gui::element::UIElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
     // FIXME: button click zone is bigger than displayed
