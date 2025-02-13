@@ -111,7 +111,7 @@ namespace gui {
                                    bool canInherit = false) const;
 
             void askRendering() const;
-            void askRecomputingLayout() const;
+            void askRecomputeLayout() const;
 
         public:
             UIElement(std::string elementName, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,

@@ -98,23 +98,23 @@ namespace gui {
 
         void Label::setText(const std::string &newText) {
             text = newText;
-            askRecomputingLayout();
+            askRecomputeLayout();
         }
 
         void Label::addText(const std::string &toAdd) {
             text.append(toAdd);
-            askRecomputingLayout();
+            askRecomputeLayout();
         }
 
         void Label::removeText(int nbChars) {
             if (text.empty()) return;
             text.resize(text.size() - nbChars);
-            askRecomputingLayout();
+            askRecomputeLayout();
         }
 
         void Label::clearText() {
             text.clear();
-            askRecomputingLayout();
+            askRecomputeLayout();
         }
 
     } // namespace element

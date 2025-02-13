@@ -232,7 +232,7 @@ namespace gui {
             if (managerActionsService != nullptr) managerActionsService->askRendering();
         }
 
-        void UIElement::askRecomputingLayout() const {
+        void UIElement::askRecomputeLayout() const {
             if (managerActionsService != nullptr) managerActionsService->askRecomputeLayout();
         }
 
@@ -522,7 +522,7 @@ namespace gui {
             SDL_Color color = backgroundColor();
             SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             SDL_GetRenderClipRect(renderer, &rect);
-
+            
             SDL_RectToFRect(&rect, &fRect);
             SDL_RenderFillRect(renderer, &fRect);
 
@@ -530,6 +530,7 @@ namespace gui {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
                 return;
             }
+
         }
 
         void UIElement::renderScrollBar(int currentSize, int desiredSize) const {

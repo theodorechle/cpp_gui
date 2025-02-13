@@ -25,7 +25,7 @@ namespace gui {
                 Status _currentStatus = Status::RUNNING;
                 bool _needRendering = true;
                 bool _needRecomputeLayout = true;
-                virtual void renderElements() const = 0;
+                virtual void renderElements(bool clear = true) const = 0;
 
             protected:
                 gui::element::AbstractElement *elementsTree = nullptr;
@@ -33,14 +33,15 @@ namespace gui {
                 void needRecomputeLayout(bool needRecomputeLayout) { _needRecomputeLayout = needRecomputeLayout; }
                 void needRendering(bool needRendering) { _needRendering = needRendering; }
                 virtual void computeElementsLayout() = 0;
+
             public:
                 AbstractManager() : managerActionsService{ManagerActionsService(this)} {}
                 virtual ~AbstractManager();
                 virtual void setElementsTree(gui::element::AbstractElement *element);
                 void deleteElementsTree();
-                void render();
+                void render(bool clear = true);
                 virtual void computeLayout();
-                ManagerActionsService *getRedrawRequester() { return &managerActionsService; }
+                ManagerActionsService *getManagerActionsService() { return &managerActionsService; }
 
                 Status status() { return _currentStatus; }
                 void askRendering() { this->_needRendering = true; }

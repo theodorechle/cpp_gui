@@ -3,6 +3,18 @@
 namespace gui {
     namespace element {
         namespace manager {
+            UIManager::UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect)
+            : window{window}, renderer{renderer} {
+                if (clipRect != nullptr) this->clipRect = *clipRect;
+                else {
+                    int width = 0;
+                    int height = 0;
+                    if (!SDL_GetCurrentRenderOutputSize(renderer, &width, &height)) {
+                        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't get render size");
+                    }
+                    this->clipRect = SDL_Rect{0, 0, width, height};
+                }
+            }
 
             void UIManager::setElementsTree(gui::element::AbstractElement *element) {
                 AbstractManager::setElementsTree(new gui::element::RootElement());
@@ -11,29 +23,36 @@ namespace gui {
                 static_cast<gui::element::UIElement *>(element)->setRenderer(renderer);
                 static_cast<gui::element::UIElement *>(element)->setWindow(window);
                 elementsTree->addChild(static_cast<gui::element::UIElement *>(element));
-                static_cast<gui::element::UIElement *>(elementsTree)->setManagerActionsService(getRedrawRequester());
+                static_cast<gui::element::UIElement *>(elementsTree)->setManagerActionsService(getManagerActionsService());
             }
 
-            void UIManager::computeElementsLayout() {
+            void UIManager::computeDesiredElementsLayout(int *width, int *height) {
                 if (elementsTree == nullptr) return;
-                int width = 0, height = 0;
-                elementsTree->computeDesiredLayout(&width, &height);
-                SDL_GetCurrentRenderOutputSize(renderer, &width, &height);
-                elementsTree->computeLayout(0, 0, width, height);
+                (*width) = 0;
+                (*height) = 0;
+                elementsTree->computeDesiredLayout(width, height);
+            }
+            void UIManager::computeFinalElementsLayout() {
+                if (elementsTree == nullptr) return;
+                elementsTree->computeLayout(clipRect.x, clipRect.y, clipRect.w, clipRect.h);
+            }
+            void UIManager::computeElementsLayout() {
+                int width, height;
+                computeDesiredElementsLayout(&width, &height);
+                computeFinalElementsLayout();
             }
 
-            void UIManager::renderElements() const {
+            void UIManager::renderElements(bool clear) const {
+                if (elementsTree == nullptr) return;
                 Uint8 r, g, b, a;
                 int width = 0, height = 0;
-                SDL_Rect rect;
-                if (SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
+                if (clear && SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                     SDL_RenderClear(renderer);
                     SDL_SetRenderDrawColor(renderer, r, g, b, a);
                 }
                 SDL_GetCurrentRenderOutputSize(renderer, &width, &height);
-                rect = SDL_Rect{0, 0, width, height};
-                SDL_SetRenderClipRect(renderer, &rect);
+                SDL_SetRenderClipRect(renderer, &clipRect);
                 elementsTree->render();
                 SDL_RenderPresent(renderer);
             }
@@ -46,7 +65,7 @@ namespace gui {
                 case SDL_EVENT_MOUSE_MOTION:
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
                 case SDL_EVENT_MOUSE_BUTTON_UP:
-                    mouseEventsOccurred = true;
+                    processMouseEvents();
                     break;
                 case SDL_EVENT_WINDOW_RESIZED:
                     askRecomputeLayout();
@@ -59,8 +78,7 @@ namespace gui {
             }
 
             void UIManager::processMouseEvents() {
-                if (!mouseEventsOccurred) return;
-                mouseEventsOccurred = false;
+                if (elementsTree == nullptr) return;
                 float x, y;
                 SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
                 SDL_Point mousePos = SDL_Point{(int)x, (int)y};
@@ -80,7 +98,6 @@ namespace gui {
                     }
                     else currentElement = currentElement->getNext();
                 }
-
                 if (mouseFlags) {
                     if (clickedElement == nullptr) {
                         clickedElement = currentHoveredElement;
@@ -120,8 +137,9 @@ namespace gui {
                     if (enabled) element->catchEvent(event);
                     element = element->getParent();
                 }
-                computeElementsLayout(); // TODO: don't recalculate the entire tree
-                needRendering(true);     // TODO: recalculate and re-render only when an element has changed
+                needRecomputeLayout(true);
+                // TODO: don't recalculate the entire tree
+                // TODO: recalculate and re-render only when an element has changed
             }
 
         } // namespace manager

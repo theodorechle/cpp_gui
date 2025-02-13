@@ -60,7 +60,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Include dependency files if they exist
--include $(DEPS)
+# -include $(DEPS)
 
 # Clean all generated files
 clean:

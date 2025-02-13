@@ -17,16 +17,22 @@ namespace gui {
                 UIElement *clickedElement = nullptr;
                 UIElement *hoveredElement = nullptr;
                 UIElement *focusedElement = nullptr;
-                bool mouseEventsOccurred = false;
+                SDL_Rect clipRect;
 
             public:
-                UIManager(SDL_Window *window, SDL_Renderer *renderer): window{window}, renderer{renderer} {}
+                UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect = nullptr);
+
+                void setClipRect(const SDL_Rect &clipRect) { this->clipRect = clipRect; }
 
                 void setElementsTree(gui::element::AbstractElement *element) override;
 
+                void computeDesiredElementsLayout(int *width, int *height);
+
+                void computeFinalElementsLayout();
+
                 void computeElementsLayout() override;
 
-                void renderElements() const override;
+                void renderElements(bool clear = true) const override;
 
                 void processEvent(const SDL_Event &event);
 

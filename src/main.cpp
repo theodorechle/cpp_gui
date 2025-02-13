@@ -4,6 +4,7 @@
 #include "elements/label.hpp"
 #include "elements/button.hpp"
 #include "elements/input.hpp"
+#include "elements/view_container.hpp"
 #include "elements/managers/abstract_manager.hpp"
 #include "elements/managers/ui_manager.hpp"
 #include "elements/ui_element.hpp"
@@ -18,6 +19,10 @@
 
 void displayHelloWorld() {
     std::cout << "hello world!\n";
+}
+
+void displayAlsoHelloWorld() {
+    std::cout << "also hello world!\n";
 }
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
@@ -74,6 +79,16 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     list->addChild(new gui::element::Label("hello world!", elementsStyleManager, &lastLabelClasses, "", textEngine));
     parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
 
+    
+    gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
+
+    gui::elementStyle::manager::ElementsStyleManager *subElementsStyleManager = new gui::elementStyle::manager::ElementsStyleManager();
+    subElementsStyleManager->addStyleFile("tests/style_tests/tests-files/main-test-sub-view.txt");
+
+    parentContainer->addChild(new gui::element::ViewContainer(subManager, subElementsStyleManager));
+
+    subManager->setElementsTree(new gui::element::Button(displayAlsoHelloWorld, subElementsStyleManager));
+
     return SDL_APP_CONTINUE;
 }
 
@@ -90,7 +105,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *state = static_cast<AppState *>(appstate);
     gui::element::manager::AbstractManager *manager = state->getManager();
-    static_cast<gui::element::manager::UIManager *>(manager)->processMouseEvents();
     manager->render();
     return SDL_APP_CONTINUE;
 }

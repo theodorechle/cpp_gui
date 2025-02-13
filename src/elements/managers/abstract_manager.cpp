@@ -10,18 +10,18 @@ namespace gui {
 
             void AbstractManager::deleteElementsTree() { delete elementsTree; }
 
-            void AbstractManager::render() {
+            void AbstractManager::render(bool clear) {
                 computeLayout();
                 if (!needRendering()) return;
                 needRendering(false);
-                renderElements();
+                renderElements(clear);
             }
 
             void AbstractManager::computeLayout() {
                 if (!needRecomputeLayout()) return;
                 needRecomputeLayout(false);
                 computeElementsLayout();
-                needRendering(true); // TODO: ask rendering only if layout changed
+                needRendering(true); // TODO: remove, should be done by elements using manager_actions_service
             }
 
         } // namespace manager
