@@ -76,6 +76,3 @@ Ampersand (&) at first element in nested style means to apply following style in
 
 ### Examples
 <a href="../../tests/style_tests_lexer_and_parser/tests-files">See example files</a>
-
-## Others:
-Note that to many recursive style blocks can lead to a stack overflow error.
