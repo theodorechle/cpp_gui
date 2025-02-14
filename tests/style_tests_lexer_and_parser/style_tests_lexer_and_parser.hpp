@@ -11,7 +11,7 @@
 #include "../../src/style/lexer.hpp"
 #include "../../src/style/node.hpp"
 #include "../../src/style/parser.hpp"
-#include "../tests.hpp"
+#include "../../cpp_tests/src/tests.hpp"
 
 namespace test {
 

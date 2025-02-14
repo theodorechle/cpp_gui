@@ -2,7 +2,7 @@
 #define STYLE_TESTS_HPP
 
 #include "../../src/style/style_deserializer.hpp"
-#include "../tests.hpp"
+#include "../../cpp_tests/src/tests.hpp"
 
 namespace test {
 

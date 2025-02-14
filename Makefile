@@ -6,7 +6,10 @@ OBJ_DIR=obj
 SRC_DIR=src
 TESTS_DIR=tests
 LIB=bin/cpp_gui_lib
+TESTS_LIB=cpp_tests/bin/cpp_tests_lib
 MAIN=bin/cpp_gui
+
+SRC_MAIN=$(SRC_DIR)/main.cpp
 
 # Subdirectories
 SUBDIRS=elements elements/managers elements_style elements_style/managers converters app_utils
@@ -15,7 +18,7 @@ SUBDIRS=elements elements/managers elements_style elements_style/managers conver
 SRC_MAIN=$(SRC_DIR)/main.cpp
 SRC_SUBDIRS=$(foreach dir, $(SUBDIRS), $(wildcard $(SRC_DIR)/$(dir)/*.cpp))
 SRC_STYLE=$(wildcard $(SRC_DIR)/style/*.cpp)
-SRC_STYLE_TESTS=$(SRC_STYLE) $(TESTS_DIR)/tests.cpp $(wildcard $(TESTS_DIR)/*/*.cpp) $(TESTS_DIR)/main.cpp
+SRC_STYLE_TESTS=$(SRC_STYLE) $(wildcard $(TESTS_DIR)/*/*.cpp) $(TESTS_DIR)/main.cpp
 
 # Object files
 OBJ_MAIN=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_MAIN))
@@ -50,9 +53,12 @@ $(MAIN): $(SRC_MAIN) $(LIB).a
 	$(CC) $(CFLAGS) -o $@ $^ $(SDL_CMD)
 
 # Build the style tests executable (style tests + all style sources)
-$(BIN_STYLE_TESTS): $(OBJ_STYLE_TESTS)
+$(BIN_STYLE_TESTS): $(OBJ_STYLE_TESTS) $(TESTS_LIB).a
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o $@
+
+$(TESTS_LIB).a:
+	$(MAKE) -C cpp_tests -j lib
 
 # Rule for compiling all object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
