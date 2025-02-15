@@ -8,5 +8,5 @@ int main() {
     styleDeserializationTests::testsDeserialization(&tests);
     tests.stop();
     tests.displaySummary();
-    return tests.allTestsPassed();
+    return !tests.allTestsPassed();
 }
