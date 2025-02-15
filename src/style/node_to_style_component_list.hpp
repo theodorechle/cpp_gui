@@ -3,7 +3,6 @@
 
 #include "node.hpp"
 #include "style_component.hpp"
-#include "settings.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
 
@@ -47,7 +46,7 @@ namespace style {
         void convertStyleBlock(int fileNumber, int *ruleNumber);
 
     public:
-        std::list<StyleBlock *> *convert(Node *tree, int fileNumber, int *ruleNumber, bool debug = false);
+        std::list<StyleBlock *> *convert(Node *tree, int fileNumber, int *ruleNumber);
     };
 
 } // namespace style

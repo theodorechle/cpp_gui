@@ -7,8 +7,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "settings.hpp"
-
 namespace style {
 
     class ParserError : public std::exception {
@@ -48,7 +46,6 @@ namespace style {
         // only used to avoid recalculating many times the root
         Node *expressionTreeRoot = new Node(Token::NullRoot);
         Node *parsedTree = expressionTreeRoot;
-        Settings *settings;
         bool isValidName(const std::string &str, size_t start, size_t end);
         bool isValidElementOrStyleName(const std::string &str);
         bool isWhiteSpace(Token token);
@@ -91,7 +88,7 @@ namespace style {
         void parseModifier();
 
     public:
-        Parser(Node *currentToken, Settings *settings) : currentToken{currentToken}, settings{settings} { parse(); };
+        Parser(Node *currentToken) : currentToken{currentToken} { parse(); };
         Node *getFinalTree() { return expressionTreeRoot; }
     };
 

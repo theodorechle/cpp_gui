@@ -44,9 +44,9 @@ namespace style {
     void Parser::parse() {
         try {
             while (currentToken != nullptr) {
-                if (settings->debug)
-                    cerr << "\nActual token : " << tokenToString(currentToken->getToken()) << ": '" << currentToken->getValue() << "'"
-                         << "\n";
+                #ifdef DEBUG_PARSER
+                cerr << "\nActual token : " << tokenToString(currentToken->getToken()) << ": '" << currentToken->getValue() << "'" << "\n";
+                #endif
                 switch (currentToken->getToken()) {
                 case Token::Space:
                     parseSpace();
@@ -114,19 +114,19 @@ namespace style {
                 default:
                     throw UnknownToken(*currentToken);
                 }
-                if (settings->debug) {
+                #ifdef DEBUG_PARSER
                     cerr << "Root :\n";
                     expressionTreeRoot->display(cerr);
                     cerr << "\n";
-                }
+                #endif
                 currentToken = currentToken->getNext();
             }
             removeWhiteSpaces();
-            if (settings->debug) {
+            #ifdef DEBUG_PARSER
                 cerr << "Final parsed tree :\n";
                 expressionTreeRoot->display(cerr);
                 cerr << "\n";
-            }
+            #endif
         }
         catch (const ParserError &) {
             parsedTree = nullptr;

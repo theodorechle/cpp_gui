@@ -177,7 +177,9 @@ namespace style {
                 firstNode = nullptr;
                 throw UnknownValue(expression.substr(index, MAX_ERROR_COMPLEMENTARY_INFOS_SIZE));
             }
-            if (settings->debug) std::cerr << tokenToString(parsedTree->getToken()) << ": '" << parsedTree->getValue() << "'\n";
+            #ifdef DEBUG_LEXER
+            std::cerr << tokenToString(parsedTree->getToken()) << ": '" << parsedTree->getValue() << "'\n";
+            #endif
             parsedTree = parsedTree->getNext();
         }
         // remove the NullRoot token at the start

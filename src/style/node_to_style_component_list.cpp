@@ -67,26 +67,22 @@ namespace style {
             std::cerr << "File '" << fileName << "' couldn't be opened\n";
             return nullptr;
         }
-        Settings *settings = new Settings();
         buffer << file.rdbuf();
         try {
-            tokens = Lexer(buffer.str(), settings).getResult();
-            result = Parser(tokens, settings).getFinalTree();
+            tokens = Lexer(buffer.str()).getResult();
+            result = Parser(tokens).getFinalTree();
         }
         catch (const ParserError &) {
             delete tokens;
             delete result;
-            delete settings;
             throw;
         }
         catch (const LexerError &) {
             delete tokens;
             delete result;
-            delete settings;
             throw;
         }
         delete tokens;
-        delete settings;
         return result;
     }
 
@@ -371,14 +367,16 @@ namespace style {
         }
     }
 
-    std::list<StyleBlock *> *NodeToStyleComponentList::convert(Node *styleTree, int fileNumber, int *ruleNumber, bool debug) {
+    std::list<StyleBlock *> *NodeToStyleComponentList::convert(Node *styleTree, int fileNumber, int *ruleNumber) {
         *ruleNumber = 0;
         if (styleTree->getToken() != Token::NullRoot) return nullptr;
         styleDefinitions = new std::list<StyleBlock *>();
 
         flattenStyle(styleTree);
-        if (debug) std::cerr << "flattened style\n";
-        if (debug) styleTree->display(std::cerr);
+        #ifdef DEBUG_STYLE_CONVERTER
+        std::cerr << "flattened style\n";
+        styleTree->display(std::cerr);
+        #endif
         tree = styleTree->getChild();
 
         while (tree != nullptr) {
