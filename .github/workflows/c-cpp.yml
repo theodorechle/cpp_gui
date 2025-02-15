@@ -12,8 +12,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repository and submodules
     - uses: actions/checkout@v4
-    - name: make style-tests
-      run: make style-tests
-    - name: bin/style-tests
+      with:
+        submodules: true
+
+    - name: Compile tests
+      run: make -j style-tests
+    - name: Execute tests
       run: bin/style-tests
