@@ -12,17 +12,17 @@ constexpr int MAX_ERROR_COMPLEMENTARY_INFOS_SIZE = 20;
 
 namespace style {
 
-    class LexerError : public std::exception {
+    class LexerException : public std::exception {
         std::string message;
 
     public:
-        LexerError(const std::string &message) : message{message} {}
+        LexerException(const std::string &message) : message{message} {}
         const char *what() const noexcept override { return message.c_str(); };
     };
 
-    class UnknownValue : public LexerError {
+    class UnknownValue : public LexerException {
     public:
-        UnknownValue(const std::string &value) : LexerError{"Error : Unknown value '" + value + "'"} {};
+        UnknownValue(const std::string &value) : LexerException{"Error : Unknown value '" + value + "'"} {};
     };
 
     const std::map<char, Token> SPECIAL_CHARACTERS = {

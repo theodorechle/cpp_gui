@@ -20,7 +20,7 @@ namespace style {
             i++;
         }
         if (i == 0) return;
-        parsedTree->appendNext(new Node(Token::LineReturn));
+        parsedTree->appendNext(new Node(Token::LineBreak));
         lexed = true;
         index += i;
     }
@@ -77,9 +77,10 @@ namespace style {
         if (!isdigit(expression[index])) return;
         int tmpSize;
         size_t i = 1;
-        while (index + i < expressionLength && isdigit(expression[index + i]))
+        while (index + i < expressionLength && isdigit(expression[index + i])) {
             i++;
-        if (SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' '
+        }
+        if (index + i < expressionLength && SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' '
             && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
             return; // not an int
         parsedTree->appendNext(new Node(Token::Int, expression.substr(index, i)));
@@ -100,7 +101,7 @@ namespace style {
             i++;
         }
         if (!dotFound || i < 2) return; // need at least one int (0-9) and a dot
-        if (SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' '
+        if (index + i < expressionLength && SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' '
             && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
             return; // not a float
         parsedTree->appendNext(new Node(Token::Float, expression.substr(index, i)));
@@ -177,9 +178,9 @@ namespace style {
                 firstNode = nullptr;
                 throw UnknownValue(expression.substr(index, MAX_ERROR_COMPLEMENTARY_INFOS_SIZE));
             }
-            #ifdef DEBUG_LEXER
+#ifdef DEBUG
             std::cerr << tokenToString(parsedTree->getToken()) << ": '" << parsedTree->getValue() << "'\n";
-            #endif
+#endif
             parsedTree = parsedTree->getNext();
         }
         // remove the NullRoot token at the start

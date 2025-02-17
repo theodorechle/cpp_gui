@@ -72,12 +72,12 @@ namespace style {
             tokens = Lexer(buffer.str()).getResult();
             result = Parser(tokens).getFinalTree();
         }
-        catch (const ParserError &) {
+        catch (const ParserException &) {
             delete tokens;
             delete result;
             throw;
         }
-        catch (const LexerError &) {
+        catch (const LexerException &) {
             delete tokens;
             delete result;
             throw;
@@ -373,7 +373,7 @@ namespace style {
         styleDefinitions = new std::list<StyleBlock *>();
 
         flattenStyle(styleTree);
-        #ifdef DEBUG_STYLE_CONVERTER
+        #ifdef DEBUG
         std::cerr << "flattened style\n";
         styleTree->display(std::cerr);
         #endif

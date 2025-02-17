@@ -9,27 +9,27 @@
 
 namespace style {
 
-    class ParserError : public std::exception {
+    class ParserException : public std::exception {
         std::string message;
 
     public:
-        ParserError(const std::string &message) : message{message} {};
+        ParserException(const std::string &message) : message{message} {};
         const char *what() const noexcept override { return message.c_str(); }
     };
 
-    class UnknownToken : public ParserError {
+    class UnknownToken : public ParserException {
     public:
-        UnknownToken(const Node &token) : ParserError{"Unknown token: \"" + token.getValue() + " (" + tokenToString(token.getToken()) + ")\""} {};
+        UnknownToken(const Node &token) : ParserException{"Unknown token: \"" + token.getValue() + " (" + tokenToString(token.getToken()) + ")\""} {};
     };
 
-    class MissingToken : public ParserError {
+    class MissingToken : public ParserException {
     public:
-        MissingToken(const std::string &token) : ParserError{"Missing token: \"" + token + "\""} {};
+        MissingToken(const std::string &token) : ParserException{"Missing token: \"" + token + "\""} {};
     };
 
-    class MalformedExpression : public ParserError {
+    class MalformedExpression : public ParserException {
     public:
-        MalformedExpression(const std::string &expression) : ParserError{"Malformed expression: \"" + expression + "\""} {};
+        MalformedExpression(const std::string &expression) : ParserException{"Malformed expression: \"" + expression + "\""} {};
     };
 
     /**

@@ -73,8 +73,8 @@ namespace style {
         // Used by both the lexer and the parser
         case Token::Space:
             return "Space";
-        case Token::LineReturn:
-            return "LineReturn";
+        case Token::LineBreak:
+            return "LineBreak";
         case Token::Empty:
             return "Empty";
         // NullRoot is used only when an algorithm must start with an existing node

@@ -20,6 +20,9 @@ namespace styleTestsLexerAndParser {
     test::Result testLexerAndParser(bool equal, const std::string &expr, const style::Node *expected);
 
     template <typename T>
+    test::Result testLexerException(const std::string &expression);
+
+    template <typename T>
     test::Result testLexerAndParserException(const std::string &expression);
     std::string getFileContent(std::string fileName);
 

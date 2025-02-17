@@ -2,7 +2,8 @@ CC=g++
 CFLAGS=-std=c++17 -Wall -g -MMD -MP
 SDL_CMD=`pkg-config sdl3 sdl3-ttf --cflags --libs`
 BIN_DIR=bin
-OBJ_DIR=obj
+OBJ_DIR=obj/normal
+OBJ_TEST_DIR=obj/test
 SRC_DIR=src
 TESTS_DIR=tests
 LIB=bin/cpp_gui_lib
@@ -24,7 +25,7 @@ SRC_STYLE_TESTS=$(SRC_STYLE) $(wildcard $(TESTS_DIR)/*/*.cpp) $(TESTS_DIR)/main.
 OBJ_MAIN=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_MAIN))
 OBJ_SUBDIRS=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_SUBDIRS))
 OBJ_STYLE=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_STYLE))
-OBJ_STYLE_TESTS=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_STYLE_TESTS))
+OBJ_STYLE_TESTS=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_TEST_DIR)/%.o, $(SRC_STYLE_TESTS))
 
 # Executable targets
 BIN_ALL=$(BIN_DIR)/all
@@ -56,6 +57,11 @@ $(MAIN): $(SRC_MAIN) $(LIB).a
 $(BIN_STYLE_TESTS): $(OBJ_STYLE_TESTS) $(TESTS_LIB).a
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o $@
+
+# Rule for compiling all object files
+$(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -DDEBUG -c $< -o $@
 
 $(TESTS_LIB).a:
 	$(MAKE) -C cpp_tests -j lib

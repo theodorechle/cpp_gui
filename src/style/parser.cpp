@@ -19,7 +19,7 @@ namespace style {
         return str.size() == 1 || isValidName(str, 1, str.size());
     }
 
-    bool Parser::isWhiteSpace(Token token) { return (token == Token::Space || token == Token::LineReturn); }
+    bool Parser::isWhiteSpace(Token token) { return (token == Token::Space || token == Token::LineBreak); }
 
     bool Parser::isComponentRelation(Token token) { return (token == Token::AnyParent || token == Token::DirectParent); }
 
@@ -30,12 +30,12 @@ namespace style {
 
     void Parser::removeLineReturn() {
         Node *lastChild = parsedTree->getLastChild();
-        if (lastChild != nullptr && lastChild->getToken() == Token::LineReturn) parsedTree->deleteSpecificChild(lastChild);
+        if (lastChild != nullptr && lastChild->getToken() == Token::LineBreak) parsedTree->deleteSpecificChild(lastChild);
     }
 
     void Parser::removeWhiteSpaces() {
         Node *lastChild = parsedTree->getLastChild();
-        while (lastChild != nullptr && (lastChild->getToken() == Token::Space || lastChild->getToken() == Token::LineReturn)) {
+        while (lastChild != nullptr && (lastChild->getToken() == Token::Space || lastChild->getToken() == Token::LineBreak)) {
             parsedTree->deleteSpecificChild(lastChild);
             lastChild = parsedTree->getLastChild();
         }
@@ -44,14 +44,14 @@ namespace style {
     void Parser::parse() {
         try {
             while (currentToken != nullptr) {
-                #ifdef DEBUG_PARSER
+                #ifdef DEBUG
                 cerr << "\nActual token : " << tokenToString(currentToken->getToken()) << ": '" << currentToken->getValue() << "'" << "\n";
                 #endif
                 switch (currentToken->getToken()) {
                 case Token::Space:
                     parseSpace();
                     break;
-                case Token::LineReturn:
+                case Token::LineBreak:
                     parseLineReturn();
                     break;
                 case Token::OneLineComment:
@@ -114,7 +114,7 @@ namespace style {
                 default:
                     throw UnknownToken(*currentToken);
                 }
-                #ifdef DEBUG_PARSER
+                #ifdef DEBUG
                     cerr << "Root :\n";
                     expressionTreeRoot->display(cerr);
                     cerr << "\n";
@@ -122,13 +122,13 @@ namespace style {
                 currentToken = currentToken->getNext();
             }
             removeWhiteSpaces();
-            #ifdef DEBUG_PARSER
+            #ifdef DEBUG
                 cerr << "Final parsed tree :\n";
                 expressionTreeRoot->display(cerr);
                 cerr << "\n";
             #endif
         }
-        catch (const ParserError &) {
+        catch (const ParserException &) {
             parsedTree = nullptr;
             delete expressionTreeRoot;
             throw;

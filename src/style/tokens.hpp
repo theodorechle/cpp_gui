@@ -43,7 +43,7 @@ namespace style {
         Import,
         // Used by both the lexer and the parser
         Space,
-        LineReturn,
+        LineBreak,
         Empty,
         // NullRoot is used only when an algorithm must start with an existing node
         NullRoot,
