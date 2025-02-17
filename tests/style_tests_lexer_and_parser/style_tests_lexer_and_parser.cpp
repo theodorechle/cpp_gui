@@ -85,6 +85,9 @@ namespace styleTestsLexerAndParser {
         style::Node *tokens = nullptr;
         try {
             tokens = style::Lexer(expression).getResult();
+#ifdef DEBUG
+            tokens->display();
+#endif
             testResult = test::Result::FAILURE;
         }
         catch (std::exception &exception) {
@@ -160,6 +163,16 @@ namespace styleTestsLexerAndParser {
         return result;
     }
 
+    test::Result testLexingTabulation() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::Space);
+        result = testLexer(true, "\t", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
     test::Result testLexingSingleLineBreak() {
         style::Node *rootExpected;
         test::Result result;
@@ -209,7 +222,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingIntegerWithMultipleChars() {
         style::Node *rootExpected;
         test::Result result;
@@ -219,7 +232,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingPositiveFloat() {
         style::Node *rootExpected;
         test::Result result;
@@ -229,7 +242,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingFloatZero() {
         style::Node *rootExpected;
         test::Result result;
@@ -239,7 +252,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingNegativeFloat() {
         style::Node *rootExpected;
         test::Result result;
@@ -249,7 +262,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingFloatNoIntegralPart() {
         style::Node *rootExpected;
         test::Result result;
@@ -259,7 +272,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingFloatNoDecimalPart() {
         style::Node *rootExpected;
         test::Result result;
@@ -269,7 +282,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingNegativeFloatNoIntegerPart() {
         style::Node *rootExpected;
         test::Result result;
@@ -279,11 +292,9 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
-    test::Result testLexingNegativeFloatNoParts() {
-        return testLexerException<style::LexerException>("-.6");
-    }
-    
+
+    test::Result testLexingNegativeFloatNoParts() { return testLexerException<style::LexerException>("-.6"); }
+
     test::Result testLexingSemiColon() {
         style::Node *rootExpected;
         test::Result result;
@@ -293,7 +304,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingColon() {
         style::Node *rootExpected;
         test::Result result;
@@ -303,7 +314,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingComma() {
         style::Node *rootExpected;
         test::Result result;
@@ -313,7 +324,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingOpeningCurlyBracket() {
         style::Node *rootExpected;
         test::Result result;
@@ -323,7 +334,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingClosingCurlyBracket() {
         style::Node *rootExpected;
         test::Result result;
@@ -333,7 +344,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingOpeningParenthesis() {
         style::Node *rootExpected;
         test::Result result;
@@ -343,7 +354,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingClosingParenthesis() {
         style::Node *rootExpected;
         test::Result result;
@@ -353,7 +364,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingGreatherThan() {
         style::Node *rootExpected;
         test::Result result;
@@ -363,7 +374,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingSharp() {
         style::Node *rootExpected;
         test::Result result;
@@ -373,7 +384,7 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingDot() {
         style::Node *rootExpected;
         test::Result result;
@@ -383,13 +394,133 @@ namespace styleTestsLexerAndParser {
         delete rootExpected;
         return result;
     }
-    
+
     test::Result testLexingAt() {
         style::Node *rootExpected;
         test::Result result;
 
         rootExpected = new style::Node(style::Token::At);
         result = testLexer(true, "@", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingStar() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::Star);
+        result = testLexer(true, "*", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingPseudoName() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::PseudoName, "test");
+        result = testLexer(true, "test", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingPseudoNameWithHyphen() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::PseudoName, "test-a");
+        result = testLexer(true, "test-a", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingPseudoNameWithNumber() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::PseudoName, "test2");
+        result = testLexer(true, "test2", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingPseudoNameWithUnderscore() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::PseudoName, "test_2");
+        result = testLexer(true, "test_2", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingPseudoNameStartingWithNumber() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::PseudoName, "2a");
+        result = testLexer(true, "2a", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingMinusSign() { return testLexerException<style::LexerException>("-"); }
+
+    test::Result testLexingStringDoubleQuotes() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::String, "value");
+        result = testLexer(true, "\"value\"", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingStringSingleQuotes() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::String, "value");
+        result = testLexer(true, "'value'", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingStringUnclosedDoubleQuotes() { return testLexerException<style::LexerException>("\"value"); }
+
+    test::Result testLexingStringUnclosedSingleQuotes() { return testLexerException<style::LexerException>("'value"); }
+
+    test::Result testLexingStringEmptyDoubleQuotes() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::String, "");
+        result = testLexer(true, "\"\"", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingStringEmptySingleQuotes() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::String, "");
+        result = testLexer(true, "''", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testLexingImport() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::At);
+        rootExpected->appendNext(new style::Node(style::Token::PseudoName, "import"))
+            ->appendNext(new style::Node(style::Token::Space))
+            ->appendNext(new style::Node(style::Token::String, "test"))
+            ->appendNext(new style::Node(style::Token::SemiColon));
+        result = testLexer(true, "@import \"test\";", rootExpected);
         delete rootExpected;
         return result;
     }
@@ -684,15 +815,23 @@ namespace styleTestsLexerAndParser {
     void testsLexerAndParser(test::Tests *tests) {
         tests->beginTestBlock("Tests style lexer and parser");
         tests->beginTestBlock("Tests lexer");
+        tests->beginTestBlock("White spaces");
         tests->runTest(testLexingEmpty, "Empty");
         tests->runTest(testLexingSingleSpace, "Single space");
         tests->runTest(testLexingMultipleSpaces, "Multiple spaces");
         tests->runTest(testLexingSingleLineBreak, "Single line break");
         tests->runTest(testLexingMultipleLineBreaks, "Multiple line breaks");
+        tests->runTest(testLexingTabulation, "Tabulation");
+        tests->endTestBlock();
+
+        tests->beginTestBlock("Integers");
         tests->runTest(testLexingPositiveInteger, "Positive integer");
         tests->runTest(testLexingIntegerZero, "Integer 0");
         tests->runTest(testLexingNegativeInteger, "Negative integer");
         tests->runTest(testLexingIntegerWithMultipleChars, "Integer with multiple chars");
+        tests->endTestBlock();
+
+        tests->beginTestBlock("Floats");
         tests->runTest(testLexingPositiveFloat, "Positive float");
         tests->runTest(testLexingFloatZero, "Float 0");
         tests->runTest(testLexingNegativeFloat, "Negative float");
@@ -700,6 +839,9 @@ namespace styleTestsLexerAndParser {
         tests->runTest(testLexingFloatNoDecimalPart, "Float no decimal part");
         tests->runTest(testLexingNegativeFloatNoIntegerPart, "Negative float no decimal part");
         tests->runTest(testLexingNegativeFloatNoParts, "Negative float no parts");
+        tests->endTestBlock();
+
+        tests->beginTestBlock("Reserved characters");
         tests->runTest(testLexingSemiColon, "Semicolon");
         tests->runTest(testLexingColon, "Colon");
         tests->runTest(testLexingComma, "Comma");
@@ -709,7 +851,31 @@ namespace styleTestsLexerAndParser {
         tests->runTest(testLexingSharp, "Sharp");
         tests->runTest(testLexingDot, "Dot");
         tests->runTest(testLexingAt, "At");
-        
+        tests->runTest(testLexingStar, "Star");
+        tests->endTestBlock();
+
+        tests->beginTestBlock("Pseudo names");
+        tests->runTest(testLexingPseudoName, "Pseudo name");
+        tests->runTest(testLexingPseudoNameWithHyphen, "Pseudo name with hyphen");
+        tests->runTest(testLexingPseudoNameWithNumber, "Pseudo name with number");
+        tests->runTest(testLexingPseudoNameWithUnderscore, "Pseudo name with underscore");
+        tests->runTest(testLexingPseudoNameStartingWithNumber, "Pseudo name with starting with number");
+        tests->runTest(testLexingMinusSign, "Minus sign");
+        tests->endTestBlock();
+
+        tests->beginTestBlock("Pseudo names");
+        tests->runTest(testLexingStringDoubleQuotes, "String double quotes");
+        tests->runTest(testLexingStringSingleQuotes, "String single quotes");
+        tests->runTest(testLexingStringUnclosedDoubleQuotes, "String unclosed double quotes");
+        tests->runTest(testLexingStringUnclosedSingleQuotes, "String unclosed single quotes");
+        tests->runTest(testLexingStringEmptyDoubleQuotes, "String empty double quotes");
+        tests->runTest(testLexingStringEmptySingleQuotes, "String empty single quotes");
+        tests->endTestBlock();
+
+        tests->beginTestBlock("Multiple tokens");
+        tests->runTest(testLexingImport, "Import");
+        tests->endTestBlock();
+
         tests->endTestBlock();
 
         tests->beginTestBlock("Tests parser");

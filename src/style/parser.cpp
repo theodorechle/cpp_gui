@@ -44,9 +44,9 @@ namespace style {
     void Parser::parse() {
         try {
             while (currentToken != nullptr) {
-                #ifdef DEBUG
+#ifdef DEBUG
                 cerr << "\nActual token : " << tokenToString(currentToken->getToken()) << ": '" << currentToken->getValue() << "'" << "\n";
-                #endif
+#endif
                 switch (currentToken->getToken()) {
                 case Token::Space:
                     parseSpace();
@@ -92,6 +92,9 @@ namespace style {
                 case Token::At:
                     parseAt();
                     break;
+                case Token::Star:
+                    parseStar();
+                    break;
                 case Token::GreaterThan:
                     parseGreatherThan();
                     break;
@@ -114,19 +117,19 @@ namespace style {
                 default:
                     throw UnknownToken(*currentToken);
                 }
-                #ifdef DEBUG
-                    cerr << "Root :\n";
-                    expressionTreeRoot->display(cerr);
-                    cerr << "\n";
-                #endif
+#ifdef DEBUG
+                cerr << "Root :\n";
+                expressionTreeRoot->display(cerr);
+                cerr << "\n";
+#endif
                 currentToken = currentToken->getNext();
             }
             removeWhiteSpaces();
-            #ifdef DEBUG
-                cerr << "Final parsed tree :\n";
-                expressionTreeRoot->display(cerr);
-                cerr << "\n";
-            #endif
+#ifdef DEBUG
+            cerr << "Final parsed tree :\n";
+            expressionTreeRoot->display(cerr);
+            cerr << "\n";
+#endif
         }
         catch (const ParserException &) {
             parsedTree = nullptr;
@@ -294,13 +297,29 @@ namespace style {
         if (parsedTree->getToken() != Token::NullRoot) throw MalformedExpression("A '@' (at) token must be on the root level");
         currentToken = currentToken->getNext();
         if (currentToken == nullptr) throw MalformedExpression("A '@' (at) token must not be alone");
-        if (currentToken->getToken() == Token::PseudoName && currentToken->getValue() == "import") parsedTree = parsedTree->appendChild(new Node{Token::Import});
+        if (currentToken->getToken() == Token::PseudoName && currentToken->getValue() == "import")
+            parsedTree = parsedTree->appendChild(new Node{Token::Import});
         else throw MalformedExpression("Invalid '@' (at) placement");
+    }
+
+    void Parser::parseStar() {
+        Token token = parsedTree->getToken();
+        if (token == Token::NullRoot || token == Token::BlockDefinition) {
+            removeSpace();
+        }
+        else if (token == Token::Declaration) {
+            removeSpace();
+            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock));
+            parsedTree = parsedTree->appendChild(new Node(Token::BlockDeclaration));
+            parsedTree = parsedTree->appendChild(new Node(Token::Declaration));
+        } else return;
+        parsedTree->appendChild(new Node(Token::Star));
     }
 
     void Parser::parseString() {
         if (parsedTree->getToken() == Token::Import) {
-            if (parsedTree->getLastChild()->getToken() != Token::Space) throw MalformedExpression("A space is needed between '@import' and the file name");
+            if (parsedTree->getLastChild()->getToken() != Token::Space)
+                throw MalformedExpression("A space is needed between '@import' and the file name");
             removeSpace();
             parsedTree->setValue(currentToken->getValue());
         }

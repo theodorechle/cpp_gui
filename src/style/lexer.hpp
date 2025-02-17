@@ -25,7 +25,7 @@ namespace style {
         UnknownValue(const std::string &value) : LexerException{"Error : Unknown value '" + value + "'"} {};
     };
 
-    const std::map<char, Token> SPECIAL_CHARACTERS = {
+    const std::map<char, Token> RESERVED_CHARACTERS = {
         {'(', Token::OpeningParenthesis},
         {')', Token::ClosingParenthesis},
         {'{', Token::OpeningCurlyBracket},
@@ -37,7 +37,8 @@ namespace style {
         {'#', Token::Sharp},
         {'.', Token::Dot},
         {'&', Token::Ampersand},
-        {'@', Token::At}
+        {'@', Token::At},
+        {'*', Token::Star}
     };
 
     const std::vector<char> PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS = {'-', '_'};
@@ -60,13 +61,14 @@ namespace style {
         void lexeOneLineComment();
         void lexeMultiLineComment();
         void lexePseudoName();
-        void lexeString();
+        void lexeStringDoubleQuotes();
+        void lexeStringSingleQuotes();
         void lexeInt();
         void lexeFloat();
         void lexeBool();
         Token getUnit(int expressionIndex, int *size);
         void lexeUnit();
-        void lexeSpecialCharacters();
+        void lexeReservedCharacters();
         Node *getResult() { return firstNode; }
     };
 

@@ -45,6 +45,7 @@ namespace style {
         Space,
         LineBreak,
         Empty,
+        Star,
         // NullRoot is used only when an algorithm must start with an existing node
         NullRoot,
         // value types

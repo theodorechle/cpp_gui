@@ -49,26 +49,40 @@ namespace style {
     }
 
     void Lexer::lexePseudoName() {
-        size_t i = 0;
+        if (!std::isalnum(expression[index])) return;
+        size_t i = 1;
         while (std::isalnum(expression[index + i])
                || std::find(PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS.cbegin(), PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS.cend(), expression[index + i])
                       != PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS.cend()) {
             i++;
         }
-        if (i == 0) return;
         parsedTree->appendNext(new Node(Token::PseudoName, expression.substr(index, i)));
         index += i;
         lexed = true;
     }
 
-    void Lexer::lexeString() {
+    void Lexer::lexeStringDoubleQuotes() {
         if (expression[index] != '"') return;
         int i = 1;
-        while (index + i + 1 < expression.size() && expression[index + i + 1] != '"') {
+        while (index + i + 1 < expressionLength && expression[index + i + 1] != '"') {
             i++;
         }
-        if (index + i >= expression.size()) return;
-        parsedTree->appendNext(new Node(Token::String, expression.substr(index + 1, i)));
+        if (i != 1 && (index + i >= expressionLength || expression[index + i + 1] != '"')) return;
+        parsedTree->appendNext(new Node(Token::String, (i == 1) ? "" : expression.substr(index + 1, i)));
+        lexed = true;
+        index += i + 2;
+    }
+
+    void Lexer::lexeStringSingleQuotes() {
+        if (expression[index] != '\'') return;
+        int i = 1;
+        while (index + i + 1 < expressionLength && expression[index + i + 1] != '\'') {
+            i++;
+        }
+        std::cerr << index << ", " << i << ", " << index + i << ", " << expressionLength << "; " << expression[index + i] << "\n";
+
+        if (i != 1 && (index + i >= expressionLength || expression[index + i + 1] != '\'')) return;
+        parsedTree->appendNext(new Node(Token::String, (i == 1) ? "" : expression.substr(index + 1, i)));
         lexed = true;
         index += i + 2;
     }
@@ -80,8 +94,8 @@ namespace style {
         while (index + i < expressionLength && isdigit(expression[index + i])) {
             i++;
         }
-        if (index + i < expressionLength && SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' '
-            && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
+        if (index + i < expressionLength && RESERVED_CHARACTERS.find(expression[index + i]) == RESERVED_CHARACTERS.cend()
+            && expression[index + i] != ' ' && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
             return; // not an int
         parsedTree->appendNext(new Node(Token::Int, expression.substr(index, i)));
         index += i;
@@ -101,8 +115,8 @@ namespace style {
             i++;
         }
         if (!dotFound || i < 2) return; // need at least one int (0-9) and a dot
-        if (index + i < expressionLength && SPECIAL_CHARACTERS.find(expression[index + i]) == SPECIAL_CHARACTERS.cend() && expression[index + i] != ' '
-            && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
+        if (index + i < expressionLength && RESERVED_CHARACTERS.find(expression[index + i]) == RESERVED_CHARACTERS.cend()
+            && expression[index + i] != ' ' && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
             return; // not a float
         parsedTree->appendNext(new Node(Token::Float, expression.substr(index, i)));
         index += i;
@@ -151,9 +165,9 @@ namespace style {
         parsedTree->appendNext(new Node(unit));
     }
 
-    void Lexer::lexeSpecialCharacters() {
-        std::map<char, Token>::const_iterator specialCharIt = SPECIAL_CHARACTERS.find(expression[index]);
-        if (specialCharIt == SPECIAL_CHARACTERS.cend()) return;
+    void Lexer::lexeReservedCharacters() {
+        std::map<char, Token>::const_iterator specialCharIt = RESERVED_CHARACTERS.find(expression[index]);
+        if (specialCharIt == RESERVED_CHARACTERS.cend()) return;
         parsedTree->appendNext(new Node(specialCharIt->second));
         index++;
         lexed = true;
@@ -166,13 +180,14 @@ namespace style {
             if (!lexed) lexeLineReturn();
             if (!lexed) lexeOneLineComment();
             if (!lexed) lexeMultiLineComment();
-            if (!lexed) lexeString();
+            if (!lexed) lexeStringDoubleQuotes();
+            if (!lexed) lexeStringSingleQuotes();
             if (!lexed) lexeFloat();
             if (!lexed) lexeInt();
             if (!lexed) lexeBool();
             if (!lexed) lexeUnit();
             if (!lexed) lexePseudoName();
-            if (!lexed) lexeSpecialCharacters();
+            if (!lexed) lexeReservedCharacters();
             if (!lexed) {
                 delete firstNode;
                 firstNode = nullptr;

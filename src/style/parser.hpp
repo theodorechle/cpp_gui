@@ -70,6 +70,7 @@ namespace style {
         void parseDot();
         void parseAmpersand();
         void parseAt();
+        void parseStar();
         void parseString();
         void parseGreatherThan();
         void parseOpeningParenthesis();

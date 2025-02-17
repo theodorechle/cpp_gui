@@ -77,6 +77,8 @@ namespace style {
             return "LineBreak";
         case Token::Empty:
             return "Empty";
+        case Token::Star:
+            return "Star";
         // NullRoot is used only when an algorithm must start with an existing node
         case Token::NullRoot:
             return "NullRoot";
