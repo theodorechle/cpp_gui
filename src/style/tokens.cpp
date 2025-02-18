@@ -52,8 +52,8 @@ namespace style {
             return "AnyParent";
         case Token::SameElement:
             return "SameElement";
-        case Token::StyleName:
-            return "StyleName";
+        case Token::RuleName:
+            return "RuleName";
         case Token::Assignment:
             return "Assignment";
         case Token::ArgSeparator:

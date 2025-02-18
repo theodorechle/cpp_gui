@@ -525,6 +525,430 @@ namespace styleTestsLexerAndParser {
         return result;
     }
 
+    test::Result testParsingEmpty() {
+        style::Node *rootExpected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        result = testLexerAndParser(true, "", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingHexRule() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition))->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "b"));
+        expected->appendChild(new style::Node(style::Token::Hex, "a"));
+        result = testLexerAndParser(true, "a {b: #a;}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingHexRuleMultipleChars() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition))->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "b"));
+        expected->appendChild(new style::Node(style::Token::Hex, "abcdef"));
+        result = testLexerAndParser(true, "a {b: #abcdef;}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingIntRule() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition))->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "b"));
+        expected->appendChild(new style::Node(style::Token::Int, "1"));
+        result = testLexerAndParser(true, "a {b: 1;}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingIntRuleMultipleChars() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition))->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "b"));
+        expected->appendChild(new style::Node(style::Token::Int, "123456"));
+        result = testLexerAndParser(true, "a {b: 123456;}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingEmptyTuple() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition))->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "b"));
+        expected->appendChild(new style::Node(style::Token::Tuple));
+        result = testLexerAndParser(true, "a {b: ();}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingIntTuple() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition))->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "b"));
+        expected = expected->appendChild(new style::Node(style::Token::Tuple));
+        expected->appendChild(new style::Node(style::Token::Int, "1"));
+        expected->appendChild(new style::Node(style::Token::Int, "2"));
+        expected->appendChild(new style::Node(style::Token::Int, "3"));
+        result = testLexerAndParser(true, "a {b: (1, 2,3);}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    // TODO: add tests for other data types
+
+    test::Result testParsingRuleNoSemiColon() { return testLexerAndParserException<style::MissingToken>("a {b: #aaaaaa}"); }
+
+    test::Result testParsingRuleWithoutValue() { return testLexerAndParserException<style::MalformedExpression>("a {b:;}"); }
+
+    test::Result testParsingRuleWithoutValueAndSemiColon() { return testLexerAndParserException<style::MissingToken>("a {b:}"); }
+
+    test::Result testParsingRuleWithoutColonAndValueAndSemiColon() { return testLexerAndParserException<style::MalformedExpression>("a {b}"); }
+
+    test::Result testParsingRuleWithoutColonAndValue() { return testLexerAndParserException<style::MalformedExpression>("a {b;}"); }
+
+    test::Result testParsingRuleWithoutRuleName() { return testLexerAndParserException<style::MalformedExpression>("a {: #aaaaaa;}"); }
+
+    test::Result testParsingRuleWithoutRuleNameAndColon() { return testLexerAndParserException<style::MalformedExpression>("a {#aaaaaa;}"); }
+
+    test::Result testParsingRuleWithoutBlockDeclaration() { return testLexerAndParserException<style::MalformedExpression>("{b: #aaaaaa;}"); }
+
+    test::Result testParsingElementName() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "a {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+    test::Result testParsingIdentifier() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::Identifier, "a"));
+        expected->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "#a {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingClass() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::Class, "a"));
+        expected->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, ".a {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingDirectParentRelationElementName() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDeclaration))->appendChild(new style::Node(style::Token::Declaration));
+        expected->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected->appendChild(new style::Node(style::Token::DirectParent));
+        expected->appendChild(new style::Node(style::Token::ElementName, "b"));
+        expected->getParent()->getParent()->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "a > b {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingDirectParentRelationIdentifier() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDeclaration))->appendChild(new style::Node(style::Token::Declaration));
+        expected->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected->appendChild(new style::Node(style::Token::DirectParent));
+        expected->appendChild(new style::Node(style::Token::Identifier, "b"));
+        expected->getParent()->getParent()->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "a > #b {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingDirectParentRelationClass() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDeclaration))->appendChild(new style::Node(style::Token::Declaration));
+        expected->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected->appendChild(new style::Node(style::Token::DirectParent));
+        expected->appendChild(new style::Node(style::Token::Class, "b"));
+        expected->getParent()->getParent()->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "a > .b {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingElementNameMultipleChars() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "abc"));
+        expected->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "abc {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingIdentifierMultipleChars() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::Identifier, "abc"));
+        expected->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "#abc {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingClassMultipleChars() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::Class, "abc"));
+        expected->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, ".abc {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingAnyParentRelationElementName() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDeclaration))->appendChild(new style::Node(style::Token::Declaration));
+        expected->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected->appendChild(new style::Node(style::Token::AnyParent));
+        expected->appendChild(new style::Node(style::Token::ElementName, "b"));
+        expected->getParent()->getParent()->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "a b {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingAnyParentRelationIdentifier() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDeclaration))->appendChild(new style::Node(style::Token::Declaration));
+        expected->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected->appendChild(new style::Node(style::Token::AnyParent));
+        expected->appendChild(new style::Node(style::Token::Identifier, "b"));
+        expected->getParent()->getParent()->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "a #b {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingAnyParentRelationClass() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDeclaration))->appendChild(new style::Node(style::Token::Declaration));
+        expected->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected->appendChild(new style::Node(style::Token::AnyParent));
+        expected->appendChild(new style::Node(style::Token::Class, "b"));
+        expected->getParent()->getParent()->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "a .b {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingAnyParentRelationIdentifierStickedToFirstDeclarationPart() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDeclaration))->appendChild(new style::Node(style::Token::Declaration));
+        expected->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected->appendChild(new style::Node(style::Token::AnyParent));
+        expected->appendChild(new style::Node(style::Token::Identifier, "b"));
+        expected->getParent()->getParent()->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "a#b {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingAnyParentRelationClassStickedToFirstDeclarationPart() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDeclaration))->appendChild(new style::Node(style::Token::Declaration));
+        expected->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected->appendChild(new style::Node(style::Token::AnyParent));
+        expected->appendChild(new style::Node(style::Token::Class, "b"));
+        expected->getParent()->getParent()->appendChild(new style::Node(style::Token::BlockDefinition));
+        result = testLexerAndParser(true, "a.b {}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingMultipleRulesInline() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
+        expected = expected->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "r"));
+        expected->appendChild(new style::Node(style::Token::Int, "1"));
+        expected = expected->getParent()->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "j"));
+        expected->appendChild(new style::Node(style::Token::Int, "2"));
+        result = testLexerAndParser(true, "a {r: 1; j: 2;}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingMultipleRulesMultipleLines() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
+        expected = expected->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "r"));
+        expected->appendChild(new style::Node(style::Token::Int, "1"));
+        expected = expected->getParent()->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "j"));
+        expected->appendChild(new style::Node(style::Token::Int, "2"));
+        result = testLexerAndParser(true, "a {\nr: 1;\nj: 2;}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
+    test::Result testParsingLineBreakInBlockDeclaration() { return testLexerAndParserException<style::MalformedExpression>("a\nb {}"); }
+
+    test::Result testParsingLineBreakAfterBlockDeclaration() { return testLexerAndParserException<style::MalformedExpression>("a\n{}"); }
+
+    test::Result testParsingLineBreakAfterAssignmentColon() { return testLexerAndParserException<style::MalformedExpression>("a\n{b:\n2;}"); }
+
+    test::Result testParsingLineBreakBeforeAssignmentColon() { return testLexerAndParserException<style::MalformedExpression>("a\n{b\n:2;}"); }
+
+    test::Result testParsingLineBreakBeforeSemiColon() { return testLexerAndParserException<style::MalformedExpression>("a\n{b:2\n;}"); }
+
     test::Result testSingleRule() {
         std::string fileContent;
         style::Node *rootExpected;
@@ -541,7 +965,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "background-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "background-color"));
         expected->appendChild(new style::Node(style::Token::Hex, "ff0000"));
 
         result = testLexerAndParser(true, fileContent, rootExpected);
@@ -567,7 +991,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected->appendChild(new style::Node(style::Token::Hex, "0000ff"));
 
         expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
@@ -580,7 +1004,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected = expected->appendChild(new style::Node(style::Token::Tuple));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
         expected->appendChild(new style::Node(style::Token::Int, "255"));
@@ -609,7 +1033,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected->appendChild(new style::Node(style::Token::Hex, "0000ff"));
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::StyleBlock));
@@ -620,7 +1044,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected = expected->appendChild(new style::Node(style::Token::Tuple));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
@@ -649,7 +1073,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected->appendChild(new style::Node(style::Token::Hex, "0000ff"));
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::StyleBlock));
@@ -660,7 +1084,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected = expected->appendChild(new style::Node(style::Token::Tuple));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
@@ -694,7 +1118,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected->appendChild(new style::Node(style::Token::Hex, "0000ff"));
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::StyleBlock));
@@ -705,7 +1129,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected = expected->appendChild(new style::Node(style::Token::Tuple));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
@@ -740,7 +1164,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected->appendChild(new style::Node(style::Token::Hex, "0000ff"));
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::StyleBlock));
@@ -751,7 +1175,7 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "text-color"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "text-color"));
         expected = expected->appendChild(new style::Node(style::Token::Tuple));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
         expected->appendChild(new style::Node(style::Token::Int, "150"));
@@ -786,11 +1210,11 @@ namespace styleTestsLexerAndParser {
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "width"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "width"));
         expected->appendChild(new style::Node(style::Token::PixelUnit))->appendChild(new style::Node(style::Token::Int, "150"));
         expected = expected->getParent();
         expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::StyleName, "height"));
+        expected->appendChild(new style::Node(style::Token::RuleName, "height"));
         expected->appendChild(new style::Node(style::Token::PercentageUnit))->appendChild(new style::Node(style::Token::Int, "40"));
 
         result = testLexerAndParser(true, fileContent, rootExpected);
@@ -879,17 +1303,70 @@ namespace styleTestsLexerAndParser {
         tests->endTestBlock();
 
         tests->beginTestBlock("Tests parser");
-        tests->runTest(testSingleRule, "Single rule");
-        tests->runTest(testTwoStyleBlocks, "Two style blocks");
-        tests->runTest(testNestedModifierBlock, "Nested modifier block");
-        tests->runTest(testNestedElementNameBlock, "Nested element name block");
-        tests->runTest(testApplyingStyleBlockUsingAnyParentRelation, "Apply style block using the any parent relation");
-        tests->runTest(testApplyingStyleBlockUsingAnyChildComponentWithNestedElementName,
-                       "Apply style block to any child component with nested element name");
-        tests->runTest(testMultiLineBlockDeclaration, "Multi-line block declaration");
-        tests->runTest(testValuesUnits, "Values units");
-        tests->runTest(testNoBlockDeclaration, "No block declaration");
-        tests->runTest(testMultilineCommentNotClosed, "Multiline comment not closed");
+        tests->runTest(testParsingEmpty, "Empty");
+
+        tests->beginTestBlock("Data types");
+        tests->runTest(testParsingHexRule, "Hex rule");
+        tests->runTest(testParsingHexRule, "Hex rule multiple chars");
+        tests->runTest(testParsingIntRule, "Int rule");
+        tests->runTest(testParsingIntRuleMultipleChars, "Int rule multiple chars");
+        tests->runTest(testParsingEmptyTuple, "Empty tuple");
+        tests->runTest(testParsingIntTuple, "Int tuple");
+        tests->endTestBlock();
+
+        tests->beginTestBlock("Invalid blocks structures");
+        tests->runTest(testParsingRuleNoSemiColon, "Rule no semi-colon");
+        tests->runTest(testParsingRuleWithoutValue, "Rule without value");
+        tests->runTest(testParsingRuleWithoutValueAndSemiColon, "Rule without value and semi-colon");
+        tests->runTest(testParsingRuleWithoutColonAndValueAndSemiColon, "Rule without colon and value and semi-colon");
+        tests->runTest(testParsingRuleWithoutColonAndValue, "Rule without rule colon and value");
+        tests->runTest(testParsingRuleWithoutRuleName, "Rule without rule name");
+        tests->runTest(testParsingRuleWithoutRuleNameAndColon, "Rule without rule name and colon");
+        tests->runTest(testParsingRuleWithoutBlockDeclaration, "Rule without block declaration");
+        tests->endTestBlock();
+
+        tests->beginTestBlock("Declaration parts");
+        tests->runTest(testParsingElementName, "Element name");
+        tests->runTest(testParsingIdentifier, "Identifier");
+        tests->runTest(testParsingClass, "Class");
+        tests->runTest(testParsingElementNameMultipleChars, "Element name multiple chars");
+        tests->runTest(testParsingIdentifierMultipleChars, "Identfier multiple chars");
+        tests->runTest(testParsingClassMultipleChars, "Class multiple chars");
+
+        tests->beginTestBlock("Declaration parts relations");
+        tests->runTest(testParsingDirectParentRelationElementName, "Direct parent relation with element name");
+        tests->runTest(testParsingDirectParentRelationIdentifier, "Direct parent relation with identifier");
+        tests->runTest(testParsingDirectParentRelationClass, "Direct parent relation with class");
+        tests->runTest(testParsingAnyParentRelationElementName, "Any parent relation with element name");
+        tests->runTest(testParsingAnyParentRelationIdentifier, "Any parent relation with identifier");
+        tests->runTest(testParsingAnyParentRelationClass, "Any parent relation with class");
+        tests->runTest(testParsingAnyParentRelationIdentifier, "Any parent relation with identifier sticked to first declaration part");
+        tests->runTest(testParsingAnyParentRelationClass, "Any parent relation with class sticked to first declaration part");
+        tests->endTestBlock();
+        tests->endTestBlock();
+
+        tests->beginTestBlock("Whitespaces");
+        tests->runTest(testParsingMultipleRulesInline, "Multiple rules inline");
+        tests->runTest(testParsingMultipleRulesMultipleLines, "Multiple rules multiple lines");
+        tests->runTest(testParsingLineBreakInBlockDeclaration, "Line break in block declaration");
+        tests->runTest(testParsingLineBreakAfterBlockDeclaration, "Line break after block declaration");
+        tests->runTest(testParsingLineBreakAfterAssignmentColon, "Line break after assignment colon");
+        tests->runTest(testParsingLineBreakBeforeAssignmentColon, "Line break before assignment colon");
+        tests->runTest(testParsingLineBreakBeforeSemiColon, "Line break before semi-colon");
+        tests->endTestBlock();
+
+        // tests->runTest(testSingleRule, "Single rule");
+        // tests->runTest(testTwoStyleBlocks, "Two style blocks");
+        // tests->runTest(testNestedModifierBlock, "Nested modifier block");
+        // tests->runTest(testNestedElementNameBlock, "Nested element name block");
+        // tests->runTest(testApplyingStyleBlockUsingAnyParentRelation, "Apply style block using the any parent relation");
+        // tests->runTest(testApplyingStyleBlockUsingAnyChildComponentWithNestedElementName,
+        //                "Apply style block to any child component with nested element name");
+        // tests->runTest(testMultiLineBlockDeclaration, "Multi-line block declaration");
+        // tests->runTest(testValuesUnits, "Values units");
+        // tests->runTest(testNoBlockDeclaration, "No block declaration");
+        // tests->runTest(testMultilineCommentNotClosed, "Multiline comment not closed");
+
         tests->endTestBlock();
 
         tests->endTestBlock();

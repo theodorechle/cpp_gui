@@ -32,7 +32,7 @@ namespace style {
         DirectParent,
         AnyParent,
         SameElement,
-        StyleName,
+        RuleName,
         Assignment,
         ArgSeparator,
         ElementName,

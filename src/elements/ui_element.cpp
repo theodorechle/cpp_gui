@@ -153,11 +153,11 @@ namespace gui {
 
         SDL_FRect UIElement::createFRect(int x, int y, int width, int height) { return SDL_FRect{(float)x, (float)y, (float)width, (float)height}; }
 
-        int UIElement::getIntFromRule(const std::vector<std::string> &styleNames, int defaultSize, bool canInherit) const {
+        int UIElement::getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit) const {
             if (elementStyle == nullptr) return defaultSize;
             style::StyleValue *rule = nullptr;
             int size = 0;
-            elementStyle->getRule(styleNames, &rule, canInherit);
+            elementStyle->getRule(ruleNames, &rule, canInherit);
             if (rule == nullptr) {
                 return defaultSize;
             }
@@ -167,22 +167,22 @@ namespace gui {
             return size;
         }
 
-        std::string UIElement::getStringFromRule(const std::vector<std::string> &styleNames, const std::string &defaultString,
+        std::string UIElement::getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString,
                                                  bool canInherit) const {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
-            elementStyle->getRule(styleNames, &rule, canInherit);
+            elementStyle->getRule(ruleNames, &rule, canInherit);
             if (rule == nullptr || rule->getType() != style::StyleValueType::String) {
                 return defaultString;
             }
             return rule->getValue();
         }
 
-        std::string UIElement::getNameStringFromRule(const std::vector<std::string> &styleNames, const std::vector<std::string> &allowedValues,
+        std::string UIElement::getNameStringFromRule(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
                                                      const std::string &defaultString, bool canInherit) const {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
-            elementStyle->getRule(styleNames, &rule, canInherit);
+            elementStyle->getRule(ruleNames, &rule, canInherit);
             if (rule == nullptr || rule->getType() != style::StyleValueType::NameString || allowedValues.empty()
                 || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend()) {
                 return defaultString;
@@ -190,20 +190,20 @@ namespace gui {
             return rule->getValue();
         }
 
-        bool UIElement::getBoolFromRule(const std::vector<std::string> &styleNames, bool defaultBool, bool canInherit) const {
+        bool UIElement::getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool, bool canInherit) const {
             bool value;
             if (elementStyle == nullptr) return defaultBool;
             style::StyleValue *rule = nullptr;
-            elementStyle->getRule(styleNames, &rule, canInherit);
+            elementStyle->getRule(ruleNames, &rule, canInherit);
             if (converter::BoolConverter::convert(rule, &value)) return value;
             return defaultBool;
         }
 
-        int UIElement::computeSize(const std::vector<std::string> &styleNames, int defaultSize, bool canInherit, int parentSize, bool *found) {
+        int UIElement::computeSize(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit, int parentSize, bool *found) {
             if (elementStyle == nullptr) return defaultSize;
             style::StyleValue *rule = nullptr;
             int size = 0;
-            elementStyle->getRule(styleNames, &rule, canInherit);
+            elementStyle->getRule(ruleNames, &rule, canInherit);
             if (found != nullptr) (*found) = (rule != nullptr);
             if (rule == nullptr) {
                 return defaultSize;
@@ -214,11 +214,11 @@ namespace gui {
             return size;
         }
 
-        SDL_Color UIElement::computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor, bool canInherit) const {
+        SDL_Color UIElement::computeColor(const std::vector<std::string> &ruleNames, SDL_Color defaultColor, bool canInherit) const {
             if (elementStyle == nullptr) return defaultColor;
             style::StyleValue *rule = nullptr;
             SDL_Color color = SDL_Color();
-            elementStyle->getRule(styleNames, &rule, canInherit);
+            elementStyle->getRule(ruleNames, &rule, canInherit);
             if (rule == nullptr) {
                 return defaultColor;
             }

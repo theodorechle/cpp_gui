@@ -47,7 +47,7 @@ namespace style {
         Node *expressionTreeRoot = new Node(Token::NullRoot);
         Node *parsedTree = expressionTreeRoot;
         bool isValidName(const std::string &str, size_t start, size_t end);
-        bool isValidElementOrStyleName(const std::string &str);
+        bool isValidElementOrRuleName(const std::string &str);
         bool isWhiteSpace(Token token);
         // relations are direct parent, any parent, same element, ...
         bool isComponentRelation(Token token);

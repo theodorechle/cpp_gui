@@ -236,10 +236,10 @@ namespace style {
     StyleValuesMap *NodeToStyleComponentList::convertAppliedStyle(int fileNumber, int *ruleNumber) {
         StyleValuesMap *appliedStyleMap;
         StyleValue *styleValue;
-        std::string styleName;
+        std::string ruleName;
         Node *definition;
         Node *oldTree;
-        Node *styleNameNode;
+        Node *ruleNameNode;
         Token token;
         if (tree == nullptr || tree->getToken() != Token::BlockDefinition) return nullptr;
 
@@ -248,17 +248,17 @@ namespace style {
         while (definition != nullptr) {
             token = definition->getToken();
             if (token == Token::Assignment) {
-                styleNameNode = definition->getChild();
-                if (styleNameNode == nullptr || styleNameNode->getToken() != Token::StyleName) {
+                ruleNameNode = definition->getChild();
+                if (ruleNameNode == nullptr || ruleNameNode->getToken() != Token::RuleName) {
                     definition = definition->getNext();
                     continue;
                 }
-                styleName = styleNameNode->getValue();
-                styleNameNode = styleNameNode->getNext();
-                if (!isNodeNull(styleNameNode)) {
-                    styleValue = convertStyleNodeToStyleValue(styleNameNode);
+                ruleName = ruleNameNode->getValue();
+                ruleNameNode = ruleNameNode->getNext();
+                if (!isNodeNull(ruleNameNode)) {
+                    styleValue = convertStyleNodeToStyleValue(ruleNameNode);
                     if (styleValue != nullptr) {
-                        (*appliedStyleMap)[styleName] = StyleRule{styleValue, true, 0, fileNumber, *ruleNumber};
+                        (*appliedStyleMap)[ruleName] = StyleRule{styleValue, true, 0, fileNumber, *ruleNumber};
                         (*ruleNumber)++;
                     }
                 }

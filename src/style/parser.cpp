@@ -14,7 +14,7 @@ namespace style {
         return true;
     }
 
-    bool Parser::isValidElementOrStyleName(const string &str) {
+    bool Parser::isValidElementOrRuleName(const string &str) {
         if (!isalpha(str[0])) return false;
         return str.size() == 1 || isValidName(str, 1, str.size());
     }
@@ -201,7 +201,7 @@ namespace style {
         Node *lastChild = parsedTree->getLastChild();
         Node *newChild;
         if (parsedTree->getToken() == Token::BlockDefinition && lastChild != nullptr && lastChild->getToken() == Token::Name) {
-            lastChild->setToken(Token::StyleName);
+            lastChild->setToken(Token::RuleName);
             newChild = new Node(Token::Assignment);
             newChild->appendChild(lastChild->copyNodeWithChilds());
             parsedTree->replaceChild(lastChild, newChild);
@@ -312,7 +312,8 @@ namespace style {
             parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock));
             parsedTree = parsedTree->appendChild(new Node(Token::BlockDeclaration));
             parsedTree = parsedTree->appendChild(new Node(Token::Declaration));
-        } else return;
+        }
+        else return;
         parsedTree->appendChild(new Node(Token::Star));
     }
 
@@ -434,8 +435,9 @@ namespace style {
     void Parser::parseClosingCurlyBracket() {
         removeWhiteSpaces();
 
-        if (parsedTree->getToken() != Token::BlockDefinition)
-            throw MalformedExpression("A closing curly bracket '}' needs an opening curly bracket '{'");
+        if (parsedTree->getToken() == Token::Assignment) throw MissingToken("Missing semi-colon after assignment");
+        else if (parsedTree->getToken() != Token::BlockDefinition)
+            throw MissingToken("A closing curly bracket '}' needs an opening curly bracket '{'");
         parsedTree = parsedTree->getParent()->getParent();
     }
 
@@ -458,7 +460,7 @@ namespace style {
             parsedTree->appendChild(new Node{Token::PseudoName, parsedTree->getValue()});
         }
         else {
-            if (isValidElementOrStyleName(currentToken->getValue())) parseName();
+            if (isValidElementOrRuleName(currentToken->getValue())) parseName();
             else throw MalformedExpression("Illegal pseudo name placement");
         }
     }

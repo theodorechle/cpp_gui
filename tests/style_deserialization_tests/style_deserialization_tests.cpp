@@ -262,7 +262,7 @@ namespace styleDeserializationTests {
         return result;
     }
 
-    test::Result testStyleNameAndValueStickedToAssignmentColon() {
+    test::Result testRuleNameAndValueStickedToAssignmentColon() {
         style::StyleComponentDataList expectedData = style::StyleComponentDataList();
         style::StyleValuesMap expectedStyleMap = style::StyleValuesMap();
         style::StyleValue *styleValue;
@@ -290,9 +290,9 @@ namespace styleDeserializationTests {
 
     test::Result testMissingStyleValue() { return checkDeserializationError<style::MalformedExpression>(".container>label#red{text-color;}"); }
 
-    test::Result testMissingStyleName() { return checkDeserializationError<style::MalformedExpression>(".container>label#red{: value}"); }
+    test::Result testMissingRuleName() { return checkDeserializationError<style::MalformedExpression>(".container>label#red{: value}"); }
 
-    test::Result testMissingStyleNameAndValue() { return checkDeserializationError<style::MalformedExpression>(".container>label#red{:}"); }
+    test::Result testMissingRuleNameAndValue() { return checkDeserializationError<style::MalformedExpression>(".container>label#red{:}"); }
 
     test::Result testMissingBlockDeclaration() { return checkDeserializationError<style::MalformedExpression>("{text-color: #ffffff;}"); }
 
@@ -306,11 +306,11 @@ namespace styleDeserializationTests {
         tests->runTest(testSingleRule, "deserializing a single rule");
         tests->runTest(testDirectParent, "direct parent");
         tests->runTest(testDirectParentWithoutSpacesAround, "direct parent without spaces");
-        tests->runTest(testStyleNameAndValueStickedToAssignmentColon, "style name and value sticked to the assignment colon");
+        tests->runTest(testRuleNameAndValueStickedToAssignmentColon, "style name and value sticked to the assignment colon");
         tests->runTest(testMissingSemiColonAfterAssignment, "missing semi-colon after assignment");
         tests->runTest(testMissingStyleValue, "missing style value");
-        tests->runTest(testMissingStyleName, "missing style name");
-        tests->runTest(testMissingStyleNameAndValue, "missing style name and value");
+        tests->runTest(testMissingRuleName, "missing style name");
+        tests->runTest(testMissingRuleNameAndValue, "missing style name and value");
         tests->runTest(testMissingBlockDeclaration, "missing block declaration");
         tests->runTest(testMissingBlockDeclarationComponentBeforeDirectParentRelation,
                       "missing block declaration component before direct parent relation");

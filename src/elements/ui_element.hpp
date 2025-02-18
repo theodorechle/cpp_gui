@@ -74,8 +74,8 @@ namespace gui {
             TTF_TextEngine *getTextEngine() { return textEngine; }
             static SDL_FRect createFRect(int x, int y, int width, int height);
 
-            int getIntFromRule(const std::vector<std::string> &styleNames, int defaultSize = 0, bool canInherit = false) const;
-            std::string getStringFromRule(const std::vector<std::string> &styleNames, const std::string &defaultString = "",
+            int getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize = 0, bool canInherit = false) const;
+            std::string getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString = "",
                                           bool canInherit = false) const;
 
             /**
@@ -91,23 +91,23 @@ namespace gui {
              *
              * If no allowed value is given, it will return the found value.
              */
-            std::string getNameStringFromRule(const std::vector<std::string> &styleNames, const std::vector<std::string> &allowedValues,
+            std::string getNameStringFromRule(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
                                               const std::string &defaultString = "", bool canInherit = false) const;
 
-            bool getBoolFromRule(const std::vector<std::string> &styleNames, bool defaultBool = false, bool canInherit = false) const;
+            bool getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool = false, bool canInherit = false) const;
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
              * Else returns default;
              */
-            int computeSize(const std::vector<std::string> &styleNames, int defaultSize = 0, bool canInherit = false, int parentSize = 0,
+            int computeSize(const std::vector<std::string> &ruleNames, int defaultSize = 0, bool canInherit = false, int parentSize = 0,
                             bool *found = nullptr);
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
              * Else returns default;
              */
-            SDL_Color computeColor(const std::vector<std::string> &styleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
+            SDL_Color computeColor(const std::vector<std::string> &ruleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
                                    bool canInherit = false) const;
 
             void askRendering() const;
