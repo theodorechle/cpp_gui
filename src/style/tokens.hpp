@@ -24,6 +24,7 @@ namespace style {
         Dot,
         Ampersand,
         At,
+        Star,
         // Used only by the parser
         StyleBlock,
         BlockDeclaration,
@@ -35,6 +36,7 @@ namespace style {
         RuleName,
         Assignment,
         ArgSeparator,
+        StarWildcard,
         ElementName,
         Name,
         Class,
@@ -45,7 +47,6 @@ namespace style {
         Space,
         LineBreak,
         Empty,
-        Star,
         // NullRoot is used only when an algorithm must start with an existing node
         NullRoot,
         // value types

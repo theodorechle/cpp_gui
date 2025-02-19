@@ -140,6 +140,9 @@ namespace gui {
                 }
                 for (style::StyleComponentDataList::const_reverse_iterator it = listEndIt; it != componentsList->crend(); it++) {
                     switch (it->second) {
+                    case style::StyleRelation::StarWildcard:
+                        selectorExists = true;
+                        break;
                     case style::StyleRelation::SameElement:
                         selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
                         break;

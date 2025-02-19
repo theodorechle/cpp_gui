@@ -47,6 +47,8 @@ namespace style {
 
     StyleRelation tokenTypeToStyleRelation(Token token) {
         switch (token) {
+        case Token::StarWildcard:
+            return StyleRelation::StarWildcard;
         case Token::DirectParent:
             return StyleRelation::DirectParent;
         case Token::AnyParent:
@@ -373,10 +375,10 @@ namespace style {
         styleDefinitions = new std::list<StyleBlock *>();
 
         flattenStyle(styleTree);
-        #ifdef DEBUG
+#ifdef DEBUG
         std::cerr << "flattened style\n";
         styleTree->display(std::cerr);
-        #endif
+#endif
         tree = styleTree->getChild();
 
         while (tree != nullptr) {

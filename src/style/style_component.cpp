@@ -50,6 +50,8 @@ namespace style {
 
     std::string styleRelationToString(StyleRelation token) {
         switch (token) {
+        case StyleRelation::StarWildcard:
+            return "StarWildcard";
         case StyleRelation::SameElement:
             return "SameElement";
         case StyleRelation::DirectParent:

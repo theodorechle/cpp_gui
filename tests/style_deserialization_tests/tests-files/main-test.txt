@@ -1,4 +1,4 @@
-@import "tests/style_tests/tests-files/imported-file.txt";
+@import "tests/style_deserialization_tests/tests-files/imported-file.txt";
 
 #red-container {
     // padding: 100px;
@@ -79,4 +79,8 @@ list {
 input {
     border-top: 1px;
     width: 50px;
+}
+
+* { // TODO: fix star wildcard
+    background-color: #000000;
 }

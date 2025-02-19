@@ -30,13 +30,15 @@ namespace style {
         case Token::MultiLineComment:
             return "MultiLineComment";
         case Token::Sharp:
-            return "Sharp";
+        return "Sharp";
         case Token::Dot:
-            return "Dot";
+        return "Dot";
         case Token::Ampersand:
-            return "Ampersand";
+        return "Ampersand";
         case Token::At:
-            return "At";
+        return "At";
+        case Token::Star:
+            return "Star";
         // Used only by the parser
         case Token::StyleBlock:
             return "StyleBlock";
@@ -58,6 +60,8 @@ namespace style {
             return "Assignment";
         case Token::ArgSeparator:
             return "ArgSeparator";
+        case Token::StarWildcard:
+            return "StarWildcard";
         case Token::ElementName:
             return "ElementName";
         case Token::Name:
@@ -77,8 +81,6 @@ namespace style {
             return "LineBreak";
         case Token::Empty:
             return "Empty";
-        case Token::Star:
-            return "Star";
         // NullRoot is used only when an algorithm must start with an existing node
         case Token::NullRoot:
             return "NullRoot";

@@ -216,7 +216,7 @@ namespace style {
 
     void Parser::parseSemiColon() {
         removeSpace();
-        if (parsedTree->getToken() == Token::Assignment || parsedTree->getToken() == Token::Import) parsedTree = parsedTree->getParent();
+        if ((parsedTree->getToken() == Token::Assignment && parsedTree->getNbChilds() > 1) || parsedTree->getToken() == Token::Import) parsedTree = parsedTree->getParent();
         else throw MalformedExpression("A semi-colon must be at the end of an assignment");
     }
 
@@ -309,12 +309,12 @@ namespace style {
         }
         else if (token == Token::Declaration) {
             removeSpace();
-            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock));
-            parsedTree = parsedTree->appendChild(new Node(Token::BlockDeclaration));
-            parsedTree = parsedTree->appendChild(new Node(Token::Declaration));
+            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock))
+                             ->appendChild(new Node(Token::BlockDeclaration))
+                             ->appendChild(new Node(Token::Declaration));
         }
         else return;
-        parsedTree->appendChild(new Node(Token::Star));
+        parsedTree->appendChild(new Node(Token::StarWildcard));
     }
 
     void Parser::parseString() {
@@ -434,8 +434,9 @@ namespace style {
 
     void Parser::parseClosingCurlyBracket() {
         removeWhiteSpaces();
-
         if (parsedTree->getToken() == Token::Assignment) throw MissingToken("Missing semi-colon after assignment");
+        Node *lastChild = parsedTree->getLastChild();
+        if (lastChild != nullptr && lastChild->getToken() != Token::Assignment && lastChild->getToken() != Token::StyleBlock) throw MalformedExpression("A block definition must only contains assgnments and other blocks");
         else if (parsedTree->getToken() != Token::BlockDefinition)
             throw MissingToken("A closing curly bracket '}' needs an opening curly bracket '{'");
         parsedTree = parsedTree->getParent()->getParent();

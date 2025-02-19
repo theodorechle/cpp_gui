@@ -285,7 +285,7 @@ namespace styleDeserializationTests {
     }
 
     test::Result testMissingSemiColonAfterAssignment() {
-        return checkDeserializationError<style::MalformedExpression>(".container      label#red{text-color : #ff0000}");
+        return checkDeserializationError<style::MissingToken>(".container      label#red{text-color : #ff0000}");
     }
 
     test::Result testMissingStyleValue() { return checkDeserializationError<style::MalformedExpression>(".container>label#red{text-color;}"); }

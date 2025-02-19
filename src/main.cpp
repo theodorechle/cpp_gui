@@ -59,7 +59,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     *appstate = new AppState(manager, sdl_window, sdl_renderer, elementsStyleManager, textEngine);
 
-    elementsStyleManager->addStyleFile("tests/style_tests/tests-files/main-test.txt");
+    elementsStyleManager->addStyleFile("tests/style_deserialization_tests/tests-files/main-test.txt");
 
     gui::element::UIElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
     manager->setElementsTree(parentContainer);
@@ -83,7 +83,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
     gui::elementStyle::manager::ElementsStyleManager *subElementsStyleManager = new gui::elementStyle::manager::ElementsStyleManager();
-    subElementsStyleManager->addStyleFile("tests/style_tests/tests-files/main-test-sub-view.txt");
+    subElementsStyleManager->addStyleFile("tests/style_deserialization_tests/tests-files/main-test-sub-view.txt");
 
     parentContainer->addChild(new gui::element::ViewContainer(subManager, subElementsStyleManager));
 
