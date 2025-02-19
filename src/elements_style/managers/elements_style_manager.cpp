@@ -81,6 +81,13 @@ namespace gui {
                 }
             }
 
+            void ElementsStyleManager::setFontsPath(const std::string &path) {
+                if (path[path.size()] != '/') fontsPath = path + '/';
+                else fontsPath = path;
+            }
+
+            const std::string &ElementsStyleManager::getFontsPath() const { return fontsPath; }
+
             int ElementsStyleManager::addStyleFile(const std::string &fileName) {
                 int fileNumber = findFile(fileName);
                 if (fileNumber != -1) {

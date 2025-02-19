@@ -29,6 +29,8 @@ namespace gui {
             ElementStyle *child = nullptr;
             ElementStyle *next = nullptr;
 
+            std::string fontsPath = "";
+
             static bool compareRulesPriorityDescending(style::StyleRule rule1, style::StyleRule rule2);
             static bool compareRulesPriorityAscending(style::StyleRule rule1, style::StyleRule rule2);
             void setParent(ElementStyle *parent) { this->parent = parent; }
@@ -59,7 +61,7 @@ namespace gui {
             bool getRule(const std::string &ruleName, style::StyleValue **ruleValue, bool canInherit = false,
                          style::StyleValue *defaultStyle = nullptr) const;
             bool getRule(const std::vector<std::string> &rulesNames, style::StyleValue **ruleValue, bool canInherit = false,
-                                       style::StyleValue *defaultStyle = nullptr) const;
+                         style::StyleValue *defaultStyle = nullptr) const;
             bool ruleExists(const std::string &ruleName) const;
             bool ruleExists(int fileNumber, int ruleNumber) const;
             const std::set<style::StyleComponentData> *getSelectors() { return &selectors; }
@@ -70,6 +72,9 @@ namespace gui {
             void addRuleAffectedByModifier(int fileNumber, int ruleNumber, std::string modifierName);
             void toggleRule(int fileNumber, int ruleNumber);
             void toggleRule(int fileNumber, int ruleNumber, bool enabled);
+
+            void setFontsPath(const std::string &path);
+            const std::string &getFontsPath() const { return fontsPath; }
         };
 
     } // namespace elementStyle

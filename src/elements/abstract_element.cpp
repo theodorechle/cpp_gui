@@ -19,6 +19,9 @@ namespace gui {
             : elementName{elementName}, elementsStyleManager{elementsStyleManager} {
 
             elementStyle = new gui::elementStyle::ElementStyle();
+            if (elementsStyleManager != nullptr) {
+                elementStyle->setFontsPath(elementsStyleManager->getFontsPath());
+            }
 
             elementStyle->addSelector(elementName, style::StyleComponentType::ElementName);
             // set selectors

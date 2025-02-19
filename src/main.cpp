@@ -1,13 +1,13 @@
 #include "app_utils/app_state.hpp"
-#include "elements/container.hpp"
-#include "elements/list.hpp"
-#include "elements/label.hpp"
 #include "elements/button.hpp"
+#include "elements/container.hpp"
 #include "elements/input.hpp"
-#include "elements/view_container.hpp"
+#include "elements/label.hpp"
+#include "elements/list.hpp"
 #include "elements/managers/abstract_manager.hpp"
 #include "elements/managers/ui_manager.hpp"
 #include "elements/ui_element.hpp"
+#include "elements/view_container.hpp"
 #include "elements_style/element_style.hpp"
 #include "elements_style/managers/elements_style_manager.hpp"
 #include "style/style_deserializer.hpp"
@@ -17,13 +17,9 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-void displayHelloWorld() {
-    std::cout << "hello world!\n";
-}
+void displayHelloWorld() { std::cout << "hello world!\n"; }
 
-void displayAlsoHelloWorld() {
-    std::cout << "also hello world!\n";
-}
+void displayAlsoHelloWorld() { std::cout << "also hello world!\n"; }
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     int windowLength = 500;
@@ -59,6 +55,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     *appstate = new AppState(manager, sdl_window, sdl_renderer, elementsStyleManager, textEngine);
 
+    elementsStyleManager->setFontsPath("tests/fonts");
     elementsStyleManager->addStyleFile("tests/style_deserialization_tests/tests-files/main-test.txt");
 
     gui::element::UIElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
@@ -66,7 +63,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
-    parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager, &labelClasses, "test-label", textEngine));
+    parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager,
+                                                      &labelClasses, "test-label", textEngine));
     parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
     gui::element::UIElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
     // FIXME: button click zone is bigger than displayed
@@ -79,7 +77,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     list->addChild(new gui::element::Label("hello world!", elementsStyleManager, &lastLabelClasses, "", textEngine));
     parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
 
-    
     gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
     gui::elementStyle::manager::ElementsStyleManager *subElementsStyleManager = new gui::elementStyle::manager::ElementsStyleManager();

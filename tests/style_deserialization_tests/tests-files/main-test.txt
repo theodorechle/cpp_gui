@@ -5,8 +5,7 @@
     border: 10px;
     font-size: 20;
     /*
-    fonts must be provided in /src/fonts
-    so the gui can find them
+    you can specify the font default directory in your program using the setFontsPath method of the ElementsStyleManager class instances
     */
     font-name: "Courgette-Regular.ttf";
     

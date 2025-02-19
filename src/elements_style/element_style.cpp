@@ -232,5 +232,10 @@ namespace gui {
             }
         }
 
+        void ElementStyle::setFontsPath(const std::string &path) {
+            if (path[path.size()] != '/') fontsPath = path + '/';
+            else fontsPath = path;
+        }
+
     } // namespace elementStyle
 } // namespace gui
