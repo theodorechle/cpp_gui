@@ -9,6 +9,13 @@ namespace gui {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't open font: %s", SDL_GetError());
                 return;
             }
+            int style = TTF_STYLE_NORMAL;
+            std::string fontWeight = getNameStringFromRule({"font-weight"}, {"normal", "bold"}, "normal", true);
+            if (fontWeight == "bold") style |= TTF_STYLE_BOLD;
+            if (getBoolFromRule({"font-italic"}, false, true)) style |= TTF_STYLE_ITALIC;
+            if (getBoolFromRule({"font-underline"}, false, true)) style |= TTF_STYLE_UNDERLINE;
+            if (getBoolFromRule({"font-strike-through"}, false, true)) style |= TTF_STYLE_STRIKETHROUGH;
+            TTF_SetFontStyle(ttfFont, style);
         }
 
         void Label::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) { getTextSize(desiredWidth, desiredHeight); }
@@ -73,7 +80,6 @@ namespace gui {
             else {
                 rect.y += (rect.h - textHeight);
             }
-
             if (!TTF_DrawRendererText(ttfText, rect.x, rect.y)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't render text: %s", SDL_GetError());
             }

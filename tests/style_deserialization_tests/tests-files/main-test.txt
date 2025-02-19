@@ -54,7 +54,10 @@ list {
 }
 
 #hello-world-button {
-
+    font-strike-through: true;
+    font-underline: true;
+    font-weight: bold;
+    font-italic: true;
     :hovered {
         background-color: #aaaaaa;
     }
