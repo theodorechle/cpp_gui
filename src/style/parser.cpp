@@ -234,12 +234,12 @@ namespace style {
                 parseIdentifier();
                 return;
             }
-            if (currentToken->getToken() != Token::PseudoName) return;
+            if (currentToken->getToken() != Token::PseudoName && currentToken->getToken() != Token::Int) return;
             parsedTree->deleteSpecificChild(lastChild);
             parsedTree->appendChild(new Node{Token::Hex, currentToken->getValue()});
         }
         else {
-            if (currentToken->getToken() != Token::PseudoName) return;
+            if (currentToken->getToken() != Token::PseudoName && currentToken->getToken() != Token::Int) return;
             if (parsedTree->getNbChilds() > 1) throw MalformedExpression("Can only have one rvalue in an assignment");
             parsedTree->appendChild(new Node{Token::Hex, currentToken->getValue()});
         }

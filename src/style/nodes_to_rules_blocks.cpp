@@ -1,4 +1,4 @@
-#include "node_to_style_component_list.hpp"
+#include "nodes_to_rules_blocks.hpp"
 #include "style_component.hpp"
 
 namespace style {

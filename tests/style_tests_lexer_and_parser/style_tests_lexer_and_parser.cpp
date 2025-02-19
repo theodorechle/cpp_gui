@@ -571,6 +571,24 @@ namespace styleTestsLexerAndParser {
         return result;
     }
 
+    test::Result testParsingHexRuleOnlyInts() {
+        style::Node *rootExpected;
+        style::Node *expected;
+        test::Result result;
+
+        rootExpected = new style::Node(style::Token::NullRoot);
+        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
+        expected->appendChild(new style::Node(style::Token::BlockDeclaration))
+            ->appendChild(new style::Node(style::Token::Declaration))
+            ->appendChild(new style::Node(style::Token::ElementName, "a"));
+        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition))->appendChild(new style::Node(style::Token::Assignment));
+        expected->appendChild(new style::Node(style::Token::RuleName, "b"));
+        expected->appendChild(new style::Node(style::Token::Hex, "000000"));
+        result = testLexerAndParser(true, "a {b: #000000;}", rootExpected);
+        delete rootExpected;
+        return result;
+    }
+
     test::Result testParsingIntRule() {
         style::Node *rootExpected;
         style::Node *expected;
@@ -1307,7 +1325,8 @@ namespace styleTestsLexerAndParser {
 
         tests->beginTestBlock("Data types");
         tests->runTest(testParsingHexRule, "Hex rule");
-        tests->runTest(testParsingHexRule, "Hex rule multiple chars");
+        tests->runTest(testParsingHexRuleMultipleChars, "Hex rule multiple chars");
+        tests->runTest(testParsingHexRuleOnlyInts, "Hex rule only ints");
         tests->runTest(testParsingIntRule, "Int rule");
         tests->runTest(testParsingIntRuleMultipleChars, "Int rule multiple chars");
         tests->runTest(testParsingEmptyTuple, "Empty tuple");

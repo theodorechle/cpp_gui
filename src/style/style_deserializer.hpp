@@ -2,7 +2,7 @@
 #define STYLE_DESERIALIZER_HPP
 
 #include "lexer.hpp"
-#include "node_to_style_component_list.hpp"
+#include "nodes_to_rules_blocks.hpp"
 #include "parser.hpp"
 #include "style_component.hpp"
 #include <fstream>
