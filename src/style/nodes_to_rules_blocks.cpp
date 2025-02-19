@@ -5,6 +5,8 @@ namespace style {
 
     StyleComponentType tokenTypeToStyleComponentType(Token token) {
         switch (token) {
+        case Token::StarWildcard:
+            return StyleComponentType::StarWildcard;
         case Token::ElementName:
             return StyleComponentType::ElementName;
         case Token::Class:
@@ -47,8 +49,6 @@ namespace style {
 
     StyleRelation tokenTypeToStyleRelation(Token token) {
         switch (token) {
-        case Token::StarWildcard:
-            return StyleRelation::StarWildcard;
         case Token::DirectParent:
             return StyleRelation::DirectParent;
         case Token::AnyParent:

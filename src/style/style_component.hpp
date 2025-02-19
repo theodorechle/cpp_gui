@@ -12,11 +12,11 @@
 
 namespace style {
 
-    enum class StyleComponentType { ElementName, Class, Modifier, Identifier, Null };
+    enum class StyleComponentType { StarWildcard, ElementName, Class, Modifier, Identifier, Null };
 
     enum class StyleValueType { Int, Float, Bool, String, Tuple, Function, PercentageUnit, PixelUnit, Hex, NameString, Null };
 
-    enum class StyleRelation { StarWildcard, SameElement, DirectParent, AnyParent, Null };
+    enum class StyleRelation { SameElement, DirectParent, AnyParent, Null };
 
     StyleComponentType tokenTypeToStyleComponentType(Token token);
     StyleValueType tokenTypeToStyleValueType(Token token);

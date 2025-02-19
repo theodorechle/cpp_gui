@@ -4,6 +4,8 @@ namespace style {
 
     std::string styleComponentTypeToString(StyleComponentType token) {
         switch (token) {
+        case StyleComponentType::StarWildcard:
+            return "StarWildcard";
         case StyleComponentType::ElementName:
             return "ElementName";
         case StyleComponentType::Class:
@@ -50,8 +52,6 @@ namespace style {
 
     std::string styleRelationToString(StyleRelation token) {
         switch (token) {
-        case StyleRelation::StarWildcard:
-            return "StarWildcard";
         case StyleRelation::SameElement:
             return "SameElement";
         case StyleRelation::DirectParent:

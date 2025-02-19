@@ -43,16 +43,16 @@ namespace style {
 
     void Parser::parse() {
         try {
-            while (currentToken != nullptr) {
+            while (currentNode != nullptr) {
 #ifdef DEBUG
-                cerr << "\nActual token : " << tokenToString(currentToken->getToken()) << ": '" << currentToken->getValue() << "'" << "\n";
+                cerr << "\nActual token : " << tokenToString(currentNode->getToken()) << ": '" << currentNode->getValue() << "'" << "\n";
 #endif
-                switch (currentToken->getToken()) {
+                switch (currentNode->getToken()) {
                 case Token::Space:
                     parseSpace();
                     break;
                 case Token::LineBreak:
-                    parseLineReturn();
+                    parseLineBreak();
                     break;
                 case Token::OneLineComment:
                     parseOneLineComment();
@@ -115,14 +115,14 @@ namespace style {
                     parseClosingCurlyBracket();
                     break;
                 default:
-                    throw UnknownToken(*currentToken);
+                    throw UnknownToken(*currentNode);
                 }
 #ifdef DEBUG
                 cerr << "Root :\n";
                 expressionTreeRoot->display(cerr);
                 cerr << "\n";
 #endif
-                currentToken = currentToken->getNext();
+                currentNode = currentNode->getNext();
             }
             removeWhiteSpaces();
 #ifdef DEBUG
@@ -146,15 +146,15 @@ namespace style {
                 if (lastChild == nullptr || !isComponentRelation(lastChild->getToken())) parsedTree->appendChild(new Node(Token::AnyParent));
             }
         }
-        else parsedTree->appendChild(currentToken->copyNode());
+        else parsedTree->appendChild(currentNode->copyNode());
     }
 
-    void Parser::parseLineReturn() {
+    void Parser::parseLineBreak() {
         Token token = parsedTree->getToken();
         if (token != Token::NullRoot && token != Token::BlockDefinition) {
-            throw MalformedExpression("A line return can only be between blocks declarations and between assignments");
+            throw MalformedExpression("A line break can only be between blocks declarations or assignments");
         }
-        parsedTree->appendChild(currentToken->copyNode());
+        parsedTree->appendChild(currentNode->copyNode());
     }
 
     void Parser::parseOneLineComment() {}
@@ -173,11 +173,11 @@ namespace style {
             if (lastChild != nullptr && lastChild->getToken() != Token::ArgSeparator)
                 throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");
             parsedTree->deleteSpecificChild(lastChild);
-            parsedTree->appendChild(currentToken->copyNode());
+            parsedTree->appendChild(currentNode->copyNode());
         }
         else {
             if (parsedTree->getNbChilds() > 1) throw MalformedExpression("Can only have one rvalue in an assignment");
-            parsedTree->appendChild(currentToken->copyNode());
+            parsedTree->appendChild(currentNode->copyNode());
         }
     }
 
@@ -207,8 +207,8 @@ namespace style {
             parsedTree->replaceChild(lastChild, newChild);
             parsedTree = newChild;
         }
-        else if (currentToken->getNext()->getToken() == Token::PseudoName) {
-            currentToken = currentToken->getNext();
+        else if (currentNode->getNext()->getToken() == Token::PseudoName) {
+            currentNode = currentNode->getNext();
             parseModifier();
         }
         else throw MalformedExpression("A colon must be inside of a style block");
@@ -216,14 +216,15 @@ namespace style {
 
     void Parser::parseSemiColon() {
         removeSpace();
-        if ((parsedTree->getToken() == Token::Assignment && parsedTree->getNbChilds() > 1) || parsedTree->getToken() == Token::Import) parsedTree = parsedTree->getParent();
+        if ((parsedTree->getToken() == Token::Assignment && parsedTree->getNbChilds() > 1) || parsedTree->getToken() == Token::Import)
+            parsedTree = parsedTree->getParent();
         else throw MalformedExpression("A semi-colon must be at the end of an assignment");
     }
 
     void Parser::parseSharp() {
         Node *lastChild;
         removeSpace();
-        currentToken = currentToken->getNext();
+        currentNode = currentNode->getNext();
         if (parsedTree->getToken() != Token::Assignment) {
             if (parsedTree->getToken() != Token::Tuple && parsedTree->getToken() != Token::Function) {
                 parseIdentifier();
@@ -234,21 +235,21 @@ namespace style {
                 parseIdentifier();
                 return;
             }
-            if (currentToken->getToken() != Token::PseudoName && currentToken->getToken() != Token::Int) return;
+            if (currentNode->getToken() != Token::PseudoName && currentNode->getToken() != Token::Int) return;
             parsedTree->deleteSpecificChild(lastChild);
-            parsedTree->appendChild(new Node{Token::Hex, currentToken->getValue()});
+            parsedTree->appendChild(new Node{Token::Hex, currentNode->getValue()});
         }
         else {
-            if (currentToken->getToken() != Token::PseudoName && currentToken->getToken() != Token::Int) return;
+            if (currentNode->getToken() != Token::PseudoName && currentNode->getToken() != Token::Int) return;
             if (parsedTree->getNbChilds() > 1) throw MalformedExpression("Can only have one rvalue in an assignment");
-            parsedTree->appendChild(new Node{Token::Hex, currentToken->getValue()});
+            parsedTree->appendChild(new Node{Token::Hex, currentNode->getValue()});
         }
     }
 
     void Parser::parseDot() {
         removeSpace();
-        if (currentToken->getNext()->getToken() == Token::PseudoName) {
-            currentToken = currentToken->getNext();
+        if (currentNode->getNext()->getToken() == Token::PseudoName) {
+            currentNode = currentNode->getNext();
             parseClass();
         }
         else throw MalformedExpression("Illegal '.' placement");
@@ -275,9 +276,9 @@ namespace style {
                 if (token == Token::NullRoot)
                     throw MissingToken("A '&' token must not be the first token of a block declaration if not a nested block");
             }
-            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock));
-            parsedTree = parsedTree->appendChild(new Node(Token::BlockDeclaration));
-            parsedTree = parsedTree->appendChild(new Node(Token::Declaration));
+            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock))
+                             ->appendChild(new Node(Token::BlockDeclaration))
+                             ->appendChild(new Node(Token::Declaration));
             parsedTree->appendChild(lastChildCopy);
             parsedTree->appendChild(new Node(Token::SameElement));
         }
@@ -295,9 +296,9 @@ namespace style {
 
     void Parser::parseAt() {
         if (parsedTree->getToken() != Token::NullRoot) throw MalformedExpression("A '@' (at) token must be on the root level");
-        currentToken = currentToken->getNext();
-        if (currentToken == nullptr) throw MalformedExpression("A '@' (at) token must not be alone");
-        if (currentToken->getToken() == Token::PseudoName && currentToken->getValue() == "import")
+        currentNode = currentNode->getNext();
+        if (currentNode == nullptr) throw MalformedExpression("A '@' (at) token must not be alone");
+        if (currentNode->getToken() == Token::PseudoName && currentNode->getValue() == "import")
             parsedTree = parsedTree->appendChild(new Node{Token::Import});
         else throw MalformedExpression("Invalid '@' (at) placement");
     }
@@ -305,13 +306,13 @@ namespace style {
     void Parser::parseStar() {
         Token token = parsedTree->getToken();
         if (token == Token::NullRoot || token == Token::BlockDefinition) {
-            removeSpace();
-        }
-        else if (token == Token::Declaration) {
-            removeSpace();
+            removeWhiteSpaces();
             parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock))
                              ->appendChild(new Node(Token::BlockDeclaration))
                              ->appendChild(new Node(Token::Declaration));
+        }
+        else if (token == Token::Declaration) {
+            removeSpace();
         }
         else return;
         parsedTree->appendChild(new Node(Token::StarWildcard));
@@ -322,7 +323,7 @@ namespace style {
             if (parsedTree->getLastChild()->getToken() != Token::Space)
                 throw MalformedExpression("A space is needed between '@import' and the file name");
             removeSpace();
-            parsedTree->setValue(currentToken->getValue());
+            parsedTree->setValue(currentNode->getValue());
         }
         else parseValue();
     }
@@ -348,9 +349,9 @@ namespace style {
                 if (token == Token::NullRoot)
                     throw MissingToken("A '>' token must not be the first token of a block declaration if not a nested block");
             }
-            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock));
-            parsedTree = parsedTree->appendChild(new Node(Token::BlockDeclaration));
-            parsedTree = parsedTree->appendChild(new Node(Token::Declaration));
+            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock))
+                             ->appendChild(new Node(Token::BlockDeclaration))
+                             ->appendChild(new Node(Token::Declaration));
             parsedTree->appendChild(lastChildCopy);
             parsedTree->appendChild(new Node(Token::DirectParent));
         }
@@ -424,9 +425,9 @@ namespace style {
             lastChildCopy = lastChild->copyNodeWithChilds();
             if (lastChildCopy->getToken() == Token::Name) lastChildCopy->setToken(Token::ElementName);
             parsedTree->deleteSpecificChild(lastChild);
-            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock));
-            parsedTree = parsedTree->appendChild(new Node(Token::BlockDeclaration));
-            parsedTree = parsedTree->appendChild(new Node(Token::Declaration));
+            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock))
+                             ->appendChild(new Node(Token::BlockDeclaration))
+                             ->appendChild(new Node(Token::Declaration));
             parsedTree->appendChild(lastChildCopy);
         }
         parsedTree = parsedTree->getParent()->getParent()->appendChild(new Node(Token::BlockDefinition));
@@ -436,7 +437,8 @@ namespace style {
         removeWhiteSpaces();
         if (parsedTree->getToken() == Token::Assignment) throw MissingToken("Missing semi-colon after assignment");
         Node *lastChild = parsedTree->getLastChild();
-        if (lastChild != nullptr && lastChild->getToken() != Token::Assignment && lastChild->getToken() != Token::StyleBlock) throw MalformedExpression("A block definition must only contains assgnments and other blocks");
+        if (lastChild != nullptr && lastChild->getToken() != Token::Assignment && lastChild->getToken() != Token::StyleBlock)
+            throw MalformedExpression("A block definition must only contains assgnments and other blocks");
         else if (parsedTree->getToken() != Token::BlockDefinition)
             throw MissingToken("A closing curly bracket '}' needs an opening curly bracket '{'");
         parsedTree = parsedTree->getParent()->getParent();
@@ -448,7 +450,7 @@ namespace style {
             removeSpace();
 
             if (parsedTree->getNbChilds() != 1) throw MalformedExpression("Can't have more than one rvalue in an assignment");
-            parsedTree->appendChild(new Node{Token::NameString, currentToken->getValue()});
+            parsedTree->appendChild(new Node{Token::NameString, currentNode->getValue()});
         }
         else if (parsedTree->getToken() == Token::Tuple || parsedTree->getToken() == Token::Function) {
             removeSpace();
@@ -461,7 +463,7 @@ namespace style {
             parsedTree->appendChild(new Node{Token::PseudoName, parsedTree->getValue()});
         }
         else {
-            if (isValidElementOrRuleName(currentToken->getValue())) parseName();
+            if (isValidElementOrRuleName(currentNode->getValue())) parseName();
             else throw MalformedExpression("Illegal pseudo name placement");
         }
     }
@@ -473,10 +475,10 @@ namespace style {
         if (token == Token::NullRoot) {
             removeWhiteSpaces();
 
-            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock));
-            parsedTree = parsedTree->appendChild(new Node(Token::BlockDeclaration));
-            parsedTree = parsedTree->appendChild(new Node(Token::Declaration));
-            parsedTree->appendChild(new Node{Token::ElementName, currentToken->getValue()});
+            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock))
+                             ->appendChild(new Node(Token::BlockDeclaration))
+                             ->appendChild(new Node(Token::Declaration));
+            parsedTree->appendChild(new Node{Token::ElementName, currentNode->getValue()});
             return;
         }
         if (token == Token::BlockDefinition) {
@@ -486,13 +488,13 @@ namespace style {
             if (lastChild != nullptr && lastChild->getToken() == Token::PseudoName) {
                 lastChildCopy = lastChild->copyNodeWithChilds();
                 parsedTree->deleteSpecificChild(lastChild);
-                parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock));
-                parsedTree = parsedTree->appendChild(new Node(Token::BlockDeclaration));
-                parsedTree = parsedTree->appendChild(new Node(Token::Declaration));
+                parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock))
+                                 ->appendChild(new Node(Token::BlockDeclaration))
+                                 ->appendChild(new Node(Token::Declaration));
                 parsedTree->appendChild(lastChildCopy);
-                parsedTree->appendChild(new Node{Token::ElementName, currentToken->getValue()});
+                parsedTree->appendChild(new Node{Token::ElementName, currentNode->getValue()});
             }
-            else parsedTree->appendChild(new Node{Token::Name, currentToken->getValue()});
+            else parsedTree->appendChild(new Node{Token::Name, currentNode->getValue()});
             return;
         }
 
@@ -500,11 +502,11 @@ namespace style {
             removeSpace();
 
             if (parsedTree->getNbChilds() > 1) throw MalformedExpression("A string|function must be the only right value of an assignment");
-            parsedTree->appendChild(new Node{Token::Name, currentToken->getValue()});
+            parsedTree->appendChild(new Node{Token::Name, currentNode->getValue()});
             return;
         }
         if (token == Token::Declaration) {
-            parsedTree->appendChild(new Node{Token::ElementName, currentToken->getValue()});
+            parsedTree->appendChild(new Node{Token::ElementName, currentNode->getValue()});
             return;
         }
         removeSpace();
@@ -515,7 +517,7 @@ namespace style {
         if (lastChild != nullptr && lastChild->getToken() != Token::ArgSeparator)
             throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");
         parsedTree->deleteSpecificChild(lastChild);
-        parsedTree->appendChild(currentToken->copyNode());
+        parsedTree->appendChild(currentNode->copyNode());
     }
 
     void Parser::parseUnit() {
@@ -527,7 +529,7 @@ namespace style {
         lastChild = parsedTree->getLastChild();
         if (lastChild == nullptr || (lastChild->getToken() != Token::Int && lastChild->getToken() != Token::Float))
             throw MissingToken("A unit must have an int or a float before");
-        newChild = new Node{currentToken->getToken(), currentToken->getValue()};
+        newChild = new Node{currentNode->getToken(), currentNode->getValue()};
         newChild->appendChild(lastChild->copyNodeWithChilds());
         parsedTree->replaceChild(lastChild, newChild);
     }
@@ -553,14 +555,14 @@ namespace style {
         if (token == Token::NullRoot || token == Token::BlockDefinition) {
             lastChild = parsedTree->getLastChild();
             lastChildCopy = updateLastDeclarationComponentBeforeNewOne(lastChild);
-            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock));
-            parsedTree = parsedTree->appendChild(new Node(Token::BlockDeclaration));
-            parsedTree = parsedTree->appendChild(new Node(Token::Declaration));
+            parsedTree = parsedTree->appendChild(new Node(Token::StyleBlock))
+                             ->appendChild(new Node(Token::BlockDeclaration))
+                             ->appendChild(new Node(Token::Declaration));
             parsedTree->appendChild(lastChildCopy);
-            parsedTree->appendChild(new Node{outputTokenType, currentToken->getValue()});
+            parsedTree->appendChild(new Node{outputTokenType, currentNode->getValue()});
         }
         else if (token == Token::Declaration) {
-            parsedTree->appendChild(new Node{outputTokenType, currentToken->getValue()});
+            parsedTree->appendChild(new Node{outputTokenType, currentNode->getValue()});
         }
         else
             throw MalformedExpression(

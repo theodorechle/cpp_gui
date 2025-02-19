@@ -37,11 +37,11 @@ namespace style {
      */
     class Parser {
         /**
-         * The expressionTreeRoot should never contains a pointer pointing to currentToken in any way,
+         * The expressionTreeRoot should never contains a pointer pointing to currentNode in any way,
          * because it could be used and freed in the calling program after the parser call.
-         * Consider currentToken has const
+         * Consider currentNode as const
          */
-        Node *currentToken;
+        Node *currentNode;
 
         // only used to avoid recalculating many times the root
         Node *expressionTreeRoot = new Node(Token::NullRoot);
@@ -59,7 +59,7 @@ namespace style {
         void parse();
 
         void parseSpace();
-        void parseLineReturn();
+        void parseLineBreak();
         void parseOneLineComment();
         void parseMultiLineComment();
         void parseValue();
@@ -89,7 +89,7 @@ namespace style {
         void parseModifier();
 
     public:
-        Parser(Node *currentToken) : currentToken{currentToken} { parse(); };
+        Parser(Node *currentNode) : currentNode{currentNode} { parse(); };
         Node *getFinalTree() { return expressionTreeRoot; }
     };
 
