@@ -209,7 +209,7 @@ namespace styleDeserializationTests {
         expectedData.push_back(std::pair(std::pair("red", style::StyleComponentType::Identifier), style::StyleRelation::SameElement));
         styleValue = new style::StyleValue("ff0000", style::StyleValueType::Hex);
         expectedStyleMap["text-color"] = style::StyleRule{styleValue, true, 111, 0, 0};
-        styleBlock = new style::StyleBlock(&expectedData, &expectedStyleMap);
+        styleBlock = new style::StyleBlock(expectedData, expectedStyleMap);
         expectedStyleBlocks = {styleBlock};
         result = testDeserialization(".container      label#red{text-color : #ff0000;}", &expectedStyleBlocks);
         delete styleBlock;
@@ -231,7 +231,7 @@ namespace styleDeserializationTests {
         expectedData.push_back(std::pair(std::pair("red", style::StyleComponentType::Identifier), style::StyleRelation::SameElement));
         styleValue = new style::StyleValue("ff0000", style::StyleValueType::Hex);
         expectedStyleMap["text-color"] = style::StyleRule{styleValue, true, 111, 0, 0};
-        styleBlock = new style::StyleBlock(&expectedData, &expectedStyleMap);
+        styleBlock = new style::StyleBlock(expectedData, expectedStyleMap);
         expectedStyleBlocks = {styleBlock};
         result = testDeserialization(".container > label#red{text-color : #ff0000;}", &expectedStyleBlocks);
         delete styleBlock;
@@ -253,7 +253,7 @@ namespace styleDeserializationTests {
         expectedData.push_back(std::pair(std::pair("red", style::StyleComponentType::Identifier), style::StyleRelation::SameElement));
         styleValue = new style::StyleValue("ff0000", style::StyleValueType::Hex);
         expectedStyleMap["text-color"] = style::StyleRule{styleValue, true, 111, 0, 0};
-        styleBlock = new style::StyleBlock(&expectedData, &expectedStyleMap);
+        styleBlock = new style::StyleBlock(expectedData, expectedStyleMap);
         expectedStyleBlocks = {styleBlock};
         result = testDeserialization(".container>label#red{text-color : #ff0000;}", &expectedStyleBlocks);
         delete styleBlock;
@@ -275,7 +275,7 @@ namespace styleDeserializationTests {
         style::StyleValue *styleValue2 = new style::StyleValue("100", style::StyleValueType::Int);
         styleValue->setChild(styleValue2);
         expectedStyleMap["padding"] = style::StyleRule{styleValue, true, 1, 0, 0};
-        styleBlock = new style::StyleBlock(&expectedData, &expectedStyleMap);
+        styleBlock = new style::StyleBlock(expectedData, expectedStyleMap);
         expectedStyleBlocks = {styleBlock};
         result = testDeserialization("label {padding:100px;}", &expectedStyleBlocks);
         delete styleBlock;

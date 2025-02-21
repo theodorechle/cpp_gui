@@ -15,6 +15,7 @@ namespace gui {
                 SDL_Window *window = nullptr;
                 SDL_Renderer *renderer = nullptr;
                 UIElement *clickedElement = nullptr;
+                bool clicked = false;
                 UIElement *hoveredElement = nullptr;
                 UIElement *focusedElement = nullptr;
                 SDL_Rect clipRect;
@@ -28,6 +29,11 @@ namespace gui {
                 void setElementsTree(gui::element::AbstractElement *element) override;
 
                 void updateClipRect();
+
+                /**
+                 * Not perfect, but should be called when elements are destroyed to prevent trying to call them (events)
+                 */
+                void resetEvents();
 
                 // parameters are needed for view containers
                 void computeDesiredElementsLayout(int *width, int *height);

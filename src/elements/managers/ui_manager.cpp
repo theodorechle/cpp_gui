@@ -34,6 +34,13 @@ namespace gui {
                 this->clipRect = SDL_Rect{0, 0, width, height};
             }
 
+            void UIManager::resetEvents() {
+                clickedElement = nullptr;
+                hoveredElement = nullptr;
+                focusedElement = nullptr;
+                needRecomputeLayout();
+            }
+
             void UIManager::computeDesiredElementsLayout(int *width, int *height) {
                 if (elementsTree == nullptr) return;
                 (*width) = 0;
@@ -106,16 +113,16 @@ namespace gui {
                     currentElementRect.y += currentElement->marginTop();
                     if (SDL_PointInRect(&mousePos, &currentElementRect)) {
                         currentHoveredElement = currentElement;
-                        if (currentElement->getChild() == nullptr) {
-                            break;
-                        }
                         currentElement = currentElement->getChild();
                     }
-                    else currentElement = currentElement->getNext();
+                    else {
+                        currentElement = currentElement->getNext();
+                    }
                 }
                 if (mouseFlags) {
-                    if (clickedElement == nullptr) {
+                    if (!clicked && clickedElement == nullptr) {
                         clickedElement = currentHoveredElement;
+                        clicked = true;
                         if (focusedElement != nullptr) focusedElement->focus(false);
                         focusedElement = clickedElement;
                         if (focusedElement != nullptr) focusedElement->focus(true);
@@ -123,6 +130,7 @@ namespace gui {
                     }
                 }
                 else {
+                    clicked = false;
                     if (clickedElement != nullptr) {
                         setElementsModifierState("clicked", clickedElement, false, SDL_Event{SDL_EVENT_MOUSE_BUTTON_DOWN});
                         clickedElement = nullptr;

@@ -221,12 +221,12 @@ namespace gui {
         }
 
         void UIElement::addChild(UIElement *child) {
-            AbstractElement::addChild(child);
-            if (managerActionsService != nullptr) managerActionsService->askRecomputeLayout();
             if (child == nullptr) return;
+            AbstractElement::addChild(child);
             child->setRenderer(renderer);
             child->setWindow(window);
             child->setManagerActionsService(managerActionsService);
+            if (managerActionsService != nullptr) managerActionsService->askRecomputeLayout();
         }
 
         void UIElement::setWindow(SDL_Window *window) {
