@@ -3,13 +3,15 @@
 
 #include "ui_element.hpp"
 
+#include <functional>
+
 namespace gui {
     namespace element {
 
         class Button : public UIElement {
-            void (*onClickFunction)();
+            std::function<void()> onClickFunction;
         public:
-            Button(void (*onClick)(), gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+            Button(std::function<void()> onClick, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                    const std::string &identifier = "");
 
         void catchEvent(const SDL_Event &event) override;

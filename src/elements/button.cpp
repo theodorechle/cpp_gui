@@ -3,7 +3,7 @@
 namespace gui {
     namespace element {
 
-        Button::Button(void (*onClick)(), gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
+        Button::Button(std::function<void()> onClick, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
             : UIElement{"button", elementsStyleManager, classes, identifier}, onClickFunction{onClick} {}
 
         void Button::catchEvent(const SDL_Event &event) {
