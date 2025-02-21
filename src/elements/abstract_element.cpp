@@ -54,6 +54,11 @@ namespace gui {
             if (child != nullptr) nbChilds++;
         }
 
+        void AbstractElement::removeChilds() {
+            child = nullptr;
+            elementStyle->removeChilds();
+        }
+
         AbstractElement::~AbstractElement() {
             delete elementStyle;
             delete child;

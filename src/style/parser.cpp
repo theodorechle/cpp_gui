@@ -191,7 +191,7 @@ namespace style {
             parsedTree = parsedTree->getParent()->appendChild(new Node(Token::Declaration));
             break;
         default:
-            throw MalformedExpression("A comma must be inside of a tuple");
+            throw MalformedExpression("A comma must separate blocks definitions or be inside of a tuple");
         }
     }
 

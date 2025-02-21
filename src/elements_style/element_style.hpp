@@ -31,7 +31,7 @@ namespace gui {
 
             std::string fontsPath = "";
 
-            static bool compareRulesPriorityDescending(style::StyleRule rule1, style::StyleRule rule2);
+            static bool compareRulesPriorityDescending(style::StyleRule rule1, style::StyleRule rule2); // TODO: take as references
             static bool compareRulesPriorityAscending(style::StyleRule rule1, style::StyleRule rule2);
             void setParent(ElementStyle *parent) { this->parent = parent; }
 
@@ -40,6 +40,7 @@ namespace gui {
             ElementStyle *getParent() { return parent; }
             void addChild(ElementStyle *child);
             ElementStyle *getChild() { return child; }
+            void removeChilds() { child = nullptr; }
             void setNext(ElementStyle *next) { this->next = next; }
             ElementStyle *getNext() { return next; }
             void setStyle(const AppliedStyleMap &style) { this->style = style; }

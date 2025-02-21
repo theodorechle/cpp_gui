@@ -260,7 +260,7 @@ namespace style {
                 if (!isNodeNull(ruleNameNode)) {
                     styleValue = convertStyleNodeToStyleValue(ruleNameNode);
                     if (styleValue != nullptr) {
-                        (*appliedStyleMap)[ruleName] = StyleRule{styleValue, true, 0, fileNumber, *ruleNumber};
+                        (*appliedStyleMap)[ruleName] = StyleRule{styleValue->copy(), true, 0, fileNumber, *ruleNumber};
                         (*ruleNumber)++;
                     }
                 }
@@ -295,7 +295,7 @@ namespace style {
                 for (std::pair<const std::string, StyleRule> &rule : *appliedStyleMap) {
                     rule.second.specificity = specificity;
                 }
-                styleComponentList->push_back(new StyleBlock(components, appliedStyleMap));
+                styleComponentList->push_back(new StyleBlock(*components, *appliedStyleMap));
                 components->erase(componentsIt, components->end());
             }
         }

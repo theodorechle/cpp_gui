@@ -80,9 +80,26 @@ namespace style {
         delete next;
     }
 
-    StyleBlock::StyleBlock(StyleComponentDataList *componentsList,
-                           StyleValuesMap *styleMap) { // TODO: forbid null pointers (maybe get params as references ?)
-        styleDef = new StyleDefinition(*componentsList, *styleMap);
+    StyleValue *StyleValue::copy() const {
+        StyleValue *newValue = new StyleValue(value, type);
+        if (child != nullptr) newValue->setChild(child->copy());
+        if (next != nullptr) newValue->setNext(next->copy());
+        return newValue;
+    }
+
+    StyleRule::StyleRule(StyleValue *value, bool enabled, int specificity, int fileNumber, int ruleNumber)
+        : value{value}, enabled{enabled}, specificity{specificity}, fileNumber{fileNumber}, ruleNumber{ruleNumber} {}
+
+    StyleRule::StyleRule(const StyleRule &rule) {
+        value = rule.value->copy();
+        enabled = rule.enabled;
+        specificity = rule.specificity;
+        fileNumber = rule.fileNumber;
+        ruleNumber = rule.ruleNumber;
+    }
+
+    StyleBlock::StyleBlock(const StyleComponentDataList &componentsList, const StyleValuesMap &styleMap) {
+        styleDef = new StyleDefinition(componentsList, styleMap);
     }
 
     StyleBlock::~StyleBlock() {
@@ -91,5 +108,4 @@ namespace style {
         }
         delete styleDef;
     }
-
 } // namespace Style

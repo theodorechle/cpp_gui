@@ -21,7 +21,6 @@ namespace gui {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
             int elementDesiredWidth = 0;
             int elementDesiredHeight = 0;
-            bool sizeParentRelative = false;
             struct {
                 int x;
                 int y;
@@ -83,7 +82,7 @@ namespace gui {
              * For example, in
              ```
              list {
-                
+
         childs-size: biggest;
         }
              ```
@@ -125,8 +124,8 @@ namespace gui {
             void setNext(UIElement *next) { AbstractElement::setNext(next); }
             UIElement *getNext() { return static_cast<UIElement *>(AbstractElement::getNext()); }
 
-            void setWindow(SDL_Window *window) { this->window = window; }
-            void setRenderer(SDL_Renderer *renderer) { this->renderer = renderer; }
+            void setWindow(SDL_Window *window);
+            void setRenderer(SDL_Renderer *renderer);
             SDL_Renderer *getRenderer() const { return renderer; }
             SDL_Window *getWindow() const { return window; }
 
@@ -170,9 +169,6 @@ namespace gui {
             SDL_Color borderBottomColor() const;
 
             SDL_Color backgroundColor() const;
-
-            bool isSizeParentRelative() const { return sizeParentRelative; }
-            bool areAllParentSizesParentRelative() const;
 
             void computeLayout(int x, int y, int availableWidth, int availableHeight) override final;
             void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) override;

@@ -56,8 +56,9 @@ namespace gui {
                     }
 
                     for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
-                        elementStyleMap[styleRule.first] = {style::StyleRule{styleRule.second.value, modifier.empty(), styleRule.second.specificity,
-                                                                             styleRule.second.fileNumber, styleRule.second.ruleNumber}};
+                        elementStyleMap[styleRule.first] = {style::StyleRule{styleRule.second.value->copy(), modifier.empty(),
+                                                                             styleRule.second.specificity, styleRule.second.fileNumber,
+                                                                             styleRule.second.ruleNumber}};
                         if (!modifier.empty()) {
                             actualElementStyle->addRuleAffectedByModifier(styleRule.second.fileNumber, styleRule.second.ruleNumber, modifier);
                         }
@@ -82,7 +83,7 @@ namespace gui {
             }
 
             void ElementsStyleManager::setFontsPath(const std::string &path) {
-                if (path[path.size()] != '/') fontsPath = path + '/';
+                if (path[path.size() - 1] != '/') fontsPath = path + '/';
                 else fontsPath = path;
             }
 
@@ -109,8 +110,8 @@ namespace gui {
                 std::list<style::StyleBlock *> *fileRules;
                 fileRules = style::StyleDeserializer::deserialize(styleFileContent, fileCount, &ruleNumber);
                 if (fileRules == nullptr || fileRules->empty()) return -1;
-                applySpecificStyleToElement(*fileRules, elements, true);
                 style.splice(style.end(), *fileRules);
+                applySpecificStyleToElement(style, elements, true);
                 delete fileRules;
                 files[fileCount] = std::pair<std::string, int>("", ruleNumber);
                 fileCount++;
@@ -190,7 +191,7 @@ namespace gui {
             }
 
             void ElementsStyleManager::addElementStyle(gui::elementStyle::ElementStyle *elementStyle) {
-                if (elements == nullptr) elements = elementStyle;
+                if (elements == nullptr) setParentElementStyle(elementStyle);
                 applyStyleToElement(elementStyle, true);
             }
 

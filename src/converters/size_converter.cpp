@@ -20,15 +20,12 @@ namespace gui {
             return true;
         }
 
-        bool gui::converter::SizeConverter::convert(style::StyleValue *value, int *size, int parentSize, bool *relativeSize,
-                                                    bool allParentSizeParentRelative) {
+        bool gui::converter::SizeConverter::convert(style::StyleValue *value, int *size, int parentSize) {
             if (value == nullptr || size == nullptr) return false;
             switch (value->getType()) {
             case style::StyleValueType::PixelUnit:
                 return convertFromPixel(value, size);
             case style::StyleValueType::PercentageUnit:
-                if (relativeSize != nullptr) (*relativeSize) = true;
-                if (allParentSizeParentRelative) return false;
                 return convertFromPercentage(value, size, parentSize);
             default:
                 return false;

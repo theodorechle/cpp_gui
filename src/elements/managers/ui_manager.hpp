@@ -18,6 +18,7 @@ namespace gui {
                 UIElement *hoveredElement = nullptr;
                 UIElement *focusedElement = nullptr;
                 SDL_Rect clipRect;
+                bool canChangeSize = true;
 
             public:
                 UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect = nullptr);
@@ -26,6 +27,9 @@ namespace gui {
 
                 void setElementsTree(gui::element::AbstractElement *element) override;
 
+                void updateClipRect();
+
+                // parameters are needed for view containers
                 void computeDesiredElementsLayout(int *width, int *height);
 
                 void computeFinalElementsLayout();

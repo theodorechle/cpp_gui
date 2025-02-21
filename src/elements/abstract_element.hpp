@@ -52,6 +52,7 @@ namespace gui {
             const AbstractElement *getConstParent() const { return parent; }
             void addChild(AbstractElement *child);
             AbstractElement *getChild() { return child; }
+            void removeChilds();
             void setNext(AbstractElement *next) { this->next = next; }
             AbstractElement *getNext() { return next; }
             virtual ~AbstractElement();

@@ -12,17 +12,14 @@ namespace gui {
             UIElement *child = getChild();
             while (child != nullptr) {
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
-                // if (!child->isSizeParentRelative()) {
                 (*desiredWidth) = std::max(childDesiredWidth, *desiredWidth);
                 (*desiredHeight) = std::max(childDesiredHeight, *desiredHeight);
                 nbChilds++;
-                // }
                 child = child->getNext();
             }
         }
 
         void UIElement::computeDesiredLayout(int *desiredWidth, int *desiredHeight) {
-            sizeParentRelative = false;
             (*desiredWidth) = 0;
             (*desiredHeight) = 0;
             int childDesiredWidth = 0;
@@ -40,7 +37,7 @@ namespace gui {
                 child = child->getNext();
             }
 
-            if (!widthFound || !heightFound) computeDesiredInnerLayout(desiredWidth, desiredHeight);
+            computeDesiredInnerLayout(desiredWidth, desiredHeight);
 
             if (widthFound) (*desiredWidth) = elementWidth;
             if (heightFound) (*desiredHeight) = elementHeight;
@@ -59,10 +56,8 @@ namespace gui {
                 while (child != nullptr) {
                     if (!widthFound) childDesiredWidth = child->marginLeft() + child->marginRight();
                     if (!heightFound) childDesiredHeight = child->marginTop() + child->marginBottom();
-                    // if (!child->sizeParentRelative) {
                     if (!widthFound) (*desiredWidth) += childDesiredWidth;
                     if (!heightFound) (*desiredHeight) += childDesiredHeight;
-                    // }
                     child = child->getNext();
                 }
             }
@@ -80,15 +75,6 @@ namespace gui {
             setDesiredSize(*desiredWidth, *desiredHeight);
         }
 
-        bool UIElement::areAllParentSizesParentRelative() const {
-            const UIElement *parent = getConstParent();
-            while (parent != nullptr) {
-                if (!parent->isSizeParentRelative()) return false;
-                parent = parent->getConstParent();
-            }
-            return true;
-        }
-
         void UIElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
             SDL_Rect newRect = SDL_Rect{x, y, availableWidth, availableHeight};
             setRect(newRect);
@@ -97,8 +83,7 @@ namespace gui {
             y += borderTop() + marginTop();
             availableWidth -= borderLeft() + borderRight();
             availableHeight -= borderTop() + borderBottom();
-
-            computeChildsLayout(x, y, availableWidth, availableHeight);
+            if (getChild() != nullptr) computeChildsLayout(x, y, availableWidth, availableHeight);
         }
 
         void UIElement::computeChildsLayout(int x, int y, int availableWidth, int availableHeight) {
@@ -167,8 +152,7 @@ namespace gui {
             return size;
         }
 
-        std::string UIElement::getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString,
-                                                 bool canInherit) const {
+        std::string UIElement::getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString, bool canInherit) const {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
             elementStyle->getRule(ruleNames, &rule, canInherit);
@@ -208,7 +192,7 @@ namespace gui {
             if (rule == nullptr) {
                 return defaultSize;
             }
-            if (!converter::SizeConverter::convert(rule, &size, parentSize, &sizeParentRelative, areAllParentSizesParentRelative())) {
+            if (!converter::SizeConverter::convert(rule, &size, parentSize)) {
                 return defaultSize;
             }
             return size;
@@ -238,9 +222,29 @@ namespace gui {
 
         void UIElement::addChild(UIElement *child) {
             AbstractElement::addChild(child);
+            if (managerActionsService != nullptr) managerActionsService->askRecomputeLayout();
+            if (child == nullptr) return;
             child->setRenderer(renderer);
             child->setWindow(window);
             child->setManagerActionsService(managerActionsService);
+        }
+
+        void UIElement::setWindow(SDL_Window *window) {
+            this->window = window;
+            UIElement *child = getChild();
+            while (child != nullptr) {
+                child->setWindow(window);
+                child = child->getNext();
+            }
+        }
+
+        void UIElement::setRenderer(SDL_Renderer *renderer) {
+            this->renderer = renderer;
+            UIElement *child = getChild();
+            while (child != nullptr) {
+                child->setRenderer(renderer);
+                child = child->getNext();
+            }
         }
 
         int UIElement::marginLeft(bool *found) {
@@ -522,7 +526,7 @@ namespace gui {
             SDL_Color color = backgroundColor();
             SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             SDL_GetRenderClipRect(renderer, &rect);
-            
+
             SDL_RectToFRect(&rect, &fRect);
             SDL_RenderFillRect(renderer, &fRect);
 
@@ -530,7 +534,6 @@ namespace gui {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
                 return;
             }
-
         }
 
         void UIElement::renderScrollBar(int currentSize, int desiredSize) const {

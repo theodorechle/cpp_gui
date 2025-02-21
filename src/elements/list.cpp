@@ -12,11 +12,9 @@ namespace gui {
             while (child != nullptr) {
                 child->setMarginsActive(false);
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
-                if (!child->isSizeParentRelative()) {
-                    (*desiredWidth) = std::max(childDesiredWidth, *desiredWidth);
-                    (*desiredHeight) = std::max(childDesiredHeight, *desiredHeight);
-                    nbChilds++;
-                }
+                (*desiredWidth) = std::max(childDesiredWidth, *desiredWidth);
+                (*desiredHeight) = std::max(childDesiredHeight, *desiredHeight);
+                nbChilds++;
                 child = child->getNext();
             }
             if (vertical) (*desiredHeight) *= nbChilds;
@@ -32,15 +30,13 @@ namespace gui {
             while (child != nullptr) {
                 child->setMarginsActive(false);
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
-                if (!child->isSizeParentRelative()) {
-                    if (vertical) {
-                        (*desiredWidth) = std::max(*desiredWidth, childDesiredWidth);
-                        (*desiredHeight) += childDesiredHeight;
-                    }
-                    else {
-                        (*desiredWidth) += childDesiredWidth;
-                        (*desiredHeight) = std::max(*desiredHeight, childDesiredHeight);
-                    }
+                if (vertical) {
+                    (*desiredWidth) = std::max(*desiredWidth, childDesiredWidth);
+                    (*desiredHeight) += childDesiredHeight;
+                }
+                else {
+                    (*desiredWidth) += childDesiredWidth;
+                    (*desiredHeight) = std::max(*desiredHeight, childDesiredHeight);
                 }
                 child = child->getNext();
             }
@@ -55,13 +51,11 @@ namespace gui {
             while (child != nullptr) {
                 child->setMarginsActive(false);
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
-                if (!child->isSizeParentRelative()) {
-                    if (vertical) {
-                        (*desiredWidth) = std::max(*desiredWidth, childDesiredWidth);
-                    }
-                    else {
-                        (*desiredHeight) = std::max(*desiredHeight, childDesiredHeight);
-                    }
+                if (vertical) {
+                    (*desiredWidth) = std::max(*desiredWidth, childDesiredWidth);
+                }
+                else {
+                    (*desiredHeight) = std::max(*desiredHeight, childDesiredHeight);
                 }
                 child = child->getNext();
             }

@@ -48,6 +48,8 @@ namespace style {
         StyleValue *getNext() { return next; }
         int nbChilds() const;
         ~StyleValue();
+
+        StyleValue *copy() const;
     };
 
     /**
@@ -63,6 +65,10 @@ namespace style {
         int specificity;
         int fileNumber;
         int ruleNumber;
+
+        StyleRule() : value{nullptr}, enabled{false}, specificity{0}, fileNumber{-1}, ruleNumber{-1} {}
+        StyleRule(StyleValue *value, bool enabled, int specificity, int fileNumber, int ruleNumber);
+        StyleRule(const StyleRule &rule);
     };
 
     typedef std::pair<std::string, StyleComponentType> StyleComponentData;
@@ -77,7 +83,7 @@ namespace style {
         StyleDefinition *styleDef;
 
     public:
-        StyleBlock(StyleComponentDataList *componentsList, StyleValuesMap *styleMap);
+        StyleBlock(const StyleComponentDataList &componentsList, const StyleValuesMap &styleMap);
         ~StyleBlock();
         StyleDefinition *getStyleDefinition() const { return styleDef; }
         const StyleComponentDataList *getComponentsList() const { return &styleDef->first; }

@@ -3,16 +3,13 @@
 namespace gui {
     namespace element {
         namespace manager {
-            UIManager::UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect)
-            : window{window}, renderer{renderer} {
-                if (clipRect != nullptr) this->clipRect = *clipRect;
+            UIManager::UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect) : window{window}, renderer{renderer} {
+                if (clipRect != nullptr) {
+                    this->clipRect = *clipRect;
+                    canChangeSize = false;
+                }
                 else {
-                    int width = 0;
-                    int height = 0;
-                    if (!SDL_GetCurrentRenderOutputSize(renderer, &width, &height)) {
-                        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't get render size");
-                    }
-                    this->clipRect = SDL_Rect{0, 0, width, height};
+                    updateClipRect();
                 }
             }
 
@@ -20,10 +17,21 @@ namespace gui {
                 AbstractManager::setElementsTree(new gui::element::RootElement());
                 static_cast<gui::element::UIElement *>(elementsTree)->setRenderer(renderer);
                 static_cast<gui::element::UIElement *>(elementsTree)->setWindow(window);
+                static_cast<gui::element::UIElement *>(elementsTree)->setManagerActionsService(getManagerActionsService());
+                computeFinalElementsLayout();
                 static_cast<gui::element::UIElement *>(element)->setRenderer(renderer);
                 static_cast<gui::element::UIElement *>(element)->setWindow(window);
                 elementsTree->addChild(static_cast<gui::element::UIElement *>(element));
-                static_cast<gui::element::UIElement *>(elementsTree)->setManagerActionsService(getManagerActionsService());
+            }
+
+            void UIManager::updateClipRect() {
+                if (!canChangeSize) return;
+                int width = 0;
+                int height = 0;
+                if (!SDL_GetCurrentRenderOutputSize(renderer, &width, &height)) {
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't get render size");
+                }
+                this->clipRect = SDL_Rect{0, 0, width, height};
             }
 
             void UIManager::computeDesiredElementsLayout(int *width, int *height) {
@@ -32,12 +40,19 @@ namespace gui {
                 (*height) = 0;
                 elementsTree->computeDesiredLayout(width, height);
             }
+
             void UIManager::computeFinalElementsLayout() {
                 if (elementsTree == nullptr) return;
                 elementsTree->computeLayout(clipRect.x, clipRect.y, clipRect.w, clipRect.h);
             }
+
             void UIManager::computeElementsLayout() {
                 int width, height;
+                // TODO: find a cleaner way to keep the root element to the window size
+                updateClipRect();
+                computeFinalElementsLayout();
+                computeDesiredElementsLayout(&width, &height);
+                computeFinalElementsLayout();
                 computeDesiredElementsLayout(&width, &height);
                 computeFinalElementsLayout();
             }
