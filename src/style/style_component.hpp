@@ -86,8 +86,8 @@ namespace style {
         StyleBlock(const StyleComponentDataList &componentsList, const StyleValuesMap &styleMap);
         ~StyleBlock();
         StyleDefinition *getStyleDefinition() const { return styleDef; }
-        const StyleComponentDataList *getComponentsList() const { return &styleDef->first; }
-        const StyleValuesMap *getStyleMap() const { return &styleDef->second; }
+        StyleComponentDataList *getComponentsList() { return &styleDef->first; }
+        StyleValuesMap *getStyleMap() { return &styleDef->second; }
     };
 
 } // namespace style

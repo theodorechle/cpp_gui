@@ -102,7 +102,9 @@ namespace gui {
                     return -1;
                 }
                 buffer << file.rdbuf();
-                return addStyle(buffer.str());
+                fileNumber = addStyle(buffer.str());
+                files[fileNumber].first = fileName;
+                return fileNumber;
             }
 
             int ElementsStyleManager::addStyle(const std::string &styleFileContent) {
@@ -115,7 +117,7 @@ namespace gui {
                 delete fileRules;
                 files[fileCount] = std::pair<std::string, int>("", ruleNumber);
                 fileCount++;
-                return fileCount;
+                return fileCount - 1;
             }
 
             void ElementsStyleManager::removeStyleInElements(int fileNumber, gui::elementStyle::ElementStyle *element) {
@@ -129,8 +131,17 @@ namespace gui {
             }
 
             void ElementsStyleManager::removeStyle(int fileNumber) {
-                if (elements != nullptr && files.find(fileNumber) != files.end()) {
+                for (std::pair<int, std::pair<std::string, int>> file : files) {
+                }
+                if (elements != nullptr && files.find(fileNumber) != files.cend()) {
                     removeStyleInElements(fileNumber, elements);
+                    for (style::StyleBlock *block : style) {
+                        style::StyleValuesMap *styleMap = block->getStyleMap();
+                        for (style::StyleValuesMap::iterator ruleIt = styleMap->begin(); ruleIt != styleMap->end();) {
+                            if (ruleIt->second.fileNumber == fileNumber) ruleIt = styleMap->erase(ruleIt);
+                            else ruleIt++;
+                        }
+                    }
                     files.erase(fileNumber);
                 }
             }

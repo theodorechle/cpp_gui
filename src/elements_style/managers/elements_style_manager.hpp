@@ -18,7 +18,7 @@ namespace gui {
                 gui::elementStyle::ElementStyle *elements = nullptr;
                 std::list<style::StyleBlock *> style = {};
                 int fileCount = 0;
-                // file number: <file name, rule number>
+                // file number: <file name, nb rules>
                 std::unordered_map<int, std::pair<std::string, int>> files = {};
                 std::string fontsPath = "";
 
