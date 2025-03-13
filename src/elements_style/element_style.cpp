@@ -74,11 +74,12 @@ namespace gui {
         int ElementStyle::deleteStyleFromFile(int fileNumber) {
             int nbDeletedRules = 0;
             for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
-                for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
+                for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end();) {
                     if (listIt->fileNumber == fileNumber) {
-                        it->second.erase(listIt);
+                        listIt = it->second.erase(listIt);
                         nbDeletedRules++;
                     }
+                    else listIt++;
                 }
             }
             return nbDeletedRules;
