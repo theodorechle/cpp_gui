@@ -162,8 +162,20 @@ namespace gui {
             return rule->getValue();
         }
 
-        std::string UIElement::getNameStringFromRule(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
-                                                     const std::string &defaultString, bool canInherit) const {
+        std::string UIElement::getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
+                                                      const std::string &defaultString, bool canInherit) const {
+            if (elementStyle == nullptr) return defaultString;
+            style::StyleValue *rule = nullptr;
+            elementStyle->getRule(ruleName, &rule, canInherit);
+            if (rule == nullptr || rule->getType() != style::StyleValueType::NameString || allowedValues.empty()
+                || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend()) {
+                return defaultString;
+            }
+            return rule->getValue();
+        }
+
+        std::string UIElement::getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
+                                                      const std::string &defaultString, bool canInherit) const {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
             elementStyle->getRule(ruleNames, &rule, canInherit);
@@ -537,7 +549,7 @@ namespace gui {
         }
 
         void UIElement::renderScrollBar(int currentSize, int desiredSize) const {
-            if (currentSize >= desiredSize && getNameStringFromRule({"scroll-bar"}, {"always"}) == "") return;
+            if (currentSize >= desiredSize && getNameStringFromRule("scroll-bar", {"always"}) == "") return;
         }
 
         void UIElement::renderScrollBars() const {

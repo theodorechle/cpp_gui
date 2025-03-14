@@ -63,7 +63,7 @@ namespace gui {
 
         void List::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
             vertical = getBoolFromRule({"vertical"});
-            childsSize = getNameStringFromRule({"childs-size"}, {"biggest", "auto", "keep"}, "auto");
+            childsSize = getNameStringFromRule("childs-size", {"biggest", "auto", "keep"}, "auto");
             if (childsSize == "biggest") getMaxDesiredChildsSize(desiredWidth, desiredHeight, vertical);
             else if (childsSize == "keep") getKeepDesiredChildsSize(desiredWidth, desiredHeight, vertical);
             else if (childsSize == "auto") getAutoDesiredChildsSize(desiredWidth, desiredHeight, vertical);

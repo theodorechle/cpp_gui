@@ -82,17 +82,30 @@ namespace gui {
              * For example, in
              ```
              list {
-
-        childs-size: biggest;
-        }
+                childs-size: biggest;
+             }
              ```
              * 'biggest' would be a valid rule name, as 'childs-size' is, but is considered as a string because it's a value.
              *
              * If no allowed value is given, it will return the found value.
              */
-            std::string getNameStringFromRule(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
-                                              const std::string &defaultString = "", bool canInherit = false) const;
+            std::string getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
+                const std::string &defaultString = "", bool canInherit = false) const;
 
+            /**
+             * Name strings are values who are valid rule names, but since they are values, they are considered as strings without quotes.
+             * For example, in
+             ```
+             list {
+                childs-size: biggest;
+             }
+             ```
+             * 'biggest' would be a valid rule name, as 'childs-size' is, but is considered as a string because it's a value.
+             *
+             * If no allowed value is given, it will return the found value.
+             */
+            std::string getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
+                const std::string &defaultString = "", bool canInherit = false) const;
             bool getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool = false, bool canInherit = false) const;
 
             /**

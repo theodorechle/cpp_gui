@@ -10,7 +10,7 @@ namespace gui {
                 return;
             }
             int style = TTF_STYLE_NORMAL;
-            std::string fontWeight = getNameStringFromRule({"font-weight"}, {"normal", "bold"}, "normal", true);
+            std::string fontWeight = getNameStringFromRule("font-weight", {"normal", "bold"}, "normal", true);
             if (fontWeight == "bold") style |= TTF_STYLE_BOLD;
             if (getBoolFromRule({"font-italic"}, false, true)) style |= TTF_STYLE_ITALIC;
             if (getBoolFromRule({"font-underline"}, false, true)) style |= TTF_STYLE_UNDERLINE;
@@ -21,11 +21,16 @@ namespace gui {
         void Label::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) { getTextSize(desiredWidth, desiredHeight); }
 
         void Label::getTextSize(int *width, int *height) {
-            if (ttfFont) TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), 0, width, height);
-            else {
-                (*width) = 0;
-                (*height) = 0;
+            if (ttfFont) {
+                std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "no-wrap"}, "wrapped", true);
+                if (wrapping == "wrapped") {
+                    int wrapWidth = this->width();
+                    TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), wrapWidth, width, height);
+                    return;
+                }
             }
+            (*width) = 0;
+            (*height) = 0;
         }
 
         void Label::renderSelfAfterChilds() {
@@ -49,6 +54,14 @@ namespace gui {
                 return;
             }
 
+            std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "no-wrap"}, "wrapped", true);
+            if (wrapping == "wrapped") {
+                int wrapWidth = rect.w;
+                if (!TTF_SetTextWrapWidth(ttfText, wrapWidth)) {
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set text wrap width: %s", SDL_GetError());
+                }
+            }
+
             color = textColor();
             if (!TTF_SetTextColor(ttfText, color.r, color.g, color.b, color.a)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set text color: %s", SDL_GetError());
@@ -58,7 +71,7 @@ namespace gui {
             int textWidth, textHeight;
             getTextSize(&textWidth, &textHeight);
 
-            std::string horizontalAlignment = getNameStringFromRule({"horizontal-alignment"}, {"start", "centered", "end"}, "start", true);
+            std::string horizontalAlignment = getNameStringFromRule("horizontal-alignment", {"start", "centered", "end"}, "start", true);
 
             // TODO: add support for reversed languages
             if (horizontalAlignment == "start") {
@@ -69,7 +82,7 @@ namespace gui {
             else {
                 rect.x += (rect.w - textWidth);
             }
-            std::string verticalAlignment = getNameStringFromRule({"vertical-alignment"}, {"start", "centered", "end"}, "start", true);
+            std::string verticalAlignment = getNameStringFromRule("vertical-alignment", {"start", "centered", "end"}, "start", true);
 
             // TODO: add support for reversed languages
             if (verticalAlignment == "start") {
