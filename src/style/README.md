@@ -57,13 +57,16 @@ Ampersand (&) at first element in nested style means to apply following style in
 
 ### Syntax
 
+styleComponents = <element-name|.class|#id|:modifier>
+componentsSpaceBeforeName = < element-name|.class|#id|:modifier
+dataTypes = int|float|bool|string
 ```
-<element-name|.class|#id><['>'|' ']<.class|#id|:modifier>| element-name>[...][, ...] { 
-    <style-name>: <string|int|float|bool|tuple[string|int|float|bool,...]>[,...];
-    <style-name>: <int|float> +|-|/|*|% <int|float>;
-    <style-name>: function(<string|int|float|bool|tuple[string|int|float|bool,...]>, ...);
+<stylesComponents><['>'|' ']<componentsSpaceBeforeName>[...][, ...] { 
+    <style-name>: <dataTypes|tuple[dataTypes,...]>[,...];
+    <style-name>: <int|float> +|-|/|*|% <int|float>; // not done
+    <style-name>: function(<dataTypes|tuple[dataTypes,...]>, ...); // not done
 
-    <&|element-name|.class|#id|:modifier><<.class|#id|:modifier>| element-name>[...] {
+    <&|styleComponents><componentsSpaceBeforeName>[...] {
         // recursive (styles, inner elements|classes|ids|modifiers)
         [...]
     }

@@ -284,6 +284,28 @@ namespace styleDeserializationTests {
         return result;
     }
 
+    test::Result testGlobalModifier() {
+	style::StyleComponentDataList expectedData = style::StyleComponentDataList();
+        style::StyleValuesMap expectedStyleMap = style::StyleValuesMap();
+        style::StyleValue *styleValue;
+        style::StyleBlock *styleBlock;
+        std::list<style::StyleBlock *> expectedStyleBlocks;
+        test::Result result;
+
+        expectedData.push_back(std::pair(std::pair("hovered", style::StyleComponentType::Modifier), style::StyleRelation::SameElement));
+        styleValue = new style::StyleValue("", style::StyleValueType::PixelUnit);
+        style::StyleValue *styleValue2 = new style::StyleValue("100", style::StyleValueType::Int);
+        styleValue->setChild(styleValue2);
+        expectedStyleMap["padding"] = style::StyleRule{styleValue, true, 10, 0, 0};
+        styleBlock = new style::StyleBlock(expectedData, expectedStyleMap);
+        expectedStyleBlocks = {styleBlock};
+        result = testDeserialization(":hovered {padding:100px;}", &expectedStyleBlocks);
+        delete styleBlock;
+        expectedStyleMap.clear();
+        expectedData.clear();
+        return result;
+    }
+
     test::Result testMissingSemiColonAfterAssignment() {
         return checkDeserializationError<style::MissingToken>(".container      label#red{text-color : #ff0000}");
     }
@@ -314,7 +336,7 @@ namespace styleDeserializationTests {
         tests->runTest(testMissingBlockDeclaration, "missing block declaration");
         tests->runTest(testMissingBlockDeclarationComponentBeforeDirectParentRelation,
                       "missing block declaration component before direct parent relation");
-
+	tests->runTest(testGlobalModifier, "global modifier");
         tests->endTestBlock();
     }
 

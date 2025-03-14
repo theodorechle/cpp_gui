@@ -1,4 +1,6 @@
 - register where errors occurs to be able to signal them
 - enable modifiers who aren't at the end of the required components list
 - check for multiple same identifiers
-- nested descendant style (like SCSS '&')
+- nested tuples?
+- assert modifiers without other component who affect all styles (:hovered {...}) are working
+- rename: styleComponent, pseudoName
