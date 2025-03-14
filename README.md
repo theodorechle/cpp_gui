@@ -20,10 +20,9 @@ The gui is designed so you can implements easily your own elements
 
 ### Abstracts
 - <i>AbstractElement</i>
-- <i>AbstractContainer</i>
-- <i>UIElement</i>
+- <i>UIElement</i> (inherits the AbstractElement class)
 
-### Concretes (they all inherits the AbstractElement class)
+### Concretes (they all inherits the UIElement class)
 - Label
 - Input
 - Container
@@ -63,23 +62,22 @@ The gui is designed so you can implements easily your own elements
     - horizontal-alignment: start|centered|end
     - vertical-alignment: start|centered|end
     - // TODO antialias: bool
-- // TODO Input
+- Input // in progress
     - // TODO caret-color: string|tuple[int,int,int]
     - // TODO placeholder-color: string|tuple[int,int,int]
 - // TODO Slider
     - // TODO bar-color: string|tuple[int,int,int]
     - // TODO cursor-color: string|tuple[int,int,int]
-- container: // Container
+- Container:
 - List
     - vertical: bool
     - childs-size: biggest|auto|keep
     - gap: int
-- // Button
+- Button
 
 
 ## Manager
-The Manager is a class who manages all the given elements.
-It chooses when their rendering are computed and when they are rendered.
+It chooses when its elements rendering is computed and when they are rendered.
 It knows the window size and state (focused, ...).
 It activates and deactivates the style modifiers.
 
