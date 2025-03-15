@@ -19,12 +19,18 @@ namespace gui {
 
         class UIElement : public AbstractElement {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
-            int elementDesiredWidth = 0;
-            int elementDesiredHeight = 0;
+            struct {
+                int width;
+                int height;
+            } elementDesiredSize = {0, 0};
+            struct {
+                int width;
+                int height;
+            } fullSize = {0, 0};
             struct {
                 int x;
                 int y;
-            } currentScrollPos = {0, 0};
+            } scrollOffset = {0, 0};
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;

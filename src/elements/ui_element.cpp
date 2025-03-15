@@ -78,6 +78,8 @@ namespace gui {
         void UIElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
             SDL_Rect newRect = SDL_Rect{x, y, availableWidth, availableHeight};
             setRect(newRect);
+            fullSize.width = availableWidth;
+            fullSize.height = availableHeight;
             if (managerActionsService != nullptr && !SDL_RectsEqual(&elementRect, &newRect)) managerActionsService->askRendering();
             x += borderLeft() + marginLeft();
             y += borderTop() + marginTop();
@@ -117,8 +119,8 @@ namespace gui {
         }
 
         void UIElement::getDesiredSize(int *width, int *height) const {
-            *width = elementDesiredWidth;
-            *height = elementDesiredHeight;
+            *width = elementDesiredSize.width;
+            *height = elementDesiredSize.height;
         }
 
         void UIElement::setSize(int width, int height) {
@@ -127,8 +129,8 @@ namespace gui {
         }
 
         void UIElement::setDesiredSize(int width, int height) {
-            this->elementDesiredWidth = width;
-            this->elementDesiredHeight = height;
+            this->elementDesiredSize.width = width;
+            this->elementDesiredSize.height = height;
         }
 
         SDL_Rect UIElement::computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect) {
