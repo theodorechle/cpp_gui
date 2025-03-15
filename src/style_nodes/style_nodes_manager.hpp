@@ -1,9 +1,9 @@
-#ifndef ELEMENTS_STYLE_MANAGER_HPP
-#define ELEMENTS_STYLE_MANAGER_HPP
+#ifndef STYLE_NODES_MANAGER_HPP
+#define STYLE_NODES_MANAGER_HPP
 
 #include "../../style/style_component.hpp"
 #include "../../style/style_deserializer.hpp"
-#include "../element_style.hpp"
+#include "style_node.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -14,8 +14,8 @@ namespace gui {
     namespace elementStyle {
         namespace manager {
 
-            class ElementsStyleManager {
-                gui::elementStyle::ElementStyle *elements = nullptr;
+            class StyleNodesManager {
+                gui::elementStyle::StyleNode *elements = nullptr;
                 std::list<style::StyleBlock *> style = {};
                 int fileCount = 0;
                 // file number: <file name, nb rules>
@@ -23,30 +23,30 @@ namespace gui {
                 std::string fontsPath = "";
 
                 int findFile(const std::string &fileName);
-                void updateRulesPrioritiesInElements(int oldFileNumber, int newwFileNumber, gui::elementStyle::ElementStyle *element);
+                void updateRulesPrioritiesInElements(int oldFileNumber, int newwFileNumber, gui::elementStyle::StyleNode *element);
                 void updateRulesPriorities(int fileNumber);
-                void applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle, gui::elementStyle::ElementStyle *elementStyle,
+                void applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle, gui::elementStyle::StyleNode *elementStyle,
                                                  bool recursive = false);
 
             public:
-                ~ElementsStyleManager();
-                void setParentElementStyle(gui::elementStyle::ElementStyle *elementStyle) { elements = elementStyle; }
+                ~StyleNodesManager();
+                void setParentElementStyle(gui::elementStyle::StyleNode *elementStyle) { elements = elementStyle; }
                 void setFontsPath(const std::string &path);
                 const std::string &getFontsPath() const;
                 // returns a number who corresponds to the file number (used to delete it) or -1 if not added
                 int addStyleFile(const std::string &fileName);
                 // returns a number who corresponds to the style pseudo-file number (used to delete it) or -1 if not added
                 int addStyle(const std::string &style);
-                void removeStyleInElements(int fileNumber, gui::elementStyle::ElementStyle *element);
+                void removeStyleInElements(int fileNumber, gui::elementStyle::StyleNode *element);
                 void removeStyle(int fileNumber);
-                bool areElementSelectorsCompatibles(gui::elementStyle::ElementStyle *elementStyle,
+                bool areElementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle,
                                                     const style::StyleComponentDataList *componentsList);
-                void applyStyleToElement(gui::elementStyle::ElementStyle *elementStyle, bool recursive = false);
-                void addElementStyle(gui::elementStyle::ElementStyle *elementStyle);
+                void applyStyleToElement(gui::elementStyle::StyleNode *elementStyle, bool recursive = false);
+                void addElementStyle(gui::elementStyle::StyleNode *elementStyle);
             };
 
         } // namespace manager
     } // namespace elementStyle
 } // namespace gui
 
-#endif // ELEMENTS_STYLE_MANAGER_HPP
+#endif // STYLE_NODES_MANAGER_HPP

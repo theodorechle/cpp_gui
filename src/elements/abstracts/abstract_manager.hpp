@@ -4,16 +4,13 @@
 #include <algorithm>
 #include <list>
 
-#include "../abstract_element.hpp"
-#include "manager_actions_service.hpp"
+#include "abstract_element.hpp"
 
 namespace gui {
     namespace element {
         namespace manager {
 
             class AbstractManager {
-                gui::element::ManagerActionsService managerActionsService;
-
             public:
                 enum class Status {
                     RUNNING,
@@ -23,31 +20,26 @@ namespace gui {
 
             private:
                 Status _currentStatus = Status::RUNNING;
-                bool _needRendering = true;
-                bool _needRecomputeLayout = true;
+                bool _needUpdate = true;
                 virtual void renderElements(bool clear = true) const = 0;
+                virtual gui::element::AbstractElement *createRootElement() const = 0;
 
             protected:
                 gui::element::AbstractElement *elementsTree = nullptr;
                 void status(Status s) { _currentStatus = s; }
-                void needRecomputeLayout(bool needRecomputeLayout) { _needRecomputeLayout = needRecomputeLayout; }
-                void needRendering(bool needRendering) { _needRendering = needRendering; }
+                void needUpdate(bool needUpdate) { _needUpdate = needUpdate; }
                 virtual void computeElementsLayout() = 0;
 
             public:
-                AbstractManager() : managerActionsService{ManagerActionsService(this)} {}
                 virtual ~AbstractManager();
-                virtual void setElementsTree(gui::element::AbstractElement *element);
+                void setSubRootElement(gui::element::AbstractElement *element);
+
                 void deleteElementsTree();
                 void render(bool clear = true);
-                virtual void computeLayout();
-                ManagerActionsService *getManagerActionsService() { return &managerActionsService; }
 
                 Status status() { return _currentStatus; }
-                void askRendering() { this->_needRendering = true; }
-                bool needRendering() { return _needRendering; }
-                void askRecomputeLayout() { this->_needRecomputeLayout = true; }
-                bool needRecomputeLayout() { return _needRecomputeLayout; }
+                void propagateElementUpdate() { _needUpdate = true; }
+                bool needUpdate() { return _needUpdate; }
             };
 
         } // namespace manager

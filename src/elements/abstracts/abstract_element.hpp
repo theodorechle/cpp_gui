@@ -1,7 +1,7 @@
 #ifndef ABSTRACT_ELEMENT_HPP
 #define ABSTRACT_ELEMENT_HPP
 
-#include "../elements_style/managers/elements_style_manager.hpp"
+#include "../../style_nodes/style_nodes_manager.hpp"
 
 #include <string>
 #include <vector>
@@ -14,11 +14,11 @@ namespace gui {
             AbstractElement *parent = nullptr;
             AbstractElement *child = nullptr;
             AbstractElement *next = nullptr;
-            gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager;
+            gui::elementStyle::manager::StyleNodesManager *elementsStyleManager;
             int nbChilds = 0;
 
         protected:
-            gui::elementStyle::ElementStyle *elementStyle = nullptr;
+            gui::elementStyle::StyleNode *elementStyle = nullptr;
             void setParent(AbstractElement *parent);
             void updateStyle();
 
@@ -45,7 +45,7 @@ namespace gui {
             /**
              * If no style manager is given, the element can't have style
              */
-            AbstractElement(std::string elementName, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
+            AbstractElement(std::string elementName, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                             std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
             const std::string &getName() const { return elementName; }
             AbstractElement *getParent() { return parent; }
@@ -58,12 +58,6 @@ namespace gui {
             virtual ~AbstractElement();
 
             virtual void render() = 0;
-
-            virtual void initBeforeLayoutComputing() {}
-            virtual void computeDesiredLayout(int *desiredWidth, int *desiredHeight) = 0;
-
-            virtual void computeLayout(int x, int y, int availableWidth, int availableHeight) = 0;
-            virtual void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) = 0;
 
             bool styleManagerAvailable() { return elementsStyleManager != nullptr; }
 

@@ -1,19 +1,19 @@
-#include "elements_style_manager.hpp"
+#include "style_nodes_manager.hpp"
 
 namespace gui {
     namespace elementStyle {
         namespace manager {
 
-            int ElementsStyleManager::findFile(const std::string &fileName) {
+            int StyleNodesManager::findFile(const std::string &fileName) {
                 for (std::pair<int, std::pair<std::string, int>> file : files) {
                     if (file.second.first == fileName) return file.first;
                 }
                 return -1;
             }
 
-            void ElementsStyleManager::updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber,
-                                                                       gui::elementStyle::ElementStyle *element) {
-                gui::elementStyle::ElementStyle *child;
+            void StyleNodesManager::updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber,
+                                                                       gui::elementStyle::StyleNode *element) {
+                gui::elementStyle::StyleNode *child;
                 element->updateStylePriorityFromFile(oldFileNumber, newFileNumber);
                 child = element->getChild();
                 while (child != nullptr) {
@@ -22,7 +22,7 @@ namespace gui {
                 }
             }
 
-            void ElementsStyleManager::updateRulesPriorities(int fileNumber) {
+            void StyleNodesManager::updateRulesPriorities(int fileNumber) {
                 std::unordered_map<int, std::pair<std::string, int>>::node_type node;
                 if (elements != nullptr) {
                     updateRulesPrioritiesInElements(fileNumber, fileCount, elements);
@@ -33,10 +33,10 @@ namespace gui {
                 }
             }
 
-            void ElementsStyleManager::applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle,
-                                                                   gui::elementStyle::ElementStyle *elementStyle, bool recursive) {
+            void StyleNodesManager::applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle,
+                                                                   gui::elementStyle::StyleNode *elementStyle, bool recursive) {
                 if (elementStyle == nullptr) return;
-                gui::elementStyle::ElementStyle *actualElementStyle = elementStyle;
+                gui::elementStyle::StyleNode *actualElementStyle = elementStyle;
                 const style::StyleValuesMap *styleMap;
                 AppliedStyleMap elementStyleMap;
                 std::string modifier = "";
@@ -76,20 +76,20 @@ namespace gui {
                 }
             }
 
-            ElementsStyleManager::~ElementsStyleManager() {
+            StyleNodesManager::~StyleNodesManager() {
                 for (style::StyleBlock *styleBlock : style) {
                     delete styleBlock;
                 }
             }
 
-            void ElementsStyleManager::setFontsPath(const std::string &path) {
+            void StyleNodesManager::setFontsPath(const std::string &path) {
                 if (path[path.size() - 1] != '/') fontsPath = path + '/';
                 else fontsPath = path;
             }
 
-            const std::string &ElementsStyleManager::getFontsPath() const { return fontsPath; }
+            const std::string &StyleNodesManager::getFontsPath() const { return fontsPath; }
 
-            int ElementsStyleManager::addStyleFile(const std::string &fileName) {
+            int StyleNodesManager::addStyleFile(const std::string &fileName) {
                 int fileNumber = findFile(fileName);
                 if (fileNumber != -1) {
                     updateRulesPriorities(fileNumber);
@@ -107,7 +107,7 @@ namespace gui {
                 return fileNumber;
             }
 
-            int ElementsStyleManager::addStyle(const std::string &styleFileContent) {
+            int StyleNodesManager::addStyle(const std::string &styleFileContent) {
                 int ruleNumber;
                 std::list<style::StyleBlock *> *fileRules;
                 fileRules = style::StyleDeserializer::deserialize(styleFileContent, fileCount, &ruleNumber);
@@ -120,8 +120,8 @@ namespace gui {
                 return fileCount - 1;
             }
 
-            void ElementsStyleManager::removeStyleInElements(int fileNumber, gui::elementStyle::ElementStyle *element) {
-                gui::elementStyle::ElementStyle *child;
+            void StyleNodesManager::removeStyleInElements(int fileNumber, gui::elementStyle::StyleNode *element) {
+                gui::elementStyle::StyleNode *child;
                 element->deleteStyleFromFile(fileNumber);
                 child = element->getChild();
                 while (child != nullptr) {
@@ -130,7 +130,7 @@ namespace gui {
                 }
             }
 
-            void ElementsStyleManager::removeStyle(int fileNumber) {
+            void StyleNodesManager::removeStyle(int fileNumber) {
                 for (std::pair<int, std::pair<std::string, int>> file : files) {
                 }
                 if (elements != nullptr && files.find(fileNumber) != files.cend()) {
@@ -146,11 +146,11 @@ namespace gui {
                 }
             }
 
-            bool ElementsStyleManager::areElementSelectorsCompatibles(gui::elementStyle::ElementStyle *elementStyle,
+            bool StyleNodesManager::areElementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle,
                                                                       const style::StyleComponentDataList *componentsList) {
                 if (elementStyle == nullptr || componentsList == nullptr) return false;
                 bool selectorExists = false;
-                gui::elementStyle::ElementStyle *currentStyle = elementStyle;
+                gui::elementStyle::StyleNode *currentStyle = elementStyle;
                 style::StyleComponentDataList::const_reverse_iterator listEndIt = componentsList->crbegin();
                 const std::set<style::StyleComponentData> *elementSelectors;
                 elementSelectors = currentStyle->getSelectors();
@@ -197,11 +197,11 @@ namespace gui {
                 return selectorExists;
             }
 
-            void ElementsStyleManager::applyStyleToElement(gui::elementStyle::ElementStyle *elementStyle, bool recursive) {
+            void StyleNodesManager::applyStyleToElement(gui::elementStyle::StyleNode *elementStyle, bool recursive) {
                 applySpecificStyleToElement(style, elementStyle, recursive);
             }
 
-            void ElementsStyleManager::addElementStyle(gui::elementStyle::ElementStyle *elementStyle) {
+            void StyleNodesManager::addElementStyle(gui::elementStyle::StyleNode *elementStyle) {
                 if (elements == nullptr) setParentElementStyle(elementStyle);
                 applyStyleToElement(elementStyle, true);
             }

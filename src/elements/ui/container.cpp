@@ -3,7 +3,7 @@
 namespace gui {
     namespace element {
 
-        Container::Container(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager, std::vector<std::string> *classes,
+        Container::Container(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
                              const std::string &identifier)
             : UIElement{"container", elementsStyleManager, classes, identifier} {}
     } // namespace element

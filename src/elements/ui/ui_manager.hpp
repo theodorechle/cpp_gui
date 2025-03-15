@@ -1,9 +1,10 @@
 #ifndef UIMANAGER_HPP
 #define UIMANAGER_HPP
 
-#include "../root_element.hpp"
-#include "../ui_element.hpp"
-#include "abstract_manager.hpp"
+#include "root_element.hpp"
+#include "ui_element.hpp"
+#include "abstracts/abstract_manager.hpp"
+#include "render_nodes/ui_render_node.hpp"
 #include <SDL3/SDL.h>
 
 namespace gui {
@@ -11,7 +12,6 @@ namespace gui {
         namespace manager {
 
             class UIManager : public AbstractManager {
-
                 SDL_Window *window = nullptr;
                 SDL_Renderer *renderer = nullptr;
                 UIElement *clickedElement = nullptr;
@@ -20,13 +20,14 @@ namespace gui {
                 UIElement *focusedElement = nullptr;
                 SDL_Rect clipRect;
                 bool canChangeSize = true;
+                gui::element::ui::render::UiRenderNode *rootRenderNode;
+
+                gui::element::AbstractElement *createRootElement() const override;
 
             public:
                 UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect = nullptr);
 
                 void setClipRect(const SDL_Rect &clipRect) { this->clipRect = clipRect; }
-
-                void setElementsTree(gui::element::AbstractElement *element) override;
 
                 void updateClipRect();
 

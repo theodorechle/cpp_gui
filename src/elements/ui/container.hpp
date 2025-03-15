@@ -8,7 +8,7 @@ namespace gui {
 
         class Container : public UIElement {
         public:
-            Container(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+            Container(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                       const std::string &identifier = "");
         };
 

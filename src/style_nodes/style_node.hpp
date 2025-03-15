@@ -1,5 +1,5 @@
-#ifndef ELEMENT_STYLE_HPP
-#define ELEMENT_STYLE_HPP
+#ifndef STYLE_NODE_HPP
+#define STYLE_NODE_HPP
 
 #include "../style/style_component.hpp"
 #include <algorithm>
@@ -12,7 +12,7 @@ namespace gui {
         typedef std::list<style::StyleRule> StyleRules;
         typedef std::unordered_map<std::string, StyleRules> AppliedStyleMap;
 
-        class ElementStyle {
+        class StyleNode {
             AppliedStyleMap style = {};
             /**
              * key:
@@ -25,24 +25,24 @@ namespace gui {
              */
             std::unordered_map<std::string, std::pair<bool, std::list<std::pair<int, int>>>> modifiers = {};
             std::set<style::StyleComponentData> selectors = {};
-            ElementStyle *parent = nullptr;
-            ElementStyle *child = nullptr;
-            ElementStyle *next = nullptr;
+            StyleNode *parent = nullptr;
+            StyleNode *child = nullptr;
+            StyleNode *next = nullptr;
 
             std::string fontsPath = "";
 
             static bool compareRulesPriorityDescending(style::StyleRule rule1, style::StyleRule rule2); // TODO: take as references
             static bool compareRulesPriorityAscending(style::StyleRule rule1, style::StyleRule rule2);
-            void setParent(ElementStyle *parent) { this->parent = parent; }
+            void setParent(StyleNode *parent) { this->parent = parent; }
 
         public:
-            virtual ~ElementStyle();
-            ElementStyle *getParent() { return parent; }
-            void addChild(ElementStyle *child);
-            ElementStyle *getChild() { return child; }
+            virtual ~StyleNode();
+            StyleNode *getParent() { return parent; }
+            void addChild(StyleNode *child);
+            StyleNode *getChild() { return child; }
             void removeChilds() { child = nullptr; }
-            void setNext(ElementStyle *next) { this->next = next; }
-            ElementStyle *getNext() { return next; }
+            void setNext(StyleNode *next) { this->next = next; }
+            StyleNode *getNext() { return next; }
             void setStyle(const AppliedStyleMap &style) { this->style = style; }
             void addStyle(AppliedStyleMap &newStyle);
             const AppliedStyleMap &getStyle() const;
@@ -81,4 +81,4 @@ namespace gui {
     } // namespace elementStyle
 } // namespace gui
 
-#endif // ELEMENT_STYLE_HPP
+#endif // STYLE_NODE_HPP

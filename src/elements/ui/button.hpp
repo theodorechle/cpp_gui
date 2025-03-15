@@ -11,7 +11,7 @@ namespace gui {
         class Button : public UIElement {
             std::function<void()> onClickFunction;
         public:
-            Button(std::function<void()> onClick, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+            Button(std::function<void()> onClick, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                    const std::string &identifier = "");
 
         void catchEvent(const SDL_Event &event) override;

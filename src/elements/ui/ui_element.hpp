@@ -5,8 +5,7 @@
 #include "../converters/color_converter.hpp"
 #include "../converters/number_converter.hpp"
 #include "../converters/size_converter.hpp"
-#include "abstract_element.hpp"
-#include "managers/manager_actions_service.hpp"
+#include "abstracts/abstract_element.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -16,27 +15,21 @@
 
 namespace gui {
     namespace element {
+        typedef struct {
+            int width;
+            int height;
+        } Size;
 
         class UIElement : public AbstractElement {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
-            struct {
-                int width;
-                int height;
-            } elementDesiredSize = {0, 0};
-            struct {
-                int width;
-                int height;
-            } fullSize = {0, 0};
-            struct {
-                int x;
-                int y;
-            } scrollOffset = {0, 0};
+            Size elementDesiredSize = {0, 0};
+            Size fullSize = {0, 0};
+            Size scrollOffset = {0, 0};
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
             bool marginsActive = true;
             bool _focus = false;
-            ManagerActionsService *managerActionsService = nullptr;
 
             /**
              * compute desired layout without margins, paddings, borders, ...
@@ -132,7 +125,7 @@ namespace gui {
             void askRecomputeLayout() const;
 
         public:
-            UIElement(std::string elementName, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
+            UIElement(std::string elementName, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
                 : AbstractElement{elementName, elementsStyleManager, classes, identifier}, textEngine{textEngine} {}
 
@@ -189,10 +182,12 @@ namespace gui {
 
             SDL_Color backgroundColor() const;
 
-            void computeLayout(int x, int y, int availableWidth, int availableHeight) override final;
-            void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) override;
+            virtual void initBeforeLayoutComputing() {}
 
-            void computeDesiredLayout(int *desiredWidth, int *desiredHeight) final;
+            void computeLayout(int x, int y, int availableWidth, int availableHeight);
+            virtual void computeChildsLayout(int x, int y, int availableWidth, int availableHeight);
+
+            void computeDesiredLayout(int *desiredWidth, int *desiredHeight);
 
             virtual void catchEvent(const SDL_Event &event) {}
 
@@ -203,8 +198,6 @@ namespace gui {
 
             void focus(bool focused);
             bool focus() { return _focus; }
-
-            void setManagerActionsService(gui::element::ManagerActionsService *managerActionsService);
         };
 
         class NoRendererException : public std::logic_error {

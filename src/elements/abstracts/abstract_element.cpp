@@ -14,11 +14,11 @@ namespace gui {
             }
         }
 
-        AbstractElement::AbstractElement(std::string elementName, elementStyle::manager::ElementsStyleManager *elementsStyleManager,
+        AbstractElement::AbstractElement(std::string elementName, elementStyle::manager::StyleNodesManager *elementsStyleManager,
                                          std::vector<std::string> *classes, const std::string &identifier)
             : elementName{elementName}, elementsStyleManager{elementsStyleManager} {
 
-            elementStyle = new gui::elementStyle::ElementStyle();
+            elementStyle = new gui::elementStyle::StyleNode();
             if (elementsStyleManager != nullptr) {
                 elementStyle->setFontsPath(elementsStyleManager->getFontsPath());
             }

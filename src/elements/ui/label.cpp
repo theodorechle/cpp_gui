@@ -98,11 +98,11 @@ namespace gui {
             }
         }
 
-        Label::Label(const std::string &elementName, const std::string &text, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager,
+        Label::Label(const std::string &elementName, const std::string &text, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager,
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : UIElement{elementName, elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 
-        Label::Label(const std::string &text, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager,
+        Label::Label(const std::string &text, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager,
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : UIElement{"label", elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 

@@ -1,7 +1,7 @@
 #ifndef VIEW_CONTAINER_HPP
 #define VIEW_CONTAINER_HPP
 
-#include "managers/ui_manager.hpp"
+#include "ui_manager.hpp"
 #include "ui_element.hpp"
 
 namespace gui {
@@ -23,7 +23,7 @@ namespace gui {
 
         public:
             ViewContainer(gui::element::manager::UIManager *viewManager,
-                          gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr,
+                          gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                           std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
         };
 

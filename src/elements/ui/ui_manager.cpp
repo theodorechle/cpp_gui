@@ -13,15 +13,11 @@ namespace gui {
                 }
             }
 
-            void UIManager::setElementsTree(gui::element::AbstractElement *element) {
-                AbstractManager::setElementsTree(new gui::element::RootElement());
-                static_cast<gui::element::UIElement *>(elementsTree)->setRenderer(renderer);
-                static_cast<gui::element::UIElement *>(elementsTree)->setWindow(window);
-                static_cast<gui::element::UIElement *>(elementsTree)->setManagerActionsService(getManagerActionsService());
-                computeFinalElementsLayout();
-                static_cast<gui::element::UIElement *>(element)->setRenderer(renderer);
-                static_cast<gui::element::UIElement *>(element)->setWindow(window);
-                elementsTree->addChild(static_cast<gui::element::UIElement *>(element));
+            gui::element::AbstractElement *UIManager::createRootElement() const {
+                gui::element::UIElement *rootElement = new gui::element::RootElement();
+                rootElement->setRenderer(renderer);
+                rootElement->setWindow(window);
+                return rootElement;
             }
 
             void UIManager::updateClipRect() {
@@ -38,7 +34,7 @@ namespace gui {
                 clickedElement = nullptr;
                 hoveredElement = nullptr;
                 focusedElement = nullptr;
-                needRecomputeLayout();
+                needUpdate();
             }
 
             void UIManager::computeDesiredElementsLayout(int *width, int *height) {

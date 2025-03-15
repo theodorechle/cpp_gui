@@ -19,7 +19,7 @@ namespace gui {
             void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) override;
 
         public:
-            List(gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+            List(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                  const std::string &identifier = "");
         };
 

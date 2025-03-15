@@ -1,9 +1,9 @@
-#include "element_style.hpp"
+#include "style_node.hpp"
 
 namespace gui {
     namespace elementStyle {
 
-        bool ElementStyle::compareRulesPriorityDescending(style::StyleRule rule1, style::StyleRule rule2) {
+        bool StyleNode::compareRulesPriorityDescending(style::StyleRule rule1, style::StyleRule rule2) {
             if (rule1.specificity > rule2.specificity) return true;
             if (rule1.specificity == rule2.specificity) {
                 if (rule1.fileNumber > rule2.fileNumber) return true;
@@ -14,7 +14,7 @@ namespace gui {
             return false;
         }
 
-        bool ElementStyle::compareRulesPriorityAscending(style::StyleRule rule1, style::StyleRule rule2) {
+        bool StyleNode::compareRulesPriorityAscending(style::StyleRule rule1, style::StyleRule rule2) {
             if (rule1.specificity < rule2.specificity) return true;
             if (rule1.specificity == rule2.specificity) {
                 if (rule1.fileNumber < rule2.fileNumber) return true;
@@ -25,11 +25,11 @@ namespace gui {
             return false;
         }
 
-        ElementStyle::~ElementStyle() {}
+        StyleNode::~StyleNode() {}
 
-        void ElementStyle::addChild(ElementStyle *child) {
-            ElementStyle *nextChild = getChild();
-            ElementStyle *selfChild;
+        void StyleNode::addChild(StyleNode *child) {
+            StyleNode *nextChild = getChild();
+            StyleNode *selfChild;
             if (nextChild == nullptr) {
                 this->child = child;
             }
@@ -44,7 +44,7 @@ namespace gui {
             child->setParent(this);
         }
 
-        void ElementStyle::addStyle(AppliedStyleMap &newStyle) {
+        void StyleNode::addStyle(AppliedStyleMap &newStyle) {
             AppliedStyleMap::iterator actualStyleIt;
             for (AppliedStyleMap::iterator it = newStyle.begin(); it != newStyle.end(); it++) {
                 actualStyleIt = style.find(it->first);
@@ -59,7 +59,7 @@ namespace gui {
             }
         }
 
-        bool ElementStyle::deleteStyle(int fileNumber, int ruleNumber) {
+        bool StyleNode::deleteStyle(int fileNumber, int ruleNumber) {
             for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
                 for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
                     if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
@@ -71,7 +71,7 @@ namespace gui {
             return false;
         }
 
-        int ElementStyle::deleteStyleFromFile(int fileNumber) {
+        int StyleNode::deleteStyleFromFile(int fileNumber) {
             int nbDeletedRules = 0;
             for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
                 for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end();) {
@@ -85,7 +85,7 @@ namespace gui {
             return nbDeletedRules;
         }
 
-        void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNumber) {
+        void StyleNode::updateStylePriorityFromFile(int oldFileNumber, int newFileNumber) {
             for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
                 for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
                     if (listIt->fileNumber == oldFileNumber) {
@@ -96,7 +96,7 @@ namespace gui {
             }
         }
 
-        int ElementStyle::clear() {
+        int StyleNode::clear() {
             int nbDeletedRules = 0;
             for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
                 nbDeletedRules += it->second.size();
@@ -106,7 +106,7 @@ namespace gui {
             return nbDeletedRules;
         }
 
-        int ElementStyle::nbRules() const {
+        int StyleNode::nbRules() const {
             int nbRules = 0;
             for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {
                 nbRules += it->second.size();
@@ -114,7 +114,7 @@ namespace gui {
             return nbRules;
         }
 
-        bool ElementStyle::getRule(const std::string &ruleName, style::StyleValue **ruleValue, bool canInherit,
+        bool StyleNode::getRule(const std::string &ruleName, style::StyleValue **ruleValue, bool canInherit,
                                    style::StyleValue *defaultStyle) const {
             for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {
                 if (it->first == ruleName) {
@@ -133,7 +133,7 @@ namespace gui {
             return parent->getRule(ruleName, ruleValue, canInherit, defaultStyle); // cascade style, if not found, check parent
         }
 
-        bool ElementStyle::getRule(const std::vector<std::string> &rulesNames, style::StyleValue **ruleValue, bool canInherit,
+        bool StyleNode::getRule(const std::vector<std::string> &rulesNames, style::StyleValue **ruleValue, bool canInherit,
                                    style::StyleValue *defaultStyle) const {
             const style::StyleRule *currentRule = nullptr;
             for (const std::string &ruleName : rulesNames) {
@@ -160,14 +160,14 @@ namespace gui {
             return parent->getRule(rulesNames, ruleValue, canInherit, defaultStyle); // cascade style, if not found, check parent
         }
 
-        bool ElementStyle::ruleExists(const std::string &ruleName) const {
+        bool StyleNode::ruleExists(const std::string &ruleName) const {
             for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {
                 if (it->first == ruleName) return true;
             }
             return false;
         }
 
-        bool ElementStyle::ruleExists(int fileNumber, int ruleNumber) const {
+        bool StyleNode::ruleExists(int fileNumber, int ruleNumber) const {
             for (AppliedStyleMap::const_iterator it = style.cbegin(); it != style.cend(); it++) {
                 for (StyleRules::const_iterator listIt = it->second.cbegin(); listIt != it->second.cend(); listIt++) {
                     if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
@@ -178,15 +178,15 @@ namespace gui {
             return false;
         }
 
-        void ElementStyle::addSelector(std::string selectorName, style::StyleComponentType selectorType) {
+        void StyleNode::addSelector(std::string selectorName, style::StyleComponentType selectorType) {
             selectors.insert(style::StyleComponentData(selectorName, selectorType));
         }
 
-        void ElementStyle::addModifier(std::string modifierName) {
+        void StyleNode::addModifier(std::string modifierName) {
             modifiers.emplace(modifierName, std::pair<bool, std::list<std::pair<int, int>>>(false, {}));
         }
 
-        void ElementStyle::setModifierState(std::string modifierName, bool enabled) {
+        void StyleNode::setModifierState(std::string modifierName, bool enabled) {
             std::unordered_map<std::string, std::pair<bool, std::list<std::pair<int, int>>>>::iterator modifier;
             modifier = modifiers.find(modifierName);
             if (modifier == modifiers.end() || modifier->second.first == enabled) return;
@@ -196,14 +196,14 @@ namespace gui {
             }
         }
 
-        void ElementStyle::deactivateAllModifiers() {
+        void StyleNode::deactivateAllModifiers() {
             std::unordered_map<std::string, std::pair<bool, std::list<std::pair<int, int>>>>::const_iterator modifiersIt;
             for (modifiersIt = modifiers.cbegin(); modifiersIt != modifiers.cend(); modifiersIt++) {
                 setModifierState(modifiersIt->first, false);
             }
         }
 
-        void ElementStyle::addRuleAffectedByModifier(int fileNumber, int ruleNumber, std::string modifierName) {
+        void StyleNode::addRuleAffectedByModifier(int fileNumber, int ruleNumber, std::string modifierName) {
             std::unordered_map<std::string, std::pair<bool, std::list<std::pair<int, int>>>>::iterator modifier;
             modifier = modifiers.find(modifierName);
             if (modifier == modifiers.end()) return;
@@ -211,7 +211,7 @@ namespace gui {
             modifier->second.second.push_back(std::pair<int, int>(fileNumber, ruleNumber));
         }
 
-        void ElementStyle::toggleRule(int fileNumber, int ruleNumber) {
+        void StyleNode::toggleRule(int fileNumber, int ruleNumber) {
             for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
                 for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
                     if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
@@ -222,7 +222,7 @@ namespace gui {
             }
         }
 
-        void ElementStyle::toggleRule(int fileNumber, int ruleNumber, bool enabled) {
+        void StyleNode::toggleRule(int fileNumber, int ruleNumber, bool enabled) {
             for (AppliedStyleMap::iterator it = style.begin(); it != style.end(); it++) {
                 for (StyleRules::iterator listIt = it->second.begin(); listIt != it->second.end(); listIt++) {
                     if (listIt->fileNumber == fileNumber && listIt->ruleNumber == ruleNumber) {
@@ -233,7 +233,7 @@ namespace gui {
             }
         }
 
-        void ElementStyle::setFontsPath(const std::string &path) {
+        void StyleNode::setFontsPath(const std::string &path) {
             if (path[path.size() - 1] != '/') fontsPath = path + '/';
             else fontsPath = path;
         }

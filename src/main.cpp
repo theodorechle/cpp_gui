@@ -1,15 +1,15 @@
 #include "app_utils/app_state.hpp"
-#include "elements/button.hpp"
-#include "elements/container.hpp"
-#include "elements/input.hpp"
-#include "elements/label.hpp"
-#include "elements/list.hpp"
-#include "elements/managers/abstract_manager.hpp"
-#include "elements/managers/ui_manager.hpp"
-#include "elements/ui_element.hpp"
-#include "elements/view_container.hpp"
-#include "elements_style/element_style.hpp"
-#include "elements_style/managers/elements_style_manager.hpp"
+#include "elements/ui/button.hpp"
+#include "elements/ui/container.hpp"
+#include "elements/ui/input.hpp"
+#include "elements/ui/label.hpp"
+#include "elements/ui/list.hpp"
+#include "elements/abstracts/abstract_manager.hpp"
+#include "elements/ui/ui_manager.hpp"
+#include "elements/ui/ui_element.hpp"
+#include "elements/ui/view_container.hpp"
+#include "style_nodes/style_node.hpp"
+#include "style_nodes/style_nodes_manager.hpp"
 #include "style/style_deserializer.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
@@ -46,7 +46,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     gui::element::manager::AbstractManager *manager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
-    gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager = new gui::elementStyle::manager::ElementsStyleManager();
+    gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = new gui::elementStyle::manager::StyleNodesManager();
     TTF_TextEngine *textEngine = TTF_CreateRendererTextEngine(sdl_renderer);
 
     if (textEngine == nullptr) {
@@ -79,7 +79,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
-    gui::elementStyle::manager::ElementsStyleManager *subElementsStyleManager = new gui::elementStyle::manager::ElementsStyleManager();
+    gui::elementStyle::manager::StyleNodesManager *subElementsStyleManager = new gui::elementStyle::manager::StyleNodesManager();
     subElementsStyleManager->addStyleFile("tests/style_deserialization_tests/tests-files/main-test-sub-view.txt");
 
     parentContainer->addChild(new gui::element::ViewContainer(subManager, subElementsStyleManager));

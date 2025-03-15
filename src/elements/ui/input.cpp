@@ -26,7 +26,7 @@ namespace gui {
             }
         }
 
-        Input::Input(const std::string &text, const std::string &placeholder, gui::elementStyle::manager::ElementsStyleManager *elementsStyleManager,
+        Input::Input(const std::string &text, const std::string &placeholder, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager,
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : Label{"input", text, elementsStyleManager, classes, identifier, textEngine}, placeholder{placeholder} {}
 
