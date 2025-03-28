@@ -48,15 +48,15 @@ namespace style {
         index += i + 3;
     }
 
-    void Lexer::lexePseudoName() {
+    void Lexer::lexeRawName() {
         if (!std::isalnum(expression[index])) return;
         size_t i = 1;
         while (std::isalnum(expression[index + i])
-               || std::find(PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS.cbegin(), PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS.cend(), expression[index + i])
-                      != PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS.cend()) {
+               || std::find(RAW_NAME_ALLOWED_SPECIAL_CHARACTERS.cbegin(), RAW_NAME_ALLOWED_SPECIAL_CHARACTERS.cend(), expression[index + i])
+                      != RAW_NAME_ALLOWED_SPECIAL_CHARACTERS.cend()) {
             i++;
         }
-        parsedTree->appendNext(new Node(Token::PseudoName, expression.substr(index, i)));
+        parsedTree->appendNext(new Node(Token::RawName, expression.substr(index, i)));
         index += i;
         lexed = true;
     }
@@ -186,7 +186,7 @@ namespace style {
             if (!lexed) lexeInt();
             if (!lexed) lexeBool();
             if (!lexed) lexeUnit();
-            if (!lexed) lexePseudoName();
+            if (!lexed) lexeRawName();
             if (!lexed) lexeReservedCharacters();
             if (!lexed) {
                 delete firstNode;

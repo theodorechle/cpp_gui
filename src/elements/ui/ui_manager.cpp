@@ -9,18 +9,18 @@ namespace gui {
                     canChangeSize = false;
                 }
                 else {
-                    updateClipRect();
+                    updateRenderingData();
                 }
             }
 
             gui::element::AbstractElement *UIManager::createRootElement() const {
-                gui::element::UIElement *rootElement = new gui::element::RootElement();
+                gui::element::UiElement *rootElement = new gui::element::RootElement();
                 rootElement->setRenderer(renderer);
                 rootElement->setWindow(window);
                 return rootElement;
             }
 
-            void UIManager::updateClipRect() {
+            void UIManager::updateRenderingData() {
                 if (!canChangeSize) return;
                 int width = 0;
                 int height = 0;
@@ -28,6 +28,10 @@ namespace gui {
                     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't get render size");
                 }
                 this->clipRect = SDL_Rect{0, 0, width, height};
+                renderedTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, clipRect.w, clipRect.h);
+                if (renderedTexture == nullptr) {
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't create a texture for rendering: %s", SDL_GetError());
+                }
             }
 
             void UIManager::resetEvents() {
@@ -37,43 +41,72 @@ namespace gui {
                 needUpdate();
             }
 
-            void UIManager::computeDesiredElementsLayout(int *width, int *height) {
-                if (elementsTree == nullptr) return;
-                (*width) = 0;
-                (*height) = 0;
-                elementsTree->computeDesiredLayout(width, height);
+            void UIManager::computeNodeLayout(gui::element::ui::render::UiRenderNode *node) { node->computeSelfLayout(); }
+
+            void UIManager::prepareRenderNodes(UiElement *rootElement, gui::element::ui::render::UiRenderNode *rootRenderNode) {
+                UiElement *currentElement = rootElement;
+                gui::element::ui::render::UiRenderNode *currentRenderNode;
+                while (currentElement != nullptr) {
+                    currentRenderNode = gui::element::ui::render::elementToRenderNodeConverter(rootRenderNode, currentElement);
+                    rootRenderNode->addChild(currentRenderNode);
+                    computeNodeLayout(currentRenderNode);
+                    prepareRenderNodes(currentElement->getChild(), currentRenderNode);
+                    currentElement = currentElement->getNext();
+                }
             }
 
-            void UIManager::computeFinalElementsLayout() {
-                if (elementsTree == nullptr) return;
-                elementsTree->computeLayout(clipRect.x, clipRect.y, clipRect.w, clipRect.h);
+            void UIManager::computeNodesAndChildsLayout(gui::element::ui::render::UiRenderNode *node) {
+                gui::element::ui::render::UiRenderNode *currentNode = node;
+                while (currentNode != nullptr) {
+                    currentNode->computeSelfAndChildsLayout();
+                    computeNodesAndChildsLayout(currentNode->child());
+                    currentNode = currentNode->next();
+                }
+            }
+
+            void UIManager::computeNodesRelativeLayout(gui::element::ui::render::UiRenderNode *node) {
+                gui::element::ui::render::UiRenderNode *currentNode = node;
+                while (currentNode != nullptr) {
+                    currentNode->computeRelativeLayout();
+                    computeNodesAndChildsLayout(currentNode->child());
+                    currentNode = currentNode->next();
+                }
+            }
+
+            void UIManager::computeNodesFinalLayout(gui::element::ui::render::UiRenderNode *node) {
+                gui::element::ui::render::UiRenderNode *currentNode = node;
+                while (currentNode != nullptr) {
+                    currentNode->computeFinalLayout();
+                    computeNodesAndChildsLayout(currentNode->child());
+                    currentNode = currentNode->next();
+                }
             }
 
             void UIManager::computeElementsLayout() {
-                int width, height;
-                // TODO: find a cleaner way to keep the root element to the window size
-                updateClipRect();
-                computeFinalElementsLayout();
-                computeDesiredElementsLayout(&width, &height);
-                computeFinalElementsLayout();
-                computeDesiredElementsLayout(&width, &height);
-                computeFinalElementsLayout();
+                prepareRenderNodes(static_cast<UiElement *>(elementsTree), rootRenderNode);
+                computeNodesAndChildsLayout(rootRenderNode);
+                computeNodesRelativeLayout(rootRenderNode);
+                computeNodesFinalLayout(rootRenderNode);
             }
 
+            void UIManager::createRenderedTexture() {}
+
             void UIManager::renderElements(bool clear) const {
-                if (elementsTree == nullptr) return;
-                Uint8 r, g, b, a;
-                int width = 0, height = 0;
-                if (clear && SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                    SDL_RenderClear(renderer);
-                    SDL_SetRenderDrawColor(renderer, r, g, b, a);
-                }
-                SDL_GetCurrentRenderOutputSize(renderer, &width, &height);
-                SDL_SetRenderClipRect(renderer, &clipRect);
-                elementsTree->render();
-                SDL_RenderPresent(renderer);
+                // if (elementsTree == nullptr) return;
+                // Uint8 r, g, b, a;
+                // int width = 0, height = 0;
+                // if (clear && SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
+                //     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                //     SDL_RenderClear(renderer);
+                //     SDL_SetRenderDrawColor(renderer, r, g, b, a);
+                // }
+                // SDL_GetCurrentRenderOutputSize(renderer, &width, &height);
+                // SDL_SetRenderClipRect(renderer, &clipRect);
+                // elementsTree->render();
+                // SDL_RenderPresent(renderer);
             }
+
+            void UIManager::update() { computeElementsLayout(); }
 
             void UIManager::processEvent(const SDL_Event &event) {
                 switch (event.type) {
@@ -86,7 +119,7 @@ namespace gui {
                     processMouseEvents();
                     break;
                 case SDL_EVENT_WINDOW_RESIZED:
-                    askRecomputeLayout();
+                    needUpdate(true);
                     break;
                 default:
                     break;
@@ -100,8 +133,8 @@ namespace gui {
                 float x, y;
                 SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
                 SDL_Point mousePos = SDL_Point{(int)x, (int)y};
-                UIElement *currentElement = static_cast<UIElement *>(elementsTree->getChild());
-                UIElement *currentHoveredElement = nullptr;
+                UiElement *currentElement = static_cast<UiElement *>(elementsTree->child());
+                UiElement *currentHoveredElement = nullptr;
                 SDL_Rect currentElementRect;
                 while (currentElement != nullptr) {
                     currentElement->getRect(&currentElementRect);
@@ -139,8 +172,8 @@ namespace gui {
                 }
             }
 
-            void UIManager::sendEvent(const SDL_Event &event, UIElement *leafElement) {
-                UIElement *element = leafElement;
+            void UIManager::sendEvent(const SDL_Event &event, UiElement *leafElement) {
+                UiElement *element = leafElement;
                 if (element == nullptr) return;
                 while (element != nullptr) {
                     element->catchEvent(event);
@@ -148,15 +181,15 @@ namespace gui {
                 }
             }
 
-            void UIManager::setElementsModifierState(const std::string &modifier, UIElement *leafElement, bool enabled, const SDL_Event &event) {
-                UIElement *element = leafElement;
+            void UIManager::setElementsModifierState(const std::string &modifier, UiElement *leafElement, bool enabled, const SDL_Event &event) {
+                UiElement *element = leafElement;
                 if (element == nullptr) return;
                 while (element != nullptr) {
                     element->setModifierState(modifier, enabled);
                     if (enabled) element->catchEvent(event);
                     element = element->getParent();
                 }
-                needRecomputeLayout(true);
+                needUpdate(true);
                 // TODO: don't recalculate the entire tree
                 // TODO: recalculate and re-render only when an element has changed
             }

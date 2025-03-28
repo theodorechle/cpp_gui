@@ -23,12 +23,12 @@ namespace gui {
                 bool _needUpdate = true;
                 virtual void renderElements(bool clear = true) const = 0;
                 virtual gui::element::AbstractElement *createRootElement() const = 0;
+                virtual void update() = 0;
 
             protected:
                 gui::element::AbstractElement *elementsTree = nullptr;
                 void status(Status s) { _currentStatus = s; }
                 void needUpdate(bool needUpdate) { _needUpdate = needUpdate; }
-                virtual void computeElementsLayout() = 0;
 
             public:
                 virtual ~AbstractManager();

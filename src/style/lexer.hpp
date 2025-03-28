@@ -41,7 +41,7 @@ namespace style {
         {'*', Token::Star}
     };
 
-    const std::vector<char> PSEUDO_NAME_ALLOWED_SPECIAL_CHARACTERS = {'-', '_'};
+    const std::vector<char> RAW_NAME_ALLOWED_SPECIAL_CHARACTERS = {'-', '_'};
 
     class Lexer {
         bool lexed;
@@ -60,7 +60,7 @@ namespace style {
         void lexeLineReturn();
         void lexeOneLineComment();
         void lexeMultiLineComment();
-        void lexePseudoName();
+        void lexeRawName();
         void lexeStringDoubleQuotes();
         void lexeStringSingleQuotes();
         void lexeInt();

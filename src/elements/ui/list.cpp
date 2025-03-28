@@ -8,7 +8,7 @@ namespace gui {
             (*desiredHeight) = 0;
             int childDesiredWidth = 0;
             int childDesiredHeight = 0;
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 child->setMarginsActive(false);
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
@@ -26,7 +26,7 @@ namespace gui {
             (*desiredHeight) = 0;
             int childDesiredWidth = 0;
             int childDesiredHeight = 0;
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 child->setMarginsActive(false);
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
@@ -47,7 +47,7 @@ namespace gui {
             (*desiredHeight) = 0;
             int childDesiredWidth = 0;
             int childDesiredHeight = 0;
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 child->setMarginsActive(false);
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
@@ -68,11 +68,11 @@ namespace gui {
             else if (childsSize == "keep") getKeepDesiredChildsSize(desiredWidth, desiredHeight, vertical);
             else if (childsSize == "auto") getAutoDesiredChildsSize(desiredWidth, desiredHeight, vertical);
             if (vertical) {
-                gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight()) * (getNbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getHeight()) * (nbChilds() - 1);
                 (*desiredHeight) += gap;
             }
             else {
-                gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getWidth()) * (getNbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (getParent() == nullptr) ? 0 : getParent()->getWidth()) * (nbChilds() - 1);
                 (*desiredWidth) += gap;
             }
         }
@@ -92,13 +92,13 @@ namespace gui {
 
             if (childsSize == "biggest" || childsSize == "auto") {
                 if (vertical) {
-                    childHeight = availableHeight / getNbChilds();
+                    childHeight = availableHeight / nbChilds();
                 }
                 else {
-                    childWidth = availableWidth / getNbChilds();
+                    childWidth = availableWidth / nbChilds();
                 }
             }
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 if (childsSize == "keep") {
                     child->getDesiredSize(&tmpChildWidth, &tmpChildHeight);
@@ -114,6 +114,6 @@ namespace gui {
 
         List::List(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
                    const std::string &identifier)
-            : UIElement{"list", elementsStyleManager, classes, identifier} {}
+            : UiElement{"list", elementsStyleManager, classes, identifier} {}
     } // namespace element
 } // namespace gui

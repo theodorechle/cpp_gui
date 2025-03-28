@@ -11,15 +11,15 @@ namespace gui {
 
         class AbstractElement {
             std::string elementName;
-            AbstractElement *parent = nullptr;
-            AbstractElement *child = nullptr;
-            AbstractElement *next = nullptr;
+            AbstractElement *_parent = nullptr;
+            AbstractElement *_child = nullptr;
+            AbstractElement *_next = nullptr;
             gui::elementStyle::manager::StyleNodesManager *elementsStyleManager;
-            int nbChilds = 0;
+            int _nbChilds = 0;
 
         protected:
             gui::elementStyle::StyleNode *elementStyle = nullptr;
-            void setParent(AbstractElement *parent);
+            void parent(AbstractElement *parent);
             void updateStyle();
 
             /**
@@ -39,7 +39,7 @@ namespace gui {
              */
             virtual void renderChilds() {};
 
-            int getNbChilds() { return nbChilds; }
+            int nbChilds() { return _nbChilds; }
 
         public:
             /**
@@ -47,14 +47,14 @@ namespace gui {
              */
             AbstractElement(std::string elementName, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                             std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
-            const std::string &getName() const { return elementName; }
-            AbstractElement *getParent() { return parent; }
-            const AbstractElement *getConstParent() const { return parent; }
+            const std::string &name() const { return elementName; }
+            AbstractElement *parent() { return _parent; }
+            const AbstractElement *getConstParent() const { return _parent; }
             void addChild(AbstractElement *child);
-            AbstractElement *getChild() { return child; }
+            AbstractElement *child() { return _child; }
             void removeChilds();
-            void setNext(AbstractElement *next) { this->next = next; }
-            AbstractElement *getNext() { return next; }
+            void next(AbstractElement *next) { this->_next = next; }
+            AbstractElement *next() { return _next; }
             virtual ~AbstractElement();
 
             virtual void render() = 0;

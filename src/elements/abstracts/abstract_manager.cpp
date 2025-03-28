@@ -13,8 +13,10 @@ namespace gui {
             void AbstractManager::deleteElementsTree() { delete elementsTree; }
 
             void AbstractManager::render(bool clear) {
-                if (!needUpdate()) return;
-                needUpdate(false);
+                if (needUpdate()) {
+                    update();
+                    needUpdate(false);
+                };
                 renderElements(clear);
             }
         } // namespace manager

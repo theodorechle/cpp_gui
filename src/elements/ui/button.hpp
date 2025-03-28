@@ -8,7 +8,7 @@
 namespace gui {
     namespace element {
 
-        class Button : public UIElement {
+        class Button : public UiElement {
             std::function<void()> onClickFunction;
         public:
             Button(std::function<void()> onClick, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,

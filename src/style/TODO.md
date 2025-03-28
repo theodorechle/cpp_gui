@@ -3,4 +3,4 @@
 - check for multiple same identifiers
 - nested tuples?
 - assert modifiers without other component who affect all styles (:hovered {...}) are working
-- rename: styleComponent, pseudoName
+- rename: styleComponent

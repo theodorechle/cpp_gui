@@ -38,7 +38,7 @@ namespace gui {
         ViewContainer::ViewContainer(gui::element::manager::UIManager *viewManager,
                                      gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
                                      const std::string &identifier)
-            : UIElement("view-container", elementsStyleManager, classes, identifier), viewManager{viewManager} {
+            : UiElement("view-container", elementsStyleManager, classes, identifier), viewManager{viewManager} {
                 SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "WARNING, this element (ViewContainer) does not fully work.");
             }
     } // namespace element

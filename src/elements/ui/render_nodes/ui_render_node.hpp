@@ -12,28 +12,39 @@ namespace gui::element::ui::render {
     } Size;
 
     typedef struct {
+        float width;
+        float height;
+    } FSize;
+
+    typedef struct {
         int x;
         int y;
     } Pos;
 
+    typedef struct {
+        float x;
+        float y;
+    } FPos;
+
     class UiRenderNode {
         // tree structure
-        UiRenderNode *parent = nullptr;
-        UiRenderNode *child = nullptr;
-        UiRenderNode *next = nullptr;
+        UiRenderNode *_parent = nullptr;
+        UiRenderNode *_child = nullptr;
+        UiRenderNode *_next = nullptr;
 
-        // the UIElement corresponding to this node. Used for computing layouts.
-        const gui::element::UIElement *baseElement;
+        // the UiElement corresponding to this node. Used for computing layouts.
+        const gui::element::UiElement *baseElement;
 
         // computed by computeSelfLayout
         Size defaultSelfSize = {0, 0};
+
+        // computed by computeSelfAndChildsLayout
+        Size defaultSizeWithChilds = {0, 0};
 
         // computed by computeRelativeLayout
         Size relativeSize = {0, 0};
 
         // computed by computeFinalLayout
-        Size finalSize = {0, 0};
-
         struct {
             SDL_Rect elementRect; // the rect containing the entire element corresponding to this node, including margin, padding and borders
             SDL_Rect contentRect; // relative to the elementRect
@@ -42,8 +53,19 @@ namespace gui::element::ui::render {
         } usedLayout;
 
         SDL_Texture texture;
-        
+
+    public:
+        UiRenderNode(UiRenderNode *parent, const gui::element::UiElement *baseElement);
+        // tree
+        UiRenderNode *parent() { return _parent; }
+        UiRenderNode *child() { return _child; }
+        UiRenderNode *next() { return _next; }
+        void addChild(UiRenderNode *newChild);
+        void next(UiRenderNode *nextNode) { _next = nextNode; }
+        void parent(UiRenderNode *parentNode) { _parent = parentNode; }
+
         void computeSelfLayout();
+        void computeSelfAndChildsLayout();
         void computeRelativeLayout();
         void computeFinalLayout();
     };

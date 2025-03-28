@@ -415,51 +415,51 @@ namespace styleTestsLexerAndParser {
         return result;
     }
 
-    test::Result testLexingPseudoName() {
+    test::Result testLexingRawName() {
         style::Node *rootExpected;
         test::Result result;
 
-        rootExpected = new style::Node(style::Token::PseudoName, "test");
+        rootExpected = new style::Node(style::Token::RawName, "test");
         result = testLexer(true, "test", rootExpected);
         delete rootExpected;
         return result;
     }
 
-    test::Result testLexingPseudoNameWithHyphen() {
+    test::Result testLexingRawNameWithHyphen() {
         style::Node *rootExpected;
         test::Result result;
 
-        rootExpected = new style::Node(style::Token::PseudoName, "test-a");
+        rootExpected = new style::Node(style::Token::RawName, "test-a");
         result = testLexer(true, "test-a", rootExpected);
         delete rootExpected;
         return result;
     }
 
-    test::Result testLexingPseudoNameWithNumber() {
+    test::Result testLexingRawNameWithNumber() {
         style::Node *rootExpected;
         test::Result result;
 
-        rootExpected = new style::Node(style::Token::PseudoName, "test2");
+        rootExpected = new style::Node(style::Token::RawName, "test2");
         result = testLexer(true, "test2", rootExpected);
         delete rootExpected;
         return result;
     }
 
-    test::Result testLexingPseudoNameWithUnderscore() {
+    test::Result testLexingRawNameWithUnderscore() {
         style::Node *rootExpected;
         test::Result result;
 
-        rootExpected = new style::Node(style::Token::PseudoName, "test_2");
+        rootExpected = new style::Node(style::Token::RawName, "test_2");
         result = testLexer(true, "test_2", rootExpected);
         delete rootExpected;
         return result;
     }
 
-    test::Result testLexingPseudoNameStartingWithNumber() {
+    test::Result testLexingRawNameStartingWithNumber() {
         style::Node *rootExpected;
         test::Result result;
 
-        rootExpected = new style::Node(style::Token::PseudoName, "2a");
+        rootExpected = new style::Node(style::Token::RawName, "2a");
         result = testLexer(true, "2a", rootExpected);
         delete rootExpected;
         return result;
@@ -516,7 +516,7 @@ namespace styleTestsLexerAndParser {
         test::Result result;
 
         rootExpected = new style::Node(style::Token::At);
-        rootExpected->appendNext(new style::Node(style::Token::PseudoName, "import"))
+        rootExpected->appendNext(new style::Node(style::Token::RawName, "import"))
             ->appendNext(new style::Node(style::Token::Space))
             ->appendNext(new style::Node(style::Token::String, "test"))
             ->appendNext(new style::Node(style::Token::SemiColon));
@@ -1297,11 +1297,11 @@ namespace styleTestsLexerAndParser {
         tests->endTestBlock();
 
         tests->beginTestBlock("Pseudo names");
-        tests->runTest(testLexingPseudoName, "Pseudo name");
-        tests->runTest(testLexingPseudoNameWithHyphen, "Pseudo name with hyphen");
-        tests->runTest(testLexingPseudoNameWithNumber, "Pseudo name with number");
-        tests->runTest(testLexingPseudoNameWithUnderscore, "Pseudo name with underscore");
-        tests->runTest(testLexingPseudoNameStartingWithNumber, "Pseudo name with starting with number");
+        tests->runTest(testLexingRawName, "Pseudo name");
+        tests->runTest(testLexingRawNameWithHyphen, "Pseudo name with hyphen");
+        tests->runTest(testLexingRawNameWithNumber, "Pseudo name with number");
+        tests->runTest(testLexingRawNameWithUnderscore, "Pseudo name with underscore");
+        tests->runTest(testLexingRawNameStartingWithNumber, "Pseudo name with starting with number");
         tests->runTest(testLexingMinusSign, "Minus sign");
         tests->endTestBlock();
 

@@ -20,7 +20,7 @@ namespace gui {
             int height;
         } Size;
 
-        class UIElement : public AbstractElement {
+        class UiElement : public AbstractElement {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
             Size elementDesiredSize = {0, 0};
             Size fullSize = {0, 0};
@@ -41,7 +41,7 @@ namespace gui {
             void setSize(int width, int height);
             void setDesiredSize(int width, int height);
 
-            void setParent(UIElement *parent) { AbstractElement::setParent(parent); }
+            void setParent(UiElement *parent) { AbstractElement::parent(parent); }
 
             /**
              * Calls the rendering methods in this order:
@@ -125,16 +125,16 @@ namespace gui {
             void askRecomputeLayout() const;
 
         public:
-            UIElement(std::string elementName, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
+            UiElement(std::string elementName, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
                 : AbstractElement{elementName, elementsStyleManager, classes, identifier}, textEngine{textEngine} {}
 
-            UIElement *getParent() { return static_cast<UIElement *>(AbstractElement::getParent()); }
-            const UIElement *getConstParent() const { return static_cast<const UIElement *>(AbstractElement::getConstParent()); }
-            void addChild(UIElement *child);
-            UIElement *getChild() { return static_cast<UIElement *>(AbstractElement::getChild()); }
-            void setNext(UIElement *next) { AbstractElement::setNext(next); }
-            UIElement *getNext() { return static_cast<UIElement *>(AbstractElement::getNext()); }
+            UiElement *getParent() { return static_cast<UiElement *>(AbstractElement::parent()); }
+            const UiElement *getConstParent() const { return static_cast<const UiElement *>(AbstractElement::getConstParent()); }
+            void addChild(UiElement *child);
+            UiElement *getChild() { return static_cast<UiElement *>(AbstractElement::child()); }
+            void setNext(UiElement *next) { AbstractElement::next(next); }
+            UiElement *getNext() { return static_cast<UiElement *>(AbstractElement::next()); }
 
             void setWindow(SDL_Window *window);
             void setRenderer(SDL_Renderer *renderer);
@@ -183,6 +183,10 @@ namespace gui {
             SDL_Color backgroundColor() const;
 
             virtual void initBeforeLayoutComputing() {}
+
+            void computeSelfLayout(int *width, int *height) const;
+
+            void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const;
 
             void computeLayout(int x, int y, int availableWidth, int availableHeight);
             virtual void computeChildsLayout(int x, int y, int availableWidth, int availableHeight);

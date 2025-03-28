@@ -15,8 +15,8 @@ namespace style {
             return "OpeningCurlyBracket";
         case Token::ClosingCurlyBracket:
             return "ClosingCurlyBracket";
-        case Token::PseudoName:
-            return "PseudoName";
+        case Token::RawName:
+            return "RawName";
         case Token::Comma:
             return "Comma";
         case Token::Colon:

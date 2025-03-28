@@ -58,7 +58,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     elementsStyleManager->setFontsPath("tests/fonts");
     elementsStyleManager->addStyleFile("tests/style_deserialization_tests/tests-files/main-test.txt");
 
-    gui::element::UIElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
+    gui::element::UiElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
     manager->setElementsTree(parentContainer);
 
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
@@ -66,10 +66,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager,
                                                       &labelClasses, "test-label", textEngine));
     parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
-    gui::element::UIElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
+    gui::element::UiElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
     // FIXME: button click zone is bigger than displayed
     parentContainer->addChild(button);
-    gui::element::UIElement *list = new gui::element::List(elementsStyleManager);
+    gui::element::UiElement *list = new gui::element::List(elementsStyleManager);
     button->addChild(list);
     list->addChild(new gui::element::Label("press this button", elementsStyleManager, {}, "", textEngine));
     list->addChild(new gui::element::Label("to display", elementsStyleManager, {}, "", textEngine));

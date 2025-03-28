@@ -20,9 +20,9 @@ The gui is designed so you can implements easily your own elements
 
 ### Abstracts
 - <i>AbstractElement</i>
-- <i>UIElement</i> (inherits the AbstractElement class)
+- <i>UiElement</i> (inherits the AbstractElement class)
 
-### Concretes (they all inherits the UIElement class)
+### Concretes (they all inherits the UiElement class)
 - Label
 - Input
 - Container
@@ -35,7 +35,7 @@ The gui is designed so you can implements easily your own elements
 
 
 ### Default styles:
-- UIElement
+- UiElement
     - background-color: string|tuple[int,int,int]
     - border-color: string|tuple[int,int,int]
     - border-width: int

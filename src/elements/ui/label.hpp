@@ -5,7 +5,7 @@
 
 namespace gui {
     namespace element {
-        class Label : public UIElement {
+        class Label : public UiElement {
             std::string text;
             TTF_Font *ttfFont = nullptr;
             TTF_Text *ttfText = nullptr;

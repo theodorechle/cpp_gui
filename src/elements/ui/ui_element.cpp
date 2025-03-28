@@ -3,13 +3,13 @@
 namespace gui {
     namespace element {
 
-        void UIElement::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
+        void UiElement::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
             int nbChilds = 0;
             (*desiredWidth) = 0;
             (*desiredHeight) = 0;
             int childDesiredWidth = 0;
             int childDesiredHeight = 0;
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
                 (*desiredWidth) = std::max(childDesiredWidth, *desiredWidth);
@@ -19,7 +19,7 @@ namespace gui {
             }
         }
 
-        void UIElement::computeDesiredLayout(int *desiredWidth, int *desiredHeight) {
+        void UiElement::computeDesiredLayout(int *desiredWidth, int *desiredHeight) {
             (*desiredWidth) = 0;
             (*desiredHeight) = 0;
             int childDesiredWidth = 0;
@@ -31,7 +31,7 @@ namespace gui {
             elementWidth = width(&widthFound);
             elementHeight = height(&heightFound);
 
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 child->initBeforeLayoutComputing();
                 child = child->getNext();
@@ -52,7 +52,7 @@ namespace gui {
             }
 
             if (marginsActive && (!heightFound || !widthFound)) {
-                UIElement *child = getChild();
+                UiElement *child = getChild();
                 while (child != nullptr) {
                     if (!widthFound) childDesiredWidth = child->marginLeft() + child->marginRight();
                     if (!heightFound) childDesiredHeight = child->marginTop() + child->marginBottom();
@@ -75,7 +75,7 @@ namespace gui {
             setDesiredSize(*desiredWidth, *desiredHeight);
         }
 
-        void UIElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
+        void UiElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
             SDL_Rect newRect = SDL_Rect{x, y, availableWidth, availableHeight};
             setRect(newRect);
             fullSize.width = availableWidth;
@@ -88,10 +88,10 @@ namespace gui {
             if (getChild() != nullptr) computeChildsLayout(x, y, availableWidth, availableHeight);
         }
 
-        void UIElement::computeChildsLayout(int x, int y, int availableWidth, int availableHeight) {
+        void UiElement::computeChildsLayout(int x, int y, int availableWidth, int availableHeight) {
             int childWidth = 0;
             int childHeight = 0;
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 child->getDesiredSize(&childWidth, &childHeight);
                 child->computeLayout(x, y, std::min(childWidth, availableWidth), std::min(childHeight, availableHeight));
@@ -99,48 +99,48 @@ namespace gui {
             }
         }
 
-        void UIElement::setRect(const SDL_Rect &rect) { elementRect = rect; }
+        void UiElement::setRect(const SDL_Rect &rect) { elementRect = rect; }
 
-        void UIElement::setPos(int x, int y) {
+        void UiElement::setPos(int x, int y) {
             elementRect.x = x;
             elementRect.y = y;
         }
 
-        void UIElement::getRect(SDL_Rect *rect) const { *rect = this->elementRect; }
+        void UiElement::getRect(SDL_Rect *rect) const { *rect = this->elementRect; }
 
-        void UIElement::getPos(int *x, int *y) const {
+        void UiElement::getPos(int *x, int *y) const {
             *x = elementRect.x;
             *y = elementRect.y;
         }
 
-        void UIElement::getSize(int *width, int *height) const {
+        void UiElement::getSize(int *width, int *height) const {
             *width = this->elementRect.w;
             *height = this->elementRect.h;
         }
 
-        void UIElement::getDesiredSize(int *width, int *height) const {
+        void UiElement::getDesiredSize(int *width, int *height) const {
             *width = elementDesiredSize.width;
             *height = elementDesiredSize.height;
         }
 
-        void UIElement::setSize(int width, int height) {
+        void UiElement::setSize(int width, int height) {
             this->elementRect.w = width;
             this->elementRect.h = height;
         }
 
-        void UIElement::setDesiredSize(int width, int height) {
+        void UiElement::setDesiredSize(int width, int height) {
             this->elementDesiredSize.width = width;
             this->elementDesiredSize.height = height;
         }
 
-        SDL_Rect UIElement::computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect) {
+        SDL_Rect UiElement::computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect) {
             return SDL_Rect{std::max(oldClipRect->x, wantedNewClipRect->x), std::max(oldClipRect->y, wantedNewClipRect->y),
                             std::min(oldClipRect->w, wantedNewClipRect->w), std::min(oldClipRect->h, wantedNewClipRect->h)};
         }
 
-        SDL_FRect UIElement::createFRect(int x, int y, int width, int height) { return SDL_FRect{(float)x, (float)y, (float)width, (float)height}; }
+        SDL_FRect UiElement::createFRect(int x, int y, int width, int height) { return SDL_FRect{(float)x, (float)y, (float)width, (float)height}; }
 
-        int UIElement::getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit) const {
+        int UiElement::getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit) const {
             if (elementStyle == nullptr) return defaultSize;
             style::StyleValue *rule = nullptr;
             int size = 0;
@@ -154,7 +154,7 @@ namespace gui {
             return size;
         }
 
-        std::string UIElement::getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString, bool canInherit) const {
+        std::string UiElement::getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString, bool canInherit) const {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
             elementStyle->getRule(ruleNames, &rule, canInherit);
@@ -164,7 +164,7 @@ namespace gui {
             return rule->getValue();
         }
 
-        std::string UIElement::getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
+        std::string UiElement::getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
                                                       const std::string &defaultString, bool canInherit) const {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
@@ -176,7 +176,7 @@ namespace gui {
             return rule->getValue();
         }
 
-        std::string UIElement::getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
+        std::string UiElement::getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
                                                       const std::string &defaultString, bool canInherit) const {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
@@ -188,7 +188,7 @@ namespace gui {
             return rule->getValue();
         }
 
-        bool UIElement::getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool, bool canInherit) const {
+        bool UiElement::getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool, bool canInherit) const {
             bool value;
             if (elementStyle == nullptr) return defaultBool;
             style::StyleValue *rule = nullptr;
@@ -197,7 +197,7 @@ namespace gui {
             return defaultBool;
         }
 
-        int UIElement::computeSize(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit, int parentSize, bool *found) {
+        int UiElement::computeSize(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit, int parentSize, bool *found) {
             if (elementStyle == nullptr) return defaultSize;
             style::StyleValue *rule = nullptr;
             int size = 0;
@@ -212,7 +212,7 @@ namespace gui {
             return size;
         }
 
-        SDL_Color UIElement::computeColor(const std::vector<std::string> &ruleNames, SDL_Color defaultColor, bool canInherit) const {
+        SDL_Color UiElement::computeColor(const std::vector<std::string> &ruleNames, SDL_Color defaultColor, bool canInherit) const {
             if (elementStyle == nullptr) return defaultColor;
             style::StyleValue *rule = nullptr;
             SDL_Color color = SDL_Color();
@@ -226,15 +226,15 @@ namespace gui {
             return color;
         }
 
-        void UIElement::askRendering() const {
+        void UiElement::askRendering() const {
             if (managerActionsService != nullptr) managerActionsService->askRendering();
         }
 
-        void UIElement::askRecomputeLayout() const {
+        void UiElement::askRecomputeLayout() const {
             if (managerActionsService != nullptr) managerActionsService->askRecomputeLayout();
         }
 
-        void UIElement::addChild(UIElement *child) {
+        void UiElement::addChild(UiElement *child) {
             if (child == nullptr) return;
             AbstractElement::addChild(child);
             child->setRenderer(renderer);
@@ -243,129 +243,129 @@ namespace gui {
             if (managerActionsService != nullptr) managerActionsService->askRecomputeLayout();
         }
 
-        void UIElement::setWindow(SDL_Window *window) {
+        void UiElement::setWindow(SDL_Window *window) {
             this->window = window;
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 child->setWindow(window);
                 child = child->getNext();
             }
         }
 
-        void UIElement::setRenderer(SDL_Renderer *renderer) {
+        void UiElement::setRenderer(SDL_Renderer *renderer) {
             this->renderer = renderer;
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 child->setRenderer(renderer);
                 child = child->getNext();
             }
         }
 
-        int UIElement::marginLeft(bool *found) {
+        int UiElement::marginLeft(bool *found) {
             if (!marginsActive) return 0;
-            const UIElement *parent = getConstParent();
+            const UiElement *parent = getConstParent();
             return computeSize({"margin-left", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UIElement::marginRight(bool *found) {
+        int UiElement::marginRight(bool *found) {
             if (!marginsActive) return 0;
-            const UIElement *parent = getConstParent();
+            const UiElement *parent = getConstParent();
             return computeSize({"margin-right", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UIElement::marginTop(bool *found) {
+        int UiElement::marginTop(bool *found) {
             if (!marginsActive) return 0;
-            const UIElement *parent = getConstParent();
+            const UiElement *parent = getConstParent();
             return computeSize({"margin-top", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UIElement::marginBottom(bool *found) {
+        int UiElement::marginBottom(bool *found) {
             if (!marginsActive) return 0;
-            const UIElement *parent = getConstParent();
+            const UiElement *parent = getConstParent();
             return computeSize({"margin-bottom", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UIElement::paddingLeft(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::paddingLeft(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"padding-left", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UIElement::paddingRight(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::paddingRight(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"padding-right", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UIElement::paddingTop(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::paddingTop(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"padding-top", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UIElement::paddingBottom(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::paddingBottom(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"padding-bottom", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UIElement::borderLeft(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::borderLeft(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"border-left", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UIElement::borderRight(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::borderRight(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"border-right", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UIElement::borderTop(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::borderTop(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"border-top", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UIElement::borderBottom(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::borderBottom(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"border-bottom", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UIElement::width(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::width(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"width"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         };
 
-        int UIElement::height(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::height(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
 
-        int UIElement::maxWidth(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::maxWidth(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"max-width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
 
-        int UIElement::minWidth(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::minWidth(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"min-width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
 
-        int UIElement::maxHeight(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::maxHeight(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"max-height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
 
-        int UIElement::minHeight(bool *found) {
-            const UIElement *parent = getConstParent();
+        int UiElement::minHeight(bool *found) {
+            const UiElement *parent = getConstParent();
             return computeSize({"min-height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
 
-        SDL_Color UIElement::borderLeftColor() const { return computeColor({"border-left-color", "border-color"}); }
+        SDL_Color UiElement::borderLeftColor() const { return computeColor({"border-left-color", "border-color"}); }
 
-        SDL_Color UIElement::borderRightColor() const { return computeColor({"border-right-color", "border-color"}); }
+        SDL_Color UiElement::borderRightColor() const { return computeColor({"border-right-color", "border-color"}); }
 
-        SDL_Color UIElement::borderTopColor() const { return computeColor({"border-top-color", "border-color"}); }
+        SDL_Color UiElement::borderTopColor() const { return computeColor({"border-top-color", "border-color"}); }
 
-        SDL_Color UIElement::borderBottomColor() const { return computeColor({"border-bottom-color", "border-color"}); }
+        SDL_Color UiElement::borderBottomColor() const { return computeColor({"border-bottom-color", "border-color"}); }
 
-        SDL_Color UIElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
+        SDL_Color UiElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
 
-        void UIElement::tryRender(SDL_Rect oldClipRect) {
+        void UiElement::tryRender(SDL_Rect oldClipRect) {
             if (!styleManagerAvailable()) {
                 renderChilds();
                 return;
@@ -417,7 +417,7 @@ namespace gui {
             renderBorders();
         }
 
-        void UIElement::render() {
+        void UiElement::render() {
             SDL_Rect clipRect;
 
             if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
@@ -433,11 +433,11 @@ namespace gui {
             }
         }
 
-        void UIElement::renderChilds() {
+        void UiElement::renderChilds() {
             SDL_Rect clipRect;
             SDL_Rect childClipRect;
             SDL_Rect childFinalClipRect;
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't get clip rect: '%s'", SDL_GetError());
                 return;
@@ -462,7 +462,7 @@ namespace gui {
             }
         }
 
-        void UIElement::renderBorders() {
+        void UiElement::renderBorders() {
             SDL_Color color;
             Uint8 r, g, b, a;
             SDL_FRect fRect;
@@ -527,7 +527,7 @@ namespace gui {
             }
         }
 
-        void UIElement::renderBackground() const {
+        void UiElement::renderBackground() const {
             Uint8 r, g, b, a;
             SDL_Rect rect;
             SDL_FRect fRect;
@@ -550,24 +550,24 @@ namespace gui {
             }
         }
 
-        void UIElement::renderScrollBar(int currentSize, int desiredSize) const {
+        void UiElement::renderScrollBar(int currentSize, int desiredSize) const {
             if (currentSize >= desiredSize && getNameStringFromRule("scroll-bar", {"always"}) == "") return;
         }
 
-        void UIElement::renderScrollBars() const {
+        void UiElement::renderScrollBars() const {
             // renderScrollBar();
             // renderScrollBar();
         }
 
-        void UIElement::focus(bool focused) {
+        void UiElement::focus(bool focused) {
             _focus = focused;
             if (focused) onFocusGet();
             else onFocusLoose();
         }
 
-        void UIElement::setManagerActionsService(gui::element::ManagerActionsService *managerActionsService) {
+        void UiElement::setManagerActionsService(gui::element::ManagerActionsService *managerActionsService) {
             this->managerActionsService = managerActionsService;
-            UIElement *child = getChild();
+            UiElement *child = getChild();
             while (child != nullptr) {
                 child->setManagerActionsService(managerActionsService);
                 child = child->getChild();

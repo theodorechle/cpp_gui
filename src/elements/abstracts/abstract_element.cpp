@@ -3,8 +3,8 @@
 namespace gui {
     namespace element {
 
-        void AbstractElement::setParent(AbstractElement *parent) {
-            this->parent = parent;
+        void AbstractElement::parent(AbstractElement *parent) {
+            this->_parent = parent;
             updateStyle();
         }
 
@@ -35,36 +35,36 @@ namespace gui {
             elementsStyleManager->addElementStyle(elementStyle);
         }
 
-        void AbstractElement::addChild(AbstractElement *child) {
-            if (child == nullptr) return;
-            AbstractElement *nextChild = getChild();
+        void AbstractElement::addChild(AbstractElement *newChild) {
+            if (newChild == nullptr) return;
+            AbstractElement *nextChild = child();
             AbstractElement *selfChild;
             if (nextChild == nullptr) {
-                this->child = child;
+                this->_child = newChild;
             }
             else {
                 do {
                     selfChild = nextChild;
-                    nextChild = selfChild->getNext();
+                    nextChild = selfChild->next();
                 } while (nextChild != nullptr);
-                selfChild->setNext(child);
+                selfChild->next(newChild);
             }
-            if (child != nullptr) {
-                elementStyle->addChild(child->elementStyle);
-                child->setParent(this);
-                nbChilds++;
+            if (newChild != nullptr) {
+                elementStyle->addChild(newChild->elementStyle);
+                newChild->parent(this);
+                _nbChilds++;
             }
         }
 
         void AbstractElement::removeChilds() {
-            child = nullptr;
+            _child = nullptr;
             elementStyle->removeChilds();
         }
 
         AbstractElement::~AbstractElement() {
             delete elementStyle;
-            delete child;
-            delete next;
+            delete _child;
+            delete _next;
         }
 
         void AbstractElement::setModifierState(std::string modifierName, bool enabled) { elementStyle->setModifierState(modifierName, enabled); }

@@ -6,7 +6,7 @@
 namespace gui {
     namespace element {
 
-        class RootElement : public UIElement {
+        class RootElement : public UiElement {
         public:
             RootElement(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                    const std::string &identifier = "");

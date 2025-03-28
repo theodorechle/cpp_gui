@@ -77,7 +77,7 @@ namespace style {
         void parseClosingParenthesis();
         void parseOpeningCurlyBracket();
         void parseClosingCurlyBracket();
-        void parsePseudoName();
+        void parseRawName();
         void parseName();
         void parseUnit();
 

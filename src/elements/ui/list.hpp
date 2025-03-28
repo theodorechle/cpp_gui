@@ -6,7 +6,7 @@
 namespace gui {
     namespace element {
 
-        class List : public UIElement {
+        class List : public UiElement {
             bool vertical = false;
             std::string childsSize = "auto";
             int gap = 0;

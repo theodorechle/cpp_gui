@@ -13,7 +13,7 @@ namespace style {
         ClosingParenthesis,
         OpeningCurlyBracket,
         ClosingCurlyBracket,
-        PseudoName,
+        RawName,
         Comma,
         Colon,
         SemiColon,

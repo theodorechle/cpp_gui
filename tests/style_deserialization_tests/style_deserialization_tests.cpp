@@ -105,7 +105,8 @@ namespace styleDeserializationTests {
         return test::Result::SUCCESS;
     }
 
-    test::Result checkStyleBlocks(const std::list<style::StyleBlock *> *testedStyleBlocks, const std::list<style::StyleBlock *> *expectedStyleBlocks) {
+    test::Result checkStyleBlocks(const std::list<style::StyleBlock *> *testedStyleBlocks,
+                                  const std::list<style::StyleBlock *> *expectedStyleBlocks) {
         test::Result result;
         std::list<style::StyleBlock *>::const_iterator testedStyleBlocksIt;
         std::list<style::StyleBlock *>::const_iterator expectedStyleBlocksIt;
@@ -285,7 +286,7 @@ namespace styleDeserializationTests {
     }
 
     test::Result testGlobalModifier() {
-	style::StyleComponentDataList expectedData = style::StyleComponentDataList();
+        style::StyleComponentDataList expectedData = style::StyleComponentDataList();
         style::StyleValuesMap expectedStyleMap = style::StyleValuesMap();
         style::StyleValue *styleValue;
         style::StyleBlock *styleBlock;
@@ -322,6 +323,12 @@ namespace styleDeserializationTests {
         return checkDeserializationError<style::MissingToken>(">label#red{text-color: #ffffff;}");
     }
 
+    test::Result testDiagram() {
+        int ruleNumber;
+        style::StyleDeserializer::deserialize("label.blue {\n\tbackground-color: #0000ff;\n}", 0, &ruleNumber);
+        return test::Result::FAILURE;
+    }
+
     void testsDeserialization(test::Tests *tests) {
         tests->beginTestBlock("Deserialization tests");
 
@@ -335,8 +342,9 @@ namespace styleDeserializationTests {
         tests->runTest(testMissingRuleNameAndValue, "missing style name and value");
         tests->runTest(testMissingBlockDeclaration, "missing block declaration");
         tests->runTest(testMissingBlockDeclarationComponentBeforeDirectParentRelation,
-                      "missing block declaration component before direct parent relation");
-	tests->runTest(testGlobalModifier, "global modifier");
+                       "missing block declaration component before direct parent relation");
+        tests->runTest(testGlobalModifier, "global modifier");
+        tests->runTest(testDiagram, "Diagram");
         tests->endTestBlock();
     }
 

@@ -7,7 +7,7 @@
 namespace gui {
     namespace element {
 
-        class ViewContainer : public UIElement {
+        class ViewContainer : public UiElement {
             gui::element::manager::UIManager *viewManager = nullptr;
 
             void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) override;
