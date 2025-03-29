@@ -323,12 +323,6 @@ namespace styleDeserializationTests {
         return checkDeserializationError<style::MissingToken>(">label#red{text-color: #ffffff;}");
     }
 
-    test::Result testDiagram() {
-        int ruleNumber;
-        style::StyleDeserializer::deserialize("label.blue {\n\tbackground-color: #0000ff;\n}", 0, &ruleNumber);
-        return test::Result::FAILURE;
-    }
-
     void testsDeserialization(test::Tests *tests) {
         tests->beginTestBlock("Deserialization tests");
 
@@ -344,7 +338,6 @@ namespace styleDeserializationTests {
         tests->runTest(testMissingBlockDeclarationComponentBeforeDirectParentRelation,
                        "missing block declaration component before direct parent relation");
         tests->runTest(testGlobalModifier, "global modifier");
-        tests->runTest(testDiagram, "Diagram");
         tests->endTestBlock();
     }
 
