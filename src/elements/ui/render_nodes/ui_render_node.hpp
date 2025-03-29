@@ -27,6 +27,7 @@ namespace gui::element::ui::render {
     } FPos;
 
     class UiRenderNode {
+        SDL_Renderer *renderer = nullptr;
         // tree structure
         UiRenderNode *_parent = nullptr;
         UiRenderNode *_child = nullptr;
@@ -48,14 +49,13 @@ namespace gui::element::ui::render {
         struct {
             SDL_Rect elementRect; // the rect containing the entire element corresponding to this node, including margin, padding and borders
             SDL_Rect contentRect; // relative to the elementRect
-            Size fullSize;
             Pos scrollOffset;
         } usedLayout;
 
-        SDL_Texture texture;
+        SDL_Texture *texture;
 
     public:
-        UiRenderNode(UiRenderNode *parent = nullptr, const gui::element::UiElement *baseElement = nullptr);
+        UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent = nullptr, const gui::element::UiElement *baseElement = nullptr);
         // tree
         UiRenderNode *parent() { return _parent; }
         UiRenderNode *child() { return _child; }
@@ -68,6 +68,9 @@ namespace gui::element::ui::render {
         void computeSelfAndChildsLayout();
         void computeRelativeLayout();
         void computeFinalLayout();
+
+        void updateTexture(bool recursive = true);
+        void render(SDL_Renderer *renderer);
     };
 } // namespace renderNode
 

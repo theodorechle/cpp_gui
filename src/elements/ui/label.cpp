@@ -9,6 +9,13 @@ namespace gui {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't open font: %s", SDL_GetError());
                 return;
             }
+
+            ttfText = TTF_CreateText(getTextEngine(), ttfFont, text.c_str(), text.size());
+            if (ttfText == nullptr) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't create text: %s", SDL_GetError());
+                return;
+            }
+
             int style = TTF_STYLE_NORMAL;
             std::string fontWeight = getNameStringFromRule("font-weight", {"normal", "bold"}, "normal", true);
             if (fontWeight == "bold") style |= TTF_STYLE_BOLD;
@@ -20,7 +27,7 @@ namespace gui {
 
         void Label::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) { getTextSize(desiredWidth, desiredHeight); }
 
-        void Label::getTextSize(int *width, int *height) {
+        void Label::getTextSize(int *width, int *height) const {
             if (ttfFont) {
                 std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "no-wrap"}, "wrapped", true);
                 if (wrapping == "wrapped") {
@@ -33,7 +40,7 @@ namespace gui {
             (*height) = 0;
         }
 
-        void Label::renderSelfAfterChilds() {
+        void Label::renderSelfAfterChilds() const {
             SDL_Rect rect;
             SDL_Color color;
             TTF_DestroyText(ttfText);
@@ -43,16 +50,7 @@ namespace gui {
                 return;
             }
 
-            if (ttfFont == nullptr) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Font is not defined.");
-                return;
-            }
-
-            ttfText = TTF_CreateText(getTextEngine(), ttfFont, text.c_str(), text.size());
-            if (ttfText == nullptr) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't create text: %s", SDL_GetError());
-                return;
-            }
+            if (ttfText == nullptr) return;
 
             std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "no-wrap"}, "wrapped", true);
             if (wrapping == "wrapped") {

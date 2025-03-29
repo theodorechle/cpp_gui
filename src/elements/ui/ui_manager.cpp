@@ -4,7 +4,7 @@ namespace gui {
     namespace element {
         namespace manager {
             UIManager::UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect)
-                : window{window}, renderer{renderer}, rootRenderNode{new gui::element::ui::render::UiRenderNode()} {
+                : window{window}, renderer{renderer}, rootRenderNode{new gui::element::ui::render::UiRenderNode(renderer)} {
                 if (clipRect != nullptr) {
                     this->clipRect = *clipRect;
                     canChangeSize = false;
@@ -48,7 +48,7 @@ namespace gui {
                 UiElement *currentElement = rootElement;
                 gui::element::ui::render::UiRenderNode *currentRenderNode;
                 while (currentElement != nullptr) {
-                    currentRenderNode = gui::element::ui::render::elementToRenderNodeConverter(rootRenderNode, currentElement);
+                    currentRenderNode = gui::element::ui::render::elementToRenderNodeConverter(renderer, rootRenderNode, currentElement);
                     rootRenderNode->addChild(currentRenderNode);
                     computeNodeLayout(currentRenderNode);
                     prepareRenderNodes(currentElement->getChild(), currentRenderNode);
@@ -90,9 +90,18 @@ namespace gui {
                 computeNodesFinalLayout(rootRenderNode);
             }
 
-            void UIManager::createRenderedTexture() {}
+            void UIManager::createRenderedTexture() {
+                if (!needRenderingUpdate) return;
+                needRenderingUpdate = false;
+                if (rootRenderNode == nullptr) return;
+                SDL_SetRenderTarget(renderer, renderedTexture);
+                rootRenderNode->updateTexture();
+                rootRenderNode->render(renderer);
+                SDL_SetRenderTarget(renderer, nullptr);
+            }
 
             void UIManager::renderElements(bool clear) const {
+                SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
                 // if (elementsTree == nullptr) return;
                 // Uint8 r, g, b, a;
                 // int width = 0, height = 0;
@@ -107,7 +116,10 @@ namespace gui {
                 // SDL_RenderPresent(renderer);
             }
 
-            void UIManager::update() { computeElementsLayout(); }
+            void UIManager::update() {
+                computeElementsLayout();
+                createRenderedTexture();
+            }
 
             void UIManager::processEvent(const SDL_Event &event) {
                 switch (event.type) {

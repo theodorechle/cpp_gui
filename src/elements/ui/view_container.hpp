@@ -13,7 +13,7 @@ namespace gui {
             void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) override;
             void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) override;
 
-            void renderChilds() override;
+            void renderChilds() const override;
             virtual void catchEvent(const SDL_Event &event) override;
 
             /**

@@ -196,7 +196,7 @@ namespace gui {
             return defaultBool;
         }
 
-        int UiElement::computeSize(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit, int parentSize, bool *found) {
+        int UiElement::computeSize(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit, int parentSize, bool *found) const {
             if (elementStyle == nullptr) return defaultSize;
             style::StyleValue *rule = nullptr;
             int size = 0;
@@ -251,96 +251,96 @@ namespace gui {
             }
         }
 
-        int UiElement::marginLeft(bool *found) {
+        int UiElement::marginLeft(bool *found) const {
             if (!marginsActive) return 0;
             const UiElement *parent = getConstParent();
             return computeSize({"margin-left", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UiElement::marginRight(bool *found) {
+        int UiElement::marginRight(bool *found) const {
             if (!marginsActive) return 0;
             const UiElement *parent = getConstParent();
             return computeSize({"margin-right", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UiElement::marginTop(bool *found) {
+        int UiElement::marginTop(bool *found) const {
             if (!marginsActive) return 0;
             const UiElement *parent = getConstParent();
             return computeSize({"margin-top", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UiElement::marginBottom(bool *found) {
+        int UiElement::marginBottom(bool *found) const {
             if (!marginsActive) return 0;
             const UiElement *parent = getConstParent();
             return computeSize({"margin-bottom", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UiElement::paddingLeft(bool *found) {
+        int UiElement::paddingLeft(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"padding-left", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UiElement::paddingRight(bool *found) {
+        int UiElement::paddingRight(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"padding-right", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UiElement::paddingTop(bool *found) {
+        int UiElement::paddingTop(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"padding-top", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UiElement::paddingBottom(bool *found) {
+        int UiElement::paddingBottom(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"padding-bottom", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UiElement::borderLeft(bool *found) {
+        int UiElement::borderLeft(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"border-left", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UiElement::borderRight(bool *found) {
+        int UiElement::borderRight(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"border-right", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
-        int UiElement::borderTop(bool *found) {
+        int UiElement::borderTop(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"border-top", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UiElement::borderBottom(bool *found) {
+        int UiElement::borderBottom(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"border-bottom", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
-        int UiElement::width(bool *found) {
+        int UiElement::width(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"width"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         };
 
-        int UiElement::height(bool *found) {
+        int UiElement::height(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
 
-        int UiElement::maxWidth(bool *found) {
+        int UiElement::maxWidth(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"max-width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
 
-        int UiElement::minWidth(bool *found) {
+        int UiElement::minWidth(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"min-width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
 
-        int UiElement::maxHeight(bool *found) {
+        int UiElement::maxHeight(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"max-height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
 
-        int UiElement::minHeight(bool *found) {
+        int UiElement::minHeight(bool *found) const {
             const UiElement *parent = getConstParent();
             return computeSize({"min-height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         };
@@ -355,11 +355,23 @@ namespace gui {
 
         SDL_Color UiElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
 
-        void UiElement::computeSelfLayout(int *width, int *height) const {}
+        void UiElement::computeSelfLayout(int *width, int *height) const {
+            (*width) = 50;
+            (*height) = 50;
+        }
 
-        void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {}
+        void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
+            int childsWidth = 0;
+            int childsHeight = 0;
+            for (std::tuple<int, int> childSize : childsSizes) {
+                childsWidth += std::get<0>(childSize);
+                childsHeight += std::get<1>(childSize);
+            }
+            (*selfWidth) = childsWidth;
+            (*selfHeight) = childsHeight;
+        }
 
-        void UiElement::tryRender(SDL_Rect oldClipRect) {
+        void UiElement::tryRender(SDL_Rect oldClipRect) const {
             if (!styleManagerAvailable()) {
                 renderChilds();
                 return;
@@ -411,7 +423,7 @@ namespace gui {
             renderBorders();
         }
 
-        void UiElement::render() {
+        void UiElement::render() const {
             SDL_Rect clipRect;
 
             if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
@@ -427,11 +439,11 @@ namespace gui {
             }
         }
 
-        void UiElement::renderChilds() {
+        void UiElement::renderChilds() const {
             SDL_Rect clipRect;
             SDL_Rect childClipRect;
             SDL_Rect childFinalClipRect;
-            UiElement *child = getChild();
+            const UiElement *child = getConstChild();
             if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't get clip rect: '%s'", SDL_GetError());
                 return;
@@ -448,7 +460,7 @@ namespace gui {
                     break;
                 }
                 child->render();
-                child = child->getNext();
+                child = child->getConstNext();
             }
             if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't restore clip rect '%s'", SDL_GetError());
@@ -456,7 +468,7 @@ namespace gui {
             }
         }
 
-        void UiElement::renderBorders() {
+        void UiElement::renderBorders() const {
             SDL_Color color;
             Uint8 r, g, b, a;
             SDL_FRect fRect;

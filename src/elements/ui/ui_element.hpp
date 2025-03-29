@@ -52,7 +52,7 @@ namespace gui {
              * - renderBorders
              * Also manages the clip rect for borders and content
              */
-            void tryRender(SDL_Rect oldClipRect);
+            void tryRender(SDL_Rect oldClipRect) const;
 
             /**
              * Return a modified version of wantedNewClipRect who fits in oldClipRect
@@ -62,14 +62,8 @@ namespace gui {
             virtual void onFocusGet() {}
             virtual void onFocusLoose() {}
 
-            void renderChilds() override;
-            void renderBackground() const;
-            void renderScrollBar(int currentSize, int desiredSize) const;
-            void renderScrollBars() const;
-            void renderBorders();
-
         protected:
-            TTF_TextEngine *getTextEngine() { return textEngine; }
+            TTF_TextEngine *getTextEngine() const { return textEngine; }
             static SDL_FRect createFRect(int x, int y, int width, int height);
 
             int getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize = 0, bool canInherit = false) const;
@@ -89,7 +83,7 @@ namespace gui {
              * If no allowed value is given, it will return the found value.
              */
             std::string getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
-                const std::string &defaultString = "", bool canInherit = false) const;
+                                              const std::string &defaultString = "", bool canInherit = false) const;
 
             /**
              * Name strings are values who are valid rule names, but since they are values, they are considered as strings without quotes.
@@ -104,7 +98,7 @@ namespace gui {
              * If no allowed value is given, it will return the found value.
              */
             std::string getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
-                const std::string &defaultString = "", bool canInherit = false) const;
+                                               const std::string &defaultString = "", bool canInherit = false) const;
             bool getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool = false, bool canInherit = false) const;
 
             /**
@@ -112,7 +106,7 @@ namespace gui {
              * Else returns default;
              */
             int computeSize(const std::vector<std::string> &ruleNames, int defaultSize = 0, bool canInherit = false, int parentSize = 0,
-                            bool *found = nullptr);
+                            bool *found = nullptr) const;
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
@@ -130,8 +124,10 @@ namespace gui {
             const UiElement *getConstParent() const { return static_cast<const UiElement *>(AbstractElement::getConstParent()); }
             void addChild(UiElement *child);
             UiElement *getChild() { return static_cast<UiElement *>(AbstractElement::child()); }
+            const UiElement *getConstChild() const { return static_cast<const UiElement *>(AbstractElement::getConstChild()); }
             void setNext(UiElement *next) { AbstractElement::next(next); }
             UiElement *getNext() { return static_cast<UiElement *>(AbstractElement::next()); }
+            const UiElement *getConstNext() const { return static_cast<const UiElement *>(AbstractElement::getConstNext()); }
 
             void setWindow(SDL_Window *window);
             void setRenderer(SDL_Renderer *renderer);
@@ -150,27 +146,27 @@ namespace gui {
             void getSize(int *width, int *height) const;
             void getDesiredSize(int *width, int *height) const;
 
-            int marginLeft(bool *found = nullptr);
-            int marginRight(bool *found = nullptr);
-            int marginTop(bool *found = nullptr);
-            int marginBottom(bool *found = nullptr);
+            int marginLeft(bool *found = nullptr) const;
+            int marginRight(bool *found = nullptr) const;
+            int marginTop(bool *found = nullptr) const;
+            int marginBottom(bool *found = nullptr) const;
 
-            int paddingLeft(bool *found = nullptr);
-            int paddingRight(bool *found = nullptr);
-            int paddingTop(bool *found = nullptr);
-            int paddingBottom(bool *found = nullptr);
+            int paddingLeft(bool *found = nullptr) const;
+            int paddingRight(bool *found = nullptr) const;
+            int paddingTop(bool *found = nullptr) const;
+            int paddingBottom(bool *found = nullptr) const;
 
-            int borderLeft(bool *found = nullptr);
-            int borderRight(bool *found = nullptr);
-            int borderTop(bool *found = nullptr);
-            int borderBottom(bool *found = nullptr);
+            int borderLeft(bool *found = nullptr) const;
+            int borderRight(bool *found = nullptr) const;
+            int borderTop(bool *found = nullptr) const;
+            int borderBottom(bool *found = nullptr) const;
 
-            int width(bool *found = nullptr);
-            int height(bool *found = nullptr);
-            int maxWidth(bool *found = nullptr);
-            int minWidth(bool *found = nullptr);
-            int maxHeight(bool *found = nullptr);
-            int minHeight(bool *found = nullptr);
+            int width(bool *found = nullptr) const;
+            int height(bool *found = nullptr) const;
+            int maxWidth(bool *found = nullptr) const;
+            int minWidth(bool *found = nullptr) const;
+            int maxHeight(bool *found = nullptr) const;
+            int minHeight(bool *found = nullptr) const;
 
             SDL_Color borderLeftColor() const;
             SDL_Color borderRightColor() const;
@@ -192,10 +188,12 @@ namespace gui {
 
             virtual void catchEvent(const SDL_Event &event) {}
 
-            /**
-             * Updates the renderer clip rect and call tryRender
-             */
-            void render() override final;
+            void renderChilds() const override;
+            void renderBackground() const;
+            void renderScrollBar(int currentSize, int desiredSize) const;
+            void renderScrollBars() const;
+            void render() const;
+            void renderBorders() const;
 
             void focus(bool focused);
             bool focus() { return _focus; }

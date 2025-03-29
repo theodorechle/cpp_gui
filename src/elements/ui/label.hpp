@@ -13,8 +13,8 @@ namespace gui {
             void initBeforeLayoutComputing() override;
 
             void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) override;
-            void getTextSize(int *width, int *height);
-            void renderSelfAfterChilds() override;
+            void getTextSize(int *width, int *height) const;
+            void renderSelfAfterChilds() const override;
 
         protected:
             Label(const std::string &elementName, const std::string &text,

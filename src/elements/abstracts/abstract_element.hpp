@@ -23,23 +23,6 @@ namespace gui {
             void parent(AbstractElement *parent);
             void updateStyle();
 
-            /**
-             * Override this function to draw self element.
-             * Only draw element content (no border / background)
-             */
-            virtual void renderSelfBeforeChilds() {};
-
-            /**
-             * Override this function to draw self element.
-             * Only draw element content (no border / background)
-             */
-            virtual void renderSelfAfterChilds() {};
-
-            /**
-             * Should call each child with a portion of the element surface
-             */
-            virtual void renderChilds() {};
-
             int nbChilds() { return _nbChilds; }
 
             void updated() { _updated = true; }
@@ -58,14 +41,31 @@ namespace gui {
             const AbstractElement *getConstParent() const { return _parent; }
             void addChild(AbstractElement *child);
             AbstractElement *child() { return _child; }
+            const AbstractElement *getConstChild() const { return _child; }
             void removeChilds();
             void next(AbstractElement *next) { this->_next = next; }
             AbstractElement *next() { return _next; }
+            const AbstractElement *getConstNext() const { return _next; }
             virtual ~AbstractElement();
 
-            virtual void render() = 0;
+            /**
+             * Override this function to draw self element.
+             * Only draw element content (no border / background)
+             */
+            virtual void renderSelfBeforeChilds() const {};
 
-            bool styleManagerAvailable() { return elementsStyleManager != nullptr; }
+            /**
+             * Override this function to draw self element.
+             * Only draw element content (no border / background)
+             */
+            virtual void renderSelfAfterChilds() const {};
+
+            /**
+             * Should call each child with a portion of the element surface
+             */
+            virtual void renderChilds() const {};
+
+            bool styleManagerAvailable() const { return elementsStyleManager != nullptr; }
 
             /**
              * true if should propagate to the parent, false else
