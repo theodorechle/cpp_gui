@@ -3,7 +3,8 @@
 namespace gui {
     namespace element {
         namespace manager {
-            UIManager::UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect) : window{window}, renderer{renderer} {
+            UIManager::UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect)
+                : window{window}, renderer{renderer}, rootRenderNode{new gui::element::ui::render::UiRenderNode()} {
                 if (clipRect != nullptr) {
                     this->clipRect = *clipRect;
                     canChangeSize = false;

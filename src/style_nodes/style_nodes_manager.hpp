@@ -1,8 +1,8 @@
 #ifndef STYLE_NODES_MANAGER_HPP
 #define STYLE_NODES_MANAGER_HPP
 
-#include "../../style/style_component.hpp"
-#include "../../style/style_deserializer.hpp"
+#include "../style/style_component.hpp"
+#include "../style/style_deserializer.hpp"
 #include "style_node.hpp"
 #include <fstream>
 #include <iostream>

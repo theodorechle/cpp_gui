@@ -16,6 +16,7 @@ namespace gui {
             AbstractElement *_next = nullptr;
             gui::elementStyle::manager::StyleNodesManager *elementsStyleManager;
             int _nbChilds = 0;
+            bool _updated = false;
 
         protected:
             gui::elementStyle::StyleNode *elementStyle = nullptr;
@@ -41,7 +42,12 @@ namespace gui {
 
             int nbChilds() { return _nbChilds; }
 
+            void updated() { _updated = true; }
+
         public:
+            bool isUpdated() { return _updated; }
+            void updateDone() { _updated = false; }
+
             /**
              * If no style manager is given, the element can't have style
              */

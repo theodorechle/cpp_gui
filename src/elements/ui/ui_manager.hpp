@@ -1,7 +1,7 @@
 #ifndef UIMANAGER_HPP
 #define UIMANAGER_HPP
 
-#include "abstracts/abstract_manager.hpp"
+#include "../abstracts/abstract_manager.hpp"
 #include "render_nodes/ui_render_node.hpp"
 #include "render_nodes/element_to_render_node_converter.hpp"
 #include "root_element.hpp"
@@ -23,7 +23,7 @@ namespace gui {
                 bool canChangeSize = true;
 
                 bool needRenderingUpdate = true;
-                gui::element::ui::render::UiRenderNode *rootRenderNode;
+                gui::element::ui::render::UiRenderNode *rootRenderNode = nullptr;
                 SDL_Texture *renderedTexture = nullptr;
 
                 gui::element::AbstractElement *createRootElement() const override;

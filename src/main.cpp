@@ -59,7 +59,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     elementsStyleManager->addStyleFile("tests/style_deserialization_tests/tests-files/main-test.txt");
 
     gui::element::UiElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
-    manager->setElementsTree(parentContainer);
+    manager->setSubRootElement(parentContainer);
 
     std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
@@ -77,14 +77,14 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     list->addChild(new gui::element::Label("hello world!", elementsStyleManager, &lastLabelClasses, "", textEngine));
     parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
 
-    gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
+    // gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
-    gui::elementStyle::manager::StyleNodesManager *subElementsStyleManager = new gui::elementStyle::manager::StyleNodesManager();
-    subElementsStyleManager->addStyleFile("tests/style_deserialization_tests/tests-files/main-test-sub-view.txt");
+    // gui::elementStyle::manager::StyleNodesManager *subElementsStyleManager = new gui::elementStyle::manager::StyleNodesManager();
+    // subElementsStyleManager->addStyleFile("tests/style_deserialization_tests/tests-files/main-test-sub-view.txt");
 
-    parentContainer->addChild(new gui::element::ViewContainer(subManager, subElementsStyleManager));
+    // parentContainer->addChild(new gui::element::ViewContainer(subManager, subElementsStyleManager));
 
-    subManager->setElementsTree(new gui::element::Button(displayAlsoHelloWorld, subElementsStyleManager));
+    // subManager->setSubRootElement(new gui::element::Button(displayAlsoHelloWorld, subElementsStyleManager));
 
     return SDL_APP_CONTINUE;
 }

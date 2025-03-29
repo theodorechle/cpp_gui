@@ -102,8 +102,8 @@ namespace gui {
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : UiElement{elementName, elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 
-        Label::Label(const std::string &text, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager,
-                     std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
+        Label::Label(const std::string &text, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
+                     const std::string &identifier, TTF_TextEngine *textEngine)
             : UiElement{"label", elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 
         Label::~Label() {
@@ -117,23 +117,23 @@ namespace gui {
 
         void Label::setText(const std::string &newText) {
             text = newText;
-            askRecomputeLayout();
+            updated();
         }
 
         void Label::addText(const std::string &toAdd) {
             text.append(toAdd);
-            askRecomputeLayout();
+            updated();
         }
 
         void Label::removeText(int nbChars) {
             if (text.empty()) return;
             text.resize(text.size() - nbChars);
-            askRecomputeLayout();
+            updated();
         }
 
         void Label::clearText() {
             text.clear();
-            askRecomputeLayout();
+            updated();
         }
 
     } // namespace element

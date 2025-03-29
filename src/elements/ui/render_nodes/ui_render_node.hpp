@@ -55,7 +55,7 @@ namespace gui::element::ui::render {
         SDL_Texture texture;
 
     public:
-        UiRenderNode(UiRenderNode *parent, const gui::element::UiElement *baseElement);
+        UiRenderNode(UiRenderNode *parent = nullptr, const gui::element::UiElement *baseElement = nullptr);
         // tree
         UiRenderNode *parent() { return _parent; }
         UiRenderNode *child() { return _child; }

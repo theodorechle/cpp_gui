@@ -80,7 +80,6 @@ namespace gui {
             setRect(newRect);
             fullSize.width = availableWidth;
             fullSize.height = availableHeight;
-            if (managerActionsService != nullptr && !SDL_RectsEqual(&elementRect, &newRect)) managerActionsService->askRendering();
             x += borderLeft() + marginLeft();
             y += borderTop() + marginTop();
             availableWidth -= borderLeft() + borderRight();
@@ -165,7 +164,7 @@ namespace gui {
         }
 
         std::string UiElement::getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
-                                                      const std::string &defaultString, bool canInherit) const {
+                                                     const std::string &defaultString, bool canInherit) const {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
             elementStyle->getRule(ruleName, &rule, canInherit);
@@ -226,21 +225,12 @@ namespace gui {
             return color;
         }
 
-        void UiElement::askRendering() const {
-            if (managerActionsService != nullptr) managerActionsService->askRendering();
-        }
-
-        void UiElement::askRecomputeLayout() const {
-            if (managerActionsService != nullptr) managerActionsService->askRecomputeLayout();
-        }
-
         void UiElement::addChild(UiElement *child) {
             if (child == nullptr) return;
             AbstractElement::addChild(child);
             child->setRenderer(renderer);
             child->setWindow(window);
-            child->setManagerActionsService(managerActionsService);
-            if (managerActionsService != nullptr) managerActionsService->askRecomputeLayout();
+            updated();
         }
 
         void UiElement::setWindow(SDL_Window *window) {
@@ -364,6 +354,10 @@ namespace gui {
         SDL_Color UiElement::borderBottomColor() const { return computeColor({"border-bottom-color", "border-color"}); }
 
         SDL_Color UiElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
+
+        void UiElement::computeSelfLayout(int *width, int *height) const {}
+
+        void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {}
 
         void UiElement::tryRender(SDL_Rect oldClipRect) {
             if (!styleManagerAvailable()) {
@@ -564,15 +558,5 @@ namespace gui {
             if (focused) onFocusGet();
             else onFocusLoose();
         }
-
-        void UiElement::setManagerActionsService(gui::element::ManagerActionsService *managerActionsService) {
-            this->managerActionsService = managerActionsService;
-            UiElement *child = getChild();
-            while (child != nullptr) {
-                child->setManagerActionsService(managerActionsService);
-                child = child->getChild();
-            }
-        }
-
     } // namespace element
 } // namespace gui

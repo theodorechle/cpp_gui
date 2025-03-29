@@ -1,11 +1,11 @@
 #ifndef UI_ELEMENT_HPP
 #define UI_ELEMENT_HPP
 
-#include "../converters/bool_converter.hpp"
-#include "../converters/color_converter.hpp"
-#include "../converters/number_converter.hpp"
-#include "../converters/size_converter.hpp"
-#include "abstracts/abstract_element.hpp"
+#include "../../converters/bool_converter.hpp"
+#include "../../converters/color_converter.hpp"
+#include "../../converters/number_converter.hpp"
+#include "../../converters/size_converter.hpp"
+#include "../abstracts/abstract_element.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -120,9 +120,6 @@ namespace gui {
              */
             SDL_Color computeColor(const std::vector<std::string> &ruleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
                                    bool canInherit = false) const;
-
-            void askRendering() const;
-            void askRecomputeLayout() const;
 
         public:
             UiElement(std::string elementName, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,

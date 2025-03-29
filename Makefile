@@ -13,7 +13,7 @@ MAIN=bin/cpp_gui
 SRC_MAIN=$(SRC_DIR)/main.cpp
 
 # Subdirectories
-SUBDIRS=elements elements/managers elements_style elements_style/managers converters app_utils
+SUBDIRS=elements/abstracts elements/ui elements/ui/render_nodes style_nodes converters app_utils
 
 # Source files
 SRC_MAIN=$(SRC_DIR)/main.cpp
