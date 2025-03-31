@@ -3,11 +3,16 @@
 namespace gui {
     namespace element {
         namespace manager {
+            void AbstractManager::addChildToRootElement(gui::element::AbstractElement *childElement) {
+                elementsTree->addChild(childElement);
+
+            }
+
             AbstractManager::~AbstractManager() { deleteElementsTree(); }
 
             void AbstractManager::setSubRootElement(gui::element::AbstractElement *element) {
-                elementsTree = createRootElement();
-                elementsTree->addChild(element);
+                createRootElement();
+                addChildToRootElement(element);
             }
 
             void AbstractManager::deleteElementsTree() { delete elementsTree; }

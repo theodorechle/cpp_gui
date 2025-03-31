@@ -6,22 +6,22 @@ namespace gui {
             SDL_Rect rect = SDL_Rect{0, 0, 0, 0};
             getRect(&rect);
             if (!SDL_StartTextInput(getWindow())) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't start text input: %s", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Input::onFocus: GetCan't start text input: %s", SDL_GetError());
                 return;
             }
             if (!SDL_SetTextInputArea(getWindow(), &rect, cursorPos.x)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set text area: %s", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Input::onFocus: Can't set text area: %s", SDL_GetError());
                 return;
             }
         }
 
         void Input::onFocusLoose() {
             if (!SDL_SetTextInputArea(getWindow(), nullptr, 0)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't clear text area: %s", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Input::onFocus: Can't clear text area: %s", SDL_GetError());
                 return;
             }
             if (!SDL_StopTextInput(getWindow())) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't stop text input: %s", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Input::onFocus: Can't stop text input: %s", SDL_GetError());
                 return;
             }
         }

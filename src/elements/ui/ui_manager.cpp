@@ -3,8 +3,7 @@
 namespace gui {
     namespace element {
         namespace manager {
-            UIManager::UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect)
-                : window{window}, renderer{renderer}, rootRenderNode{new gui::element::ui::render::UiRenderNode(renderer)} {
+            UIManager::UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect) : window{window}, renderer{renderer} {
                 if (clipRect != nullptr) {
                     this->clipRect = *clipRect;
                     canChangeSize = false;
@@ -14,11 +13,12 @@ namespace gui {
                 }
             }
 
-            gui::element::AbstractElement *UIManager::createRootElement() const {
+            void UIManager::createRootElement() {
                 gui::element::UiElement *rootElement = new gui::element::RootElement();
                 rootElement->setRenderer(renderer);
                 rootElement->setWindow(window);
-                return rootElement;
+                elementsTree = rootElement;
+                rootRenderNode = new gui::element::ui::render::UiRenderNode(renderer, nullptr, rootElement);
             }
 
             void UIManager::updateRenderingData() {
@@ -26,13 +26,17 @@ namespace gui {
                 int width = 0;
                 int height = 0;
                 if (!SDL_GetCurrentRenderOutputSize(renderer, &width, &height)) {
-                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't get render size");
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UIManager::updateRenderingData: Can't get render size");
                 }
                 this->clipRect = SDL_Rect{0, 0, width, height};
                 renderedTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, clipRect.w, clipRect.h);
                 if (renderedTexture == nullptr) {
-                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't create a texture for rendering: %s", SDL_GetError());
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UIManager::updateRenderingData: Can't create a texture for rendering: %s", SDL_GetError());
                 }
+            }
+
+            void UIManager::addChildToRootElement(gui::element::AbstractElement *childElement) {
+                static_cast<gui::element::UiElement *>(elementsTree)->addChild(static_cast<gui::element::UiElement *>(childElement));
             }
 
             void UIManager::resetEvents() {
@@ -69,7 +73,7 @@ namespace gui {
                 gui::element::ui::render::UiRenderNode *currentNode = node;
                 while (currentNode != nullptr) {
                     currentNode->computeRelativeLayout();
-                    computeNodesAndChildsLayout(currentNode->child());
+                    computeNodesRelativeLayout(currentNode->child());
                     currentNode = currentNode->next();
                 }
             }
@@ -78,12 +82,13 @@ namespace gui {
                 gui::element::ui::render::UiRenderNode *currentNode = node;
                 while (currentNode != nullptr) {
                     currentNode->computeFinalLayout();
-                    computeNodesAndChildsLayout(currentNode->child());
+                    computeNodesFinalLayout(currentNode->child());
                     currentNode = currentNode->next();
                 }
             }
 
             void UIManager::computeElementsLayout() {
+                if (rootRenderNode == nullptr) return;
                 prepareRenderNodes(static_cast<UiElement *>(elementsTree), rootRenderNode);
                 computeNodesAndChildsLayout(rootRenderNode);
                 computeNodesRelativeLayout(rootRenderNode);

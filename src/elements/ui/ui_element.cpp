@@ -356,13 +356,13 @@ namespace gui {
         SDL_Color UiElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
 
         void UiElement::computeSelfLayout(int *width, int *height) const {
-            (*width) = 50;
-            (*height) = 50;
+            (*width) = 50; // TODO: remove
+            (*height) = 50; // TODO: remove
         }
 
         void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
-            int childsWidth = 0;
-            int childsHeight = 0;
+            int childsWidth = 50; // TODO: remove
+            int childsHeight = 50; // TODO: remove
             for (std::tuple<int, int> childSize : childsSizes) {
                 childsWidth += std::get<0>(childSize);
                 childsHeight += std::get<1>(childSize);
@@ -396,7 +396,7 @@ namespace gui {
 
             finalClipRectNoBorders = computeNewClipRect(&oldClipRect, &clipRectNoBorders);
             if (!SDL_SetRenderClipRect(renderer, &finalClipRectNoBorders)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect no borders '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::tryRender: can't set clip rect no borders '%s'", SDL_GetError());
                 return;
             }
             renderBackground();
@@ -408,7 +408,7 @@ namespace gui {
             finalClipRectNoPaddings = computeNewClipRect(&oldClipRect, &clipRectNoPaddings);
 
             if (!SDL_SetRenderClipRect(renderer, &finalClipRectNoPaddings)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect no paddings '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::tryRender: can't set clip rect no paddings '%s'", SDL_GetError());
                 return;
             }
 
@@ -417,7 +417,7 @@ namespace gui {
             renderSelfAfterChilds();
 
             if (!SDL_SetRenderClipRect(renderer, &finalClipRect)) { // ensure rect has correct size
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::tryRender: can't set clip rect '%s'", SDL_GetError());
                 return;
             }
             renderBorders();
@@ -427,14 +427,14 @@ namespace gui {
             SDL_Rect clipRect;
 
             if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't get clip rect: '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::render: can't get clip rect: '%s'", SDL_GetError());
                 return;
             }
 
             tryRender(clipRect);
 
             if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't restore clip rect '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::render: can't restore clip rect '%s'", SDL_GetError());
                 return;
             }
         }
@@ -445,7 +445,7 @@ namespace gui {
             SDL_Rect childFinalClipRect;
             const UiElement *child = getConstChild();
             if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't get clip rect: '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't get clip rect: '%s'", SDL_GetError());
                 return;
             }
             while (child != nullptr) {
@@ -456,14 +456,14 @@ namespace gui {
                 childClipRect.h = std::min(childClipRect.h + child->marginBottom(), clipRect.h - (childClipRect.y - clipRect.y));
                 childFinalClipRect = computeNewClipRect(&clipRect, &childClipRect);
                 if (!SDL_SetRenderClipRect(renderer, &childFinalClipRect)) {
-                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't set clip rect '%s'", SDL_GetError());
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't set clip rect '%s'", SDL_GetError());
                     break;
                 }
                 child->render();
                 child = child->getConstNext();
             }
             if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "can't restore clip rect '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't restore clip rect '%s'", SDL_GetError());
                 return;
             }
         }
@@ -481,7 +481,7 @@ namespace gui {
             int bBottom = borderBottom();
 
             if (!SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't get draw color '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderBorders: Can't get draw color '%s'", SDL_GetError());
                 return;
             }
             getRect(&realRect);
@@ -492,7 +492,7 @@ namespace gui {
             // left border
             color = borderLeftColor();
             if (!SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderBorders: Can't set draw color '%s'", SDL_GetError());
                 return;
             }
             fRect = createFRect(clippedRectWithBorders.x, clippedRectWithBorders.y + bTop, bLeft, clippedRectWithBorders.h - bTop - bBottom);
@@ -501,7 +501,7 @@ namespace gui {
             // right border
             color = borderRightColor();
             if (!SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderBorders: Can't set draw color '%s'", SDL_GetError());
                 return;
             }
             fRect = createFRect(clippedRectWithBorders.x + clippedRectWithBorders.w, clippedRectWithBorders.y + bTop, -bRight,
@@ -511,7 +511,7 @@ namespace gui {
             // top border
             color = borderTopColor();
             if (!SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderBorders: Can't set draw color '%s'", SDL_GetError());
                 return;
             }
             fRect = createFRect(clippedRectWithBorders.x, clippedRectWithBorders.y, clippedRectWithBorders.w, bTop);
@@ -520,7 +520,7 @@ namespace gui {
             // bottom border
             color = borderBottomColor();
             if (!SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderBorders: Can't set draw color '%s'", SDL_GetError());
                 return;
             }
             fRect = createFRect(clippedRectWithBorders.x, clippedRectWithBorders.y + clippedRectWithBorders.h, clippedRectWithBorders.w, -bBottom);
@@ -528,7 +528,7 @@ namespace gui {
 
             // restore previous color
             if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderBorders: Can't set draw color '%s'", SDL_GetError());
                 return;
             }
         }
@@ -539,7 +539,7 @@ namespace gui {
             SDL_FRect fRect;
 
             if (!SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't get draw color '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderBackground: Can't get draw color '%s'", SDL_GetError());
                 return;
             }
 
@@ -551,7 +551,7 @@ namespace gui {
             SDL_RenderFillRect(renderer, &fRect);
 
             if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't set draw color '%s'", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderBackground: Can't set draw color '%s'", SDL_GetError());
                 return;
             }
         }

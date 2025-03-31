@@ -47,9 +47,9 @@ namespace gui::element::ui::render {
 
         // computed by computeFinalLayout
         struct {
-            SDL_Rect elementRect; // the rect containing the entire element corresponding to this node, including margin, padding and borders
-            SDL_Rect contentRect; // relative to the elementRect
-            Pos scrollOffset;
+            SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0}; // the rect containing the entire element corresponding to this node, including margin, padding and borders
+            SDL_Rect contentRect = SDL_Rect{0, 0, 0, 0}; // relative to the elementRect
+            Pos scrollOffset = {0, 0};
         } usedLayout;
 
         SDL_Texture *texture;

@@ -26,7 +26,7 @@ namespace gui {
                 gui::element::ui::render::UiRenderNode *rootRenderNode = nullptr;
                 SDL_Texture *renderedTexture = nullptr;
 
-                gui::element::AbstractElement *createRootElement() const override;
+                void createRootElement() override;
 
                 void computeNodeLayout(gui::element::ui::render::UiRenderNode *node);
                 void prepareRenderNodes(UiElement *rootElement, gui::element::ui::render::UiRenderNode *rootRenderNode);
@@ -53,6 +53,8 @@ namespace gui {
                 void setElementsModifierState(const std::string &modifier, UiElement *leafElement, bool enabled, const SDL_Event &event);
 
                 void updateRenderingData();
+
+                void addChildToRootElement(gui::element::AbstractElement *childElement) override;
 
             public:
                 UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect = nullptr);

@@ -58,7 +58,7 @@ namespace gui::element::ui::render {
     void UiRenderNode::updateTexture(bool recursive) {
         texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, usedLayout.elementRect.w, usedLayout.elementRect.h);
         if (texture == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Can't create a texture for an ui_render_node");
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiRenderNode::updateTexture: Can't create a texture for an ui_render_node: %s", SDL_GetError());
         }
         if (baseElement == nullptr) return;
         baseElement->render();

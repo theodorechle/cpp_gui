@@ -22,8 +22,9 @@ namespace gui {
                 Status _currentStatus = Status::RUNNING;
                 bool _needUpdate = true;
                 virtual void renderElements(bool clear = true) const = 0;
-                virtual gui::element::AbstractElement *createRootElement() const = 0;
+                virtual void createRootElement() = 0;
                 virtual void update() = 0;
+                virtual void addChildToRootElement(gui::element::AbstractElement *childElement);
 
             protected:
                 gui::element::AbstractElement *elementsTree = nullptr;
