@@ -23,12 +23,12 @@ namespace gui {
             void parent(AbstractElement *parent);
             void updateStyle();
 
-            int nbChilds() { return _nbChilds; }
+            int nbChilds() const { return _nbChilds; }
 
             void updated() { _updated = true; }
 
         public:
-            bool isUpdated() { return _updated; }
+            bool isUpdated() const { return _updated; }
             void updateDone() { _updated = false; }
 
             /**

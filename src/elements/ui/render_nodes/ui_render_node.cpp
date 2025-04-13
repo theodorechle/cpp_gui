@@ -43,6 +43,8 @@ namespace gui::element::ui::render {
 
     void UiRenderNode::computeRelativeLayout() {
         if (baseElement == nullptr) return;
+        // set variables like rem, em, ...
+        // percentages should be set now
         baseElement->computeSelfLayout(&(relativeSize.width), &(relativeSize.height));
     }
 
@@ -58,10 +60,14 @@ namespace gui::element::ui::render {
     void UiRenderNode::updateTexture(bool recursive) {
         texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, usedLayout.elementRect.w, usedLayout.elementRect.h);
         if (texture == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiRenderNode::updateTexture: Can't create a texture for an ui_render_node: %s", SDL_GetError());
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR,
+                         "UiRenderNode::updateTexture (linked to UiElement '%s'): Can't create a texture for an ui_render_node: %s",
+                         baseElement->name().c_str(), SDL_GetError());
         }
         if (baseElement == nullptr) return;
+        SDL_SetRenderTarget(renderer, texture);
         baseElement->render();
+        SDL_SetRenderTarget(renderer, nullptr);
     }
 
     void UiRenderNode::render(SDL_Renderer *renderer) {

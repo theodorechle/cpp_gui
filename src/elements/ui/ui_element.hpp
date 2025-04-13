@@ -22,24 +22,16 @@ namespace gui {
 
         class UiElement : public AbstractElement {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
-            Size elementDesiredSize = {0, 0};
             Size fullSize = {0, 0};
             Size scrollOffset = {0, 0};
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
-            bool marginsActive = true;
             bool _focus = false;
-
-            /**
-             * compute desired layout without margins, paddings, borders, ...
-             */
-            virtual void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight);
 
             void setRect(const SDL_Rect &rect);
             void setPos(int x, int y);
             void setSize(int width, int height);
-            void setDesiredSize(int width, int height);
 
             void setParent(UiElement *parent) { AbstractElement::parent(parent); }
 
@@ -134,8 +126,6 @@ namespace gui {
             SDL_Renderer *getRenderer() const { return renderer; }
             SDL_Window *getWindow() const { return window; }
 
-            void setMarginsActive(bool active) { marginsActive = active; }
-
             int getWidth() const { return elementRect.w; };
             int getHeight() const { return elementRect.h; };
             int getXPos() const { return elementRect.x; };
@@ -175,17 +165,26 @@ namespace gui {
 
             SDL_Color backgroundColor() const;
 
+            /**
+             * Must be tree independant (no use of parent or childs nor nexts)
+             */
             virtual void initBeforeLayoutComputing() {}
 
-            void computeSelfLayout(int *width, int *height) const;
+            /**
+             * Compute the element layout and borders, margins, paddings.
+             * To compute the inner element layout, it calls computeSelfInnerLayout, which can be overriden to create your own layout
+             */
+            virtual void computeSelfLayout(int *width, int *height) const;
+            virtual void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const;
 
-            void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const;
+        private:
+            /**
+             * Should compute only the layout of the content of the element, not borders, margins, paddings.
+             * To change the behavior of these, see the computeSelfLayout function
+             */
+            virtual void computeSelfInnerLayout(int *width, int *height) const;
 
-            void computeLayout(int x, int y, int availableWidth, int availableHeight);
-            virtual void computeChildsLayout(int x, int y, int availableWidth, int availableHeight);
-
-            void computeDesiredLayout(int *desiredWidth, int *desiredHeight);
-
+        public:
             virtual void catchEvent(const SDL_Event &event) {}
 
             void renderChilds() const override;

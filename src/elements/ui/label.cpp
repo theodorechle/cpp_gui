@@ -10,6 +10,7 @@ namespace gui {
                 return;
             }
 
+            TTF_DestroyText(ttfText);
             ttfText = TTF_CreateText(getTextEngine(), ttfFont, text.c_str(), text.size());
             if (ttfText == nullptr) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::initBeforeLayoutComputing: Can't create text: %s", SDL_GetError());
@@ -25,7 +26,7 @@ namespace gui {
             TTF_SetFontStyle(ttfFont, style);
         }
 
-        void Label::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) { getTextSize(desiredWidth, desiredHeight); }
+        void Label::computeSelfInnerLayout(int *width, int *height) const { getTextSize(width, height); }
 
         void Label::getTextSize(int *width, int *height) const {
             if (ttfFont) {
@@ -43,7 +44,6 @@ namespace gui {
         void Label::renderSelfAfterChilds() const {
             SDL_Rect rect;
             SDL_Color color;
-            TTF_DestroyText(ttfText);
             SDL_GetRenderClipRect(getRenderer(), &rect);
             if (getTextEngine() == nullptr) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Text engine is not defined.");

@@ -2,21 +2,13 @@
 #define LIST_HPP
 
 #include "ui_element.hpp"
+#include <numeric>
 
 namespace gui {
     namespace element {
 
         class List : public UiElement {
-            bool vertical = false;
-            std::string childsSize = "auto";
-            int gap = 0;
-
-            void getMaxDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical);
-            void getKeepDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical);
-            void getAutoDesiredChildsSize(int *desiredWidth, int *desiredHeight, bool vertical);
-
-            void computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) override;
-            void computeChildsLayout(int x, int y, int availableWidth, int availableHeight) override;
+            void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const override;
 
         public:
             List(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,

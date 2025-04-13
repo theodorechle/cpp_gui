@@ -48,6 +48,15 @@ namespace gui {
 
             void UIManager::computeNodeLayout(gui::element::ui::render::UiRenderNode *node) { node->computeSelfLayout(); }
 
+            void UIManager::initElementsBeforeLayoutComputing(gui::element::UiElement *element) {
+                element->initBeforeLayoutComputing();
+                UiElement *child = element->getChild();
+                while (child != nullptr) {
+                    initElementsBeforeLayoutComputing(child);
+                    child = child->getNext();
+                }
+            }
+
             void UIManager::prepareRenderNodes(UiElement *rootElement, gui::element::ui::render::UiRenderNode *rootRenderNode) {
                 UiElement *currentElement = rootElement;
                 gui::element::ui::render::UiRenderNode *currentRenderNode;
@@ -60,14 +69,7 @@ namespace gui {
                 }
             }
 
-            void UIManager::computeNodesAndChildsLayout(gui::element::ui::render::UiRenderNode *node) {
-                gui::element::ui::render::UiRenderNode *currentNode = node;
-                while (currentNode != nullptr) {
-                    currentNode->computeSelfAndChildsLayout();
-                    computeNodesAndChildsLayout(currentNode->child());
-                    currentNode = currentNode->next();
-                }
-            }
+            void UIManager::computeNodesAndChildsLayout(gui::element::ui::render::UiRenderNode *node) { node->computeSelfAndChildsLayout(); }
 
             void UIManager::computeNodesRelativeLayout(gui::element::ui::render::UiRenderNode *node) {
                 gui::element::ui::render::UiRenderNode *currentNode = node;
@@ -89,6 +91,7 @@ namespace gui {
 
             void UIManager::computeElementsLayout() {
                 if (rootRenderNode == nullptr) return;
+                initElementsBeforeLayoutComputing(static_cast<UiElement *>(elementsTree));
                 prepareRenderNodes(static_cast<UiElement *>(elementsTree), rootRenderNode);
                 computeNodesAndChildsLayout(rootRenderNode);
                 computeNodesRelativeLayout(rootRenderNode);
@@ -106,7 +109,8 @@ namespace gui {
             }
 
             void UIManager::renderElements(bool clear) const {
-                SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
+                if (renderedTexture != nullptr) SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
+                SDL_RenderPresent(renderer);
                 // if (elementsTree == nullptr) return;
                 // Uint8 r, g, b, a;
                 // int width = 0, height = 0;

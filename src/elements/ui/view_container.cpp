@@ -3,13 +3,13 @@
 namespace gui {
     namespace element {
 
-        void ViewContainer::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
+        void ViewContainer::computeSelfLayout(int *width, int *height) const {
             if (viewManager == nullptr) return;
             // TODO: re-add
             // viewManager->computeDesiredElementsLayout(desiredWidth, desiredHeight);
         }
 
-        void ViewContainer::computeChildsLayout(int x, int y, int availableWidth, int availableHeight) {
+        void ViewContainer::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
             if (viewManager == nullptr) return;
             // TODO: re-add
             // viewManager->setClipRect(SDL_Rect{x, y, availableWidth, availableHeight});
@@ -23,7 +23,7 @@ namespace gui {
             // viewManager->askRendering();
             // viewManager->render(false);
         }
-        
+
         void ViewContainer::catchEvent(const SDL_Event &event) {
             if (viewManager == nullptr) return;
             // TODO: re-add
@@ -44,7 +44,7 @@ namespace gui {
                                      gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
                                      const std::string &identifier)
             : UiElement("view-container", elementsStyleManager, classes, identifier), viewManager{viewManager} {
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "WARNING, this element (ViewContainer) does not fully work.");
-            }
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "WARNING, this element (ViewContainer) does not fully work.");
+        }
     } // namespace element
 } // namespace gui

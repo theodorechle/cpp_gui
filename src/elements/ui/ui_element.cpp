@@ -3,101 +3,6 @@
 namespace gui {
     namespace element {
 
-        void UiElement::computeDesiredInnerLayout(int *desiredWidth, int *desiredHeight) {
-            int nbChilds = 0;
-            (*desiredWidth) = 0;
-            (*desiredHeight) = 0;
-            int childDesiredWidth = 0;
-            int childDesiredHeight = 0;
-            UiElement *child = getChild();
-            while (child != nullptr) {
-                child->computeDesiredLayout(&childDesiredWidth, &childDesiredHeight);
-                (*desiredWidth) = std::max(childDesiredWidth, *desiredWidth);
-                (*desiredHeight) = std::max(childDesiredHeight, *desiredHeight);
-                nbChilds++;
-                child = child->getNext();
-            }
-        }
-
-        void UiElement::computeDesiredLayout(int *desiredWidth, int *desiredHeight) {
-            (*desiredWidth) = 0;
-            (*desiredHeight) = 0;
-            int childDesiredWidth = 0;
-            int childDesiredHeight = 0;
-            int elementWidth = 0;
-            int elementHeight = 0;
-            bool widthFound = false;
-            bool heightFound = false;
-            elementWidth = width(&widthFound);
-            elementHeight = height(&heightFound);
-
-            UiElement *child = getChild();
-            while (child != nullptr) {
-                child->initBeforeLayoutComputing();
-                child = child->getNext();
-            }
-
-            computeDesiredInnerLayout(desiredWidth, desiredHeight);
-
-            if (widthFound) (*desiredWidth) = elementWidth;
-            if (heightFound) (*desiredHeight) = elementHeight;
-
-            if (!widthFound) {
-                (*desiredWidth) += paddingLeft() + paddingRight();
-                (*desiredWidth) += borderLeft() + borderRight();
-            }
-            if (!heightFound) {
-                (*desiredHeight) += paddingTop() + paddingBottom();
-                (*desiredHeight) += borderTop() + borderBottom();
-            }
-
-            if (marginsActive && (!heightFound || !widthFound)) {
-                UiElement *child = getChild();
-                while (child != nullptr) {
-                    if (!widthFound) childDesiredWidth = child->marginLeft() + child->marginRight();
-                    if (!heightFound) childDesiredHeight = child->marginTop() + child->marginBottom();
-                    if (!widthFound) (*desiredWidth) += childDesiredWidth;
-                    if (!heightFound) (*desiredHeight) += childDesiredHeight;
-                    child = child->getNext();
-                }
-            }
-            bool found = false;
-            int size;
-            size = minWidth(&found);
-            if (found) (*desiredWidth) = std::max(*desiredWidth, size);
-            size = maxWidth(&found);
-            if (found) (*desiredWidth) = std::min(*desiredWidth, size);
-            size = minHeight(&found);
-            if (found) (*desiredHeight) = std::max(*desiredHeight, size);
-            size = maxHeight(&found);
-            if (found) (*desiredHeight) = std::min(*desiredHeight, size);
-
-            setDesiredSize(*desiredWidth, *desiredHeight);
-        }
-
-        void UiElement::computeLayout(int x, int y, int availableWidth, int availableHeight) {
-            SDL_Rect newRect = SDL_Rect{x, y, availableWidth, availableHeight};
-            setRect(newRect);
-            fullSize.width = availableWidth;
-            fullSize.height = availableHeight;
-            x += borderLeft() + marginLeft();
-            y += borderTop() + marginTop();
-            availableWidth -= borderLeft() + borderRight();
-            availableHeight -= borderTop() + borderBottom();
-            if (getChild() != nullptr) computeChildsLayout(x, y, availableWidth, availableHeight);
-        }
-
-        void UiElement::computeChildsLayout(int x, int y, int availableWidth, int availableHeight) {
-            int childWidth = 0;
-            int childHeight = 0;
-            UiElement *child = getChild();
-            while (child != nullptr) {
-                child->getDesiredSize(&childWidth, &childHeight);
-                child->computeLayout(x, y, std::min(childWidth, availableWidth), std::min(childHeight, availableHeight));
-                child = child->getNext();
-            }
-        }
-
         void UiElement::setRect(const SDL_Rect &rect) { elementRect = rect; }
 
         void UiElement::setPos(int x, int y) {
@@ -117,19 +22,9 @@ namespace gui {
             *height = this->elementRect.h;
         }
 
-        void UiElement::getDesiredSize(int *width, int *height) const {
-            *width = elementDesiredSize.width;
-            *height = elementDesiredSize.height;
-        }
-
         void UiElement::setSize(int width, int height) {
             this->elementRect.w = width;
             this->elementRect.h = height;
-        }
-
-        void UiElement::setDesiredSize(int width, int height) {
-            this->elementDesiredSize.width = width;
-            this->elementDesiredSize.height = height;
         }
 
         SDL_Rect UiElement::computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect) {
@@ -168,8 +63,13 @@ namespace gui {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
             elementStyle->getRule(ruleName, &rule, canInherit);
-            if (rule == nullptr || rule->getType() != style::StyleValueType::NameString || allowedValues.empty()
-                || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend()) {
+            if (rule
+                == nullptr
+                || rule->getType()
+                != style::StyleValueType::NameString
+                || allowedValues.empty()
+                || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue())
+                == allowedValues.cend()) {
                 return defaultString;
             }
             return rule->getValue();
@@ -180,8 +80,13 @@ namespace gui {
             if (elementStyle == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
             elementStyle->getRule(ruleNames, &rule, canInherit);
-            if (rule == nullptr || rule->getType() != style::StyleValueType::NameString || allowedValues.empty()
-                || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend()) {
+            if (rule
+                == nullptr
+                || rule->getType()
+                != style::StyleValueType::NameString
+                || allowedValues.empty()
+                || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue())
+                == allowedValues.cend()) {
                 return defaultString;
             }
             return rule->getValue();
@@ -252,25 +157,21 @@ namespace gui {
         }
 
         int UiElement::marginLeft(bool *found) const {
-            if (!marginsActive) return 0;
             const UiElement *parent = getConstParent();
             return computeSize({"margin-left", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
         int UiElement::marginRight(bool *found) const {
-            if (!marginsActive) return 0;
             const UiElement *parent = getConstParent();
             return computeSize({"margin-right", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
         }
 
         int UiElement::marginTop(bool *found) const {
-            if (!marginsActive) return 0;
             const UiElement *parent = getConstParent();
             return computeSize({"margin-top", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
 
         int UiElement::marginBottom(bool *found) const {
-            if (!marginsActive) return 0;
             const UiElement *parent = getConstParent();
             return computeSize({"margin-bottom", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
         }
@@ -356,20 +257,56 @@ namespace gui {
         SDL_Color UiElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
 
         void UiElement::computeSelfLayout(int *width, int *height) const {
-            (*width) = 50; // TODO: remove
-            (*height) = 50; // TODO: remove
+            (*width) = 0;
+            (*height) = 0;
+            int childDesiredWidth = 0;
+            int childDesiredHeight = 0;
+            int elementWidth = 0;
+            int elementHeight = 0;
+            bool widthFound = false;
+            bool heightFound = false;
+            elementWidth = this->width(&widthFound);
+            elementHeight = this->height(&heightFound);
+
+            computeSelfInnerLayout(width, height);
+
+            if (widthFound) (*width) = elementWidth;
+            if (heightFound) (*height) = elementHeight;
+
+            if (!widthFound) {
+                (*width) += paddingLeft() + paddingRight();
+                (*width) += borderLeft() + borderRight();
+            }
+            if (!heightFound) {
+                (*height) += paddingTop() + paddingBottom();
+                (*height) += borderTop() + borderBottom();
+            }
+
+            if (!heightFound || !widthFound) {
+                const UiElement *child = getConstChild();
+                while (child != nullptr) {
+                    if (!widthFound) childDesiredWidth = child->marginLeft() + child->marginRight();
+                    if (!heightFound) childDesiredHeight = child->marginTop() + child->marginBottom();
+                    if (!widthFound) (*width) += childDesiredWidth;
+                    if (!heightFound) (*height) += childDesiredHeight;
+                    child = child->getConstNext();
+                }
+            }
+            bool found = false;
+            int size;
+            size = minWidth(&found);
+            if (found) (*width) = std::max(*width, size);
+            size = maxWidth(&found);
+            if (found) (*width) = std::min(*width, size);
+            size = minHeight(&found);
+            if (found) (*height) = std::max(*height, size);
+            size = maxHeight(&found);
+            if (found) (*height) = std::min(*height, size);
         }
 
-        void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
-            int childsWidth = 50; // TODO: remove
-            int childsHeight = 50; // TODO: remove
-            for (std::tuple<int, int> childSize : childsSizes) {
-                childsWidth += std::get<0>(childSize);
-                childsHeight += std::get<1>(childSize);
-            }
-            (*selfWidth) = childsWidth;
-            (*selfHeight) = childsHeight;
-        }
+        void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {}
+
+        void UiElement::computeSelfInnerLayout(int *width, int *height) const {}
 
         void UiElement::tryRender(SDL_Rect oldClipRect) const {
             if (!styleManagerAvailable()) {
