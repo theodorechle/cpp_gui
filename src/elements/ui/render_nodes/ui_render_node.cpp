@@ -66,7 +66,7 @@ namespace gui::element::ui::render {
         }
         if (baseElement == nullptr) return;
         SDL_SetRenderTarget(renderer, texture);
-        baseElement->render();
+        if (!baseElement->render()) SDL_RenderClear(renderer);
         SDL_SetRenderTarget(renderer, nullptr);
     }
 

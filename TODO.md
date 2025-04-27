@@ -5,4 +5,14 @@
 Recompute on size changing (modifiers, ...)
 add overflow (scroll)
 add width and height auto (100% parent)
-force style file reloading
+force style file reloading when receiving it twice
+
+
+Rendering:
+clipping
+
+- border
+- background
+- rendering before child OVERRIDABLE
+- render childs
+- rendering after child OVERRIDABLE

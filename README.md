@@ -68,11 +68,11 @@ The gui is designed so you can implements easily your own elements
 - // TODO Slider
     - // TODO bar-color: string|tuple[int,int,int]
     - // TODO cursor-color: string|tuple[int,int,int]
-- Container:
 - List
     - vertical: bool
     - childs-size: biggest|keep
     - gap: int
+- Container
 - Button
 
 

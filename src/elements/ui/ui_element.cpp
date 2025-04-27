@@ -259,39 +259,20 @@ namespace gui {
         void UiElement::computeSelfLayout(int *width, int *height) const {
             (*width) = 0;
             (*height) = 0;
-            int childDesiredWidth = 0;
-            int childDesiredHeight = 0;
-            int elementWidth = 0;
-            int elementHeight = 0;
             bool widthFound = false;
             bool heightFound = false;
-            elementWidth = this->width(&widthFound);
-            elementHeight = this->height(&heightFound);
+            int elementWidth = this->width(&widthFound);
+            int elementHeight = this->height(&heightFound);
 
             computeSelfInnerLayout(width, height);
 
-            if (widthFound) (*width) = elementWidth;
-            if (heightFound) (*height) = elementHeight;
-
             if (!widthFound) {
-                (*width) += paddingLeft() + paddingRight();
-                (*width) += borderLeft() + borderRight();
+                (*width) = elementWidth + paddingLeft() + paddingRight() + borderLeft() + borderRight();
             }
             if (!heightFound) {
-                (*height) += paddingTop() + paddingBottom();
-                (*height) += borderTop() + borderBottom();
+                (*height) = elementHeight + paddingTop() + paddingBottom() + borderTop() + borderBottom();
             }
 
-            if (!heightFound || !widthFound) {
-                const UiElement *child = getConstChild();
-                while (child != nullptr) {
-                    if (!widthFound) childDesiredWidth = child->marginLeft() + child->marginRight();
-                    if (!heightFound) childDesiredHeight = child->marginTop() + child->marginBottom();
-                    if (!widthFound) (*width) += childDesiredWidth;
-                    if (!heightFound) (*height) += childDesiredHeight;
-                    child = child->getConstNext();
-                }
-            }
             bool found = false;
             int size;
             size = minWidth(&found);
@@ -306,74 +287,51 @@ namespace gui {
 
         void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {}
 
-        void UiElement::computeSelfInnerLayout(int *width, int *height) const {}
-
-        void UiElement::tryRender(SDL_Rect oldClipRect) const {
-            if (!styleManagerAvailable()) {
-                renderChilds();
-                return;
+        bool UiElement::setClipRect(const SDL_Rect *clipRect, std::string callerName) const {
+            if (!SDL_SetRenderClipRect(renderer, clipRect)) {
+                SDL_LogError(GUI_RENDERING, "%s: can't set clip rect '%s'", callerName.c_str(), SDL_GetError());
+                return false;
             }
-            if (renderer == nullptr) throw NoRendererException();
-            SDL_Rect clipRect;
-            SDL_Rect finalClipRect;
-            SDL_Rect clipRectNoBorders;
-            SDL_Rect finalClipRectNoBorders;
-            SDL_Rect clipRectNoPaddings;
-            SDL_Rect finalClipRectNoPaddings;
-
-            clipRect = SDL_Rect{oldClipRect.x, oldClipRect.y, this->elementRect.w, this->elementRect.h};
-            renderScrollBars();
-
-            finalClipRect = computeNewClipRect(&oldClipRect, &clipRect);
-
-            clipRectNoBorders.x = clipRect.x + borderLeft();
-            clipRectNoBorders.w = clipRect.w - borderLeft() - borderRight();
-            clipRectNoBorders.y = clipRect.y + borderTop();
-            clipRectNoBorders.h = clipRect.h - borderTop() - borderBottom();
-
-            finalClipRectNoBorders = computeNewClipRect(&oldClipRect, &clipRectNoBorders);
-            if (!SDL_SetRenderClipRect(renderer, &finalClipRectNoBorders)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::tryRender: can't set clip rect no borders '%s'", SDL_GetError());
-                return;
-            }
-            renderBackground();
-
-            clipRectNoPaddings.x = clipRectNoBorders.x + paddingLeft();
-            clipRectNoPaddings.w = clipRectNoBorders.w - paddingLeft() - paddingRight();
-            clipRectNoPaddings.y = clipRectNoBorders.y + paddingTop();
-            clipRectNoPaddings.h = clipRectNoBorders.h - paddingTop() - paddingBottom();
-            finalClipRectNoPaddings = computeNewClipRect(&oldClipRect, &clipRectNoPaddings);
-
-            if (!SDL_SetRenderClipRect(renderer, &finalClipRectNoPaddings)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::tryRender: can't set clip rect no paddings '%s'", SDL_GetError());
-                return;
-            }
-
-            renderSelfBeforeChilds();
-            renderChilds();
-            renderSelfAfterChilds();
-
-            if (!SDL_SetRenderClipRect(renderer, &finalClipRect)) { // ensure rect has correct size
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::tryRender: can't set clip rect '%s'", SDL_GetError());
-                return;
-            }
-            renderBorders();
+            return true;
         }
 
-        void UiElement::render() const {
+        void UiElement::computeSelfInnerLayout(int *width, int *height) const {}
+
+        bool UiElement::render() const {
+            if (renderer == nullptr) throw NoRendererException(); // TODO: exception or simple error log? (coherence with the entire program)
+
             SDL_Rect clipRect;
+            SDL_GetRenderClipRect(renderer, &clipRect);
 
-            if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::render: can't get clip rect: '%s'", SDL_GetError());
-                return;
-            }
+            // borders
+            renderBorders();
 
-            tryRender(clipRect);
+            // background
+            SDL_Rect clipRectBackground; // no borders
+            clipRectBackground.x = clipRect.x + borderLeft();
+            clipRectBackground.y = clipRect.y + borderTop();
+            clipRectBackground.w = clipRect.w - borderLeft() - borderRight();
+            clipRectBackground.h = clipRect.h - borderTop() - borderBottom();
+            if (!setClipRect(&clipRectBackground, "UiElement::render (background)")) return false;
+            renderBackground();
 
-            if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::render: can't restore clip rect '%s'", SDL_GetError());
-                return;
-            }
+            SDL_Rect clipRectContent; // no borders, no paddings
+            clipRectContent.x = clipRectBackground.x + paddingLeft();
+            clipRectContent.y = clipRectBackground.y + paddingTop();
+            clipRectContent.w = clipRectBackground.w - paddingLeft() - paddingRight();
+            clipRectContent.h = clipRectBackground.h - paddingTop() - paddingBottom();
+            if (!setClipRect(&clipRectContent, "UiElement::render (content)")) return false;
+
+            renderSelfBeforeChilds();
+
+            renderChilds();
+
+            renderSelfAfterChilds();
+
+            renderScrollBars();
+
+            // restore clip rect
+            return setClipRect(&clipRect, "UiElement::render (restore)");
         }
 
         void UiElement::renderChilds() const {
@@ -498,6 +456,7 @@ namespace gui {
         }
 
         void UiElement::renderScrollBars() const {
+            // TODO: do it
             // renderScrollBar();
             // renderScrollBar();
         }

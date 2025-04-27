@@ -177,6 +177,8 @@ namespace gui {
             virtual void computeSelfLayout(int *width, int *height) const;
             virtual void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const;
 
+            bool setClipRect(const SDL_Rect *clipRect, std::string callerName = "") const;
+
         private:
             /**
              * Should compute only the layout of the content of the element, not borders, margins, paddings.
@@ -189,10 +191,10 @@ namespace gui {
 
             void renderChilds() const override;
             void renderBackground() const;
+            void renderBorders() const;
             void renderScrollBar(int currentSize, int desiredSize) const;
             void renderScrollBars() const;
-            void render() const;
-            void renderBorders() const;
+            bool render() const;
 
             void focus(bool focused);
             bool focus() { return _focus; }
@@ -205,5 +207,8 @@ namespace gui {
 
     } // namespace element
 } // namespace gui
+
+// TODO: move it elsewhere
+enum GUI_LogCategory { GUI_RENDERING = SDL_LOG_CATEGORY_CUSTOM };
 
 #endif // UI_ELEMENT_HPP
