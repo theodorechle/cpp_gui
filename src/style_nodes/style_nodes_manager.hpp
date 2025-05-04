@@ -39,8 +39,9 @@ namespace gui {
                 int addStyle(const std::string &style);
                 void removeStyleInElements(int fileNumber, gui::elementStyle::StyleNode *element);
                 void removeStyle(int fileNumber);
-                bool areElementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle,
-                                                    const style::StyleComponentDataList *componentsList);
+                bool areElementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle, const style::StyleComponentDataList *componentsList);
+
+                // TODO: Are both methods neeeded?
                 void applyStyleToElement(gui::elementStyle::StyleNode *elementStyle, bool recursive = false);
                 void addElementStyle(gui::elementStyle::StyleNode *elementStyle);
             };

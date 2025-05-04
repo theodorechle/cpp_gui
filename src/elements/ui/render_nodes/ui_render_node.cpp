@@ -84,23 +84,20 @@ namespace gui::element::ui::render {
         std::cerr << "width=" << usedLayout.elementClippedRect.w << ", height=" << usedLayout.elementClippedRect.h << "\n";
     }
 
-    void UiRenderNode::updateTexture(bool recursive) {
-        texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, usedLayout.elementRect.w, usedLayout.elementRect.h);
-        if (texture == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-                         "UiRenderNode::updateTexture (linked to UiElement '%s'): Can't create a texture for an ui_render_node: %s",
-                         baseElement->name().c_str(), SDL_GetError());
-        }
+    void UiRenderNode::render(bool recursive) {
         if (baseElement == nullptr) return;
-        SDL_SetRenderTarget(renderer, texture);
+        // baseElement->renderScrollBars(); // TODO
+
+        SDL_Rect clipRect;
+        SDL_GetRenderClipRect(renderer, &clipRect);
+
+        if (!SDL_SetRenderClipRect(renderer, &(usedLayout.elementClippedRect))) {
+            SDL_LogError(GUI_RENDERING, "uiRenderNode::render: can't set clip rect '%s'", SDL_GetError());
+            return;
+        }
         if (!baseElement->render()) SDL_RenderClear(renderer);
-        SDL_SetRenderTarget(renderer, nullptr);
+        if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
+            SDL_LogError(GUI_RENDERING, "uiRenderNode::render: can't restore clip rect '%s'", SDL_GetError());
+        }
     }
-
-    void UiRenderNode::render(SDL_Renderer *renderer) {
-        SDL_FRect renderFRect;
-        SDL_RectToFRect(&(usedLayout.elementClippedRect), &renderFRect);
-        SDL_RenderTexture(renderer, texture, nullptr, &renderFRect);
-    }
-
 } // namespace gui::element::ui::renderNode

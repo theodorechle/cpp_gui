@@ -121,6 +121,7 @@ namespace gui {
             style::StyleValue *rule = nullptr;
             SDL_Color color = SDL_Color();
             elementStyle->getRule(ruleNames, &rule, canInherit);
+            std::cerr << "rule '" << ruleNames.front() << "' is null? : " << (rule == nullptr) << "\n";
             if (rule == nullptr) {
                 return defaultColor;
             }
@@ -311,67 +312,52 @@ namespace gui {
             SDL_Rect clipRect;
             SDL_GetRenderClipRect(renderer, &clipRect);
 
-            SDL_SetRenderDrawColor(renderer, (Uint8)255, (Uint8)0, (Uint8)0, (Uint8)255); // TODO: remove
-
             // borders
-            renderBorders();
+            renderBordersWrapper();
 
             // background
-            SDL_Rect clipRectBackground; // no borders
-            clipRectBackground.x = clipRect.x + borderLeft();
-            clipRectBackground.y = clipRect.y + borderTop();
-            clipRectBackground.w = clipRect.w - borderLeft() - borderRight();
-            clipRectBackground.h = clipRect.h - borderTop() - borderBottom();
-            if (!setClipRect(&clipRectBackground, "UiElement::render (background)")) return false;
-            renderBackground();
+            renderBackgroundWrapper();
 
-            SDL_Rect clipRectContent; // no borders, no paddings
-            clipRectContent.x = clipRectBackground.x + paddingLeft();
-            clipRectContent.y = clipRectBackground.y + paddingTop();
-            clipRectContent.w = clipRectBackground.w - paddingLeft() - paddingRight();
-            clipRectContent.h = clipRectBackground.h - paddingTop() - paddingBottom();
-            if (!setClipRect(&clipRectContent, "UiElement::render (content)")) return false;
+            renderSelfBeforeChildsWrapper();
 
-            renderSelfBeforeChilds();
+            renderChildsWrapper();
 
-            renderChilds();
+            renderSelfAfterChildsWrapper();
 
-            renderSelfAfterChilds();
-
-            renderScrollBars();
+            renderScrollBarsWrapper();
 
             // restore clip rect
             return setClipRect(&clipRect, "UiElement::render (restore)");
         }
 
-        void UiElement::renderChilds() const {
-            SDL_Rect clipRect;
-            SDL_Rect childClipRect;
-            SDL_Rect childFinalClipRect;
-            const UiElement *child = getConstChild();
-            if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't get clip rect: '%s'", SDL_GetError());
-                return;
-            }
-            while (child != nullptr) {
-                childClipRect = SDL_Rect{std::min(std::max(clipRect.x, child->getXPos() + child->marginLeft()), clipRect.x + clipRect.w),
-                                         std::min(std::max(clipRect.y, child->getYPos() + child->marginTop()), clipRect.y + clipRect.h),
-                                         child->getWidth(), child->getHeight()};
-                childClipRect.w = std::min(childClipRect.w + child->marginRight(), clipRect.w - (childClipRect.x - clipRect.x));
-                childClipRect.h = std::min(childClipRect.h + child->marginBottom(), clipRect.h - (childClipRect.y - clipRect.y));
-                childFinalClipRect = computeNewClipRect(&clipRect, &childClipRect);
-                if (!SDL_SetRenderClipRect(renderer, &childFinalClipRect)) {
-                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't set clip rect '%s'", SDL_GetError());
-                    break;
-                }
-                child->render();
-                child = child->getConstNext();
-            }
-            if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't restore clip rect '%s'", SDL_GetError());
-                return;
-            }
-        }
+        // void UiElement::renderChilds() const {
+        //     SDL_Rect clipRect;
+        //     SDL_Rect childClipRect;
+        //     SDL_Rect childFinalClipRect;
+        //     const UiElement *child = getConstChild();
+        //     if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
+        //         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't get clip rect: '%s'", SDL_GetError());
+        //         return;
+        //     }
+        //     while (child != nullptr) {
+        //         childClipRect = SDL_Rect{std::min(std::max(clipRect.x, child->getXPos() + child->marginLeft()), clipRect.x + clipRect.w),
+        //                                  std::min(std::max(clipRect.y, child->getYPos() + child->marginTop()), clipRect.y + clipRect.h),
+        //                                  child->getWidth(), child->getHeight()};
+        //         childClipRect.w = std::min(childClipRect.w + child->marginRight(), clipRect.w - (childClipRect.x - clipRect.x));
+        //         childClipRect.h = std::min(childClipRect.h + child->marginBottom(), clipRect.h - (childClipRect.y - clipRect.y));
+        //         childFinalClipRect = computeNewClipRect(&clipRect, &childClipRect);
+        //         if (!SDL_SetRenderClipRect(renderer, &childFinalClipRect)) {
+        //             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't set clip rect '%s'", SDL_GetError());
+        //             break;
+        //         }
+        //         child->render();
+        //         child = child->getConstNext();
+        //     }
+        //     if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
+        //         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't restore clip rect '%s'", SDL_GetError());
+        //         return;
+        //     }
+        // }
 
         void UiElement::renderBorders() const {
             SDL_Color color;
@@ -449,6 +435,7 @@ namespace gui {
             }
 
             SDL_Color color = backgroundColor();
+            std::cerr << "color of element '" << name() << "': " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << ", " << (int)color.a << "\n";
             SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             SDL_GetRenderClipRect(renderer, &rect);
 
@@ -469,6 +456,52 @@ namespace gui {
             // TODO: do it
             // renderScrollBar();
             // renderScrollBar();
+        }
+
+        void UiElement::renderSelfBeforeChildsWrapper() const {
+            SDL_Rect clipRect;
+            SDL_GetRenderClipRect(renderer, &clipRect);
+
+            SDL_Rect clipRectContent; // no borders, no paddings
+            clipRectContent.x = clipRect.x + borderLeft() + paddingLeft();
+            clipRectContent.y = clipRect.y + borderTop() + paddingTop();
+            clipRectContent.w = clipRect.w - borderLeft() - borderRight() - paddingLeft() - paddingRight();
+            clipRectContent.h = clipRect.h - borderTop() - borderBottom() - paddingTop() - paddingBottom();
+            if (!setClipRect(&clipRectContent, "UiElement::render (content)")) return;
+            renderSelfBeforeChilds();
+        }
+        
+        void UiElement::renderSelfAfterChildsWrapper() const {
+            renderSelfAfterChilds();
+        }
+
+
+        void UiElement::renderChildsWrapper() const {
+            renderChilds();
+        }
+
+        void UiElement::renderBackgroundWrapper() const {
+            SDL_Rect clipRect;
+            SDL_GetRenderClipRect(renderer, &clipRect);
+            SDL_Rect clipRectBackground; // no borders
+            clipRectBackground.x = clipRect.x + borderLeft();
+            clipRectBackground.y = clipRect.y + borderTop();
+            clipRectBackground.w = clipRect.w - borderLeft() - borderRight();
+            clipRectBackground.h = clipRect.h - borderTop() - borderBottom();
+            if (!setClipRect(&clipRectBackground, "UiElement::render (background)")) return;
+            renderBackground();
+        }
+
+        void UiElement::renderBordersWrapper() const {
+            renderBorders();
+        }
+
+        void UiElement::renderScrollBarWrapper(int currentSize, int desiredSize) const {
+            renderScrollBar(currentSize, desiredSize);
+        }
+
+        void UiElement::renderScrollBarsWrapper() const {
+            renderScrollBars();
         }
 
         void UiElement::focus(bool focused) {

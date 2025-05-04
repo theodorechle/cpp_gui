@@ -29,17 +29,6 @@ namespace gui {
             void setParent(UiElement *parent) { AbstractElement::parent(parent); }
 
             /**
-             * Calls the rendering methods in this order:
-             * - renderBackground
-             * - renderSelfBeforeChilds
-             * - renderChilds
-             * - renderSelfAfterChilds
-             * - renderBorders
-             * Also manages the clip rect for borders and content
-             */
-            void tryRender(SDL_Rect oldClipRect) const;
-
-            /**
              * Return a modified version of wantedNewClipRect who fits in oldClipRect
              */
             static SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
@@ -184,15 +173,35 @@ namespace gui {
         private:
             bool setClipRect(const SDL_Rect *clipRect, std::string callerName = "") const;
 
-        public:
-            virtual void catchEvent(const SDL_Event &event) {}
-
-            void renderChilds() const override;
+            void renderSelfBeforeChilds() const {};
+            void renderSelfAfterChilds() const {};
+            virtual void renderChilds() const {};
             void renderBackground() const;
             void renderBorders() const;
             void renderScrollBar(int currentSize, int desiredSize) const;
             void renderScrollBars() const;
+
+        public:
+            void renderSelfBeforeChildsWrapper() const override;
+            void renderSelfAfterChildsWrapper() const override;
+            void renderChildsWrapper() const override;
+            void renderBackgroundWrapper() const;
+            void renderBordersWrapper() const;
+            void renderScrollBarWrapper(int currentSize, int desiredSize) const;
+            void renderScrollBarsWrapper() const;
+
+            /** // TODO: verify the doc
+             * Calls the rendering methods in this order:
+             * - renderBackground
+             * - renderSelfBeforeChilds
+             * - renderChilds
+             * - renderSelfAfterChilds
+             * - renderBorders
+             * Also manages the clip rect for borders and content
+             */
             bool render() const;
+
+            virtual void catchEvent(const SDL_Event &event) {}
 
             void focus(bool focused);
             bool focus() { return _focus; }

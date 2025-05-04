@@ -16,7 +16,7 @@ namespace gui {
             // viewManager->computeFinalElementsLayout();
         }
 
-        void ViewContainer::renderChilds() const {
+        void ViewContainer::renderChildsWrapper() const {
             if (viewManager == nullptr) return;
             std::cerr << "rendering\n";
             // TODO: re-add

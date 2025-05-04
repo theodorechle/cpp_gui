@@ -49,11 +49,9 @@ namespace gui {
                 } while (nextChild != nullptr);
                 selfChild->next(newChild);
             }
-            if (newChild != nullptr) {
-                elementStyle->addChild(newChild->elementStyle);
-                newChild->parent(this);
-                _nbChilds++;
-            }
+            elementStyle->addChild(newChild->elementStyle);
+            newChild->parent(this);
+            _nbChilds++;
         }
 
         void AbstractElement::removeChilds() {

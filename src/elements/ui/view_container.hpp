@@ -13,7 +13,7 @@ namespace gui {
             void computeTotalLayout(int *width, int *height) const override;
             void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds, std::list<std::tuple<int, int>> childsSizes) const override;
 
-            void renderChilds() const override;
+            void renderChildsWrapper() const override;
             virtual void catchEvent(const SDL_Event &event) override;
 
             /**

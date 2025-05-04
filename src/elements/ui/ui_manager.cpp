@@ -112,14 +112,17 @@ namespace gui {
                 if (!needRenderingUpdate) return;
                 needRenderingUpdate = false;
                 if (rootRenderNode == nullptr) return;
-                SDL_SetRenderTarget(renderer, renderedTexture);
-                rootRenderNode->updateTexture();
-                rootRenderNode->render(renderer);
-                SDL_SetRenderTarget(renderer, nullptr);
+                // SDL_SetRenderTarget(renderer, renderedTexture);
+                rootRenderNode->render();
+                // SDL_SetRenderTarget(renderer, nullptr);
             }
 
             void UIManager::renderElements(bool clear) const {
-                if (renderedTexture != nullptr) SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
+                // std::cerr << "Rendering elements (renderedTexture is null: " << (renderedTexture == nullptr) << ")\n";
+                // if (renderedTexture != nullptr) {
+                    // std::cerr << "renderedTexture: w=" << renderedTexture->w << ", h=" << renderedTexture->h << "\n";
+                    // SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
+                // }
                 SDL_RenderPresent(renderer);
                 // if (elementsTree == nullptr) return;
                 // Uint8 r, g, b, a;

@@ -52,18 +52,18 @@ namespace gui {
              * Override this function to draw self element.
              * Only draw element content (no border / background)
              */
-            virtual void renderSelfBeforeChilds() const {};
+            virtual void renderSelfBeforeChildsWrapper() const {};
 
             /**
              * Override this function to draw self element.
              * Only draw element content (no border / background)
              */
-            virtual void renderSelfAfterChilds() const {};
+            virtual void renderSelfAfterChildsWrapper() const {};
 
             /**
              * Should call each child with a portion of the element surface
              */
-            virtual void renderChilds() const {};
+            virtual void renderChildsWrapper() const {};
 
             bool styleManagerAvailable() const { return elementsStyleManager != nullptr; }
 

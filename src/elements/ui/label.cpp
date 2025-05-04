@@ -41,7 +41,7 @@ namespace gui {
             (*height) = 0;
         }
 
-        void Label::renderSelfAfterChilds() const {
+        void Label::renderSelfAfterChildsWrapper() const {
             SDL_Rect rect;
             SDL_Color color;
             SDL_GetRenderClipRect(getRenderer(), &rect);

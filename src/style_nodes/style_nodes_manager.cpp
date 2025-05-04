@@ -11,8 +11,7 @@ namespace gui {
                 return -1;
             }
 
-            void StyleNodesManager::updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber,
-                                                                       gui::elementStyle::StyleNode *element) {
+            void StyleNodesManager::updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber, gui::elementStyle::StyleNode *element) {
                 gui::elementStyle::StyleNode *child;
                 element->updateStylePriorityFromFile(oldFileNumber, newFileNumber);
                 child = element->getChild();
@@ -34,8 +33,14 @@ namespace gui {
             }
 
             void StyleNodesManager::applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle,
-                                                                   gui::elementStyle::StyleNode *elementStyle, bool recursive) {
+                                                                gui::elementStyle::StyleNode *elementStyle, bool recursive) {
                 if (elementStyle == nullptr) return;
+                std::cerr << "Applying style to element:\n";
+                std::cerr << "selectors: ";
+                for (style::StyleComponentData selector : *(elementStyle->getSelectors())) {
+                    std::cerr << selector.first << ", ";
+                }
+                std::cerr << "\n";
                 gui::elementStyle::StyleNode *actualElementStyle = elementStyle;
                 const style::StyleValuesMap *styleMap;
                 AppliedStyleMap elementStyleMap;
@@ -63,7 +68,11 @@ namespace gui {
                             actualElementStyle->addRuleAffectedByModifier(styleRule.second.fileNumber, styleRule.second.ruleNumber, modifier);
                         }
                     }
-
+                    std::cerr << "applied style: ";
+                    for (std::pair<std::string, StyleRules> appliedStyle : elementStyleMap) {
+                        std::cerr << appliedStyle.first << ", ";
+                    }
+                    std::cerr << "\n";
                     actualElementStyle->addStyle(elementStyleMap);
                 }
 
@@ -90,7 +99,8 @@ namespace gui {
             const std::string &StyleNodesManager::getFontsPath() const { return fontsPath; }
 
             int StyleNodesManager::addStyleFile(const std::string &fileName) {
-                int fileNumber = findFile(fileName);
+                std::cerr << "Adding file '" << fileName << "'\n";
+                int fileNumber = findFile(fileName); //  TODO: allow force reload
                 if (fileNumber != -1) {
                     updateRulesPriorities(fileNumber);
                     return fileNumber;
@@ -121,6 +131,7 @@ namespace gui {
             }
 
             void StyleNodesManager::removeStyleInElements(int fileNumber, gui::elementStyle::StyleNode *element) {
+                std::cerr << "Removing style from element\n";
                 gui::elementStyle::StyleNode *child;
                 element->deleteStyleFromFile(fileNumber);
                 child = element->getChild();
@@ -147,7 +158,7 @@ namespace gui {
             }
 
             bool StyleNodesManager::areElementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle,
-                                                                      const style::StyleComponentDataList *componentsList) {
+                                                                   const style::StyleComponentDataList *componentsList) {
                 if (elementStyle == nullptr || componentsList == nullptr) return false;
                 bool selectorExists = false;
                 gui::elementStyle::StyleNode *currentStyle = elementStyle;

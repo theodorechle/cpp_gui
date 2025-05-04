@@ -13,6 +13,8 @@ namespace gui {
                         const std::string &identifier = "");
             void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
                                             std::list<std::tuple<int, int>> childsSizes) const override;
+
+            void renderChilds() const override;
         };
 
     } // namespace element

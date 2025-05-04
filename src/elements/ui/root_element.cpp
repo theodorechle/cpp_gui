@@ -20,5 +20,15 @@ namespace gui {
             (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
             (*selfHeight) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
         }
+
+        void RootElement::renderChilds() const {
+            const UiElement *child = getConstChild();
+            int childNb = 1;
+            while (child != nullptr) {
+                std::cerr << "child (" << childNb << " of " << nbChilds() << ") of '" << name() << "': " << child->name() << "\n";
+                child->render();
+                child = child->getConstNext();
+            }
+        }
     } // namespace element
 } // namespace gui

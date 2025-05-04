@@ -47,14 +47,13 @@ namespace gui::element::ui::render {
 
         // computed by computeFinalLayout
         struct {
-            SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0}; // the rect containing the entire element corresponding to this node, including margin, padding and borders
+            SDL_Rect elementRect =
+                SDL_Rect{0, 0, 0, 0}; // the rect containing the entire element corresponding to this node, including margin, padding and borders
             SDL_Rect elementClippedRect = SDL_Rect{0, 0, 0, 0};
             // contentRect is implementation detail and thus should not be usable outside this class
             SDL_Rect contentRect = SDL_Rect{0, 0, 0, 0}; // relative to the elementRect
             Pos scrollOffset = {0, 0};
         } usedLayout;
-
-        SDL_Texture *texture;
 
     public:
         UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent = nullptr, const gui::element::UiElement *baseElement = nullptr);
@@ -73,8 +72,7 @@ namespace gui::element::ui::render {
         SDL_Rect *elementRect();
         SDL_Rect *elementClippedRect();
 
-        void updateTexture(bool recursive = true);
-        void render(SDL_Renderer *renderer);
+        void render(bool recursive = true);
     };
 } // namespace renderNode
 
