@@ -25,7 +25,9 @@ namespace gui::element::ui::render {
 
     void UiRenderNode::computeSelfLayout() {
         if (baseElement == nullptr) return;
-        baseElement->computeSelfLayout(&(defaultSelfSize.width), &(defaultSelfSize.height));
+        std::cerr << "computeSelfLayout (" << baseElement->name() << "): ";
+        baseElement->computeInnerLayout(&(defaultSelfSize.width), &(defaultSelfSize.height));
+        baseElement->computeTotalLayout(&(defaultSelfSize.width), &(defaultSelfSize.height));
     }
 
     void UiRenderNode::computeSelfAndChildsLayout() {
@@ -38,23 +40,48 @@ namespace gui::element::ui::render {
             child = child->_next;
         }
 
-        baseElement->computeSelfAndChildsLayout(&(defaultSelfSize.width), &(defaultSelfSize.height), childsSizes);
+        std::cerr << "computeSelfAndChildsLayout (" << baseElement->name() << "): ";
+        baseElement->computeSelfAndChildsLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height), &(defaultSelfSize.width),
+                                                &(defaultSelfSize.height), childsSizes);
+        baseElement->computeTotalLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height));
     }
 
     void UiRenderNode::computeRelativeLayout() {
         if (baseElement == nullptr) return;
         // set variables like rem, em, ...
         // percentages should be set now
-        baseElement->computeSelfLayout(&(relativeSize.width), &(relativeSize.height));
+        std::list<std::tuple<int, int>> childsSizes = {};
+        UiRenderNode *child = _child;
+        while (child != nullptr) {
+            child->computeRelativeLayout();
+            childsSizes.push_back(std::tuple<int, int>(child->relativeSize.width, child->relativeSize.height));
+            child = child->_next;
+        }
+
+        std::cerr << "computeRelativeLayout (" << baseElement->name() << "): ";
+        baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), &(defaultSizeWithChilds.width),
+                                                &(defaultSizeWithChilds.height), childsSizes);
+        baseElement->computeTotalLayout(&(relativeSize.width), &(relativeSize.height));
     }
 
-    void UiRenderNode::computeFinalLayout() {
+    SDL_Rect *UiRenderNode::elementRect() { return &usedLayout.elementRect; }
+
+    SDL_Rect *UiRenderNode::elementClippedRect() { return &usedLayout.elementClippedRect; }
+
+    void UiRenderNode::computeFinalLayout(SDL_Rect clipRect) {
         // overflows, ...
-        // TODO: remove this code
+
         usedLayout.elementRect.w = relativeSize.width;
         usedLayout.elementRect.h = relativeSize.height;
+
+        // TODO: update this code
         usedLayout.contentRect.w = relativeSize.width;
         usedLayout.contentRect.h = relativeSize.height;
+
+        usedLayout.elementClippedRect = clipRect;
+        std::cerr << "computeFinalLayout (" << baseElement->name() << "): ";
+        std::cerr << "width=" << usedLayout.elementRect.w << ", height=" << usedLayout.elementRect.h << " --- clipped: ";
+        std::cerr << "width=" << usedLayout.elementClippedRect.w << ", height=" << usedLayout.elementClippedRect.h << "\n";
     }
 
     void UiRenderNode::updateTexture(bool recursive) {
@@ -72,7 +99,7 @@ namespace gui::element::ui::render {
 
     void UiRenderNode::render(SDL_Renderer *renderer) {
         SDL_FRect renderFRect;
-        SDL_RectToFRect(&(usedLayout.elementRect), &renderFRect);
+        SDL_RectToFRect(&(usedLayout.elementClippedRect), &renderFRect);
         SDL_RenderTexture(renderer, texture, nullptr, &renderFRect);
     }
 

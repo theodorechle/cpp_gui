@@ -61,21 +61,21 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     gui::element::UiElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
     manager->setSubRootElement(parentContainer);
 
-    std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
+    // std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
-    parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager,
-                                                      &labelClasses, "test-label", textEngine));
-    parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
-    gui::element::UiElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
-    // FIXME: button click zone is bigger than displayed
-    parentContainer->addChild(button);
-    gui::element::UiElement *list = new gui::element::List(elementsStyleManager);
-    button->addChild(list);
-    list->addChild(new gui::element::Label("press this button", elementsStyleManager, {}, "", textEngine));
-    list->addChild(new gui::element::Label("to display", elementsStyleManager, {}, "", textEngine));
-    std::vector<std::string> lastLabelClasses = std::vector<std::string>{"last"};
-    list->addChild(new gui::element::Label("hello world!", elementsStyleManager, &lastLabelClasses, "", textEngine));
-    parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
+    // parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager,
+    //                                                   &labelClasses, "test-label", textEngine));
+    // parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
+    // gui::element::UiElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
+    // // FIXME: button click zone is bigger than displayed
+    // parentContainer->addChild(button);
+    // gui::element::UiElement *list = new gui::element::List(elementsStyleManager);
+    // button->addChild(list);
+    // list->addChild(new gui::element::Label("press this button", elementsStyleManager, {}, "", textEngine));
+    // list->addChild(new gui::element::Label("to display", elementsStyleManager, {}, "", textEngine));
+    // std::vector<std::string> lastLabelClasses = std::vector<std::string>{"last"};
+    // list->addChild(new gui::element::Label("hello world!", elementsStyleManager, &lastLabelClasses, "", textEngine));
+    // parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
 
     // gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 

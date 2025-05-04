@@ -2,8 +2,8 @@
 #define UIMANAGER_HPP
 
 #include "../abstracts/abstract_manager.hpp"
-#include "render_nodes/ui_render_node.hpp"
 #include "render_nodes/element_to_render_node_converter.hpp"
+#include "render_nodes/ui_render_node.hpp"
 #include "root_element.hpp"
 #include "ui_element.hpp"
 #include <SDL3/SDL.h>
@@ -30,10 +30,10 @@ namespace gui {
 
                 void computeNodeLayout(gui::element::ui::render::UiRenderNode *node);
                 void initElementsBeforeLayoutComputing(gui::element::UiElement *element);
-                void prepareRenderNodes(UiElement *rootElement, gui::element::ui::render::UiRenderNode *rootRenderNode);
+                void prepareRenderNodes(UiElement *rootElement, gui::element::ui::render::UiRenderNode *rootRenderNode, bool isRoot = false);
                 void computeNodesAndChildsLayout(gui::element::ui::render::UiRenderNode *node);
                 void computeNodesRelativeLayout(gui::element::ui::render::UiRenderNode *node);
-                void computeNodesFinalLayout(gui::element::ui::render::UiRenderNode *node);
+                void computeNodesFinalLayout(gui::element::ui::render::UiRenderNode *node, SDL_Rect *rootClipRect = nullptr);
                 void computeElementsLayout();
                 void createRenderedTexture();
 

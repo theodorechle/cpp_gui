@@ -8,11 +8,11 @@ namespace gui {
     namespace element {
 
         class List : public UiElement {
-            void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const override;
-
         public:
             List(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                  const std::string &identifier = "");
+            void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
+                                            std::list<std::tuple<int, int>> childsSizes) const override;
         };
 
     } // namespace element

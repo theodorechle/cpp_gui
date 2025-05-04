@@ -3,13 +3,13 @@
 namespace gui {
     namespace element {
 
-        void ViewContainer::computeSelfLayout(int *width, int *height) const {
+        void ViewContainer::computeTotalLayout(int *width, int *height) const {
             if (viewManager == nullptr) return;
             // TODO: re-add
             // viewManager->computeDesiredElementsLayout(desiredWidth, desiredHeight);
         }
 
-        void ViewContainer::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
+        void ViewContainer::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds, std::list<std::tuple<int, int>> childsSizes) const {
             if (viewManager == nullptr) return;
             // TODO: re-add
             // viewManager->setClipRect(SDL_Rect{x, y, availableWidth, availableHeight});

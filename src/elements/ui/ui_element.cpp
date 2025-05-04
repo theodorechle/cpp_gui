@@ -256,21 +256,24 @@ namespace gui {
 
         SDL_Color UiElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
 
-        void UiElement::computeSelfLayout(int *width, int *height) const {
-            (*width) = 0;
-            (*height) = 0;
+        void UiElement::computeTotalLayout(int *width, int *height) const {
             bool widthFound = false;
             bool heightFound = false;
-            int elementWidth = this->width(&widthFound);
-            int elementHeight = this->height(&heightFound);
-
-            computeSelfInnerLayout(width, height);
+            int tempWidth = this->width(&widthFound);
+            int tempHeight = this->height(&heightFound);
 
             if (!widthFound) {
-                (*width) = elementWidth + paddingLeft() + paddingRight() + borderLeft() + borderRight();
+                (*width) += paddingLeft() + paddingRight() + borderLeft() + borderRight();
             }
+            else {
+                (*width) = tempWidth;
+            }
+
             if (!heightFound) {
-                (*height) = elementHeight + paddingTop() + paddingBottom() + borderTop() + borderBottom();
+                (*height) += paddingTop() + paddingBottom() + borderTop() + borderBottom();
+            }
+            else {
+                (*height) = tempHeight;
             }
 
             bool found = false;
@@ -283,9 +286,14 @@ namespace gui {
             if (found) (*height) = std::max(*height, size);
             size = maxHeight(&found);
             if (found) (*height) = std::min(*height, size);
+            std::cerr << "width=" << *width << ", height=" << *height << "\n";
         }
 
-        void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {}
+        void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
+                                                   std::list<std::tuple<int, int>> childsSizes) const {
+            (*selfWidth) = (*selfWidthWithoutChilds);
+            (*selfHeight) = (*selfHeightWithoutChilds);
+        }
 
         bool UiElement::setClipRect(const SDL_Rect *clipRect, std::string callerName) const {
             if (!SDL_SetRenderClipRect(renderer, clipRect)) {
@@ -295,13 +303,15 @@ namespace gui {
             return true;
         }
 
-        void UiElement::computeSelfInnerLayout(int *width, int *height) const {}
+        void UiElement::computeInnerLayout(int *width, int *height) const {}
 
         bool UiElement::render() const {
             if (renderer == nullptr) throw NoRendererException(); // TODO: exception or simple error log? (coherence with the entire program)
 
             SDL_Rect clipRect;
             SDL_GetRenderClipRect(renderer, &clipRect);
+
+            SDL_SetRenderDrawColor(renderer, (Uint8)255, (Uint8)0, (Uint8)0, (Uint8)255); // TODO: remove
 
             // borders
             renderBorders();

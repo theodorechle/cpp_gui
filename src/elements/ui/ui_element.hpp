@@ -15,15 +15,8 @@
 
 namespace gui {
     namespace element {
-        typedef struct {
-            int width;
-            int height;
-        } Size;
-
         class UiElement : public AbstractElement {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
-            Size fullSize = {0, 0};
-            Size scrollOffset = {0, 0};
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
@@ -171,20 +164,25 @@ namespace gui {
             virtual void initBeforeLayoutComputing() {}
 
             /**
-             * Compute the element layout and borders, margins, paddings.
-             * To compute the inner element layout, it calls computeSelfInnerLayout, which can be overriden to create your own layout
+             * Adds the borders, margins, paddings to the element layout (width and height).
              */
-            virtual void computeSelfLayout(int *width, int *height) const;
-            virtual void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const;
+            virtual void computeTotalLayout(int *width, int *height) const;
 
-            bool setClipRect(const SDL_Rect *clipRect, std::string callerName = "") const;
+            /**
+             * selWidth and selfHeight are the new sizes
+             * selfWidthWithoutChilds and selfHeightWithoutChilds are the previous sizes computed by computeSelfLayout
+             */
+            virtual void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
+                                                    std::list<std::tuple<int, int>> childsSizes) const;
 
-        private:
             /**
              * Should compute only the layout of the content of the element, not borders, margins, paddings.
              * To change the behavior of these, see the computeSelfLayout function
              */
-            virtual void computeSelfInnerLayout(int *width, int *height) const;
+            virtual void computeInnerLayout(int *width, int *height) const;
+
+        private:
+            bool setClipRect(const SDL_Rect *clipRect, std::string callerName = "") const;
 
         public:
             virtual void catchEvent(const SDL_Event &event) {}

@@ -12,7 +12,7 @@ namespace gui {
 
             void initBeforeLayoutComputing() override;
 
-            void computeSelfInnerLayout(int *width, int *height) const override;
+            void computeInnerLayout(int *width, int *height) const override;
             void getTextSize(int *width, int *height) const;
             void renderSelfAfterChilds() const override;
 

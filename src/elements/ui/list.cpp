@@ -2,7 +2,12 @@
 
 namespace gui {
     namespace element {
-        void List::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
+        List::List(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
+                   const std::string &identifier)
+            : UiElement{"list", elementsStyleManager, classes, identifier} {}
+
+        void List::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
+                                              std::list<std::tuple<int, int>> childsSizes) const {
             bool vertical = getBoolFromRule({"vertical"});
             std::string childsLayout = getNameStringFromRule("childs-size", {"biggest", "keep"}, "biggest");
             int gap;
@@ -16,11 +21,11 @@ namespace gui {
 
             if (vertical) {
                 (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
-                std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
+                std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0); // FIXME: accumulate result is not used
             }
             else {
                 (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
-                std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0);
+                std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0); // FIXME: accumulate result is not used
             }
 
             if (childsLayout == "biggest") {
@@ -47,9 +52,5 @@ namespace gui {
                 (*selfWidth) += gap * (childsSizes.size() - 1);
             }
         }
-
-        List::List(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
-                   const std::string &identifier)
-            : UiElement{"list", elementsStyleManager, classes, identifier} {}
     } // namespace element
 } // namespace gui

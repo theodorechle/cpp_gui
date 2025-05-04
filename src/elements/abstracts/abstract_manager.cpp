@@ -5,7 +5,6 @@ namespace gui {
         namespace manager {
             void AbstractManager::addChildToRootElement(gui::element::AbstractElement *childElement) {
                 elementsTree->addChild(childElement);
-
             }
 
             AbstractManager::~AbstractManager() { deleteElementsTree(); }
