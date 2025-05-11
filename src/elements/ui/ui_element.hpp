@@ -6,6 +6,7 @@
 #include "../../converters/number_converter.hpp"
 #include "../../converters/size_converter.hpp"
 #include "../abstracts/abstract_element.hpp"
+#include "utils.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -15,16 +16,13 @@
 
 namespace gui {
     namespace element {
+
         class UiElement : public AbstractElement {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
             bool _focus = false;
-
-            void setRect(const SDL_Rect &rect);
-            void setPos(int x, int y);
-            void setSize(int width, int height);
 
             void setParent(UiElement *parent) { AbstractElement::parent(parent); }
 
@@ -113,11 +111,6 @@ namespace gui {
             int getXPos() const { return elementRect.x; };
             int getYPos() const { return elementRect.y; };
 
-            void getRect(SDL_Rect *rect) const;
-            void getPos(int *x, int *y) const;
-            void getSize(int *width, int *height) const;
-            void getDesiredSize(int *width, int *height) const;
-
             int marginLeft(bool *found = nullptr) const;
             int marginRight(bool *found = nullptr) const;
             int marginTop(bool *found = nullptr) const;
@@ -153,6 +146,11 @@ namespace gui {
             virtual void initBeforeLayoutComputing() {}
 
             /**
+             * Must be tree independant (no use of parent or childs nor nexts)
+             */
+            virtual void restoreAfterLayoutComputing() {}
+
+            /**
              * Adds the borders, margins, paddings to the element layout (width and height).
              */
             virtual void computeTotalLayout(int *width, int *height) const;
@@ -175,7 +173,8 @@ namespace gui {
 
             void renderSelfBeforeChilds() const {};
             void renderSelfAfterChilds() const {};
-            virtual void renderChilds() const {};
+            virtual void renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                      std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {};
             void renderBackground() const;
             void renderBorders() const;
             void renderScrollBar(int currentSize, int desiredSize) const;
@@ -184,7 +183,11 @@ namespace gui {
         public:
             void renderSelfBeforeChildsWrapper() const override;
             void renderSelfAfterChildsWrapper() const override;
-            void renderChildsWrapper() const override;
+            void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                     std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
+            bool renderSingleChildWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                          std::function<const ElementData *(const AbstractElement *)> childInfosCallback, const UiElement *child,
+                                          gui::element::ui::Pos pos) const;
             void renderBackgroundWrapper() const;
             void renderBordersWrapper() const;
             void renderScrollBarWrapper(int currentSize, int desiredSize) const;
@@ -199,12 +202,13 @@ namespace gui {
              * - renderBorders
              * Also manages the clip rect for borders and content
              */
-            bool render() const;
+            bool render(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                        std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
 
             virtual void catchEvent(const SDL_Event &event) {}
 
             void focus(bool focused);
-            bool focus() { return _focus; }
+            bool focus() { return _focus; };
         };
 
         class NoRendererException : public std::logic_error {

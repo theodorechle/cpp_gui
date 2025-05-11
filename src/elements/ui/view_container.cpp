@@ -9,14 +9,16 @@ namespace gui {
             // viewManager->computeDesiredElementsLayout(desiredWidth, desiredHeight);
         }
 
-        void ViewContainer::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds, std::list<std::tuple<int, int>> childsSizes) const {
+        void ViewContainer::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
+                                                       std::list<std::tuple<int, int>> childsSizes) const {
             if (viewManager == nullptr) return;
             // TODO: re-add
             // viewManager->setClipRect(SDL_Rect{x, y, availableWidth, availableHeight});
             // viewManager->computeFinalElementsLayout();
         }
 
-        void ViewContainer::renderChildsWrapper() const {
+        void ViewContainer::renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                                std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
             if (viewManager == nullptr) return;
             std::cerr << "rendering\n";
             // TODO: re-add

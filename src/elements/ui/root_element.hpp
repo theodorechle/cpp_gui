@@ -14,7 +14,7 @@ namespace gui {
             void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
                                             std::list<std::tuple<int, int>> childsSizes) const override;
 
-            void renderChilds() const override;
+            void renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback, std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
         };
 
     } // namespace element

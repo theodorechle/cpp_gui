@@ -3,8 +3,8 @@
 namespace gui {
     namespace element {
         void Input::onFocusGet() {
-            SDL_Rect rect = SDL_Rect{0, 0, 0, 0};
-            getRect(&rect);
+            SDL_Rect rect;
+            SDL_GetRenderClipRect(getRenderer(), &rect);
             if (!SDL_StartTextInput(getWindow())) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Input::onFocus: GetCan't start text input: %s", SDL_GetError());
                 return;

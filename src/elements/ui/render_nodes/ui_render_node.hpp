@@ -1,31 +1,14 @@
 #ifndef UI_RENDER_NODE_HPP
 #define UI_RENDER_NODE_HPP
 
+#include "../../abstracts/abstract_element.hpp"
+#include "../../abstracts/abstract_utils.hpp"
 #include "../ui_element.hpp"
+#include "../utils.hpp"
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 
 namespace gui::element::ui::render {
-    typedef struct {
-        int width;
-        int height;
-    } Size;
-
-    typedef struct {
-        float width;
-        float height;
-    } FSize;
-
-    typedef struct {
-        int x;
-        int y;
-    } Pos;
-
-    typedef struct {
-        float x;
-        float y;
-    } FPos;
-
     class UiRenderNode {
         SDL_Renderer *renderer = nullptr;
         // tree structure
@@ -34,7 +17,7 @@ namespace gui::element::ui::render {
         UiRenderNode *_next = nullptr;
 
         // the UiElement corresponding to this node. Used for computing layouts.
-        const gui::element::UiElement *baseElement;
+        gui::element::UiElement *baseElement;
 
         // computed by computeSelfLayout
         Size defaultSelfSize = {0, 0};
@@ -55,9 +38,16 @@ namespace gui::element::ui::render {
             Pos scrollOffset = {0, 0};
         } usedLayout;
 
+        SDL_Texture *nodeTexture = nullptr;
+
+        SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
+
     public:
-        UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent = nullptr, const gui::element::UiElement *baseElement = nullptr);
+        UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent = nullptr, gui::element::UiElement *baseElement = nullptr);
         // tree
+        const UiRenderNode *constParent() const { return _parent; }
+        const UiRenderNode *constChild() const { return _child; }
+        const UiRenderNode *constNext() const { return _next; }
         UiRenderNode *parent() { return _parent; }
         UiRenderNode *child() { return _child; }
         UiRenderNode *next() { return _next; }
@@ -69,10 +59,16 @@ namespace gui::element::ui::render {
         void computeSelfAndChildsLayout();
         void computeRelativeLayout();
         void computeFinalLayout(SDL_Rect clipRect = SDL_Rect{0, 0, 0, 0});
-        SDL_Rect *elementRect();
-        SDL_Rect *elementClippedRect();
+        const SDL_Rect *elementRect() const;
+        const SDL_Rect *elementClippedRect() const;
 
+        void initBeforeLayoutComputing();
+        void restoreAfterLayoutComputing();
         void render(bool recursive = true);
+        bool renderElement(UiRenderData *data) const;
+        bool renderChildElement(const UiElement *element, UiRenderData *data) const;
+
+        const UiElementData *childData(const UiElement *child) const;
     };
 } // namespace renderNode
 

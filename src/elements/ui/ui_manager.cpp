@@ -48,13 +48,12 @@ namespace gui {
 
             void UIManager::computeNodeLayout(gui::element::ui::render::UiRenderNode *node) { node->computeSelfLayout(); }
 
-            void UIManager::initElementsBeforeLayoutComputing(gui::element::UiElement *element) {
-                element->initBeforeLayoutComputing();
-                UiElement *child = element->getChild();
-                while (child != nullptr) {
-                    initElementsBeforeLayoutComputing(child);
-                    child = child->getNext();
-                }
+            void UIManager::initElementsBeforeLayoutComputing(gui::element::ui::render::UiRenderNode *rootRenderNode) {
+                rootRenderNode->initBeforeLayoutComputing();
+            }
+
+            void UIManager::restoreAfterLayoutComputing(gui::element::ui::render::UiRenderNode *rootRenderNode) {
+                rootRenderNode->restoreAfterLayoutComputing();
             }
 
             void UIManager::prepareRenderNodes(UiElement *rootElement, gui::element::ui::render::UiRenderNode *rootRenderNode, bool isRoot) {
@@ -80,49 +79,41 @@ namespace gui {
                 gui::element::ui::render::UiRenderNode *currentNode = node;
                 while (currentNode != nullptr) {
                     currentNode->computeRelativeLayout();
-                    computeNodesRelativeLayout(currentNode->child());
                     currentNode = currentNode->next();
                 }
             }
 
             void UIManager::computeNodesFinalLayout(gui::element::ui::render::UiRenderNode *node, SDL_Rect *rootClipRect) {
-                gui::element::ui::render::UiRenderNode *currentNode = node;
-                if (currentNode != nullptr && rootClipRect != nullptr) {
-                    currentNode->computeFinalLayout(*rootClipRect);
-                    currentNode = currentNode->next();
-                }
-
-                while (currentNode != nullptr) {
-                    currentNode->computeFinalLayout();
-                    computeNodesFinalLayout(currentNode->child());
-                    currentNode = currentNode->next();
-                }
+                if (node == nullptr) return;
+                if (rootClipRect == nullptr) node->computeFinalLayout();
+                else node->computeFinalLayout(*rootClipRect);
             }
 
             void UIManager::computeElementsLayout() {
                 if (rootRenderNode == nullptr) return;
-                initElementsBeforeLayoutComputing(static_cast<UiElement *>(elementsTree));
+                initElementsBeforeLayoutComputing(rootRenderNode);
                 prepareRenderNodes(static_cast<UiElement *>(elementsTree), rootRenderNode, true);
                 computeNodesAndChildsLayout(rootRenderNode);
                 computeNodesRelativeLayout(rootRenderNode);
                 computeNodesFinalLayout(rootRenderNode, &clipRect);
+                restoreAfterLayoutComputing(rootRenderNode);
             }
 
             void UIManager::createRenderedTexture() {
                 if (!needRenderingUpdate) return;
                 needRenderingUpdate = false;
                 if (rootRenderNode == nullptr) return;
-                // SDL_SetRenderTarget(renderer, renderedTexture);
+                SDL_SetRenderTarget(renderer, renderedTexture);
                 rootRenderNode->render();
-                // SDL_SetRenderTarget(renderer, nullptr);
+                SDL_SetRenderTarget(renderer, nullptr);
             }
 
             void UIManager::renderElements(bool clear) const {
-                // std::cerr << "Rendering elements (renderedTexture is null: " << (renderedTexture == nullptr) << ")\n";
-                // if (renderedTexture != nullptr) {
-                    // std::cerr << "renderedTexture: w=" << renderedTexture->w << ", h=" << renderedTexture->h << "\n";
-                    // SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
-                // }
+                std::cerr << "Rendering elements (renderedTexture is null: " << (renderedTexture == nullptr) << ")\n";
+                if (renderedTexture != nullptr) {
+                    std::cerr << "renderedTexture: w=" << renderedTexture->w << ", h=" << renderedTexture->h << "\n";
+                    SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
+                }
                 SDL_RenderPresent(renderer);
                 // if (elementsTree == nullptr) return;
                 // Uint8 r, g, b, a;
@@ -172,7 +163,7 @@ namespace gui {
                 UiElement *currentHoveredElement = nullptr;
                 SDL_Rect currentElementRect;
                 while (currentElement != nullptr) {
-                    currentElement->getRect(&currentElementRect);
+                    // currentElement->getRect(&currentElementRect); // FIXME
                     currentElementRect.x += currentElement->marginLeft();
                     currentElementRect.y += currentElement->marginTop();
                     if (SDL_PointInRect(&mousePos, &currentElementRect)) {

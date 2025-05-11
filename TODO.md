@@ -16,3 +16,6 @@ clipping
 - rendering before child OVERRIDABLE
 - render childs
 - rendering after child OVERRIDABLE
+
+Simplify the use of the text engine
+Update namespaces

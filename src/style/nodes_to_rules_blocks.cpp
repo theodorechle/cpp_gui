@@ -260,7 +260,7 @@ namespace style {
                 if (!isNodeNull(ruleNameNode)) {
                     styleValue = convertStyleNodeToStyleValue(ruleNameNode);
                     if (styleValue != nullptr) {
-                        (*appliedStyleMap)[ruleName] = StyleRule{styleValue->copy(), true, 0, fileNumber, *ruleNumber};
+                        (*appliedStyleMap)[ruleName] = StyleRule(styleValue->copy(), true, 0, fileNumber, *ruleNumber);
                         (*ruleNumber)++;
                     }
                 }

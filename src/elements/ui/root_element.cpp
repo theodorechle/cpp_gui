@@ -2,7 +2,6 @@
 
 namespace gui {
     namespace element {
-
         RootElement::RootElement(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
                                  const std::string &identifier)
             : UiElement{"root", elementsStyleManager, classes, identifier} {}
@@ -21,12 +20,13 @@ namespace gui {
             (*selfHeight) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
         }
 
-        void RootElement::renderChilds() const {
+        void RootElement::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                       std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
             const UiElement *child = getConstChild();
             int childNb = 1;
             while (child != nullptr) {
                 std::cerr << "child (" << childNb << " of " << nbChilds() << ") of '" << name() << "': " << child->name() << "\n";
-                child->render();
+                renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, {0, 0});
                 child = child->getConstNext();
             }
         }
