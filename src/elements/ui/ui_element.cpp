@@ -474,6 +474,7 @@ namespace gui {
 
             const ui::UiElementData *childData = static_cast<const ui::UiElementData *>(childInfosCallback(child));
 
+            // TODO: cleanup
             SDL_Rect childRect = SDL_Rect{pos.x, pos.y, childData->elementSize.width, childData->elementSize.height};
             delete childData;
             SDL_Rect selfRect;

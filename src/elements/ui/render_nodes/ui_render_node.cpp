@@ -68,20 +68,21 @@ namespace gui::element::ui::render {
 
     const SDL_Rect *UiRenderNode::elementClippedRect() const { return &usedLayout.elementClippedRect; }
 
-    void UiRenderNode::computeFinalLayout(SDL_Rect clipRect) {
+    void UiRenderNode::computeFinalLayout(SDL_Rect clipRect, bool forceSize) {
         // overflows, ...
 
         usedLayout.elementRect.w = relativeSize.width;
         usedLayout.elementRect.h = relativeSize.height;
 
         // TODO: update this code
+        // FIXME: clipped rect should not be bigger than normal rect
         usedLayout.contentRect.w = relativeSize.width;
         usedLayout.contentRect.h = relativeSize.height;
 
         usedLayout.elementClippedRect = clipRect;
-        std::cerr << "computeFinalLayout (" << baseElement->name() << "): ";
-        std::cerr << "width=" << usedLayout.elementRect.w << ", height=" << usedLayout.elementRect.h << " --- clipped: ";
-        std::cerr << "width=" << usedLayout.elementClippedRect.w << ", height=" << usedLayout.elementClippedRect.h << "\n";
+        if (forceSize) {
+            usedLayout.elementRect = clipRect;
+        }
 
         UiRenderNode *childNode = child();
         SDL_Rect childClipRect;
@@ -118,59 +119,84 @@ namespace gui::element::ui::render {
     void UiRenderNode::render(bool recursive) {
         if (baseElement == nullptr) return;
 
-        UiRenderData data = UiRenderData(usedLayout.elementClippedRect);
+        UiRenderData data = UiRenderData(usedLayout.elementRect);
 
-        if (!renderElement(&data)) SDL_RenderClear(renderer);
+        renderElement(&data);
     }
 
-    bool UiRenderNode::renderElement(UiRenderData *data) const {
-        // restore clip rect, get the size from UiRenderNode, but find a way to give coordinates
+    void UiRenderNode::createTexture() {
+        nodeTexture =
+            SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, usedLayout.elementRect.w, usedLayout.elementRect.h);
+        if (nodeTexture == nullptr) {
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR,
+                         "UiRenderNode::createTexture (linked to UiElement '%s'): Can't create a texture for an ui_render_node: %s",
+                         baseElement->name().c_str(), SDL_GetError());
+        }
+
+        std::cerr << "elementRect: w=" << usedLayout.elementRect.w << ", h=" << usedLayout.elementRect.h << "\n";
+        std::cerr << "elementClippedRect: w=" << usedLayout.elementClippedRect.w << ", h=" << usedLayout.elementClippedRect.h << "\n";
+    }
+
+    void UiRenderNode::renderElement(UiRenderData *data) {
+        usedLayout.startCoords = Pos{data->elementRect.x, data->elementRect.y};
+        SDL_Texture *parentTexture = SDL_GetRenderTarget(renderer);
+        SDL_SetRenderTarget(renderer, nodeTexture);
+        SDL_SetRenderClipRect(renderer, &(usedLayout.elementRect)); // maybe remove it and do not use clip rect here
+
+        if (!baseElement->render(
+                [this](const AbstractElement *element, RenderData *elementData) {
+                    return this->renderChildElement(static_cast<const UiElement *>(element), static_cast<UiRenderData *>(elementData));
+                },
+                [this](const AbstractElement *element) { return this->childData(static_cast<const UiElement *>(element)); })) {
+            SDL_RenderClear(renderer);
+        }
+
+        SDL_SetRenderTarget(renderer, parentTexture);
+        renderOnParentSurface();
+    }
+
+    void UiRenderNode::renderOnParentSurface() const {
 
         SDL_Rect previousClipRect;
         if (!SDL_GetRenderClipRect(renderer, &previousClipRect)) {
             SDL_LogError(GUI_RENDERING, "UiRenderNode::renderElement: Can't get clip rect: '%s'", SDL_GetError());
-            return false;
+            return;
         }
 
         std::cerr
-            << "set clip rect <"
-            << usedLayout.elementClippedRect.x
-            << ","
-            << usedLayout.elementClippedRect.y
-            << ","
-            << usedLayout.elementClippedRect.w
-            << ","
-            << usedLayout.elementClippedRect.h
-            << "> for element '"
-            << baseElement->name()
-            << "'\n";
-        if (!SDL_SetRenderClipRect(renderer, &(usedLayout.elementClippedRect))) {
-            SDL_LogError(GUI_RENDERING, "UiRenderNode::renderElement: Can't set clip rect: '%s'", SDL_GetError());
-            return false;
-        }
+            << "previousClipRect: x="
+            << previousClipRect.x
+            << ", y="
+            << previousClipRect.y
+            << ", w="
+            << previousClipRect.w
+            << ", h="
+            << previousClipRect.h
+            << "\n";
+        std::cerr << SDL_RenderClipEnabled(renderer) << "\n";
 
-        bool rendered = baseElement->render(
-            [this](const AbstractElement *element, RenderData *data) {
-                return this->renderChildElement(static_cast<const UiElement *>(element), static_cast<UiRenderData *>(data));
-            },
-            [this](const AbstractElement *element) { return this->childData(static_cast<const UiElement *>(element)); });
+        SDL_SetRenderClipRect(renderer, nullptr);
+
+        SDL_FRect renderFRect;
+        SDL_RectToFRect(&(usedLayout.elementRect), &renderFRect);
+        renderFRect.x = usedLayout.startCoords.x;
+        renderFRect.y = usedLayout.startCoords.y;
+        std::cerr << "renderFRect: x=" << renderFRect.x << ", y=" << renderFRect.y << ", w=" << renderFRect.w << ", h=" << renderFRect.h << "\n";
+        SDL_RenderTexture(renderer, nodeTexture, nullptr, &renderFRect);
 
         if (!SDL_SetRenderClipRect(renderer, &previousClipRect)) {
             SDL_LogError(GUI_RENDERING, "UiRenderNode::renderElement: Can't restore clip rect: '%s'", SDL_GetError());
-            return false;
         }
-
-        return rendered;
     }
 
-    bool UiRenderNode::renderChildElement(const UiElement *element, UiRenderData *data) const {
-        const UiRenderNode *node = constChild();
+    bool UiRenderNode::renderChildElement(const UiElement *element, UiRenderData *data) {
+        UiRenderNode *node = child();
         while (node != nullptr) {
             if (node->baseElement == element) {
                 std::cerr << "UiRenderNode: rendering element '" << baseElement->name() << "'\n";
                 node->renderElement(data);
             }
-            node = node->constNext();
+            node = node->next();
         }
         return false;
     }
@@ -180,11 +206,10 @@ namespace gui::element::ui::render {
         while (node != nullptr) {
             if (node->baseElement == child) {
                 std::cerr << "UiRenderNode: getting data of child '" << baseElement->name() << "'\n";
-                return new UiElementData({node->usedLayout.elementClippedRect.w, node->usedLayout.elementClippedRect.h});
+                return new UiElementData({node->usedLayout.elementRect.w, node->usedLayout.elementRect.h});
             }
             node = node->constNext();
         }
         return nullptr;
     }
-
 } // namespace gui::element::ui::renderNode

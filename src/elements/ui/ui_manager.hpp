@@ -36,6 +36,7 @@ namespace gui {
                 void computeNodesRelativeLayout(gui::element::ui::render::UiRenderNode *node);
                 void computeNodesFinalLayout(gui::element::ui::render::UiRenderNode *node, SDL_Rect *rootClipRect = nullptr);
                 void computeElementsLayout();
+                void createNodesTextures(gui::element::ui::render::UiRenderNode *node);
                 void createRenderedTexture();
 
                 /**

@@ -86,7 +86,7 @@ namespace gui {
             void UIManager::computeNodesFinalLayout(gui::element::ui::render::UiRenderNode *node, SDL_Rect *rootClipRect) {
                 if (node == nullptr) return;
                 if (rootClipRect == nullptr) node->computeFinalLayout();
-                else node->computeFinalLayout(*rootClipRect);
+                else node->computeFinalLayout(*rootClipRect, true);
             }
 
             void UIManager::computeElementsLayout() {
@@ -99,10 +99,20 @@ namespace gui {
                 restoreAfterLayoutComputing(rootRenderNode);
             }
 
+            void UIManager::createNodesTextures(gui::element::ui::render::UiRenderNode *node) {
+                gui::element::ui::render::UiRenderNode *currentNode = node;
+                while (currentNode != nullptr) {
+                    currentNode->createTexture();
+                    createNodesTextures(currentNode->child());
+                    currentNode = currentNode->next();
+                }
+            }
+
             void UIManager::createRenderedTexture() {
                 if (!needRenderingUpdate) return;
                 needRenderingUpdate = false;
                 if (rootRenderNode == nullptr) return;
+                createNodesTextures(rootRenderNode);
                 SDL_SetRenderTarget(renderer, renderedTexture);
                 rootRenderNode->render();
                 SDL_SetRenderTarget(renderer, nullptr);

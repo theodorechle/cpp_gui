@@ -29,13 +29,14 @@ namespace gui::element::ui::render {
         Size relativeSize = {0, 0};
 
         // computed by computeFinalLayout
-        struct {
+        struct { // TODO: cleanup
             SDL_Rect elementRect =
                 SDL_Rect{0, 0, 0, 0}; // the rect containing the entire element corresponding to this node, including margin, padding and borders
             SDL_Rect elementClippedRect = SDL_Rect{0, 0, 0, 0};
             // contentRect is implementation detail and thus should not be usable outside this class
             SDL_Rect contentRect = SDL_Rect{0, 0, 0, 0}; // relative to the elementRect
             Pos scrollOffset = {0, 0};
+            Pos startCoords = {0, 0};
         } usedLayout;
 
         SDL_Texture *nodeTexture = nullptr;
@@ -58,15 +59,17 @@ namespace gui::element::ui::render {
         void computeSelfLayout();
         void computeSelfAndChildsLayout();
         void computeRelativeLayout();
-        void computeFinalLayout(SDL_Rect clipRect = SDL_Rect{0, 0, 0, 0});
+        void computeFinalLayout(SDL_Rect clipRect = SDL_Rect{0, 0, 0, 0}, bool forceSize=false);
         const SDL_Rect *elementRect() const;
         const SDL_Rect *elementClippedRect() const;
 
         void initBeforeLayoutComputing();
         void restoreAfterLayoutComputing();
         void render(bool recursive = true);
-        bool renderElement(UiRenderData *data) const;
-        bool renderChildElement(const UiElement *element, UiRenderData *data) const;
+        void createTexture();
+        void renderElement(UiRenderData *data);
+        void renderOnParentSurface() const;
+        bool renderChildElement(const UiElement *element, UiRenderData *data);
 
         const UiElementData *childData(const UiElement *child) const;
     };
