@@ -273,7 +273,7 @@ namespace gui {
 
         bool UiElement::setClipRect(const SDL_Rect *clipRect, std::string callerName) const {
             if (!SDL_SetRenderClipRect(renderer, clipRect)) {
-                SDL_LogError(GUI_RENDERING, "%s: can't set clip rect '%s'", callerName.c_str(), SDL_GetError());
+                SDL_LogError(ui::GUI_RENDERING, "%s: can't set clip rect '%s'", callerName.c_str(), SDL_GetError());
                 return false;
             }
             return true;
@@ -292,14 +292,14 @@ namespace gui {
             // borders
             renderBordersWrapper();
 
-            // background
-            renderBackgroundWrapper();
-
             SDL_Rect innerRect = {clipRect.x + paddingLeft() + borderLeft(), clipRect.y + paddingTop() + borderTop(),
                                   clipRect.w - paddingLeft() - paddingRight() - borderLeft() - borderRight(),
                                   clipRect.h - paddingTop() - paddingBottom() - borderTop() - borderBottom()};
 
             if (!setClipRect(&innerRect, "UiElement::render (inner rect)")) return false;
+
+            // background
+            renderBackgroundWrapper();
 
             renderSelfBeforeChildsWrapper();
 
@@ -374,8 +374,7 @@ namespace gui {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderBorders: Can't set draw color '%s'", SDL_GetError());
                 return;
             }
-            fRect = createFRect(clipRect.x + clipRect.w, clipRect.y + bTop, -bRight,
-                                clipRect.h - bTop - bBottom);
+            fRect = createFRect(clipRect.x + clipRect.w, clipRect.y + bTop, -bRight, clipRect.h - bTop - bBottom);
             SDL_RenderFillRect(renderer, &fRect);
 
             // top border
@@ -487,12 +486,7 @@ namespace gui {
         void UiElement::renderBackgroundWrapper() const {
             SDL_Rect clipRect;
             SDL_GetRenderClipRect(renderer, &clipRect);
-            SDL_Rect clipRectBackground; // no borders
-            clipRectBackground.x = clipRect.x + borderLeft();
-            clipRectBackground.y = clipRect.y + borderTop();
-            clipRectBackground.w = clipRect.w - borderLeft() - borderRight();
-            clipRectBackground.h = clipRect.h - borderTop() - borderBottom();
-            if (!setClipRect(&clipRectBackground, "UiElement::render (background)")) return;
+            if (!setClipRect(&clipRect, "UiElement::render (background)")) return;
             renderBackground();
         }
 

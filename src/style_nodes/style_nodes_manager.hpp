@@ -41,7 +41,7 @@ namespace gui {
                 void removeStyle(int fileNumber);
                 bool areElementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle, const style::StyleComponentDataList *componentsList);
 
-                // TODO: Are both methods neeeded?
+                // TODO: Are both methods needed?
                 void applyStyleToElement(gui::elementStyle::StyleNode *elementStyle, bool recursive = false);
                 void addElementStyle(gui::elementStyle::StyleNode *elementStyle);
             };

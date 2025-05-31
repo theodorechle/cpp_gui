@@ -14,11 +14,11 @@ namespace gui {
             }
 
             void UIManager::createRootElement() {
-                gui::element::UiElement *rootElement = new gui::element::RootElement();
+                UiElement *rootElement = new RootElement();
                 rootElement->setRenderer(renderer);
                 rootElement->setWindow(window);
                 elementsTree = rootElement;
-                rootRenderNode = new gui::element::ui::render::UiRenderNode(renderer, nullptr, rootElement);
+                rootRenderNode = new ui::render::UiRenderNode(renderer, nullptr, rootElement);
             }
 
             void UIManager::updateRenderingData() {
@@ -35,8 +35,8 @@ namespace gui {
                 }
             }
 
-            void UIManager::addChildToRootElement(gui::element::AbstractElement *childElement) {
-                static_cast<gui::element::UiElement *>(elementsTree)->addChild(static_cast<gui::element::UiElement *>(childElement));
+            void UIManager::addChildToRootElement(AbstractElement *childElement) {
+                static_cast<UiElement *>(elementsTree)->addChild(static_cast<UiElement *>(childElement));
             }
 
             void UIManager::resetEvents() {
@@ -46,44 +46,50 @@ namespace gui {
                 needUpdate();
             }
 
-            void UIManager::computeNodeLayout(gui::element::ui::render::UiRenderNode *node) { node->computeSelfLayout(); }
+            void UIManager::computeNodesLayout(ui::render::UiRenderNode *renderNode) {
+                renderNode->computeSelfLayout();
+                ui::render::UiRenderNode *child = renderNode->child();
+                while (child != nullptr) {
+                    computeNodesLayout(child);
+                    child = child->next();
+                }
+            }
 
-            void UIManager::initElementsBeforeLayoutComputing(gui::element::ui::render::UiRenderNode *rootRenderNode) {
+            void UIManager::initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode) {
                 rootRenderNode->initBeforeLayoutComputing();
             }
 
-            void UIManager::restoreAfterLayoutComputing(gui::element::ui::render::UiRenderNode *rootRenderNode) {
+            void UIManager::restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode) {
                 rootRenderNode->restoreAfterLayoutComputing();
             }
 
-            void UIManager::prepareRenderNodes(UiElement *rootElement, gui::element::ui::render::UiRenderNode *rootRenderNode, bool isRoot) {
+            void UIManager::prepareRenderNodes(UiElement *rootElement, ui::render::UiRenderNode *rootRenderNode, bool isRoot) {
                 UiElement *currentElement = rootElement;
-                gui::element::ui::render::UiRenderNode *currentRenderNode;
+                ui::render::UiRenderNode *currentRenderNode;
                 while (currentElement != nullptr) {
                     if (isRoot) {
                         currentRenderNode = rootRenderNode;
                     }
                     else {
-                        currentRenderNode = gui::element::ui::render::elementToRenderNodeConverter(renderer, rootRenderNode, currentElement);
+                        currentRenderNode = ui::render::elementToRenderNodeConverter(renderer, rootRenderNode, currentElement);
                         rootRenderNode->addChild(currentRenderNode);
                     }
-                    computeNodeLayout(currentRenderNode);
                     prepareRenderNodes(currentElement->getChild(), currentRenderNode);
                     currentElement = currentElement->getNext();
                 }
             }
 
-            void UIManager::computeNodesAndChildsLayout(gui::element::ui::render::UiRenderNode *node) { node->computeSelfAndChildsLayout(); }
+            void UIManager::computeNodesAndChildsLayout(ui::render::UiRenderNode *node) { node->computeSelfAndChildsLayout(); }
 
-            void UIManager::computeNodesRelativeLayout(gui::element::ui::render::UiRenderNode *node) {
-                gui::element::ui::render::UiRenderNode *currentNode = node;
+            void UIManager::computeNodesRelativeLayout(ui::render::UiRenderNode *node) {
+                ui::render::UiRenderNode *currentNode = node;
                 while (currentNode != nullptr) {
                     currentNode->computeRelativeLayout();
                     currentNode = currentNode->next();
                 }
             }
 
-            void UIManager::computeNodesFinalLayout(gui::element::ui::render::UiRenderNode *node, SDL_Rect *rootClipRect) {
+            void UIManager::computeNodesFinalLayout(ui::render::UiRenderNode *node, SDL_Rect *rootClipRect) {
                 if (node == nullptr) return;
                 if (rootClipRect == nullptr) node->computeFinalLayout();
                 else node->computeFinalLayout(*rootClipRect, true);
@@ -91,16 +97,17 @@ namespace gui {
 
             void UIManager::computeElementsLayout() {
                 if (rootRenderNode == nullptr) return;
-                initElementsBeforeLayoutComputing(rootRenderNode);
                 prepareRenderNodes(static_cast<UiElement *>(elementsTree), rootRenderNode, true);
+                initElementsBeforeLayoutComputing(rootRenderNode);
+                computeNodesLayout(rootRenderNode);
                 computeNodesAndChildsLayout(rootRenderNode);
                 computeNodesRelativeLayout(rootRenderNode);
                 computeNodesFinalLayout(rootRenderNode, &clipRect);
                 restoreAfterLayoutComputing(rootRenderNode);
             }
 
-            void UIManager::createNodesTextures(gui::element::ui::render::UiRenderNode *node) {
-                gui::element::ui::render::UiRenderNode *currentNode = node;
+            void UIManager::createNodesTextures(ui::render::UiRenderNode *node) {
+                ui::render::UiRenderNode *currentNode = node;
                 while (currentNode != nullptr) {
                     currentNode->createTexture();
                     createNodesTextures(currentNode->child());

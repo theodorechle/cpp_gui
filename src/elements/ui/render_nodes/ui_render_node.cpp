@@ -69,13 +69,11 @@ namespace gui::element::ui::render {
     const SDL_Rect *UiRenderNode::elementClippedRect() const { return &usedLayout.elementClippedRect; }
 
     void UiRenderNode::computeFinalLayout(SDL_Rect clipRect, bool forceSize) {
-        // overflows, ...
+        // TODO: overflows, ...
 
         usedLayout.elementRect.w = relativeSize.width;
         usedLayout.elementRect.h = relativeSize.height;
 
-        // TODO: update this code
-        // FIXME: clipped rect should not be bigger than normal rect
         usedLayout.contentRect.w = relativeSize.width;
         usedLayout.contentRect.h = relativeSize.height;
 
@@ -141,7 +139,7 @@ namespace gui::element::ui::render {
         usedLayout.startCoords = Pos{data->elementRect.x, data->elementRect.y};
         SDL_Texture *parentTexture = SDL_GetRenderTarget(renderer);
         SDL_SetRenderTarget(renderer, nodeTexture);
-        SDL_SetRenderClipRect(renderer, &(usedLayout.elementRect)); // maybe remove it and do not use clip rect here
+        SDL_SetRenderClipRect(renderer, &(usedLayout.elementRect)); // TODO: get rid of get clip rects and get texture size instead
 
         if (!baseElement->render(
                 [this](const AbstractElement *element, RenderData *elementData) {
@@ -205,7 +203,7 @@ namespace gui::element::ui::render {
         const UiRenderNode *node = constChild();
         while (node != nullptr) {
             if (node->baseElement == child) {
-                std::cerr << "UiRenderNode: getting data of child '" << baseElement->name() << "'\n";
+                std::cerr << "UiRenderNode: getting data of child '" << node->baseElement->name() << "'\n";
                 return new UiElementData({node->usedLayout.elementRect.w, node->usedLayout.elementRect.h});
             }
             node = node->constNext();

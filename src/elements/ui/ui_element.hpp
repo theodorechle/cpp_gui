@@ -28,6 +28,7 @@ namespace gui {
 
             /**
              * Return a modified version of wantedNewClipRect who fits in oldClipRect
+             * Does not alter any of the given rects
              */
             static SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
 
@@ -193,14 +194,14 @@ namespace gui {
             void renderScrollBarWrapper(int currentSize, int desiredSize) const;
             void renderScrollBarsWrapper() const;
 
-            /** // TODO: verify the doc
+            /**
              * Calls the rendering methods in this order:
-             * - renderBackground
-             * - renderSelfBeforeChilds
-             * - renderChilds
-             * - renderSelfAfterChilds
-             * - renderBorders
-             * Also manages the clip rect for borders and content
+             * - renderBordersWrapper
+             * - renderBackgroundWrapper
+             * - renderSelfBeforeChildsWrapper
+             * - renderChildsWrapper
+             * - renderScrollBarsWrapper
+             * Also manages the clip rect for content (everything except borders)
              */
             bool render(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                         std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
@@ -218,8 +219,5 @@ namespace gui {
 
     } // namespace element
 } // namespace gui
-
-// TODO: move it elsewhere
-enum GUI_LogCategory { GUI_RENDERING = SDL_LOG_CATEGORY_CUSTOM };
 
 #endif // UI_ELEMENT_HPP

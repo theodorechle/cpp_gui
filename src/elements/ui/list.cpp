@@ -52,5 +52,16 @@ namespace gui {
                 (*selfWidth) += gap * (childsSizes.size() - 1);
             }
         }
+
+        void List::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
+            const UiElement *child = getConstChild();
+            int childNb = 1;
+            while (child != nullptr) {
+                std::cerr << "child (" << childNb << " of " << nbChilds() << ") of '" << name() << "': " << child->name() << "\n";
+                renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, {0, 0});
+                child = child->getConstNext();
+            }
+        }
     } // namespace element
 } // namespace gui

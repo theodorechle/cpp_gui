@@ -1,16 +1,16 @@
 #include "app_utils/app_state.hpp"
+#include "elements/abstracts/abstract_manager.hpp"
 #include "elements/ui/button.hpp"
 #include "elements/ui/container.hpp"
 #include "elements/ui/input.hpp"
 #include "elements/ui/label.hpp"
 #include "elements/ui/list.hpp"
-#include "elements/abstracts/abstract_manager.hpp"
-#include "elements/ui/ui_manager.hpp"
 #include "elements/ui/ui_element.hpp"
+#include "elements/ui/ui_manager.hpp"
 #include "elements/ui/view_container.hpp"
+#include "style/style_deserializer.hpp"
 #include "style_nodes/style_node.hpp"
 #include "style_nodes/style_nodes_manager.hpp"
-#include "style/style_deserializer.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include <SDL3/SDL.h>
@@ -61,10 +61,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     gui::element::UiElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
     manager->setSubRootElement(parentContainer);
 
-    // std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
+    std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
 
-    // parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager,
-    //                                                   &labelClasses, "test-label", textEngine));
+    parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager,
+                                                      &labelClasses, "test-label", textEngine));
     // parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
     // gui::element::UiElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
     // // FIXME: button click zone is bigger than displayed

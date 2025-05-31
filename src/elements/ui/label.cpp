@@ -29,16 +29,19 @@ namespace gui {
         void Label::computeInnerLayout(int *width, int *height) const { getTextSize(width, height); }
 
         void Label::getTextSize(int *width, int *height) const {
-            if (ttfFont) {
-                std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "no-wrap"}, "wrapped", true);
-                if (wrapping == "wrapped") {
-                    int wrapWidth = this->width();
-                    TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), wrapWidth, width, height);
-                    return;
-                }
+            if (!ttfFont) {
+                (*width) = 0;
+                (*height) = 0;
+                return;
             }
-            (*width) = 0;
-            (*height) = 0;
+            std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "no-wrap"}, "wrapped", true);
+            if (wrapping == "wrapped") {
+                int wrapWidth = this->width();
+                TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), wrapWidth, width, height);
+            }
+            else {
+                TTF_GetStringSize(ttfFont, text.c_str(), text.size(), width, height);
+            }
         }
 
         void Label::renderSelfAfterChildsWrapper() const {

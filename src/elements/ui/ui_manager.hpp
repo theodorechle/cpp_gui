@@ -28,7 +28,7 @@ namespace gui {
 
                 void createRootElement() override;
 
-                void computeNodeLayout(gui::element::ui::render::UiRenderNode *node);
+                void computeNodesLayout(ui::render::UiRenderNode *renderNode);
                 void initElementsBeforeLayoutComputing(gui::element::ui::render::UiRenderNode *rootRenderNode);
                 void restoreAfterLayoutComputing(gui::element::ui::render::UiRenderNode *rootRenderNode);
                 void prepareRenderNodes(UiElement *rootElement, gui::element::ui::render::UiRenderNode *rootRenderNode, bool isRoot = false);
