@@ -21,25 +21,25 @@ namespace gui {
 
             if (vertical) {
                 (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
-                std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0); // FIXME: accumulate result is not used
             }
             else {
                 (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
-                std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0); // FIXME: accumulate result is not used
             }
 
             if (childsLayout == "biggest") {
                 if (vertical) {
-                    (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
+                    (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend()) * nbChilds();
                 }
                 else {
-                    (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
+                    (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend()) * nbChilds();
                 }
             }
             else if (childsLayout == "keep") {
-                for (const std::tuple<int, int> &childSize : childsSizes) {
-                    if (vertical) (*selfHeight) += std::get<1>(childSize);
-                    else (*selfWidth) += std::get<0>(childSize);
+                if (vertical) {
+                    (*selfHeight) = std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0);
+                }
+                else {
+                    (*selfWidth) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
                 }
             }
 
@@ -60,6 +60,7 @@ namespace gui {
             while (child != nullptr) {
                 std::cerr << "child (" << childNb << " of " << nbChilds() << ") of '" << name() << "': " << child->name() << "\n";
                 renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, {0, 0});
+                childNb++;
                 child = child->getConstNext();
             }
         }

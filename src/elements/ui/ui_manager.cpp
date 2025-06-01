@@ -43,7 +43,7 @@ namespace gui {
                 clickedElement = nullptr;
                 hoveredElement = nullptr;
                 focusedElement = nullptr;
-                needUpdate();
+                needUpdate(true);
             }
 
             void UIManager::computeNodesLayout(ui::render::UiRenderNode *renderNode) {

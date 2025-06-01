@@ -102,7 +102,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *state = static_cast<AppState *>(appstate);
     gui::element::manager::AbstractManager *manager = state->getManager();
-    manager->render();
+    if (manager->needUpdate()) manager->render();
     return SDL_APP_CONTINUE;
 }
 

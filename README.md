@@ -62,6 +62,7 @@ The gui is designed so you can implements easily your own elements
     - horizontal-alignment: start|centered|end
     - vertical-alignment: start|centered|end
     - // TODO antialias: bool
+    - text-wrap: wrapped|line-break
 - Input // in progress
     - // TODO caret-color: string|tuple[int,int,int]
     - // TODO placeholder-color: string|tuple[int,int,int]

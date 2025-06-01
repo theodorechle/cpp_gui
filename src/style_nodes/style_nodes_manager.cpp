@@ -35,12 +35,12 @@ namespace gui {
             void StyleNodesManager::applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle,
                                                                 gui::elementStyle::StyleNode *elementStyle, bool recursive) {
                 if (elementStyle == nullptr) return;
-                std::cerr << "Applying style to element:\n";
-                std::cerr << "selectors: ";
-                for (style::StyleComponentData selector : *(elementStyle->getSelectors())) {
-                    std::cerr << selector.first << ", ";
-                }
-                std::cerr << "\n";
+                // std::cerr << "Applying style to element:\n";
+                // std::cerr << "selectors: ";
+                // for (style::StyleComponentData selector : *(elementStyle->getSelectors())) {
+                //     std::cerr << selector.first << ", ";
+                // }
+                // std::cerr << "\n";
                 gui::elementStyle::StyleNode *actualElementStyle = elementStyle;
                 const style::StyleValuesMap *styleMap;
                 AppliedStyleMap elementStyleMap;
@@ -68,11 +68,11 @@ namespace gui {
                             actualElementStyle->addRuleAffectedByModifier(styleRule.second.fileNumber, styleRule.second.ruleNumber, modifier);
                         }
                     }
-                    std::cerr << "applied style: ";
-                    for (std::pair<std::string, StyleRules> appliedStyle : elementStyleMap) {
-                        std::cerr << appliedStyle.first << ", ";
-                    }
-                    std::cerr << "\n";
+                    // std::cerr << "applied style: ";
+                    // for (std::pair<std::string, StyleRules> appliedStyle : elementStyleMap) {
+                    //     std::cerr << appliedStyle.first << ", ";
+                    // }
+                    // std::cerr << "\n";
                     actualElementStyle->addStyle(elementStyleMap);
                 }
 

@@ -27,6 +27,7 @@ namespace gui {
             while (child != nullptr) {
                 std::cerr << "child (" << childNb << " of " << nbChilds() << ") of '" << name() << "': " << child->name() << "\n";
                 renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, {0, 0});
+                childNb++;
                 child = child->getConstNext();
             }
         }

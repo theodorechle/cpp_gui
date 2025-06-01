@@ -162,7 +162,9 @@ namespace gui::element::ui::render {
         }
 
         std::cerr
-            << "previousClipRect: x="
+            << "previousClipRect ("
+            << baseElement->name()
+            << "): x="
             << previousClipRect.x
             << ", y="
             << previousClipRect.y
@@ -179,7 +181,18 @@ namespace gui::element::ui::render {
         SDL_RectToFRect(&(usedLayout.elementRect), &renderFRect);
         renderFRect.x = usedLayout.startCoords.x;
         renderFRect.y = usedLayout.startCoords.y;
-        std::cerr << "renderFRect: x=" << renderFRect.x << ", y=" << renderFRect.y << ", w=" << renderFRect.w << ", h=" << renderFRect.h << "\n";
+        std::cerr
+            << "renderFRect ("
+            << baseElement->name()
+            << "): x="
+            << renderFRect.x
+            << ", y="
+            << renderFRect.y
+            << ", w="
+            << renderFRect.w
+            << ", h="
+            << renderFRect.h
+            << "\n";
         SDL_RenderTexture(renderer, nodeTexture, nullptr, &renderFRect);
 
         if (!SDL_SetRenderClipRect(renderer, &previousClipRect)) {

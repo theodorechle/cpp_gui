@@ -29,19 +29,22 @@ namespace gui {
         void Label::computeInnerLayout(int *width, int *height) const { getTextSize(width, height); }
 
         void Label::getTextSize(int *width, int *height) const {
-            if (!ttfFont) {
-                (*width) = 0;
-                (*height) = 0;
-                return;
+            if (ttfFont) {
+                std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "line-break"}, "wrapped", true);
+                if (wrapping == "wrapped") {
+                    int wrapWidth = this->width();
+                    if (wrapWidth != 0) {
+                        TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), wrapWidth, width, height);
+                        return;
+                    }
+                }
+                else if (wrapping == "line-break") {
+                    TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), 0, width, height);
+                    return;
+                }
             }
-            std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "no-wrap"}, "wrapped", true);
-            if (wrapping == "wrapped") {
-                int wrapWidth = this->width();
-                TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), wrapWidth, width, height);
-            }
-            else {
-                TTF_GetStringSize(ttfFont, text.c_str(), text.size(), width, height);
-            }
+            (*width) = 0;
+            (*height) = 0;
         }
 
         void Label::renderSelfAfterChildsWrapper() const {
@@ -55,10 +58,15 @@ namespace gui {
 
             if (ttfText == nullptr) return;
 
-            std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "no-wrap"}, "wrapped", true);
+            std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "line-break"}, "wrapped", true);
             if (wrapping == "wrapped") {
                 int wrapWidth = rect.w;
                 if (!TTF_SetTextWrapWidth(ttfText, wrapWidth)) {
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Can't set text wrap width: %s", SDL_GetError());
+                }
+            }
+            else if (wrapping == "line-break") {
+                if (!TTF_SetTextWrapWidth(ttfText, 0)) {
                     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Can't set text wrap width: %s", SDL_GetError());
                 }
             }

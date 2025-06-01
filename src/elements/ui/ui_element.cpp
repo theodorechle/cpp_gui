@@ -96,7 +96,7 @@ namespace gui {
             style::StyleValue *rule = nullptr;
             SDL_Color color = SDL_Color();
             elementStyle->getRule(ruleNames, &rule, canInherit);
-            std::cerr << "rule '" << ruleNames.front() << "' is null? : " << (rule == nullptr) << "\n";
+            // std::cerr << "rule '" << ruleNames.front() << "' is null? : " << (rule == nullptr) << "\n";
             if (rule == nullptr) {
                 return defaultColor;
             }
@@ -447,18 +447,7 @@ namespace gui {
             // renderScrollBar();
         }
 
-        void UiElement::renderSelfBeforeChildsWrapper() const {
-            SDL_Rect clipRect;
-            SDL_GetRenderClipRect(renderer, &clipRect);
-
-            SDL_Rect clipRectContent; // no borders, no paddings
-            clipRectContent.x = clipRect.x + borderLeft() + paddingLeft();
-            clipRectContent.y = clipRect.y + borderTop() + paddingTop();
-            clipRectContent.w = clipRect.w - borderLeft() - borderRight() - paddingLeft() - paddingRight();
-            clipRectContent.h = clipRect.h - borderTop() - borderBottom() - paddingTop() - paddingBottom();
-            if (!setClipRect(&clipRectContent, "UiElement::render (content)")) return;
-            renderSelfBeforeChilds();
-        }
+        void UiElement::renderSelfBeforeChildsWrapper() const { renderSelfBeforeChilds(); }
 
         void UiElement::renderSelfAfterChildsWrapper() const { renderSelfAfterChilds(); }
 
@@ -483,12 +472,7 @@ namespace gui {
             return childRendered;
         }
 
-        void UiElement::renderBackgroundWrapper() const {
-            SDL_Rect clipRect;
-            SDL_GetRenderClipRect(renderer, &clipRect);
-            if (!setClipRect(&clipRect, "UiElement::render (background)")) return;
-            renderBackground();
-        }
+        void UiElement::renderBackgroundWrapper() const { renderBackground(); }
 
         void UiElement::renderBordersWrapper() const { renderBorders(); }
 
