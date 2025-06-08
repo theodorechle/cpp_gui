@@ -9,7 +9,6 @@ namespace gui {
         void List::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
                                               std::list<std::tuple<int, int>> childsSizes) const {
             bool vertical = getBoolFromRule({"vertical"});
-            std::string childsLayout = getNameStringFromRule("childs-size", {"biggest", "keep"}, "biggest");
             int gap;
             std::list<int> childsWidths;
             std::list<int> childsHeights;
@@ -21,33 +20,13 @@ namespace gui {
 
             if (vertical) {
                 (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
-            }
-            else {
-                (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
-            }
-
-            if (childsLayout == "biggest") {
-                if (vertical) {
-                    (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend()) * nbChilds();
-                }
-                else {
-                    (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend()) * nbChilds();
-                }
-            }
-            else if (childsLayout == "keep") {
-                if (vertical) {
-                    (*selfHeight) = std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0);
-                }
-                else {
-                    (*selfWidth) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
-                }
-            }
-
-            if (vertical) {
+                (*selfHeight) = std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0);
                 gap = computeSize({"gap"}, 0, false, (getConstParent() == nullptr) ? 0 : getConstParent()->getHeight()) * (nbChilds() - 1);
                 (*selfHeight) += gap * (childsSizes.size() - 1);
             }
             else {
+                (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
+                (*selfWidth) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
                 gap = computeSize({"gap"}, 0, false, (getConstParent() == nullptr) ? 0 : getConstParent()->getWidth()) * (nbChilds() - 1);
                 (*selfWidth) += gap * (childsSizes.size() - 1);
             }
@@ -55,12 +34,26 @@ namespace gui {
 
         void List::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                 std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
+            bool vertical = getBoolFromRule({"vertical"});
+            int gap;
+            if (vertical) {
+                gap = computeSize({"gap"}, 0, false, (getConstParent() == nullptr) ? 0 : getConstParent()->getHeight()) * (nbChilds() - 1);
+            }
+            else {
+                gap = computeSize({"gap"}, 0, false, (getConstParent() == nullptr) ? 0 : getConstParent()->getWidth()) * (nbChilds() - 1);
+            }
+            const ui::UiElementData *childData;
+            ui::Pos childCoords = {0, 0};
             const UiElement *child = getConstChild();
-            int childNb = 1;
             while (child != nullptr) {
-                std::cerr << "child (" << childNb << " of " << nbChilds() << ") of '" << name() << "': " << child->name() << "\n";
-                renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, {0, 0});
-                childNb++;
+                renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, childCoords);
+                childData = static_cast<const ui::UiElementData *>(childInfosCallback(child));
+                if (vertical) {
+                    childCoords.y += childData->elementSize.height + gap;
+                }
+                else {
+                    childCoords.x += childData->elementSize.width + gap;
+                }
                 child = child->getConstNext();
             }
         }

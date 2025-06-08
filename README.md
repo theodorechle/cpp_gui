@@ -71,7 +71,6 @@ The gui is designed so you can implements easily your own elements
     - // TODO cursor-color: string|tuple[int,int,int]
 - List
     - vertical: bool
-    - childs-size: biggest|keep
     - gap: int
 - Container
 - Button

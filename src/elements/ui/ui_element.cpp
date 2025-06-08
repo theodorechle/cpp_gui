@@ -464,6 +464,8 @@ namespace gui {
 
             // TODO: cleanup
             SDL_Rect childRect = SDL_Rect{pos.x, pos.y, childData->elementSize.width, childData->elementSize.height};
+            childRect.x += paddingLeft() + borderLeft();
+            childRect.y += paddingTop() + borderTop();
             delete childData;
             SDL_Rect selfRect;
             SDL_GetRenderClipRect(renderer, &selfRect);
