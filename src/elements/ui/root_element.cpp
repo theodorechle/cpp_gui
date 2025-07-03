@@ -17,7 +17,7 @@ namespace gui {
             }
 
             (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
-            (*selfHeight) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
+            (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
         }
 
         void RootElement::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
@@ -25,7 +25,6 @@ namespace gui {
             const UiElement *child = getConstChild();
             int childNb = 1;
             while (child != nullptr) {
-                std::cerr << "child (" << childNb << " of " << nbChilds() << ") of '" << name() << "': " << child->name() << "\n";
                 renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, {0, 0});
                 childNb++;
                 child = child->getConstNext();

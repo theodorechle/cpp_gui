@@ -55,6 +55,10 @@ The gui is designed so you can implements easily your own elements
     - overflow-x: hidden|scroll
     - overflow-y: hidden|scroll
     - scroll-bar: scroll|always
+    - // FIXME margin-left: int
+    - // FIXME margin-right: int
+    - // FIXME margin-top: int
+    - // FIXME margin-down: int
 - Label
     - text-color: string|tuple[int,int,int]
     - font: string

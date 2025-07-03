@@ -16,9 +16,6 @@ namespace gui::element::ui::render {
         UiRenderNode *_child = nullptr;
         UiRenderNode *_next = nullptr;
 
-        // the UiElement corresponding to this node. Used for computing layouts.
-        gui::element::UiElement *baseElement;
-
         // computed by computeSelfLayout
         Size defaultSelfSize = {0, 0};
 
@@ -44,7 +41,11 @@ namespace gui::element::ui::render {
         SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
 
     public:
+        // the UiElement corresponding to this node. Used for computing layouts.
+        gui::element::UiElement *baseElement; // should be private, but needed by the ui manager
+
         UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent = nullptr, gui::element::UiElement *baseElement = nullptr);
+        ~UiRenderNode();
         // tree
         const UiRenderNode *constParent() const { return _parent; }
         const UiRenderNode *constChild() const { return _child; }
@@ -52,6 +53,7 @@ namespace gui::element::ui::render {
         UiRenderNode *parent() { return _parent; }
         UiRenderNode *child() { return _child; }
         UiRenderNode *next() { return _next; }
+        void removeChilds();
         void addChild(UiRenderNode *newChild);
         void next(UiRenderNode *nextNode) { _next = nextNode; }
         void parent(UiRenderNode *parentNode) { _parent = parentNode; }
@@ -59,9 +61,11 @@ namespace gui::element::ui::render {
         void computeSelfLayout();
         void computeSelfAndChildsLayout();
         void computeRelativeLayout();
-        void computeFinalLayout(SDL_Rect clipRect = SDL_Rect{0, 0, 0, 0}, bool forceSize=false);
+        void computeFinalLayout(SDL_Rect *clipRect = nullptr, bool forceSize = false);
         const SDL_Rect *elementRect() const;
         const SDL_Rect *elementClippedRect() const;
+
+        const Pos *startCoords() const;
 
         void initBeforeLayoutComputing();
         void restoreAfterLayoutComputing();

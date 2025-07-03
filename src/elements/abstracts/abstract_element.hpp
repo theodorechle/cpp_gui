@@ -15,7 +15,7 @@ namespace gui::element {
         AbstractElement *_next = nullptr;
         gui::elementStyle::manager::StyleNodesManager *elementsStyleManager;
         int _nbChilds = 0;
-        bool _updated = false;
+        bool _updated = false; // TODO: used?
 
     protected:
         gui::elementStyle::StyleNode *elementStyle = nullptr;

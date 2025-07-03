@@ -12,7 +12,7 @@
     width: 150px;
     border: 1px;
     border-color: #00ff00;
-    //text-wrap: line-break;
+    text-wrap: wrapped;
 }
 /*
 root {

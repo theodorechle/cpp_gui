@@ -22,6 +22,7 @@ void displayHelloWorld() { std::cout << "hello world!\n"; }
 void displayAlsoHelloWorld() { std::cout << "also hello world!\n"; }
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
+    SDL_SetLogPriorities(SDL_LOG_PRIORITY_DEBUG);
     int windowLength = 500;
     int windowHeight = 500;
     SDL_Window *sdl_window = nullptr;
@@ -65,8 +66,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager,
                                                       &labelClasses, "test-label", textEngine));
-    parentContainer->addChild(new gui::element::Label("an other text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager,
-                                                      &labelClasses, "test-label", textEngine));
+    parentContainer->addChild(new gui::element::Label("an other text rendered (a big big big very really big text)\non multiple lines",
+                                                      elementsStyleManager, &labelClasses, "test-label", textEngine));
     // parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
     // gui::element::UiElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
     // // FIXME: button click zone is bigger than displayed

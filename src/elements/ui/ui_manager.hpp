@@ -39,11 +39,6 @@ namespace gui {
                 void createNodesTextures(gui::element::ui::render::UiRenderNode *node);
                 void createRenderedTexture();
 
-                /**
-                 * Not perfect, but should be called when elements are destroyed to prevent trying to call them (events)
-                 */
-                void resetEvents();
-
                 void renderElements(bool clear = true) const override;
                 void update() override;
 
@@ -67,6 +62,11 @@ namespace gui {
                 void processEvent(const SDL_Event &event);
 
                 void processMouseEvents();
+
+                /**
+                 * Not perfect, but should be called when elements are destroyed to prevent trying to call them (events)
+                 */
+                void resetEvents();
             };
 
         } // namespace manager

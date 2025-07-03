@@ -39,7 +39,7 @@ clicked
 </br>
 hovered
 
-Custom modifiers can be written
+Custom modifiers are not yet available
 
 ### Identifiers (single element)
 An identifier (id) can be used to apply to a specific element

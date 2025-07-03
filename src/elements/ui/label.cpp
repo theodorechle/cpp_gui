@@ -30,7 +30,7 @@ namespace gui {
 
         void Label::getTextSize(int *width, int *height) const {
             if (ttfFont) {
-                std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "line-break"}, "wrapped", true);
+                std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "line-break"}, "line-break", true);
                 if (wrapping == "wrapped") {
                     int wrapWidth = this->width();
                     if (wrapWidth != 0) {
@@ -47,9 +47,13 @@ namespace gui {
             (*height) = 0;
         }
 
-        void Label::renderSelfAfterChildsWrapper() const {
+        void Label::renderSelfAfterChilds() const {
             SDL_Rect rect;
             SDL_Color color;
+            if ((int)(backgroundColor().r) == 0 && (int)(backgroundColor().g) == 0 && (int)(backgroundColor().b) == 255) {
+                std::cerr << "label with text:\n";
+                std::cerr << "~~ " << text << " ~~\n";                
+            }
             SDL_GetRenderClipRect(getRenderer(), &rect);
             if (getTextEngine() == nullptr) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Text engine is not defined.");
@@ -58,7 +62,7 @@ namespace gui {
 
             if (ttfText == nullptr) return;
 
-            std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "line-break"}, "wrapped", true);
+            std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "line-break"}, "line-break", true);
             if (wrapping == "wrapped") {
                 int wrapWidth = rect.w;
                 if (!TTF_SetTextWrapWidth(ttfText, wrapWidth)) {

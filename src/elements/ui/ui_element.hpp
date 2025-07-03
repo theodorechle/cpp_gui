@@ -18,7 +18,7 @@ namespace gui {
     namespace element {
 
         class UiElement : public AbstractElement {
-            SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
+            SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0}; // TODO: used?
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
@@ -172,10 +172,10 @@ namespace gui {
         private:
             bool setClipRect(const SDL_Rect *clipRect, std::string callerName = "") const;
 
-            void renderSelfBeforeChilds() const {};
-            void renderSelfAfterChilds() const {};
+            virtual void renderSelfBeforeChilds() const;
+            virtual void renderSelfAfterChilds() const;
             virtual void renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
-                                      std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {};
+                                      std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const;
             void renderBackground() const;
             void renderBorders() const;
             void renderScrollBar(int currentSize, int desiredSize) const;

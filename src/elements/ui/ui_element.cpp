@@ -262,7 +262,7 @@ namespace gui {
             if (found) (*height) = std::max(*height, size);
             size = maxHeight(&found);
             if (found) (*height) = std::min(*height, size);
-            std::cerr << "width=" << *width << ", height=" << *height << "\n";
+            // std::cerr << "width=" << *width << ", height=" << *height << "\n";
         }
 
         void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
@@ -279,12 +279,25 @@ namespace gui {
             return true;
         }
 
+        void UiElement::renderSelfBeforeChilds() const {
+            // SDL_LogDebug(ui::GUI_RENDERING, "%s: DEFAULT renderSelfBeforeChilds method", name().c_str());
+        }
+
+        void UiElement::renderSelfAfterChilds() const {
+            // SDL_LogDebug(ui::GUI_RENDERING, "%s: DEFAULT renderSelfAfterChilds method", name().c_str());
+        }
+
+        void UiElement::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                     std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
+            // SDL_LogDebug(ui::GUI_RENDERING, "%s: DEFAULT renderChilds method", name().c_str());
+        }
+
         void UiElement::computeInnerLayout(int *width, int *height) const {}
 
         bool UiElement::render(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
             if (renderer == nullptr) throw NoRendererException(); // TODO: exception or simple error log? (coherence with the entire program)
-            std::cerr << "UiElement: rendering element '" << name() << "'\n";
+            // std::cerr << "UiElement: rendering element '" << name() << "'\n";
 
             SDL_Rect clipRect;
             SDL_GetRenderClipRect(renderer, &clipRect);
@@ -413,18 +426,18 @@ namespace gui {
             }
 
             SDL_Color color = backgroundColor();
-            std::cerr
-                << "color of element '"
-                << name()
-                << "': "
-                << (int)color.r
-                << ", "
-                << (int)color.g
-                << ", "
-                << (int)color.b
-                << ", "
-                << (int)color.a
-                << "\n";
+            // std::cerr
+            //     << "color of element '"
+            //     << name()
+            //     << "': "
+            //     << (int)color.r
+            //     << ", "
+            //     << (int)color.g
+            //     << ", "
+            //     << (int)color.b
+            //     << ", "
+            //     << (int)color.a
+            //     << "\n";
             SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             SDL_GetRenderClipRect(renderer, &rect);
 

@@ -4,6 +4,14 @@ namespace gui::element::ui::render {
     UiRenderNode::UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent, gui::element::UiElement *baseElement)
         : renderer{renderer}, _parent{parent}, baseElement{baseElement} {}
 
+    UiRenderNode::~UiRenderNode() {
+        SDL_DestroyTexture(nodeTexture);
+        delete _child;
+        delete _next;
+    }
+
+    void UiRenderNode::removeChilds() { _child = nullptr; }
+
     void UiRenderNode::addChild(UiRenderNode *newChild) {
         if (newChild == nullptr) return;
         UiRenderNode *nextChild = child();
@@ -25,7 +33,7 @@ namespace gui::element::ui::render {
 
     void UiRenderNode::computeSelfLayout() {
         if (baseElement == nullptr) return;
-        std::cerr << "computeSelfLayout (" << baseElement->name() << "): ";
+        // std::cerr << "computeSelfLayout (" << baseElement->name() << "): ";
         baseElement->computeInnerLayout(&(defaultSelfSize.width), &(defaultSelfSize.height));
         baseElement->computeTotalLayout(&(defaultSelfSize.width), &(defaultSelfSize.height));
     }
@@ -40,7 +48,7 @@ namespace gui::element::ui::render {
             child = child->_next;
         }
 
-        std::cerr << "computeSelfAndChildsLayout (" << baseElement->name() << "): ";
+        // std::cerr << "computeSelfAndChildsLayout (" << baseElement->name() << "): ";
         baseElement->computeSelfAndChildsLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height), &(defaultSelfSize.width),
                                                 &(defaultSelfSize.height), childsSizes);
         baseElement->computeTotalLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height));
@@ -58,7 +66,7 @@ namespace gui::element::ui::render {
             child = child->_next;
         }
 
-        std::cerr << "computeRelativeLayout (" << baseElement->name() << "): ";
+        // std::cerr << "computeRelativeLayout (" << baseElement->name() << "): ";
         baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), &(defaultSizeWithChilds.width),
                                                 &(defaultSizeWithChilds.height), childsSizes);
         baseElement->computeTotalLayout(&(relativeSize.width), &(relativeSize.height));
@@ -68,7 +76,9 @@ namespace gui::element::ui::render {
 
     const SDL_Rect *UiRenderNode::elementClippedRect() const { return &usedLayout.elementClippedRect; }
 
-    void UiRenderNode::computeFinalLayout(SDL_Rect clipRect, bool forceSize) {
+    const Pos *UiRenderNode::startCoords() const { return &usedLayout.startCoords; }
+
+    void UiRenderNode::computeFinalLayout(SDL_Rect *clipRect, bool forceSize) {
         // TODO: overflows, ...
 
         usedLayout.elementRect.w = relativeSize.width;
@@ -77,16 +87,28 @@ namespace gui::element::ui::render {
         usedLayout.contentRect.w = relativeSize.width;
         usedLayout.contentRect.h = relativeSize.height;
 
-        usedLayout.elementClippedRect = clipRect;
-        if (forceSize) {
-            usedLayout.elementRect = clipRect;
+        if (clipRect == nullptr) {
+            usedLayout.elementClippedRect = usedLayout.elementRect;
         }
+        else {
+            usedLayout.elementClippedRect = *clipRect;
+        }
+        if (forceSize && clipRect != nullptr) {
+            usedLayout.elementRect = *clipRect;
+        }
+        // std::cerr << "computeFinalLayout (" << baseElement->name() << "): ";
+        // std::cerr << "width=" << usedLayout.elementRect.w << ", height=" << usedLayout.elementRect.h << " | ";
+        // std::cerr << "clipped width=" << usedLayout.elementClippedRect.w << ", clipped height=" << usedLayout.elementClippedRect.h << "\n";
 
         UiRenderNode *childNode = child();
         SDL_Rect childClipRect;
+        SDL_Rect newClipRect;
         while (childNode != nullptr) {
             childClipRect = {0, 0, childNode->relativeSize.width, childNode->relativeSize.height};
-            childNode->computeFinalLayout(computeNewClipRect(&clipRect, &childClipRect));
+            if (clipRect != nullptr) {
+                newClipRect = computeNewClipRect(clipRect, &childClipRect);
+            }
+            childNode->computeFinalLayout(&newClipRect);
             childNode = childNode->next();
         }
     }
@@ -115,6 +137,7 @@ namespace gui::element::ui::render {
     }
 
     void UiRenderNode::render(bool recursive) {
+        std::cerr << "baseElement is null: " << (baseElement == nullptr) << "\n";
         if (baseElement == nullptr) return;
 
         UiRenderData data = UiRenderData(usedLayout.elementRect);
@@ -123,6 +146,7 @@ namespace gui::element::ui::render {
     }
 
     void UiRenderNode::createTexture() {
+        SDL_DestroyTexture(nodeTexture);
         nodeTexture =
             SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, usedLayout.elementRect.w, usedLayout.elementRect.h);
         if (nodeTexture == nullptr) {
@@ -131,8 +155,8 @@ namespace gui::element::ui::render {
                          baseElement->name().c_str(), SDL_GetError());
         }
 
-        std::cerr << "elementRect: w=" << usedLayout.elementRect.w << ", h=" << usedLayout.elementRect.h << "\n";
-        std::cerr << "elementClippedRect: w=" << usedLayout.elementClippedRect.w << ", h=" << usedLayout.elementClippedRect.h << "\n";
+        // std::cerr << "elementRect: w=" << usedLayout.elementRect.w << ", h=" << usedLayout.elementRect.h << "\n";
+        // std::cerr << "elementClippedRect: w=" << usedLayout.elementClippedRect.w << ", h=" << usedLayout.elementClippedRect.h << "\n";
     }
 
     void UiRenderNode::renderElement(UiRenderData *data) {
@@ -161,19 +185,19 @@ namespace gui::element::ui::render {
             return;
         }
 
-        std::cerr
-            << "previousClipRect ("
-            << baseElement->name()
-            << "): x="
-            << previousClipRect.x
-            << ", y="
-            << previousClipRect.y
-            << ", w="
-            << previousClipRect.w
-            << ", h="
-            << previousClipRect.h
-            << "\n";
-        std::cerr << SDL_RenderClipEnabled(renderer) << "\n";
+        // std::cerr
+        //     << "previousClipRect ("
+        //     << baseElement->name()
+        //     << "): x="
+        //     << previousClipRect.x
+        //     << ", y="
+        //     << previousClipRect.y
+        //     << ", w="
+        //     << previousClipRect.w
+        //     << ", h="
+        //     << previousClipRect.h
+        //     << "\n";
+        // std::cerr << SDL_RenderClipEnabled(renderer) << "\n";
 
         SDL_SetRenderClipRect(renderer, nullptr);
 
@@ -181,22 +205,24 @@ namespace gui::element::ui::render {
         SDL_RectToFRect(&(usedLayout.elementRect), &renderFRect);
         renderFRect.x = usedLayout.startCoords.x;
         renderFRect.y = usedLayout.startCoords.y;
-        std::cerr
-            << "renderFRect ("
-            << baseElement->name()
-            << "): x="
-            << renderFRect.x
-            << ", y="
-            << renderFRect.y
-            << ", w="
-            << renderFRect.w
-            << ", h="
-            << renderFRect.h
-            << "\n";
-        SDL_RenderTexture(renderer, nodeTexture, nullptr, &renderFRect);
+        // std::cerr
+        //     << "renderFRect ("
+        //     << baseElement->name()
+        //     << "): x="
+        //     << renderFRect.x
+        //     << ", y="
+        //     << renderFRect.y
+        //     << ", w="
+        //     << renderFRect.w
+        //     << ", h="
+        //     << renderFRect.h
+        //     << "\n";
+        if (!SDL_RenderTexture(renderer, nodeTexture, nullptr, &renderFRect)) {
+            SDL_LogError(GUI_RENDERING, "UiRenderNode::renderOnParentSurface: Can't render current surface on parent surface : '%s'", SDL_GetError());
+        }
 
         if (!SDL_SetRenderClipRect(renderer, &previousClipRect)) {
-            SDL_LogError(GUI_RENDERING, "UiRenderNode::renderElement: Can't restore clip rect: '%s'", SDL_GetError());
+            SDL_LogError(GUI_RENDERING, "UiRenderNode::renderOnParentSurface: Can't restore clip rect: '%s'", SDL_GetError());
         }
     }
 
@@ -204,7 +230,7 @@ namespace gui::element::ui::render {
         UiRenderNode *node = child();
         while (node != nullptr) {
             if (node->baseElement == element) {
-                std::cerr << "UiRenderNode: rendering element '" << baseElement->name() << "'\n";
+                // std::cerr << "UiRenderNode: rendering element '" << baseElement->name() << "'\n";
                 node->renderElement(data);
             }
             node = node->next();
@@ -216,7 +242,7 @@ namespace gui::element::ui::render {
         const UiRenderNode *node = constChild();
         while (node != nullptr) {
             if (node->baseElement == child) {
-                std::cerr << "UiRenderNode: getting data of child '" << node->baseElement->name() << "'\n";
+                // std::cerr << "UiRenderNode: getting data of child '" << node->baseElement->name() << "'\n";
                 return new UiElementData({node->usedLayout.elementRect.w, node->usedLayout.elementRect.h});
             }
             node = node->constNext();

@@ -1,4 +1,5 @@
 #include "ui_manager.hpp"
+#include "label.hpp"
 
 namespace gui {
     namespace element {
@@ -59,9 +60,7 @@ namespace gui {
                 rootRenderNode->initBeforeLayoutComputing();
             }
 
-            void UIManager::restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode) {
-                rootRenderNode->restoreAfterLayoutComputing();
-            }
+            void UIManager::restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode) { rootRenderNode->restoreAfterLayoutComputing(); }
 
             void UIManager::prepareRenderNodes(UiElement *rootElement, ui::render::UiRenderNode *rootRenderNode, bool isRoot) {
                 UiElement *currentElement = rootElement;
@@ -92,11 +91,15 @@ namespace gui {
             void UIManager::computeNodesFinalLayout(ui::render::UiRenderNode *node, SDL_Rect *rootClipRect) {
                 if (node == nullptr) return;
                 if (rootClipRect == nullptr) node->computeFinalLayout();
-                else node->computeFinalLayout(*rootClipRect, true);
+                else node->computeFinalLayout(rootClipRect, true);
             }
 
             void UIManager::computeElementsLayout() {
+                std::cerr << "computeElementsLayout\n";
                 if (rootRenderNode == nullptr) return;
+                std::cerr << "rootRenderNode is not null\n";
+                delete rootRenderNode->child(); // TODO: remove
+                rootRenderNode->removeChilds();
                 prepareRenderNodes(static_cast<UiElement *>(elementsTree), rootRenderNode, true);
                 initElementsBeforeLayoutComputing(rootRenderNode);
                 computeNodesLayout(rootRenderNode);
@@ -117,7 +120,7 @@ namespace gui {
 
             void UIManager::createRenderedTexture() {
                 if (!needRenderingUpdate) return;
-                needRenderingUpdate = false;
+                // needRenderingUpdate = false; // TODO: uncomment
                 if (rootRenderNode == nullptr) return;
                 createNodesTextures(rootRenderNode);
                 SDL_SetRenderTarget(renderer, renderedTexture);
@@ -126,9 +129,9 @@ namespace gui {
             }
 
             void UIManager::renderElements(bool clear) const {
-                std::cerr << "Rendering elements (renderedTexture is null: " << (renderedTexture == nullptr) << ")\n";
+                // std::cerr << "Rendering elements (renderedTexture is null: " << (renderedTexture == nullptr) << ")\n";
                 if (renderedTexture != nullptr) {
-                    std::cerr << "renderedTexture: w=" << renderedTexture->w << ", h=" << renderedTexture->h << "\n";
+                    // std::cerr << "renderedTexture: w=" << renderedTexture->w << ", h=" << renderedTexture->h << "\n";
                     SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
                 }
                 SDL_RenderPresent(renderer);
@@ -176,19 +179,48 @@ namespace gui {
                 float x, y;
                 SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
                 SDL_Point mousePos = SDL_Point{(int)x, (int)y};
-                UiElement *currentElement = static_cast<UiElement *>(elementsTree->child());
+                ui::render::UiRenderNode *currentRenderNode = rootRenderNode->child();
+                UiElement *currentElement = nullptr;
                 UiElement *currentHoveredElement = nullptr;
-                SDL_Rect currentElementRect;
-                while (currentElement != nullptr) {
-                    // currentElement->getRect(&currentElementRect); // FIXME
-                    currentElementRect.x += currentElement->marginLeft();
-                    currentElementRect.y += currentElement->marginTop();
+                SDL_Rect currentElementRect = SDL_Rect();
+                int currentX = 0;
+                int currentY = 0;
+                // SDL_Delay(10);
+                std::cerr << "start\n";
+                std::cerr << "point: x=" << mousePos.x << ", y=" << mousePos.y << "\n";
+                while (currentRenderNode != nullptr) {
+                    currentElement = currentRenderNode->baseElement;
+                    currentX = currentElementRect.x;
+                    currentY = currentElementRect.y;
+                    currentElementRect = *currentRenderNode->elementClippedRect(); // copy
+                    const ui::Pos pos = *currentRenderNode->startCoords();
+                    currentElementRect.x += pos.x + currentX;
+                    currentElementRect.y += pos.y + currentY;
+                    std::cerr
+                        << "element rect ("
+                        << currentElement->name()
+                        << "): x="
+                        << currentElementRect.x
+                        << ", y="
+                        << currentElementRect.y
+                        << ", w="
+                        << currentElementRect.w
+                        << ", h="
+                        << currentElementRect.h
+                        << "\n";
+                    std::cerr << "hovered: " << (SDL_PointInRect(&mousePos, &currentElementRect) ? "true" : "false") << "\n";
                     if (SDL_PointInRect(&mousePos, &currentElementRect)) {
+                        if (currentElement->name() == "label") {
+                            std::cerr
+                                << "hovered element is label with text: -- "
+                                << static_cast<gui::element::Label *>(currentElement)->getText()
+                                << " --\n";
+                        }
                         currentHoveredElement = currentElement;
-                        currentElement = currentElement->getChild();
+                        currentRenderNode = currentRenderNode->child();
                     }
                     else {
-                        currentElement = currentElement->getNext();
+                        currentRenderNode = currentRenderNode->next();
                     }
                 }
                 if (mouseFlags) {
@@ -198,6 +230,7 @@ namespace gui {
                         if (focusedElement != nullptr) focusedElement->focus(false);
                         focusedElement = clickedElement;
                         if (focusedElement != nullptr) focusedElement->focus(true);
+                        SDL_Log("clickedElement: %s", clickedElement->name().c_str());
                         setElementsModifierState("clicked", clickedElement, true, SDL_Event{SDL_EVENT_MOUSE_BUTTON_DOWN});
                     }
                 }

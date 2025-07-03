@@ -5,7 +5,7 @@
 Recompute on size changing (modifiers, ...)
 add overflow (scroll)
 add width and height auto (100% parent)
-force style file reloading when receiving it twice
+force style flag file reloading when receiving it twice
 
 
 Rendering:
@@ -19,3 +19,4 @@ clipping
 
 Simplify the use of the text engine
 Update namespaces
+
