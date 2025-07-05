@@ -157,7 +157,7 @@ namespace gui {
             virtual void computeTotalLayout(int *width, int *height) const;
 
             /**
-             * selWidth and selfHeight are the new sizes
+             * selfWidth and selfHeight are the new sizes
              * selfWidthWithoutChilds and selfHeightWithoutChilds are the previous sizes computed by computeSelfLayout
              */
             virtual void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,

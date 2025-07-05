@@ -11,10 +11,10 @@ force style flag file reloading when receiving it twice
 Rendering:
 clipping
 
-- border
-- background
+- border OVERRIDABLE
+- background OVERRIDABLE
 - rendering before child OVERRIDABLE
-- render childs
+- render childs OVERRIDABLE
 - rendering after child OVERRIDABLE
 
 Simplify the use of the text engine

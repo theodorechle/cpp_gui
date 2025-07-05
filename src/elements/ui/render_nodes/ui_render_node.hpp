@@ -42,7 +42,7 @@ namespace gui::element::ui::render {
 
     public:
         // the UiElement corresponding to this node. Used for computing layouts.
-        gui::element::UiElement *baseElement; // should be private, but needed by the ui manager
+        gui::element::UiElement *baseElement; // FIXME: should be private, but needed by the ui manager
 
         UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent = nullptr, gui::element::UiElement *baseElement = nullptr);
         ~UiRenderNode();

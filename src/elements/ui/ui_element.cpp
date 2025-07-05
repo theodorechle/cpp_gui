@@ -233,23 +233,35 @@ namespace gui {
         SDL_Color UiElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
 
         void UiElement::computeTotalLayout(int *width, int *height) const {
+            std::cerr << name() << "\n";
             bool widthFound = false;
             bool heightFound = false;
             int tempWidth = this->width(&widthFound);
             int tempHeight = this->height(&heightFound);
+            std::cerr << "width=" << *width << ", height=" << *height << "\n";
 
-            if (!widthFound) {
-                (*width) += paddingLeft() + paddingRight() + borderLeft() + borderRight();
-            }
-            else {
+            std::cerr
+                << "padding: left="
+                << paddingLeft()
+                << ", top="
+                << paddingTop()
+                << ", right="
+                << paddingRight()
+                << ", bottom="
+                << paddingBottom()
+                << "\n";
+            if (widthFound) {
                 (*width) = tempWidth;
             }
+            else {
+                (*width) += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+            }
 
-            if (!heightFound) {
-                (*height) += paddingTop() + paddingBottom() + borderTop() + borderBottom();
+            if (heightFound) {
+                (*height) = tempHeight;
             }
             else {
-                (*height) = tempHeight;
+                (*height) += paddingTop() + paddingBottom() + borderTop() + borderBottom();
             }
 
             bool found = false;
@@ -262,13 +274,14 @@ namespace gui {
             if (found) (*height) = std::max(*height, size);
             size = maxHeight(&found);
             if (found) (*height) = std::min(*height, size);
-            // std::cerr << "width=" << *width << ", height=" << *height << "\n";
+            std::cerr << "width=" << *width << ", height=" << *height << "\n";
         }
 
         void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
                                                    std::list<std::tuple<int, int>> childsSizes) const {
-            (*selfWidth) = (*selfWidthWithoutChilds);
-            (*selfHeight) = (*selfHeightWithoutChilds);
+            // (*selfWidth) = (*selfWidthWithoutChilds);
+            // (*selfHeight) = (*selfHeightWithoutChilds);
+            computeInnerLayout(selfWidth, selfHeight);
         }
 
         bool UiElement::setClipRect(const SDL_Rect *clipRect, std::string callerName) const {
@@ -297,22 +310,25 @@ namespace gui {
         bool UiElement::render(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
             if (renderer == nullptr) throw NoRendererException(); // TODO: exception or simple error log? (coherence with the entire program)
-            // std::cerr << "UiElement: rendering element '" << name() << "'\n";
 
             SDL_Rect clipRect;
             SDL_GetRenderClipRect(renderer, &clipRect);
 
-            // borders
             renderBordersWrapper();
 
-            SDL_Rect innerRect = {clipRect.x + paddingLeft() + borderLeft(), clipRect.y + paddingTop() + borderTop(),
-                                  clipRect.w - paddingLeft() - paddingRight() - borderLeft() - borderRight(),
-                                  clipRect.h - paddingTop() - paddingBottom() - borderTop() - borderBottom()};
+            SDL_Rect innerRect = {clipRect.x + borderLeft(), clipRect.y + borderTop(), clipRect.w - borderLeft() - borderRight(),
+                                  clipRect.h - borderTop() - borderBottom()};
 
             if (!setClipRect(&innerRect, "UiElement::render (inner rect)")) return false;
 
-            // background
             renderBackgroundWrapper();
+
+            innerRect.x += paddingLeft();
+            innerRect.y += paddingTop();
+            innerRect.w -= paddingLeft() + paddingRight();
+            innerRect.h -= paddingTop() + paddingBottom();
+
+            if (!setClipRect(&innerRect, "UiElement::render (inner rect)")) return false;
 
             renderSelfBeforeChildsWrapper();
 
