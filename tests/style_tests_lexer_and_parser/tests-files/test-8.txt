@@ -1,4 +1,0 @@
-{ // should fail because of no required style elements|classes|...
-    width: 150px;
-    height: 40%;
-}

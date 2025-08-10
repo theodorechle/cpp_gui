@@ -1,3 +1,0 @@
-element { // ui elements will have a red background
-    background-color: #ff0000;
-}

@@ -82,6 +82,9 @@ namespace styleTestsLexerAndParser {
     test::Result testLexerException(const std::string &expression) {
         test::Result testResult;
         std::cout << "Test if lexing\n'\n" << expression << "\n'\n raises an exception : ";
+#ifdef DEBUG
+        std::cout << "\n";
+#endif
         style::Node *tokens = nullptr;
         try {
             tokens = style::Lexer(expression).getResult();
@@ -106,6 +109,9 @@ namespace styleTestsLexerAndParser {
     test::Result testLexerAndParserException(const std::string &expression) {
         test::Result testResult;
         std::cout << "Test if lexing and parsing\n'\n" << expression << "\n'\n raises an exception : ";
+#ifdef DEBUG
+        std::cout << "\n";
+#endif
         style::Node *tokens = nullptr;
         style::Node *result = nullptr;
         try {
@@ -676,11 +682,15 @@ namespace styleTestsLexerAndParser {
 
     test::Result testParsingRuleWithoutColonAndValue() { return testLexerAndParserException<style::MalformedExpression>("a {b;}"); }
 
-    test::Result testParsingRuleWithoutRuleName() { return testLexerAndParserException<style::MalformedExpression>("a {: #aaaaaa;}"); }
+    test::Result testParsingRuleWithoutName() { return testLexerAndParserException<style::MalformedExpression>("a {: #aaaaaa;}"); }
 
-    test::Result testParsingRuleWithoutRuleNameAndColon() { return testLexerAndParserException<style::MalformedExpression>("a {#aaaaaa;}"); }
+    test::Result testParsingRuleWithoutNameAndColon() { return testLexerAndParserException<style::MalformedExpression>("a {#aaaaaa;}"); }
 
-    test::Result testParsingRuleWithoutBlockDeclaration() { return testLexerAndParserException<style::MalformedExpression>("{b: #aaaaaa;}"); }
+    test::Result testParsingBlockWithoutDeclaration() { return testLexerAndParserException<style::MalformedExpression>("{b: #aaaaaa;}"); }
+
+    test::Result testParsingBlockWithoutOpeningCurlyBracket() { return testLexerAndParserException<style::MalformedExpression>("a b: #aaaaaa;}"); }
+
+    test::Result testParsingBlockWithoutClosingCurlyBracket() { return testLexerAndParserException<style::MalformedExpression>("a {b: #aaaaaa;"); }
 
     test::Result testParsingElementName() {
         style::Node *rootExpected;
@@ -967,30 +977,6 @@ namespace styleTestsLexerAndParser {
 
     test::Result testParsingLineBreakBeforeSemiColon() { return testLexerAndParserException<style::MalformedExpression>("a\n{b:2\n;}"); }
 
-    test::Result testSingleRule() {
-        std::string fileContent;
-        style::Node *rootExpected;
-        style::Node *expected;
-        test::Result result;
-
-        fileContent = getFileContent(TESTS_FILES_DIR + "/test-0.txt");
-        rootExpected = new style::Node(style::Token::NullRoot);
-        expected = rootExpected->appendChild(new style::Node(style::Token::StyleBlock));
-        expected = expected->appendChild(new style::Node(style::Token::BlockDeclaration));
-        expected = expected->appendChild(new style::Node(style::Token::Declaration));
-        expected->appendChild(new style::Node(style::Token::ElementName, "element"));
-        expected = expected->getParent();
-        expected = expected->getParent();
-        expected = expected->appendChild(new style::Node(style::Token::BlockDefinition));
-        expected = expected->appendChild(new style::Node(style::Token::Assignment));
-        expected->appendChild(new style::Node(style::Token::RuleName, "background-color"));
-        expected->appendChild(new style::Node(style::Token::Hex, "ff0000"));
-
-        result = testLexerAndParser(true, fileContent, rootExpected);
-        delete rootExpected;
-        return result;
-    }
-
     test::Result testTwoStyleBlocks() {
         std::string fileContent;
         style::Node *rootExpected;
@@ -1204,13 +1190,6 @@ namespace styleTestsLexerAndParser {
         return result;
     }
 
-    test::Result testMultiLineBlockDeclaration() {
-        std::string fileContent;
-
-        fileContent = getFileContent(TESTS_FILES_DIR + "/test-6.txt");
-        return testLexerAndParserException<style::MalformedExpression>(fileContent);
-    }
-
     test::Result testValuesUnits() {
         std::string fileContent;
         style::Node *rootExpected;
@@ -1238,13 +1217,6 @@ namespace styleTestsLexerAndParser {
         result = testLexerAndParser(true, fileContent, rootExpected);
         delete rootExpected;
         return result;
-    }
-
-    test::Result testNoBlockDeclaration() {
-        std::string fileContent;
-
-        fileContent = getFileContent(TESTS_FILES_DIR + "/test-8.txt");
-        return testLexerAndParserException<style::MalformedExpression>(fileContent);
     }
 
     test::Result testMultilineCommentNotClosed() {
@@ -1339,9 +1311,11 @@ namespace styleTestsLexerAndParser {
         tests->runTest(testParsingRuleWithoutValueAndSemiColon, "Rule without value and semi-colon");
         tests->runTest(testParsingRuleWithoutColonAndValueAndSemiColon, "Rule without colon and value and semi-colon");
         tests->runTest(testParsingRuleWithoutColonAndValue, "Rule without rule colon and value");
-        tests->runTest(testParsingRuleWithoutRuleName, "Rule without rule name");
-        tests->runTest(testParsingRuleWithoutRuleNameAndColon, "Rule without rule name and colon");
-        tests->runTest(testParsingRuleWithoutBlockDeclaration, "Rule without block declaration");
+        tests->runTest(testParsingRuleWithoutName, "Rule without name");
+        tests->runTest(testParsingRuleWithoutNameAndColon, "Rule without name and colon");
+        tests->runTest(testParsingBlockWithoutDeclaration, "Block without declaration");
+        tests->runTest(testParsingBlockWithoutOpeningCurlyBracket, "Block without opening curly bracket");
+        tests->runTest(testParsingBlockWithoutClosingCurlyBracket, "Block without closing curly bracket");
         tests->endTestBlock();
 
         tests->beginTestBlock("Declaration parts");
@@ -1374,20 +1348,16 @@ namespace styleTestsLexerAndParser {
         tests->runTest(testParsingLineBreakBeforeSemiColon, "Line break before semi-colon");
         tests->endTestBlock();
 
-        // tests->runTest(testSingleRule, "Single rule");
-        // tests->runTest(testTwoStyleBlocks, "Two style blocks");
-        // tests->runTest(testNestedModifierBlock, "Nested modifier block");
-        // tests->runTest(testNestedElementNameBlock, "Nested element name block");
-        // tests->runTest(testApplyingStyleBlockUsingAnyParentRelation, "Apply style block using the any parent relation");
-        // tests->runTest(testApplyingStyleBlockUsingAnyChildComponentWithNestedElementName,
-        //                "Apply style block to any child component with nested element name");
-        // tests->runTest(testMultiLineBlockDeclaration, "Multi-line block declaration");
-        // tests->runTest(testValuesUnits, "Values units");
-        // tests->runTest(testNoBlockDeclaration, "No block declaration");
-        // tests->runTest(testMultilineCommentNotClosed, "Multiline comment not closed");
+        tests->runTest(testTwoStyleBlocks, "Two style blocks");
+        tests->runTest(testNestedModifierBlock, "Nested modifier block");
+        tests->runTest(testNestedElementNameBlock, "Nested element name block");
+        tests->runTest(testApplyingStyleBlockUsingAnyParentRelation, "Apply style block using the any parent relation");
+        tests->runTest(testApplyingStyleBlockUsingAnyChildComponentWithNestedElementName,
+                       "Apply style block to any child component with nested element name");
+        tests->runTest(testValuesUnits, "Values units");
+        tests->runTest(testMultilineCommentNotClosed, "Multiline comment not closed");
 
         tests->endTestBlock();
-
         tests->endTestBlock();
     }
 

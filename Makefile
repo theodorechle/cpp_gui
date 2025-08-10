@@ -46,12 +46,12 @@ $(LIB).a: $(OBJ_STYLE) $(OBJ_SUBDIRS)
 	ar -r $@ $^
 
 # Build everything except tests
-$(MAIN): $(SRC_MAIN) $(LIB).a
+$(MAIN): $(OBJ_MAIN) $(LIB).a
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(SDL_CMD)
 
 # Build the tests executable (tests + all style sources)
-$(BIN_TESTS): $(SRC_TESTS) $(TESTS_LIB).a
+$(BIN_TESTS): $(OBJ_TESTS) $(TESTS_LIB).a
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 

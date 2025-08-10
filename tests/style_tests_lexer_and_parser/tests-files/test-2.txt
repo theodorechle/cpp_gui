@@ -1,4 +1,4 @@
-// equivalent at previous two blocks
+// equivalent of previous two blocks
 label.blue {
     text-color: #0000ff;
     :hovered {
