@@ -3,8 +3,6 @@
 #include "node.hpp"
 #include "parser.hpp"
 
-using namespace std;
-
 namespace style {
 
     Node *Node::copyNode() const {
@@ -31,7 +29,7 @@ namespace style {
         return n;
     }
 
-    void Node::displayTree(ostream &flow, int level) const {
+    void Node::displayTree(std::ostream &flow, int level) const {
         for (int i = 0; i < level; i++)
             flow << "\t";
         flow << getValue() << " (" << getToken() << ")\n";
@@ -42,9 +40,9 @@ namespace style {
         }
     }
 
-    void Node::display(ostream &flow) const { displayTree(flow, 0); }
+    void Node::display(std::ostream &flow) const { displayTree(flow, 0); }
 
-    void Node::displayNexts(ostream &flow) const {
+    void Node::displayNexts(std::ostream &flow) const {
         const Node *next = this;
         while (next != nullptr) {
             flow << next->getValue() << " (" << next->getToken() << ")\n";

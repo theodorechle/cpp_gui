@@ -8,23 +8,30 @@
 #include <vector>
 
 namespace gui::element {
+    namespace manager {
+        class AbstractManager;
+    }
+
     class AbstractElement {
         std::string elementName;
         AbstractElement *_parent = nullptr;
         AbstractElement *_child = nullptr;
         AbstractElement *_next = nullptr;
+        manager::AbstractManager *elementManager = nullptr;
         gui::elementStyle::manager::StyleNodesManager *elementsStyleManager;
         int _nbChilds = 0;
         bool _updated = false; // TODO: used?
 
     protected:
-        gui::elementStyle::StyleNode *elementStyle = nullptr;
+        gui::elementStyle::StyleNode *style = nullptr;
         void parent(AbstractElement *parent);
         void updateStyle();
 
         int nbChilds() const { return _nbChilds; }
 
         void updated() { _updated = true; }
+
+        void sendEventToManager(ElementEvent event);
 
     public:
         bool isUpdated() const { return _updated; }
@@ -45,6 +52,9 @@ namespace gui::element {
         void next(AbstractElement *next) { this->_next = next; }
         AbstractElement *next() { return _next; }
         const AbstractElement *getConstNext() const { return _next; }
+
+        void manager(manager::AbstractManager *manager);
+
         virtual ~AbstractElement();
 
         /**
@@ -62,12 +72,14 @@ namespace gui::element {
         /**
          * Should call each child with a portion of the element surface
          */
-        virtual void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback, std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {};
+        virtual void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                         std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {};
 
         /**
          * Should call rendering functions, including (if used) previous functions.
          */
-        virtual bool render(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback, std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const = 0;
+        virtual bool render(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                            std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const = 0;
 
         bool styleManagerAvailable() const { return elementsStyleManager != nullptr; }
 
@@ -75,7 +87,11 @@ namespace gui::element {
          * true if should propagate to the parent, false else
          */
         void setModifierState(std::string modifierName, bool enabled);
+
+        void displayStyle();
     };
 }
+
+#include "abstract_manager.hpp"
 
 #endif // ABSTRACT_ELEMENT_HPP

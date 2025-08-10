@@ -1,12 +1,10 @@
 #include "parser.hpp"
 
-using namespace std;
-
 namespace style {
 
-    bool Parser::isValidName(const string &str, size_t start, size_t end) {
+    bool Parser::isValidName(const std::string &str, size_t start, size_t end) {
         size_t i;
-        end = min(end, str.size());
+        end = std::min(end, str.size());
         for (i = start; i < end - 1; i++) {
             if (!isalpha(str[i]) && str[i] != '_' && str[i] != '-') return false;
         }
@@ -14,7 +12,7 @@ namespace style {
         return true;
     }
 
-    bool Parser::isValidElementOrRuleName(const string &str) {
+    bool Parser::isValidElementOrRuleName(const std::string &str) {
         if (!isalpha(str[0])) return false;
         return str.size() == 1 || isValidName(str, 1, str.size());
     }
@@ -45,7 +43,7 @@ namespace style {
         try {
             while (currentNode != nullptr) {
 #ifdef DEBUG
-                cerr << "\nActual token : " << tokenToString(currentNode->getToken()) << ": '" << currentNode->getValue() << "'" << "\n";
+                std::cerr << "\nActual token : " << tokenToString(currentNode->getToken()) << ": '" << currentNode->getValue() << "'" << "\n";
 #endif
                 switch (currentNode->getToken()) {
                 case Token::Space:
@@ -118,17 +116,17 @@ namespace style {
                     throw UnknownToken(*currentNode);
                 }
 #ifdef DEBUG
-                cerr << "Root :\n";
-                expressionTreeRoot->display(cerr);
-                cerr << "\n";
+                std::cerr << "Root :\n";
+                expressionTreeRoot->display(std::cerr);
+                std::cerr << "\n";
 #endif
                 currentNode = currentNode->getNext();
             }
             removeWhiteSpaces();
 #ifdef DEBUG
-            cerr << "Final parsed tree :\n";
-            expressionTreeRoot->display(cerr);
-            cerr << "\n";
+            std::cerr << "Final parsed tree :\n";
+            expressionTreeRoot->display(std::cerr);
+            std::cerr << "\n";
 #endif
         }
         catch (const ParserException &) {

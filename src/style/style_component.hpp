@@ -60,7 +60,7 @@ namespace style {
      *   rule number (file dependant)
      */
     struct StyleRule {
-        StyleValue *value;
+        StyleValue *value = nullptr;
         bool enabled;
         int specificity;
         int fileNumber;

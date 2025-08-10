@@ -10,6 +10,17 @@ namespace gui::element::manager {
         addChildToRootElement(element);
     }
 
+    void AbstractManager::elementEvent(ElementEvent event, AbstractElement *caller) {
+        switch (event)
+        {
+        case ElementEvent::REMOVE_CHILDS:
+            needUpdate(true);
+            break;
+        default:
+            break;
+        }
+    }
+
     void AbstractManager::deleteElementsTree() { delete elementsTree; }
 
     void AbstractManager::render(bool clear) {

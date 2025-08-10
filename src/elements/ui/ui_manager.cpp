@@ -18,6 +18,7 @@ namespace gui {
                 UiElement *rootElement = new RootElement();
                 rootElement->setRenderer(renderer);
                 rootElement->setWindow(window);
+                rootElement->manager(this);
                 elementsTree = rootElement;
                 rootRenderNode = new ui::render::UiRenderNode(renderer, nullptr, rootElement);
             }
@@ -95,9 +96,9 @@ namespace gui {
             }
 
             void UIManager::computeElementsLayout() {
-                std::cerr << "computeElementsLayout\n";
+                // std::cerr << "computeElementsLayout\n";
                 if (rootRenderNode == nullptr) return;
-                std::cerr << "rootRenderNode is not null\n";
+                // std::cerr << "rootRenderNode is not null\n";
                 delete rootRenderNode->child(); // TODO: remove
                 rootRenderNode->removeChilds();
                 prepareRenderNodes(static_cast<UiElement *>(elementsTree), rootRenderNode, true);
@@ -186,40 +187,46 @@ namespace gui {
                 int currentX = 0;
                 int currentY = 0;
                 // SDL_Delay(10);
-                std::cerr << "start\n";
-                std::cerr << "point: x=" << mousePos.x << ", y=" << mousePos.y << "\n";
+                // std::cerr << "start\n";
+                // std::cerr << "point: x=" << mousePos.x << ", y=" << mousePos.y << "\n";
                 while (currentRenderNode != nullptr) {
                     currentElement = currentRenderNode->baseElement;
                     currentX = currentElementRect.x;
                     currentY = currentElementRect.y;
                     currentElementRect = *currentRenderNode->elementClippedRect(); // copy
                     const ui::Pos pos = *currentRenderNode->startCoords();
+                    // std::cerr << "currentElementRect: " << currentElementRect.x << ", " << currentElementRect.y << "\n";
+                    // std::cerr << "currentX: " << currentX << ", currentY: " << currentY << "\n";
+                    // std::cerr << "pos: " << pos.x << ", " << pos.y << "\n";
                     currentElementRect.x += pos.x + currentX;
                     currentElementRect.y += pos.y + currentY;
-                    std::cerr
-                        << "element rect ("
-                        << currentElement->name()
-                        << "): x="
-                        << currentElementRect.x
-                        << ", y="
-                        << currentElementRect.y
-                        << ", w="
-                        << currentElementRect.w
-                        << ", h="
-                        << currentElementRect.h
-                        << "\n";
-                    std::cerr << "hovered: " << (SDL_PointInRect(&mousePos, &currentElementRect) ? "true" : "false") << "\n";
+                    // std::cerr
+                    //     << "element rect ("
+                    //     << currentElement->name()
+                    //     << "): x="
+                    //     << currentElementRect.x
+                    //     << ", y="
+                    //     << currentElementRect.y
+                    //     << ", w="
+                    //     << currentElementRect.w
+                    //     << ", h="
+                    //     << currentElementRect.h
+                    //     << "\n";
+                    // std::cerr << "hovered: " << (SDL_PointInRect(&mousePos, &currentElementRect) ? "true" : "false") << "\n";
                     if (SDL_PointInRect(&mousePos, &currentElementRect)) {
-                        if (currentElement->name() == "label") {
-                            std::cerr
-                                << "hovered element is label with text: -- "
-                                << static_cast<gui::element::Label *>(currentElement)->getText()
-                                << " --\n";
-                        }
+                        // if (currentElement->name() == "label") {
+                        //     std::cerr
+                        //         << "hovered element is label with text: -- "
+                        //         << static_cast<gui::element::Label *>(currentElement)->getText()
+                        //         << " --\n";
+                        // }
+                        currentElement->displayStyle();
                         currentHoveredElement = currentElement;
                         currentRenderNode = currentRenderNode->child();
                     }
                     else {
+                        currentElementRect.x -= pos.x;
+                        currentElementRect.y -= pos.y;
                         currentRenderNode = currentRenderNode->next();
                     }
                 }
@@ -230,7 +237,7 @@ namespace gui {
                         if (focusedElement != nullptr) focusedElement->focus(false);
                         focusedElement = clickedElement;
                         if (focusedElement != nullptr) focusedElement->focus(true);
-                        SDL_Log("clickedElement: %s", clickedElement->name().c_str());
+                        // SDL_Log("clickedElement: %s", clickedElement->name().c_str());
                         setElementsModifierState("clicked", clickedElement, true, SDL_Event{SDL_EVENT_MOUSE_BUTTON_DOWN});
                     }
                 }

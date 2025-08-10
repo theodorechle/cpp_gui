@@ -91,7 +91,7 @@ namespace style {
         : value{value}, enabled{enabled}, specificity{specificity}, fileNumber{fileNumber}, ruleNumber{ruleNumber} {}
 
     StyleRule::StyleRule(const StyleRule &rule) {
-        value = rule.value->copy();
+        if (rule.value != nullptr) value = rule.value->copy();
         enabled = rule.enabled;
         specificity = rule.specificity;
         fileNumber = rule.fileNumber;

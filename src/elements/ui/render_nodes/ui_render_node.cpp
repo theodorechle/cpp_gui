@@ -137,7 +137,7 @@ namespace gui::element::ui::render {
     }
 
     void UiRenderNode::render(bool recursive) {
-        std::cerr << "baseElement is null: " << (baseElement == nullptr) << "\n";
+        // std::cerr << "baseElement is null: " << (baseElement == nullptr) << "\n";
         if (baseElement == nullptr) return;
 
         UiRenderData data = UiRenderData(usedLayout.elementRect);

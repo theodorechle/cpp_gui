@@ -1,5 +1,5 @@
-#ifndef STYLE_TESTS_LEXER_AND_PARSER
-#define STYLE_TESTS_LEXER_AND_PARSER
+#ifndef STYLE_TESTS_LEXER_AND_PARSER_HPP
+#define STYLE_TESTS_LEXER_AND_PARSER_HPP
 
 #include <bits/stdc++.h>
 #include <fstream>
@@ -29,4 +29,4 @@ namespace styleTestsLexerAndParser {
     void testsLexerAndParser(test::Tests *tests);
 } // namespace styleTestsLexerAndParser
 
-#endif // STYLE_TESTS_LEXER_AND_PARSER
+#endif // STYLE_TESTS_LEXER_AND_PARSER_HPP

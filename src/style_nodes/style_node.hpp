@@ -29,11 +29,13 @@ namespace gui {
             StyleNode *child = nullptr;
             StyleNode *next = nullptr;
 
-            std::string fontsPath = "";
+            std::string fontsPath = "/";
 
             static bool compareRulesPriorityDescending(style::StyleRule rule1, style::StyleRule rule2); // TODO: take as references
             static bool compareRulesPriorityAscending(style::StyleRule rule1, style::StyleRule rule2);
             void setParent(StyleNode *parent) { this->parent = parent; }
+            style::StyleRule *findRule(int fileNumber, int ruleNumber);
+            const style::StyleRule *findRule(int fileNumber, int ruleNumber) const;
 
         public:
             virtual ~StyleNode();
@@ -46,7 +48,13 @@ namespace gui {
             void setStyle(const AppliedStyleMap &style) { this->style = style; }
             void addStyle(AppliedStyleMap &newStyle);
             const AppliedStyleMap &getStyle() const;
-            // returns true if successfully deleted, false else
+            /*
+            Delete first rule who correspond to the file and rule number.
+            Each rule should have a unique number.
+            If not, which one is deleted cannot be guaranted.
+
+            returns true if successfully deleted, false else
+            */
             bool deleteStyle(int fileNumber, int ruleNumber);
             // returns the number of deleted rules
             int deleteStyleFromFile(int fileNumber);
@@ -61,7 +69,16 @@ namespace gui {
              */
             bool getRule(const std::string &ruleName, style::StyleValue **ruleValue, bool canInherit = false,
                          style::StyleValue *defaultStyle = nullptr) const;
-            bool getRule(const std::vector<std::string> &rulesNames, style::StyleValue **ruleValue, bool canInherit = false,
+            /**
+             * Set the value in the ruleValue parameter.
+             * Returns true if found or default value is returned.
+             * If canInherit is true and rule is not found, tries to search in parents style.
+             * If no defaultStyle is given, returns false if no value were found.
+             *
+             * Return the value with biggest specificity among all matching rules.
+             * If two values have same specificity, first in the rulesNames list will be prioritized.
+             */
+            bool getRule(const std::vector<std::string> &ruleNames, style::StyleValue **ruleValue, bool canInherit = false,
                          style::StyleValue *defaultStyle = nullptr) const;
             bool ruleExists(const std::string &ruleName) const;
             bool ruleExists(int fileNumber, int ruleNumber) const;

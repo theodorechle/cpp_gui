@@ -10,10 +10,10 @@ namespace gui {
         SDL_FRect UiElement::createFRect(int x, int y, int width, int height) { return SDL_FRect{(float)x, (float)y, (float)width, (float)height}; }
 
         int UiElement::getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit) const {
-            if (elementStyle == nullptr) return defaultSize;
+            if (style == nullptr) return defaultSize;
             style::StyleValue *rule = nullptr;
             int size = 0;
-            elementStyle->getRule(ruleNames, &rule, canInherit);
+            style->getRule(ruleNames, &rule, canInherit);
             if (rule == nullptr) {
                 return defaultSize;
             }
@@ -24,9 +24,9 @@ namespace gui {
         }
 
         std::string UiElement::getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString, bool canInherit) const {
-            if (elementStyle == nullptr) return defaultString;
+            if (style == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
-            elementStyle->getRule(ruleNames, &rule, canInherit);
+            style->getRule(ruleNames, &rule, canInherit);
             if (rule == nullptr || rule->getType() != style::StyleValueType::String) {
                 return defaultString;
             }
@@ -35,9 +35,9 @@ namespace gui {
 
         std::string UiElement::getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
                                                      const std::string &defaultString, bool canInherit) const {
-            if (elementStyle == nullptr) return defaultString;
+            if (style == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
-            elementStyle->getRule(ruleName, &rule, canInherit);
+            style->getRule(ruleName, &rule, canInherit);
             if (rule
                 == nullptr
                 || rule->getType()
@@ -52,9 +52,9 @@ namespace gui {
 
         std::string UiElement::getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
                                                       const std::string &defaultString, bool canInherit) const {
-            if (elementStyle == nullptr) return defaultString;
+            if (style == nullptr) return defaultString;
             style::StyleValue *rule = nullptr;
-            elementStyle->getRule(ruleNames, &rule, canInherit);
+            style->getRule(ruleNames, &rule, canInherit);
             if (rule
                 == nullptr
                 || rule->getType()
@@ -69,18 +69,18 @@ namespace gui {
 
         bool UiElement::getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool, bool canInherit) const {
             bool value;
-            if (elementStyle == nullptr) return defaultBool;
+            if (style == nullptr) return defaultBool;
             style::StyleValue *rule = nullptr;
-            elementStyle->getRule(ruleNames, &rule, canInherit);
+            style->getRule(ruleNames, &rule, canInherit);
             if (converter::BoolConverter::convert(rule, &value)) return value;
             return defaultBool;
         }
 
         int UiElement::computeSize(const std::vector<std::string> &ruleNames, int defaultSize, bool canInherit, int parentSize, bool *found) const {
-            if (elementStyle == nullptr) return defaultSize;
+            if (style == nullptr) return defaultSize;
             style::StyleValue *rule = nullptr;
             int size = 0;
-            elementStyle->getRule(ruleNames, &rule, canInherit);
+            style->getRule(ruleNames, &rule, canInherit);
             if (found != nullptr) (*found) = (rule != nullptr);
             if (rule == nullptr) {
                 return defaultSize;
@@ -92,10 +92,10 @@ namespace gui {
         }
 
         SDL_Color UiElement::computeColor(const std::vector<std::string> &ruleNames, SDL_Color defaultColor, bool canInherit) const {
-            if (elementStyle == nullptr) return defaultColor;
+            if (style == nullptr) return defaultColor;
             style::StyleValue *rule = nullptr;
             SDL_Color color = SDL_Color();
-            elementStyle->getRule(ruleNames, &rule, canInherit);
+            style->getRule(ruleNames, &rule, canInherit);
             // std::cerr << "rule '" << ruleNames.front() << "' is null? : " << (rule == nullptr) << "\n";
             if (rule == nullptr) {
                 return defaultColor;
@@ -233,23 +233,23 @@ namespace gui {
         SDL_Color UiElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
 
         void UiElement::computeTotalLayout(int *width, int *height) const {
-            std::cerr << name() << "\n";
+            // std::cerr << name() << "\n";
             bool widthFound = false;
             bool heightFound = false;
             int tempWidth = this->width(&widthFound);
             int tempHeight = this->height(&heightFound);
-            std::cerr << "width=" << *width << ", height=" << *height << "\n";
+            // std::cerr << "width=" << *width << ", height=" << *height << "\n";
 
-            std::cerr
-                << "padding: left="
-                << paddingLeft()
-                << ", top="
-                << paddingTop()
-                << ", right="
-                << paddingRight()
-                << ", bottom="
-                << paddingBottom()
-                << "\n";
+            // std::cerr
+            //     << "padding: left="
+            //     << paddingLeft()
+            //     << ", top="
+            //     << paddingTop()
+            //     << ", right="
+            //     << paddingRight()
+            //     << ", bottom="
+            //     << paddingBottom()
+            //     << "\n";
             if (widthFound) {
                 (*width) = tempWidth;
             }
@@ -274,7 +274,7 @@ namespace gui {
             if (found) (*height) = std::max(*height, size);
             size = maxHeight(&found);
             if (found) (*height) = std::min(*height, size);
-            std::cerr << "width=" << *width << ", height=" << *height << "\n";
+            // std::cerr << "width=" << *width << ", height=" << *height << "\n";
         }
 
         void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,

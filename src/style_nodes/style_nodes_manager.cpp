@@ -61,7 +61,7 @@ namespace gui {
                     }
 
                     for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
-                        elementStyleMap[styleRule.first] = {style::StyleRule{styleRule.second.value->copy(), modifier.empty(),
+                        elementStyleMap[styleRule.first] = {style::StyleRule{styleRule.second.value->copy(), modifier.empty(), // disable if affected by modifier should be done by elementStyle
                                                                              styleRule.second.specificity, styleRule.second.fileNumber,
                                                                              styleRule.second.ruleNumber}};
                         if (!modifier.empty()) {
