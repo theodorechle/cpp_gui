@@ -10,6 +10,8 @@ namespace gui::element {
         if (elementsStyleManager != nullptr) {
             elementsStyleManager->applyStyleToElement(style);
         }
+        if (child() != nullptr) child()->updateStyle();
+        if (next() != nullptr) next()->updateStyle();
     }
 
     void AbstractElement::sendEventToManager(ElementEvent event) {

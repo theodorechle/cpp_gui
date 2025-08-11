@@ -220,7 +220,7 @@ namespace gui {
                         //         << static_cast<gui::element::Label *>(currentElement)->getText()
                         //         << " --\n";
                         // }
-                        currentElement->displayStyle();
+                        // currentElement->displayStyle();
                         currentHoveredElement = currentElement;
                         currentRenderNode = currentRenderNode->child();
                     }

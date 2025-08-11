@@ -128,7 +128,7 @@ namespace style {
             expressionTreeRoot->display(std::cerr);
             std::cerr << "\n";
 #endif
-            if (parsedTree->getToken() != Token::NullRoot) throw MalformedExpression("Block not properly closed\n");
+            if (parsedTree != expressionTreeRoot) throw MalformedExpression("Block not properly closed\n");
         }
         catch (const ParserException &) {
             parsedTree = nullptr;
