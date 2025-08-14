@@ -88,7 +88,9 @@ namespace gui {
             const std::string &StyleNodesManager::getFontsPath() const { return fontsPath; }
 
             int StyleNodesManager::addStyleFile(const std::string &fileName) {
+#ifdef DEBUG
                 std::cerr << "Adding file '" << fileName << "'\n";
+#endif
                 int fileNumber = findFile(fileName); //  TODO: allow force reload
                 if (fileNumber != -1) {
                     updateRulesPriorities(fileNumber);
@@ -160,69 +162,43 @@ namespace gui {
             bool StyleNodesManager::elementSelectorsCompatiblesLoop(style::StyleComponentDataList::const_reverse_iterator componentDataIt,
                                                                     style::StyleComponentDataList::const_reverse_iterator componentDataListEndIt,
                                                                     gui::elementStyle::StyleNode *elementStyle) {
-                bool selectorExists = false;
                 gui::elementStyle::StyleNode *currentStyle = elementStyle;
-                const std::set<style::StyleComponentData> *elementSelectors = currentStyle->getSelectors();
+                const std::set<style::StyleComponentData> *elementSelectors;
 
                 for (style::StyleComponentDataList::const_reverse_iterator it = componentDataIt; it != componentDataListEndIt; it++) {
                     if (it->first.second == style::StyleComponentType::StarWildcard) {
-                        while (currentStyle != nullptr) {
-                            currentStyle = currentStyle->getParent();
-                            if (currentStyle == nullptr) {
-                                selectorExists = false;
-                                break;
-                            }
-                            style::StyleComponentDataList::const_reverse_iterator nextIt = std::next(it);
-                            if (nextIt == componentDataListEndIt) {
-                                selectorExists = true;
-                                break;
-                            }
-                            selectorExists = elementSelectorsCompatiblesLoop(nextIt, componentDataListEndIt, currentStyle);
-                            if (selectorExists) break;
-                        }
-                        return selectorExists;
-                        selectorExists = true;
-                        continue; // allow any element
+                        continue;
                     }
                     switch (it->second) {
                     case style::StyleRelation::SameElement:
-                        selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
+                        elementSelectors = currentStyle->getSelectors();
+                        if (elementSelectors->find(it->first) == elementSelectors->cend()) return false;
                         break;
                     case style::StyleRelation::DirectParent:
                         currentStyle = currentStyle->getParent();
-                        if (currentStyle == nullptr) {
-                            selectorExists = false;
-                            break;
-                        }
+                        if (!currentStyle) return false;
+
                         elementSelectors = currentStyle->getSelectors();
-                        selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
+                        if (elementSelectors->find(it->first) == elementSelectors->cend()) return false;
                         break;
                     case style::StyleRelation::AnyParent:
-                        while (currentStyle != nullptr) {
+                        while (currentStyle) {
                             currentStyle = currentStyle->getParent();
-                            if (currentStyle == nullptr) {
-                                selectorExists = false;
-                                break;
-                            }
+                            if (!currentStyle) return false;
+
                             elementSelectors = currentStyle->getSelectors();
-                            if (elementSelectors->find(it->first) != elementSelectors->cend()) {
-                                style::StyleComponentDataList::const_reverse_iterator nextIt = std::next(it);
-                                if (nextIt == componentDataListEndIt) {
-                                    selectorExists = true;
-                                    break;
-                                }
-                                selectorExists = elementSelectorsCompatiblesLoop(nextIt, componentDataListEndIt, currentStyle);
-                                if (selectorExists) break;
+                            if (elementSelectors->find(it->first) == elementSelectors->cend()) continue;
+                            style::StyleComponentDataList::const_reverse_iterator nextIt = std::next(it);
+                            if (nextIt == componentDataListEndIt || elementSelectorsCompatiblesLoop(nextIt, componentDataListEndIt, currentStyle)) {
+                                return true;
                             }
                         }
-                        return selectorExists;
+                        return false;
                     default:
-                        selectorExists = false;
-                        break;
+                        return false;
                     }
-                    if (!selectorExists) break;
                 }
-                return selectorExists;
+                return true;
             }
 
             void StyleNodesManager::applyStyleToElement(gui::elementStyle::StyleNode *elementStyle, bool recursive) {
