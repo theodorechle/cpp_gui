@@ -96,7 +96,6 @@ namespace gui {
             style::StyleValue *rule = nullptr;
             SDL_Color color = SDL_Color();
             style->getRule(ruleNames, &rule, canInherit);
-            // std::cerr << "rule '" << ruleNames.front() << "' is null? : " << (rule == nullptr) << "\n";
             if (rule == nullptr) {
                 return defaultColor;
             }
@@ -233,23 +232,10 @@ namespace gui {
         SDL_Color UiElement::backgroundColor() const { return computeColor({"background-color"}, SDL_Color{255, 255, 255, 0}); }
 
         void UiElement::computeTotalLayout(int *width, int *height) const {
-            // std::cerr << name() << "\n";
             bool widthFound = false;
             bool heightFound = false;
             int tempWidth = this->width(&widthFound);
             int tempHeight = this->height(&heightFound);
-            // std::cerr << "width=" << *width << ", height=" << *height << "\n";
-
-            // std::cerr
-            //     << "padding: left="
-            //     << paddingLeft()
-            //     << ", top="
-            //     << paddingTop()
-            //     << ", right="
-            //     << paddingRight()
-            //     << ", bottom="
-            //     << paddingBottom()
-            //     << "\n";
             if (widthFound) {
                 (*width) = tempWidth;
             }
@@ -274,7 +260,6 @@ namespace gui {
             if (found) (*height) = std::max(*height, size);
             size = maxHeight(&found);
             if (found) (*height) = std::min(*height, size);
-            // std::cerr << "width=" << *width << ", height=" << *height << "\n";
         }
 
         void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
@@ -292,18 +277,12 @@ namespace gui {
             return true;
         }
 
-        void UiElement::renderSelfBeforeChilds() const {
-            // SDL_LogDebug(ui::GUI_RENDERING, "%s: DEFAULT renderSelfBeforeChilds method", name().c_str());
-        }
+        void UiElement::renderSelfBeforeChilds() const {}
 
-        void UiElement::renderSelfAfterChilds() const {
-            // SDL_LogDebug(ui::GUI_RENDERING, "%s: DEFAULT renderSelfAfterChilds method", name().c_str());
-        }
+        void UiElement::renderSelfAfterChilds() const {}
 
         void UiElement::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
-                                     std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
-            // SDL_LogDebug(ui::GUI_RENDERING, "%s: DEFAULT renderChilds method", name().c_str());
-        }
+                                     std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {}
 
         void UiElement::computeInnerLayout(int *width, int *height) const {}
 
@@ -342,35 +321,6 @@ namespace gui {
             return true;
         }
 
-        // void UiElement::renderChilds() const {
-        //     SDL_Rect clipRect;
-        //     SDL_Rect childClipRect;
-        //     SDL_Rect childFinalClipRect;
-        //     const UiElement *child = getConstChild();
-        //     if (!SDL_GetRenderClipRect(renderer, &clipRect)) {
-        //         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't get clip rect: '%s'", SDL_GetError());
-        //         return;
-        //     }
-        //     while (child != nullptr) {
-        //         childClipRect = SDL_Rect{std::min(std::max(clipRect.x, child->getXPos() + child->marginLeft()), clipRect.x + clipRect.w),
-        //                                  std::min(std::max(clipRect.y, child->getYPos() + child->marginTop()), clipRect.y + clipRect.h),
-        //                                  child->getWidth(), child->getHeight()};
-        //         childClipRect.w = std::min(childClipRect.w + child->marginRight(), clipRect.w - (childClipRect.x - clipRect.x));
-        //         childClipRect.h = std::min(childClipRect.h + child->marginBottom(), clipRect.h - (childClipRect.y - clipRect.y));
-        //         childFinalClipRect = computeNewClipRect(&clipRect, &childClipRect);
-        //         if (!SDL_SetRenderClipRect(renderer, &childFinalClipRect)) {
-        //             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't set clip rect '%s'", SDL_GetError());
-        //             break;
-        //         }
-        //         child->render();
-        //         child = child->getConstNext();
-        //     }
-        //     if (!SDL_SetRenderClipRect(renderer, &clipRect)) {
-        //         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderChilds: can't restore clip rect '%s'", SDL_GetError());
-        //         return;
-        //     }
-        // }
-
         void UiElement::renderBorders() const {
             SDL_Color color;
             Uint8 r, g, b, a;
@@ -386,7 +336,6 @@ namespace gui {
                 return;
             }
             SDL_GetRenderClipRect(renderer, &clipRect);
-            // TODO: set border render order in the README
 
             // left border
             color = borderLeftColor();
@@ -442,18 +391,6 @@ namespace gui {
             }
 
             SDL_Color color = backgroundColor();
-            // std::cerr
-            //     << "color of element '"
-            //     << name()
-            //     << "': "
-            //     << (int)color.r
-            //     << ", "
-            //     << (int)color.g
-            //     << ", "
-            //     << (int)color.b
-            //     << ", "
-            //     << (int)color.a
-            //     << "\n";
             SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             SDL_GetRenderClipRect(renderer, &rect);
 

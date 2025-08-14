@@ -6,6 +6,7 @@
 #include "render_nodes/ui_render_node.hpp"
 #include "root_element.hpp"
 #include "ui_element.hpp"
+#include "utils.hpp"
 #include <SDL3/SDL.h>
 
 namespace gui {
@@ -21,6 +22,7 @@ namespace gui {
                 UiElement *focusedElement = nullptr;
                 SDL_Rect clipRect;
                 bool canChangeSize = true;
+                bool windowFocused = false;
 
                 bool needRenderingUpdate = true;
                 gui::element::ui::render::UiRenderNode *rootRenderNode = nullptr;

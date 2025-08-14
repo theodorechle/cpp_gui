@@ -38,7 +38,11 @@ The gui is designed so you can implements easily your own elements
 - UiElement
     - background-color: string|tuple[int,int,int]
     - border-color: string|tuple[int,int,int]
-    - border-width: int
+    - border: int
+    - border-left: int
+    - border-right: int
+    - border-top: int
+    - border-bottom: int
     - // TODO border-radius: int
     - // TODO border-top-left-radius: int
     - // TODO border-top-right-radius: int
@@ -51,6 +55,10 @@ The gui is designed so you can implements easily your own elements
     - min-width: int
     - max-width: int
     - padding: int
+    - padding-left: int
+    - padding-right: int
+    - padding-top: int
+    - padding-bottom: int
     - overflow: hidden|scroll
     - overflow-x: hidden|scroll
     - overflow-y: hidden|scroll
@@ -79,6 +87,9 @@ The gui is designed so you can implements easily your own elements
 - Container
 - Button
 
+// TODO: auto sizes
+
+Display border order: left, right, top, bottom
 
 ## Manager
 It chooses when its elements rendering is computed and when they are rendered.

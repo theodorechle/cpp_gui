@@ -96,9 +96,7 @@ namespace gui {
             }
 
             void UIManager::computeElementsLayout() {
-                // std::cerr << "computeElementsLayout\n";
                 if (rootRenderNode == nullptr) return;
-                // std::cerr << "rootRenderNode is not null\n";
                 delete rootRenderNode->child(); // TODO: remove
                 rootRenderNode->removeChilds();
                 prepareRenderNodes(static_cast<UiElement *>(elementsTree), rootRenderNode, true);
@@ -130,28 +128,14 @@ namespace gui {
             }
 
             void UIManager::renderElements(bool clear) const {
-                // std::cerr << "Rendering elements (renderedTexture is null: " << (renderedTexture == nullptr) << ")\n";
                 if (renderedTexture != nullptr) {
-                    // std::cerr << "renderedTexture: w=" << renderedTexture->w << ", h=" << renderedTexture->h << "\n";
                     SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
                 }
                 SDL_RenderPresent(renderer);
-                // if (elementsTree == nullptr) return;
-                // Uint8 r, g, b, a;
-                // int width = 0, height = 0;
-                // if (clear && SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
-                //     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                //     SDL_RenderClear(renderer);
-                //     SDL_SetRenderDrawColor(renderer, r, g, b, a);
-                // }
-                // SDL_GetCurrentRenderOutputSize(renderer, &width, &height);
-                // SDL_SetRenderClipRect(renderer, &clipRect);
-                // elementsTree->render();
-                // SDL_RenderPresent(renderer);
             }
 
             void UIManager::update() {
-                computeElementsLayout();
+                computeElementsLayout(); // TODO: improve to only render updated elements
                 createRenderedTexture();
             }
 
@@ -167,6 +151,12 @@ namespace gui {
                     break;
                 case SDL_EVENT_WINDOW_RESIZED:
                     needUpdate(true);
+                    break;
+                case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+                    windowFocused = false;
+                    break;
+                case SDL_EVENT_WINDOW_MOUSE_ENTER:
+                    windowFocused = true;
                     break;
                 default:
                     break;
@@ -186,48 +176,24 @@ namespace gui {
                 SDL_Rect currentElementRect = SDL_Rect();
                 int currentX = 0;
                 int currentY = 0;
-                // SDL_Delay(10);
-                // std::cerr << "start\n";
-                // std::cerr << "point: x=" << mousePos.x << ", y=" << mousePos.y << "\n";
-                while (currentRenderNode != nullptr) {
-                    currentElement = currentRenderNode->baseElement;
-                    currentX = currentElementRect.x;
-                    currentY = currentElementRect.y;
-                    currentElementRect = *currentRenderNode->elementClippedRect(); // copy
-                    const ui::Pos pos = *currentRenderNode->startCoords();
-                    // std::cerr << "currentElementRect: " << currentElementRect.x << ", " << currentElementRect.y << "\n";
-                    // std::cerr << "currentX: " << currentX << ", currentY: " << currentY << "\n";
-                    // std::cerr << "pos: " << pos.x << ", " << pos.y << "\n";
-                    currentElementRect.x += pos.x + currentX;
-                    currentElementRect.y += pos.y + currentY;
-                    // std::cerr
-                    //     << "element rect ("
-                    //     << currentElement->name()
-                    //     << "): x="
-                    //     << currentElementRect.x
-                    //     << ", y="
-                    //     << currentElementRect.y
-                    //     << ", w="
-                    //     << currentElementRect.w
-                    //     << ", h="
-                    //     << currentElementRect.h
-                    //     << "\n";
-                    // std::cerr << "hovered: " << (SDL_PointInRect(&mousePos, &currentElementRect) ? "true" : "false") << "\n";
-                    if (SDL_PointInRect(&mousePos, &currentElementRect)) {
-                        // if (currentElement->name() == "label") {
-                        //     std::cerr
-                        //         << "hovered element is label with text: -- "
-                        //         << static_cast<gui::element::Label *>(currentElement)->getText()
-                        //         << " --\n";
-                        // }
-                        // currentElement->displayStyle();
-                        currentHoveredElement = currentElement;
-                        currentRenderNode = currentRenderNode->child();
-                    }
-                    else {
-                        currentElementRect.x -= pos.x;
-                        currentElementRect.y -= pos.y;
-                        currentRenderNode = currentRenderNode->next();
+                if (windowFocused) {
+                    while (currentRenderNode != nullptr) {
+                        currentElement = currentRenderNode->baseElement;
+                        currentX = currentElementRect.x;
+                        currentY = currentElementRect.y;
+                        currentElementRect = *currentRenderNode->elementClippedRect(); // copy
+                        const ui::Pos pos = *currentRenderNode->startCoords();
+                        currentElementRect.x += pos.x + currentX;
+                        currentElementRect.y += pos.y + currentY;
+                        if (SDL_PointInRect(&mousePos, &currentElementRect)) {
+                            currentHoveredElement = currentElement;
+                            currentRenderNode = currentRenderNode->child();
+                        }
+                        else {
+                            currentElementRect.x -= pos.x;
+                            currentElementRect.y -= pos.y;
+                            currentRenderNode = currentRenderNode->next();
+                        }
                     }
                 }
                 if (mouseFlags) {
@@ -237,7 +203,6 @@ namespace gui {
                         if (focusedElement != nullptr) focusedElement->focus(false);
                         focusedElement = clickedElement;
                         if (focusedElement != nullptr) focusedElement->focus(true);
-                        // SDL_Log("clickedElement: %s", clickedElement->name().c_str());
                         setElementsModifierState("clicked", clickedElement, true, SDL_Event{SDL_EVENT_MOUSE_BUTTON_DOWN});
                     }
                 }
@@ -248,7 +213,7 @@ namespace gui {
                         clickedElement = nullptr;
                     }
                 }
-                if (hoveredElement != currentHoveredElement) {
+                if ((hoveredElement != currentHoveredElement) || (hoveredElement && !windowFocused)) {
                     setElementsModifierState("hovered", hoveredElement, false, SDL_Event{SDL_EVENT_MOUSE_MOTION});
                     setElementsModifierState("hovered", currentHoveredElement, true, SDL_Event{SDL_EVENT_MOUSE_MOTION});
                     hoveredElement = currentHoveredElement;
@@ -273,8 +238,6 @@ namespace gui {
                     element = element->getParent();
                 }
                 needUpdate(true);
-                // TODO: don't recalculate the entire tree
-                // TODO: recalculate and re-render only when an element has changed
             }
 
         } // namespace manager

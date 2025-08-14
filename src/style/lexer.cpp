@@ -79,7 +79,6 @@ namespace style {
         while (index + i + 1 < expressionLength && expression[index + i + 1] != '\'') {
             i++;
         }
-        std::cerr << index << ", " << i << ", " << index + i << ", " << expressionLength << "; " << expression[index + i] << "\n";
 
         if (i != 1 && (index + i >= expressionLength || expression[index + i + 1] != '\'')) return;
         parsedTree->appendNext(new Node(Token::String, (i == 1) ? "" : expression.substr(index + 1, i)));
