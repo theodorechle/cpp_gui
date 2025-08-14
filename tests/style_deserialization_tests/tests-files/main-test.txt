@@ -105,6 +105,6 @@ input {
     width: 50px;
 }
 
-#hello-world-button > list > * { // TODO: fix star wildcard
+#hello-world-button > list > * {
     background-color:(203, 42, 198);
 }

@@ -20,7 +20,7 @@ namespace gui::element {
         manager::AbstractManager *elementManager = nullptr;
         gui::elementStyle::manager::StyleNodesManager *elementsStyleManager;
         int _nbChilds = 0;
-        bool _updated = false; // TODO: used?
+        bool _updated = false;
 
     protected:
         gui::elementStyle::StyleNode *style = nullptr;

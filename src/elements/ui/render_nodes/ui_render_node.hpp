@@ -26,7 +26,7 @@ namespace gui::element::ui::render {
         Size relativeSize = {0, 0};
 
         // computed by computeFinalLayout
-        struct { // TODO: cleanup
+        struct {
             SDL_Rect elementRect =
                 SDL_Rect{0, 0, 0, 0}; // the rect containing the entire element corresponding to this node, including margin, padding and borders
             SDL_Rect elementClippedRect = SDL_Rect{0, 0, 0, 0};
