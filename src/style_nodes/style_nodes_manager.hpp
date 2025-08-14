@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <iterator>
 
 namespace gui {
     namespace elementStyle {
@@ -27,6 +28,10 @@ namespace gui {
                 void updateRulesPriorities(int fileNumber);
                 void applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle, gui::elementStyle::StyleNode *elementStyle,
                                                  bool recursive = false);
+                bool elementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle, const style::StyleComponentDataList *componentsList);
+                bool elementSelectorsCompatiblesLoop(style::StyleComponentDataList::const_reverse_iterator componentDataIt,
+                                                     style::StyleComponentDataList::const_reverse_iterator componentDataListEndIt,
+                                                     gui::elementStyle::StyleNode *elementStyle);
 
             public:
                 ~StyleNodesManager();
@@ -39,7 +44,6 @@ namespace gui {
                 int addStyle(const std::string &style);
                 void removeStyleInElements(int fileNumber, gui::elementStyle::StyleNode *element);
                 void removeStyle(int fileNumber);
-                bool areElementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle, const style::StyleComponentDataList *componentsList);
 
                 // TODO: Are both methods needed?
                 void applyStyleToElement(gui::elementStyle::StyleNode *elementStyle, bool recursive = false);

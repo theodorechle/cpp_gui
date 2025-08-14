@@ -95,14 +95,14 @@ namespace gui {
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
                 : AbstractElement{elementName, elementsStyleManager, classes, identifier}, textEngine{textEngine} {}
 
-            UiElement *getParent() { return static_cast<UiElement *>(AbstractElement::parent()); }
-            const UiElement *getConstParent() const { return static_cast<const UiElement *>(AbstractElement::getConstParent()); }
+            UiElement *parent() { return static_cast<UiElement *>(AbstractElement::parent()); }
+            const UiElement *constParent() const { return static_cast<const UiElement *>(AbstractElement::constParent()); }
             void addChild(UiElement *child);
-            UiElement *getChild() { return static_cast<UiElement *>(AbstractElement::child()); }
-            const UiElement *getConstChild() const { return static_cast<const UiElement *>(AbstractElement::getConstChild()); }
-            void setNext(UiElement *next) { AbstractElement::next(next); }
-            UiElement *getNext() { return static_cast<UiElement *>(AbstractElement::next()); }
-            const UiElement *getConstNext() const { return static_cast<const UiElement *>(AbstractElement::getConstNext()); }
+            UiElement *child() { return static_cast<UiElement *>(AbstractElement::child()); }
+            const UiElement *constChild() const { return static_cast<const UiElement *>(AbstractElement::constChild()); }
+            void next(UiElement *next) { AbstractElement::next(next); }
+            UiElement *next() { return static_cast<UiElement *>(AbstractElement::next()); }
+            const UiElement *constNext() const { return static_cast<const UiElement *>(AbstractElement::constNext()); }
 
             void setWindow(SDL_Window *window);
             void setRenderer(SDL_Renderer *renderer);

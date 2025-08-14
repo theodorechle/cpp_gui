@@ -44,7 +44,7 @@ namespace gui {
                     modifier = "";
                     const style::StyleComponentDataList *componentsList = styleComponent->getComponentsList();
 
-                    if (!areElementSelectorsCompatibles(actualElementStyle, componentsList)) continue;
+                    if (!elementSelectorsCompatibles(actualElementStyle, componentsList)) continue;
 
                     styleMap = styleComponent->getStyleMap();
                     elementStyleMap = AppliedStyleMap();
@@ -55,9 +55,9 @@ namespace gui {
                     }
 
                     for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
-                        elementStyleMap[styleRule.first] = {style::StyleRule{styleRule.second.value->copy(), modifier.empty(), // disable if affected by modifier should be done by elementStyle
-                                                                             styleRule.second.specificity, styleRule.second.fileNumber,
-                                                                             styleRule.second.ruleNumber}};
+                        elementStyleMap[styleRule.first] = {style::StyleRule{
+                            styleRule.second.value->copy(), modifier.empty(), // disable if affected by modifier should be done by elementStyle
+                            styleRule.second.specificity, styleRule.second.fileNumber, styleRule.second.ruleNumber}};
                         if (!modifier.empty()) {
                             actualElementStyle->addRuleAffectedByModifier(styleRule.second.fileNumber, styleRule.second.ruleNumber, modifier);
                         }
@@ -120,7 +120,9 @@ namespace gui {
             }
 
             void StyleNodesManager::removeStyleInElements(int fileNumber, gui::elementStyle::StyleNode *element) {
+#ifdef DEBUG
                 std::cerr << "Removing style from element\n";
+#endif
                 gui::elementStyle::StyleNode *child;
                 element->deleteStyleFromFile(fileNumber);
                 child = element->getChild();
@@ -146,19 +148,39 @@ namespace gui {
                 }
             }
 
-            bool StyleNodesManager::areElementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle,
-                                                                   const style::StyleComponentDataList *componentsList) {
+            bool StyleNodesManager::elementSelectorsCompatibles(gui::elementStyle::StyleNode *elementStyle,
+                                                                const style::StyleComponentDataList *componentsList) {
                 if (elementStyle == nullptr || componentsList == nullptr) return false;
+                style::StyleComponentDataList::const_reverse_iterator componentDataIt = componentsList->crbegin();
+                if (componentDataIt->first.second == style::StyleComponentType::Modifier)
+                    componentDataIt++; // TODO: rework to put modifiers inside the declaration, not only at the end
+                return elementSelectorsCompatiblesLoop(componentDataIt, componentsList->crend(), elementStyle);
+            }
+
+            bool StyleNodesManager::elementSelectorsCompatiblesLoop(style::StyleComponentDataList::const_reverse_iterator componentDataIt,
+                                                                    style::StyleComponentDataList::const_reverse_iterator componentDataListEndIt,
+                                                                    gui::elementStyle::StyleNode *elementStyle) {
                 bool selectorExists = false;
                 gui::elementStyle::StyleNode *currentStyle = elementStyle;
-                style::StyleComponentDataList::const_reverse_iterator listEndIt = componentsList->crbegin();
-                const std::set<style::StyleComponentData> *elementSelectors;
-                elementSelectors = currentStyle->getSelectors();
-                if (listEndIt->first.second == style::StyleComponentType::Modifier) {
-                    listEndIt++;
-                }
-                for (style::StyleComponentDataList::const_reverse_iterator it = listEndIt; it != componentsList->crend(); it++) {
+                const std::set<style::StyleComponentData> *elementSelectors = currentStyle->getSelectors();
+
+                for (style::StyleComponentDataList::const_reverse_iterator it = componentDataIt; it != componentDataListEndIt; it++) {
                     if (it->first.second == style::StyleComponentType::StarWildcard) {
+                        while (currentStyle != nullptr) {
+                            currentStyle = currentStyle->getParent();
+                            if (currentStyle == nullptr) {
+                                selectorExists = false;
+                                break;
+                            }
+                            style::StyleComponentDataList::const_reverse_iterator nextIt = std::next(it);
+                            if (nextIt == componentDataListEndIt) {
+                                selectorExists = true;
+                                break;
+                            }
+                            selectorExists = elementSelectorsCompatiblesLoop(nextIt, componentDataListEndIt, currentStyle);
+                            if (selectorExists) break;
+                        }
+                        return selectorExists;
                         selectorExists = true;
                         continue; // allow any element
                     }
@@ -176,18 +198,24 @@ namespace gui {
                         selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
                         break;
                     case style::StyleRelation::AnyParent:
-                        while (currentStyle != nullptr) { // FIXME: do the next steps with all compatible parents. The first found can be good for
-                                                          // this step but not the next, and an other could work
+                        while (currentStyle != nullptr) {
                             currentStyle = currentStyle->getParent();
                             if (currentStyle == nullptr) {
                                 selectorExists = false;
-                                break; // TODO: better handling
+                                break;
                             }
                             elementSelectors = currentStyle->getSelectors();
-                            selectorExists = (elementSelectors->find(it->first) != elementSelectors->cend());
-                            if (selectorExists) break;
+                            if (elementSelectors->find(it->first) != elementSelectors->cend()) {
+                                style::StyleComponentDataList::const_reverse_iterator nextIt = std::next(it);
+                                if (nextIt == componentDataListEndIt) {
+                                    selectorExists = true;
+                                    break;
+                                }
+                                selectorExists = elementSelectorsCompatiblesLoop(nextIt, componentDataListEndIt, currentStyle);
+                                if (selectorExists) break;
+                            }
                         }
-                        break;
+                        return selectorExists;
                     default:
                         selectorExists = false;
                         break;

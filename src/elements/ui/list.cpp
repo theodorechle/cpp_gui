@@ -21,13 +21,13 @@ namespace gui {
             if (vertical) {
                 (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
                 (*selfHeight) = std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0);
-                gap = computeSize({"gap"}, 0, false, (getConstParent() == nullptr) ? 0 : getConstParent()->getHeight()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (constParent() == nullptr) ? 0 : constParent()->getHeight()) * (nbChilds() - 1);
                 (*selfHeight) += gap * (childsSizes.size() - 1);
             }
             else {
                 (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
                 (*selfWidth) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
-                gap = computeSize({"gap"}, 0, false, (getConstParent() == nullptr) ? 0 : getConstParent()->getWidth()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (constParent() == nullptr) ? 0 : constParent()->getWidth()) * (nbChilds() - 1);
                 (*selfWidth) += gap * (childsSizes.size() - 1);
             }
         }
@@ -37,14 +37,14 @@ namespace gui {
             bool vertical = getBoolFromRule({"vertical"});
             int gap;
             if (vertical) {
-                gap = computeSize({"gap"}, 0, false, (getConstParent() == nullptr) ? 0 : getConstParent()->getHeight()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (constParent() == nullptr) ? 0 : constParent()->getHeight()) * (nbChilds() - 1);
             }
             else {
-                gap = computeSize({"gap"}, 0, false, (getConstParent() == nullptr) ? 0 : getConstParent()->getWidth()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (constParent() == nullptr) ? 0 : constParent()->getWidth()) * (nbChilds() - 1);
             }
             const ui::UiElementData *childData;
             ui::Pos childCoords = {0, 0};
-            const UiElement *child = getConstChild();
+            const UiElement *child = constChild();
             while (child != nullptr) {
                 renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, childCoords);
                 childData = static_cast<const ui::UiElementData *>(childInfosCallback(child));
@@ -54,7 +54,7 @@ namespace gui {
                 else {
                     childCoords.x += childData->elementSize.width + gap;
                 }
-                child = child->getConstNext();
+                child = child->constNext();
             }
         }
     } // namespace element

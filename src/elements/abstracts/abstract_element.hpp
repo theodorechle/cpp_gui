@@ -44,14 +44,14 @@ namespace gui::element {
                         std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
         const std::string &name() const { return elementName; }
         AbstractElement *parent() { return _parent; }
-        const AbstractElement *getConstParent() const { return _parent; }
+        const AbstractElement *constParent() const { return _parent; }
         void addChild(AbstractElement *child);
         AbstractElement *child() { return _child; }
-        const AbstractElement *getConstChild() const { return _child; }
+        const AbstractElement *constChild() const { return _child; }
         void removeChilds();
         void next(AbstractElement *next) { this->_next = next; }
         AbstractElement *next() { return _next; }
-        const AbstractElement *getConstNext() const { return _next; }
+        const AbstractElement *constNext() const { return _next; }
 
         void manager(manager::AbstractManager *manager);
 

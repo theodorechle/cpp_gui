@@ -74,8 +74,8 @@ namespace gui {
                         currentRenderNode = ui::render::elementToRenderNodeConverter(renderer, rootRenderNode, currentElement);
                         rootRenderNode->addChild(currentRenderNode);
                     }
-                    prepareRenderNodes(currentElement->getChild(), currentRenderNode);
-                    currentElement = currentElement->getNext();
+                    prepareRenderNodes(currentElement->child(), currentRenderNode);
+                    currentElement = currentElement->next();
                 }
             }
 
@@ -225,7 +225,7 @@ namespace gui {
                 if (element == nullptr) return;
                 while (element != nullptr) {
                     element->catchEvent(event);
-                    element = element->getParent();
+                    element = element->parent();
                 }
             }
 
@@ -235,7 +235,7 @@ namespace gui {
                 while (element != nullptr) {
                     element->setModifierState(modifier, enabled);
                     if (enabled) element->catchEvent(event);
-                    element = element->getParent();
+                    element = element->parent();
                 }
                 needUpdate(true);
             }

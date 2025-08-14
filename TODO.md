@@ -20,3 +20,4 @@ clipping
 Simplify the use of the text engine
 Update namespaces
 
+merge all trees into on class to reduce bugs and simplify tests

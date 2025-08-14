@@ -23,12 +23,12 @@ namespace gui {
 
         void Container::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                      std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
-            const UiElement *child = getConstChild();
+            const UiElement *child = constChild();
             int childNb = 1;
             while (child != nullptr) {
                 renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, {0, 0});
                 childNb++;
-                child = child->getConstNext();
+                child = child->constNext();
             }
         }
     } // namespace element
