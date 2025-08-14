@@ -2,7 +2,8 @@
 #define APP_STATE_HPP
 
 #include "../elements/abstracts/abstract_manager.hpp"
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_video.h>
+#include <SDL3/SDL_render.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
 /**
