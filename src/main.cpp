@@ -75,7 +75,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                                                       elementsStyleManager, &labelClasses, "test-label", textEngine));
     parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
     gui::element::UiElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
-    // FIXME: button click zone is bigger than displayed
     parentContainer->addChild(button);
     gui::element::UiElement *list = new gui::element::List(elementsStyleManager);
     button->addChild(list);

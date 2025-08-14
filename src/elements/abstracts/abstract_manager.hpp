@@ -43,7 +43,6 @@ namespace gui::element::manager {
         void render(bool clear = true);
 
         Status status() { return _currentStatus; }
-        void propagateElementUpdate() { _needUpdate = true; }
         bool needUpdate() { return _needUpdate; }
     };
 }
