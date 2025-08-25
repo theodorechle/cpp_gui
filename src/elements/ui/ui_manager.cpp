@@ -143,23 +143,23 @@ namespace gui {
                 switch (event.type) {
                 case SDL_EVENT_QUIT:
                     status(Status::ENDED);
-                    break;
+                    return;
                 case SDL_EVENT_MOUSE_MOTION:
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
                 case SDL_EVENT_MOUSE_BUTTON_UP:
                     processMouseEvents();
-                    break;
+                    return;
                 case SDL_EVENT_WINDOW_RESIZED:
                     needUpdate(true);
-                    break;
+                    return;
                 case SDL_EVENT_WINDOW_MOUSE_LEAVE:
                     windowFocused = false;
-                    break;
+                    return;
                 case SDL_EVENT_WINDOW_MOUSE_ENTER:
                     windowFocused = true;
-                    break;
+                    return;
                 default:
-                    break;
+                    return;
                 }
 
                 sendEvent(event, focusedElement);
