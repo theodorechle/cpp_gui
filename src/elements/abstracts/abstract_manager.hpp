@@ -18,20 +18,25 @@ namespace gui::element::manager {
 
     private:
         Status _currentStatus = Status::RUNNING;
-        bool _needUpdate = true;
         virtual void renderElements(bool clear = true) const = 0;
         virtual void createRootElement() = 0;
         virtual void update() = 0;
-        virtual void addChildToRootElement(gui::element::AbstractElement *childElement);
+        virtual void addChildToRootElement(AbstractElement *childElement);
 
     protected:
-        gui::element::AbstractElement *elementsTree = nullptr;
+        AbstractElement *elementsTree = nullptr;
+        std::set<AbstractElement *> elementsToUpdate = {};
+
         void status(Status s) { _currentStatus = s; }
-        void needUpdate(bool needUpdate) { _needUpdate = needUpdate; }
+
+        /**
+         * If passed nullptr, clear needed update (no update required)
+         */
+        void needUpdate(AbstractElement *element);
 
     public:
         virtual ~AbstractManager();
-        void setSubRootElement(gui::element::AbstractElement *element);
+        void setSubRootElement(AbstractElement *element);
 
         /**
          * Do actions when an element sends an event (for example, if the element tree changed, it should be re-rendered).
@@ -43,8 +48,8 @@ namespace gui::element::manager {
         void render(bool clear = true);
 
         Status status() { return _currentStatus; }
-        bool needUpdate() { return _needUpdate; }
+        bool needUpdate() { return elementsToUpdate.size(); }
     };
-}
+} // namespace gui::element::manager
 
 #endif // ABSTRACT_MANAGER_HPP

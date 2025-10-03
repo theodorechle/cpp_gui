@@ -53,6 +53,7 @@ namespace gui::element::ui::render {
         UiRenderNode *parent() { return _parent; }
         UiRenderNode *child() { return _child; }
         UiRenderNode *next() { return _next; }
+        // remove pointer to childs, but does not delete them
         void removeChilds();
         void addChild(UiRenderNode *newChild);
         void next(UiRenderNode *nextNode) { _next = nextNode; }
@@ -75,8 +76,13 @@ namespace gui::element::ui::render {
         void renderOnParentSurface() const;
         bool renderChildElement(const UiElement *element, UiRenderData *data);
 
+        void scroll(int x, int y);
+
         const UiElementData *childData(const UiElement *child) const;
+        void debugDisplay(int indent = 0) const;
+
+        bool isParentOf(const UiRenderNode *node) const;
     };
-} // namespace renderNode
+} // namespace gui::element::ui::render
 
 #endif // UI_RENDER_NODE_HPP

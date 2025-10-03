@@ -34,35 +34,27 @@ namespace gui {
         }
 
         std::string UiElement::getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
-                                                     const std::string &defaultString, bool canInherit) const {
-            if (style == nullptr) return defaultString;
+                                                     const std::string &defaultValue, bool canInherit) const {
+            if (style == nullptr) return defaultValue;
             style::StyleValue *rule = nullptr;
             style->getRule(ruleName, &rule, canInherit);
-            if (rule
-                == nullptr
-                || rule->getType()
-                != style::StyleValueType::NameString
-                || allowedValues.empty()
-                || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue())
-                == allowedValues.cend()) {
-                return defaultString;
+            if (rule == nullptr
+                || rule->getType() != style::StyleValueType::NameString
+                || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend())) {
+                return defaultValue;
             }
             return rule->getValue();
         }
 
         std::string UiElement::getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
-                                                      const std::string &defaultString, bool canInherit) const {
-            if (style == nullptr) return defaultString;
+                                                      const std::string &defaultValue, bool canInherit) const {
+            if (style == nullptr) return defaultValue;
             style::StyleValue *rule = nullptr;
             style->getRule(ruleNames, &rule, canInherit);
-            if (rule
-                == nullptr
-                || rule->getType()
-                != style::StyleValueType::NameString
-                || allowedValues.empty()
-                || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue())
-                == allowedValues.cend()) {
-                return defaultString;
+            if (rule == nullptr
+                || rule->getType() != style::StyleValueType::NameString
+                || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend())) {
+                return defaultValue;
             }
             return rule->getValue();
         }
@@ -286,7 +278,7 @@ namespace gui {
 
         void UiElement::computeInnerLayout(int *width, int *height) const {}
 
-        bool UiElement::render(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+        bool UiElement::render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
             if (renderer == nullptr) throw NoRendererException(); // TODO: exception or simple error log? (coherence with the entire program)
 
@@ -316,7 +308,10 @@ namespace gui {
             renderSelfAfterChildsWrapper();
             if (!setClipRect(&clipRect, "UiElement::render (restore)")) return false;
 
-            renderScrollBarsWrapper();
+            const ui::UiElementData *data = static_cast<const ui::UiElementData *>(elementData);
+
+            renderVerticalScrollBarWrapper(data->elementSize.height, data->clippedElementSize, data->scrollOffset.y);
+            renderHorizontalScrollBarWrapper(data->elementSize.width, data->clippedElementSize, data->scrollOffset.x);
 
             return true;
         }
@@ -403,14 +398,54 @@ namespace gui {
             }
         }
 
-        void UiElement::renderScrollBar(int currentSize, int desiredSize) const {
-            if (currentSize >= desiredSize && getNameStringFromRule("scroll-bar", {"always"}) == "") return;
+        void UiElement::renderVerticalScrollBar(int totalHeight, ui::Size clippedSize, int offset) const {
+            Uint8 r, g, b, a;
+
+            if (!SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderVerticalScrollBar: Can't get draw color '%s'", SDL_GetError());
+                return;
+            }
+
+            SDL_Color color = computeColor({"scroll-bar-color"}, SDL_Color{200, 200, 200, 255});
+            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+            int scrollBarWidth = getIntFromRule({"scroll-bar-size"}, 5);
+            SDL_FRect rect = {static_cast<float>(clippedSize.width) - scrollBarWidth, static_cast<float>(offset), static_cast<float>(scrollBarWidth),
+                              static_cast<float>(clippedSize.height) / (static_cast<float>(totalHeight) / clippedSize.height)};
+            SDL_RenderFillRect(renderer, &rect);
+            std::cerr << "scroll-y: scrollable-size=" << (totalHeight - clippedSize.height) << ", offset=" << offset << "\n";
+
+            if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderVerticalScrollBar: Can't set draw color '%s'", SDL_GetError());
+                return;
+            }
         }
 
-        void UiElement::renderScrollBars() const {
-            // TODO: do it
-            // renderScrollBar();
-            // renderScrollBar();
+        void UiElement::renderHorizontalScrollBar(int totalWidth, ui::Size clippedSize, int offset) const {
+            Uint8 r, g, b, a;
+
+            if (!SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a)) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderVerticalScrollBar: Can't get draw color '%s'", SDL_GetError());
+                return;
+            }
+
+            SDL_Color color = computeColor({"scroll-bar-color"}, SDL_Color{200, 200, 200, 255});
+            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+            int scrollBarWidth = getIntFromRule({"scroll-bar-size"}, 5);
+            SDL_FRect rect = {
+                static_cast<float>(offset),
+                static_cast<float>(clippedSize.height) - scrollBarWidth,
+                static_cast<float>(clippedSize.width) / (static_cast<float>(totalWidth) / clippedSize.width),
+                static_cast<float>(scrollBarWidth),
+            };
+            SDL_RenderFillRect(renderer, &rect);
+            std::cerr << "scroll-x: scrollable-size=" << (totalWidth - clippedSize.width) << ", offset=" << offset << "\n";
+
+            if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderVerticalScrollBar: Can't set draw color '%s'", SDL_GetError());
+                return;
+            }
         }
 
         void UiElement::renderSelfBeforeChildsWrapper() const { renderSelfBeforeChilds(); }
@@ -429,7 +464,7 @@ namespace gui {
             const ui::UiElementData *childData = static_cast<const ui::UiElementData *>(childInfosCallback(child));
 
             // TODO: cleanup
-            SDL_Rect childRect = SDL_Rect{pos.x, pos.y, childData->elementSize.width, childData->elementSize.height};
+            SDL_Rect childRect = SDL_Rect{pos.x, pos.y, childData->clippedElementSize.width, childData->clippedElementSize.height};
             childRect.x += paddingLeft() + borderLeft();
             childRect.y += paddingTop() + borderTop();
             delete childData;
@@ -440,13 +475,20 @@ namespace gui {
             return childRendered;
         }
 
+        // TODO: should I remove these useless wrapper and call directly the methods? Or force inline?
         void UiElement::renderBackgroundWrapper() const { renderBackground(); }
 
         void UiElement::renderBordersWrapper() const { renderBorders(); }
 
-        void UiElement::renderScrollBarWrapper(int currentSize, int desiredSize) const { renderScrollBar(currentSize, desiredSize); }
+        void UiElement::renderVerticalScrollBarWrapper(int totalHeight, ui::Size clippedSize, int offset) const {
+            std::string value = getNameStringFromRule("overflow-y", {"hidden", "scroll", "auto"}, "auto");
+            if (value == "scroll" || (value == "auto" && totalHeight > clippedSize.height)) renderVerticalScrollBar(totalHeight, clippedSize, offset);
+        }
 
-        void UiElement::renderScrollBarsWrapper() const { renderScrollBars(); }
+        void UiElement::renderHorizontalScrollBarWrapper(int totalWidth, ui::Size clippedSize, int offset) const {
+            std::string value = getNameStringFromRule("overflow-x", {"hidden", "scroll", "auto"}, "auto");
+            if (value == "scroll" || (value == "auto" && totalWidth > clippedSize.width)) renderHorizontalScrollBar(totalWidth, clippedSize, offset);
+        }
 
         void UiElement::focus(bool focused) {
             _focus = focused;

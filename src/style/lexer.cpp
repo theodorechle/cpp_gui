@@ -93,8 +93,11 @@ namespace style {
         while (index + i < expressionLength && isdigit(expression[index + i])) {
             i++;
         }
-        if (index + i < expressionLength && RESERVED_CHARACTERS.find(expression[index + i]) == RESERVED_CHARACTERS.cend()
-            && expression[index + i] != ' ' && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
+        if (index + i < expressionLength
+            && RESERVED_CHARACTERS.find(expression[index + i]) == RESERVED_CHARACTERS.cend()
+            && expression[index + i] != ' '
+            && expression[index + i] != '\n'
+            && getUnit(i, &tmpSize) == Token::NullRoot)
             return; // not an int
         parsedTree->appendNext(new Node(Token::Int, expression.substr(index, i)));
         index += i;
@@ -114,8 +117,11 @@ namespace style {
             i++;
         }
         if (!dotFound || i < 2) return; // need at least one int (0-9) and a dot
-        if (index + i < expressionLength && RESERVED_CHARACTERS.find(expression[index + i]) == RESERVED_CHARACTERS.cend()
-            && expression[index + i] != ' ' && expression[index + i] != '\n' && getUnit(i, &tmpSize) == Token::NullRoot)
+        if (index + i < expressionLength
+            && RESERVED_CHARACTERS.find(expression[index + i]) == RESERVED_CHARACTERS.cend()
+            && expression[index + i] != ' '
+            && expression[index + i] != '\n'
+            && getUnit(i, &tmpSize) == Token::NullRoot)
             return; // not a float
         parsedTree->appendNext(new Node(Token::Float, expression.substr(index, i)));
         index += i;

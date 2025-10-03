@@ -415,12 +415,9 @@ namespace style {
         if (lastChild != nullptr && lastChild->getToken() == Token::AnyParent) {
             parsedTree->deleteSpecificChild(lastChild);
         }
-        if (parsedTree->getToken()
-            != Token::NullRoot
-            && parsedTree->getToken()
-            != Token::BlockDefinition
-            && parsedTree->getToken()
-            != Token::Declaration)
+        if (parsedTree->getToken() != Token::NullRoot
+            && parsedTree->getToken() != Token::BlockDefinition
+            && parsedTree->getToken() != Token::Declaration)
             throw MalformedExpression("A style block must be defined in an other style block or at the root level of the file");
         if (parsedTree->getToken() != Token::Declaration) {
             lastChild = parsedTree->getLastChild();

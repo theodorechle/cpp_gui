@@ -5,6 +5,6 @@ namespace gui::element {
     struct ElementData {};
     struct RenderData {};
 
-    enum class ElementEvent { REMOVE_CHILDS };
+    enum class ElementEvent { REMOVE_CHILDS, ADD_CHILD };
 }
 #endif // ABSTRACT_UTILS_HPP

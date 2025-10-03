@@ -26,8 +26,11 @@ namespace gui::element::ui {
 
     struct UiElementData : ElementData {
         Size elementSize;
+        Size clippedElementSize;
+        Pos scrollOffset;
 
-        UiElementData(Size size) : elementSize{size} {}
+        UiElementData(Size size, Size clippedSize, Pos scrollOffset)
+            : elementSize{size}, clippedElementSize{clippedSize}, scrollOffset{scrollOffset} {}
     };
 }
 

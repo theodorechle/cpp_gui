@@ -22,8 +22,11 @@ IndentCaseLabels: false
 ColumnLimit: 150
 AccessModifierOffset: -4
 NamespaceIndentation: All
-FixNamespaceComments: false
+FixNamespaceComments: true
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 BreakBeforeBinaryOperators: NonAssignment
-BreakBinaryOperations: OnePerLine
+BreakBinaryOperations: RespectPrecedence
 BreakTemplateDeclarations: Yes
+PointerAlignment: Right
+ReferenceAlignment: Right
+ReflowComments: Always

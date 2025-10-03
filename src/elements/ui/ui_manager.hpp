@@ -7,9 +7,9 @@
 #include "root_element.hpp"
 #include "ui_element.hpp"
 #include "utils.hpp"
+#include <SDL3/SDL_events.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
-#include <SDL3/SDL_events.h>
 
 namespace gui {
     namespace element {
@@ -18,29 +18,28 @@ namespace gui {
             class UIManager : public AbstractManager {
                 SDL_Window *window = nullptr;
                 SDL_Renderer *renderer = nullptr;
-                UiElement *clickedElement = nullptr;
+                ui::render::UiRenderNode *clickedElement = nullptr;
                 bool clicked = false;
-                UiElement *hoveredElement = nullptr;
-                UiElement *focusedElement = nullptr;
+                ui::render::UiRenderNode *hoveredElement = nullptr;
+                ui::render::UiRenderNode *focusedElement = nullptr;
                 SDL_Rect clipRect;
                 bool canChangeSize = true;
                 bool windowFocused = false;
 
-                bool needRenderingUpdate = true;
-                gui::element::ui::render::UiRenderNode *rootRenderNode = nullptr;
+                ui::render::UiRenderNode *rootRenderNode = nullptr;
                 SDL_Texture *renderedTexture = nullptr;
 
                 void createRootElement() override;
 
                 void computeNodesLayout(ui::render::UiRenderNode *renderNode);
-                void initElementsBeforeLayoutComputing(gui::element::ui::render::UiRenderNode *rootRenderNode);
-                void restoreAfterLayoutComputing(gui::element::ui::render::UiRenderNode *rootRenderNode);
-                void prepareRenderNodes(UiElement *rootElement, gui::element::ui::render::UiRenderNode *rootRenderNode, bool isRoot = false);
-                void computeNodesAndChildsLayout(gui::element::ui::render::UiRenderNode *node);
-                void computeNodesRelativeLayout(gui::element::ui::render::UiRenderNode *node);
-                void computeNodesFinalLayout(gui::element::ui::render::UiRenderNode *node, SDL_Rect *rootClipRect = nullptr);
+                void initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
+                void restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
+                void prepareRenderNodes(UiElement *rootElement, ui::render::UiRenderNode *rootRenderNode);
+                void computeNodesAndChildsLayout(ui::render::UiRenderNode *node);
+                void computeNodesRelativeLayout(ui::render::UiRenderNode *node);
+                void computeNodesFinalLayout(ui::render::UiRenderNode *node, SDL_Rect *rootClipRect = nullptr);
                 void computeElementsLayout();
-                void createNodesTextures(gui::element::ui::render::UiRenderNode *node);
+                void createNodesTextures(ui::render::UiRenderNode *node);
                 void createRenderedTexture();
 
                 void renderElements(bool clear = true) const override;
@@ -56,7 +55,19 @@ namespace gui {
 
                 void updateRenderingData();
 
+                // childElement must be a UiElement
                 void addChildToRootElement(gui::element::AbstractElement *childElement) override;
+
+                /**
+                 * Returns the renderNode who corresponds to the given element.
+                 * If none found, returns nullptr;
+                 */
+                ui::render::UiRenderNode *renderNodeOf(const AbstractElement *element);
+
+                /**
+                 * parentNode is the parent of the deleted nodes
+                 */
+                void resetInvalidPointersOnNodesDeletion(const ui::render::UiRenderNode *parentNode, bool deleteUpdateElement = true);
 
             public:
                 UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect = nullptr);
@@ -67,10 +78,9 @@ namespace gui {
 
                 void processMouseEvents();
 
-                /**
-                 * Not perfect, but should be called when elements are destroyed to prevent trying to call them (events)
-                 */
-                void resetEvents();
+                void scroll(int x, int y);
+
+                void elementEvent(ElementEvent event, AbstractElement *caller) override;
             };
 
         } // namespace manager

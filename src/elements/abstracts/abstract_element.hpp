@@ -48,6 +48,7 @@ namespace gui::element {
         void addChild(AbstractElement *child);
         AbstractElement *child() { return _child; }
         const AbstractElement *constChild() const { return _child; }
+        // remove pointer to childs, but does not delete them
         void removeChilds();
         void next(AbstractElement *next) { this->_next = next; }
         AbstractElement *next() { return _next; }
@@ -78,7 +79,7 @@ namespace gui::element {
         /**
          * Should call rendering functions, including (if used) previous functions.
          */
-        virtual bool render(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+        virtual bool render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                             std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const = 0;
 
         bool styleManagerAvailable() const { return elementsStyleManager != nullptr; }
@@ -89,8 +90,10 @@ namespace gui::element {
         void setModifierState(std::string modifierName, bool enabled);
 
         void displayStyle();
+
+        void debugDisplay(int indent = 0) const;
     };
-}
+} // namespace gui::element
 
 #include "abstract_manager.hpp"
 

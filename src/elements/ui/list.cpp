@@ -49,10 +49,10 @@ namespace gui {
                 renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, childCoords);
                 childData = static_cast<const ui::UiElementData *>(childInfosCallback(child));
                 if (vertical) {
-                    childCoords.y += childData->elementSize.height + gap;
+                    childCoords.y += childData->clippedElementSize.height + gap;
                 }
                 else {
-                    childCoords.x += childData->elementSize.width + gap;
+                    childCoords.x += childData->clippedElementSize.width + gap;
                 }
                 child = child->constNext();
             }

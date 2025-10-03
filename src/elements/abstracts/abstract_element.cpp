@@ -57,6 +57,8 @@ namespace gui::element {
         style->addChild(newChild->style);
         newChild->parent(this);
         _nbChilds++;
+        newChild->manager(elementManager);
+        sendEventToManager(ElementEvent::ADD_CHILD);
     }
 
     void AbstractElement::removeChilds() {
@@ -132,4 +134,16 @@ namespace gui::element {
         }
         std::cerr << "########################################################\n";
     }
-}
+
+    void AbstractElement::debugDisplay(int indent) const {
+        for (int i = 0; i < indent; i++) {
+            std::cerr << "\t";
+        }
+        std::cerr << "(" << this << ") " << elementName << "\n";
+        const AbstractElement *child = constChild();
+        while (child) {
+            child->debugDisplay(indent + 1);
+            child = child->constNext();
+        }
+    }
+} // namespace gui::element

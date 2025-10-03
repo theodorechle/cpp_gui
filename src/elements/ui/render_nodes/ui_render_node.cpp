@@ -1,4 +1,5 @@
 #include "ui_render_node.hpp"
+#include "../label.hpp"
 
 namespace gui::element::ui::render {
     UiRenderNode::UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent, gui::element::UiElement *baseElement)
@@ -134,6 +135,8 @@ namespace gui::element::ui::render {
         if (baseElement == nullptr) return;
 
         UiRenderData data = UiRenderData(usedLayout.elementRect);
+        data.elementRect.x += usedLayout.startCoords.x;
+        data.elementRect.y += usedLayout.startCoords.y;
 
         renderElement(&data);
     }
@@ -159,7 +162,11 @@ namespace gui::element::ui::render {
         SDL_SetRenderTarget(renderer, nodeTexture);
         SDL_SetRenderClipRect(renderer, &(usedLayout.elementRect)); // TODO: get rid of get clip rects and get texture size instead
 
+        UiElementData elementData = UiElementData({usedLayout.elementRect.w, usedLayout.elementRect.h},
+                                                  {usedLayout.elementClippedRect.w, usedLayout.elementClippedRect.h}, usedLayout.scrollOffset);
+
         if (!baseElement->render(
+                &elementData,
                 [this](const AbstractElement *element, RenderData *elementData) {
                     return this->renderChildElement(static_cast<const UiElement *>(element), static_cast<UiRenderData *>(elementData));
                 },
@@ -204,14 +211,57 @@ namespace gui::element::ui::render {
         return false;
     }
 
+    void UiRenderNode::scroll(int x, int y) {
+        usedLayout.scrollOffset = {std::max(std::min(usedLayout.scrollOffset.x + x, usedLayout.elementRect.w - usedLayout.elementClippedRect.w), 0),
+                                   std::max(std::min(usedLayout.scrollOffset.y + y, usedLayout.elementRect.h - usedLayout.elementClippedRect.h), 0)};
+    }
+
     const UiElementData *UiRenderNode::childData(const UiElement *child) const {
         const UiRenderNode *node = constChild();
         while (node != nullptr) {
             if (node->baseElement == child) {
-                return new UiElementData({node->usedLayout.elementRect.w, node->usedLayout.elementRect.h});
+                return new UiElementData({node->usedLayout.elementRect.w, node->usedLayout.elementRect.h},
+                                         {node->usedLayout.elementClippedRect.w, node->usedLayout.elementClippedRect.h},
+                                         node->usedLayout.scrollOffset);
             }
             node = node->constNext();
         }
         return nullptr;
     }
-} // namespace gui::element::ui::renderNode
+
+    void UiRenderNode::debugDisplay(int indent) const {
+        for (int i = 0; i < indent; i++) {
+            std::cerr << "\t";
+        }
+        std::cerr
+            << "("
+            << this
+            << ") "
+            << baseElement->name()
+            << "{x="
+            << usedLayout.startCoords.x
+            << ",y="
+            << usedLayout.startCoords.y
+            << ",w="
+            << usedLayout.elementClippedRect.w
+            << ",h="
+            << usedLayout.elementClippedRect.h
+            << "}";
+        if (baseElement->name() == "label") std::cerr << " (" << static_cast<gui::element::Label *>(baseElement)->getText() << ")";
+        std::cerr << "\n";
+        const UiRenderNode *child = constChild();
+        while (child) {
+            child->debugDisplay(indent + 1);
+            child = child->constNext();
+        }
+    }
+
+    bool UiRenderNode::isParentOf(const UiRenderNode *node) const {
+        while (node) {
+            if (node == this) return true;
+            node = node->_parent;
+        }
+        return false;
+    }
+
+} // namespace gui::element::ui::render

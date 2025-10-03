@@ -60,9 +60,10 @@ The gui is designed so you can implements easily your own elements
     - padding-top: int
     - padding-bottom: int
     - overflow: hidden|scroll
-    - overflow-x: hidden|scroll
-    - overflow-y: hidden|scroll
-    - scroll-bar: scroll|always
+    - overflow-x: hidden|scroll|auto
+    - overflow-y: hidden|scroll|auto
+    - scroll-bar-size: int
+    - scroll-bar-color: string|tuple[int,int,int]
     - // FIXME margin-left: int
     - // FIXME margin-right: int
     - // FIXME margin-top: int

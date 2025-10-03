@@ -20,7 +20,7 @@ namespace gui {
     namespace element {
 
         class UiElement : public AbstractElement {
-            SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0}; // TODO: used?
+            SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0}; // TODO: update it to be able to use percentages
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
@@ -55,10 +55,15 @@ namespace gui {
              ```
              * 'biggest' would be a valid rule name, as 'childs-size' is, but is considered as a string because it's a value.
              *
+             * Specifically, name strings should be a set of possible values, restraining the possibilities, whereas strings could be anything,
+             although you can still put anything in name strings.
+             * It's just not what they were made for in the first place.
+             *
              * If no allowed value is given, it will return the found value.
+             * If no value is found, it returns the defaultValue.
              */
             std::string getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
-                                              const std::string &defaultString = "", bool canInherit = false) const;
+                                              const std::string &defaultValue = "", bool canInherit = false) const;
 
             /**
              * Name strings are values who are valid rule names, but since they are values, they are considered as strings without quotes.
@@ -70,10 +75,15 @@ namespace gui {
              ```
              * 'biggest' would be a valid rule name, as 'childs-size' is, but is considered as a string because it's a value.
              *
+             * Specifically, name strings should be a set of possible values, restraining the possibilities, whereas strings could be anything,
+             although you can still put anything in name strings.
+             * It's just not what they were made for in the first place.
+             *
              * If no allowed value is given, it will return the found value.
+             * If no value is found, it returns the defaultValue.
              */
             std::string getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
-                                               const std::string &defaultString = "", bool canInherit = false) const;
+                                               const std::string &defaultValue = "", bool canInherit = false) const;
             bool getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool = false, bool canInherit = false) const;
 
             /**
@@ -178,10 +188,10 @@ namespace gui {
             virtual void renderSelfAfterChilds() const;
             virtual void renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                       std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const;
-            void renderBackground() const;
-            void renderBorders() const;
-            void renderScrollBar(int currentSize, int desiredSize) const;
-            void renderScrollBars() const;
+            virtual void renderBackground() const;
+            virtual void renderBorders() const;
+            virtual void renderVerticalScrollBar(int totalHeight, ui::Size clippedSize, int offset) const;
+            virtual void renderHorizontalScrollBar(int totalWidth, ui::Size clippedSize, int offset) const;
 
         public:
             void renderSelfBeforeChildsWrapper() const override;
@@ -193,8 +203,8 @@ namespace gui {
                                           gui::element::ui::Pos pos) const;
             void renderBackgroundWrapper() const;
             void renderBordersWrapper() const;
-            void renderScrollBarWrapper(int currentSize, int desiredSize) const;
-            void renderScrollBarsWrapper() const;
+            void renderVerticalScrollBarWrapper(int totalHeight, ui::Size clippedSize, int offset) const;
+            void renderHorizontalScrollBarWrapper(int totalWidth, ui::Size clippedSize, int offset) const;
 
             /**
              * Calls the rendering methods in this order:
@@ -205,7 +215,7 @@ namespace gui {
              * - renderScrollBarsWrapper
              * Also manages the clip rect for content (everything except borders)
              */
-            bool render(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+            bool render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                         std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
 
             virtual void catchEvent(const SDL_Event &event) {}
@@ -214,9 +224,9 @@ namespace gui {
             bool focus() { return _focus; };
         };
 
-        class NoRendererException : public std::logic_error {
+        class NoRendererException : public std::runtime_error {
         public:
-            NoRendererException() : std::logic_error{"No renderer available"} {};
+            NoRendererException() : std::runtime_error{"No renderer available"} {};
         };
 
     } // namespace element

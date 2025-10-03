@@ -21,3 +21,10 @@ Simplify the use of the text engine
 Update namespaces
 
 merge all trees into on class to reduce bugs and simplify tests
+
+fix resize
+
+update elements on events (hovered, clicked, ...) only if they do something (have a modifier, maybe other things)
+don't re-render elements who don't change (only the ones who changes and their parents)
+
+don't redraw parents if size don't change (draw directly, bypass parent)
