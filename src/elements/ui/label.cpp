@@ -121,7 +121,7 @@ namespace gui {
         }
 
         SDL_Color Label::textColor() const { return computeColor({"text-color"}, SDL_Color{0, 0, 0, 255}, true); }
-        int Label::fontSize() const { return getIntFromRule({"font-size"}, 15, true); }
+        int Label::fontSize() const { return computeSize({"font-size"}, 15, true); }
         std::string Label::fontName() const { return style->getFontsPath() + getStringFromRule({"font-name"}, "", true); }
 
         void Label::setText(const std::string &newText) {
