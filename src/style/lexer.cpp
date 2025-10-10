@@ -87,9 +87,10 @@ namespace style {
     }
 
     void Lexer::lexeInt() {
-        if (!isdigit(expression[index])) return;
+        size_t i = 0;
+        if (expression[index] == '-') i++;
+        if (!isdigit(expression[index + i])) return;
         int tmpSize;
-        size_t i = 1;
         while (index + i < expressionLength && isdigit(expression[index + i])) {
             i++;
         }
@@ -108,6 +109,11 @@ namespace style {
         int tmpSize;
         bool dotFound = false;
         size_t i = 0;
+        size_t min_index = 2;
+        if (expression[index + i] == '-') {
+            i++;
+            min_index++;
+        }
         while (index + i < expressionLength) {
             if (expression[index + i] == '.') {
                 if (!dotFound) dotFound = true;
@@ -116,7 +122,7 @@ namespace style {
             else if (!isdigit(expression[index + i])) return;
             i++;
         }
-        if (!dotFound || i < 2) return; // need at least one int (0-9) and a dot
+        if (!dotFound || i < min_index) return; // need at least one int (0-9) and a dot
         if (index + i < expressionLength
             && RESERVED_CHARACTERS.find(expression[index + i]) == RESERVED_CHARACTERS.cend()
             && expression[index + i] != ' '

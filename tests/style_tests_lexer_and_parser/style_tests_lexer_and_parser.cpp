@@ -263,7 +263,7 @@ namespace styleTestsLexerAndParser {
         style::Node *rootExpected;
         test::Result result;
 
-        rootExpected = new style::Node(style::Token::Int, "-12.6");
+        rootExpected = new style::Node(style::Token::Float, "-12.6");
         result = testLexer(true, "-12.6", rootExpected);
         delete rootExpected;
         return result;
@@ -299,7 +299,7 @@ namespace styleTestsLexerAndParser {
         return result;
     }
 
-    test::Result testLexingNegativeFloatNoParts() { return testLexerException<style::LexerException>("-.6"); }
+    test::Result testLexingNegativeFloatNoParts() { return testLexerException<style::LexerException>("-."); }
 
     test::Result testLexingSemiColon() {
         style::Node *rootExpected;
