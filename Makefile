@@ -1,5 +1,5 @@
-CC=g++
-CFLAGS=-std=c++17 -Wall -g -MMD -MP
+CPP_C=g++
+CPP_FLAGS=-std=c++17 -Wall -g -MMD -MP
 SDL_CMD=`pkg-config sdl3 sdl3-ttf --cflags --libs`
 BIN_DIR=bin
 OBJ_DIR=obj/normal
@@ -34,6 +34,13 @@ BIN_TESTS=$(BIN_DIR)/tests
 
 .PHONY: all clean tests
 
+# $(info origin=$(origin DEBUG))
+# $(info value='$(DEBUG)')
+
+ifdef DEBUG
+CPP_FLAGS += -DDEBUG
+endif
+
 # Build the final executable combining exe and style
 all: $(MAIN)
 
@@ -48,17 +55,17 @@ $(LIB).a: $(OBJ_STYLE) $(OBJ_SUBDIRS)
 # Build everything except tests
 $(MAIN): $(OBJ_MAIN) $(LIB).a
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^ $(SDL_CMD)
+	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD)
 
 # Build the tests executable (tests + all style sources)
 $(BIN_TESTS): $(OBJ_TESTS) $(TESTS_LIB).a
-	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^
+	@CPP_C -p $(BIN_DIR)
+	$(CPP_C) $(CPP_FLAGS) -o $@ $^
 
 # Rule for compiling all object files
 $(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -DDEBUG -c $< -o $@
+	$(CPP_C) $(CPP_FLAGS) -DDEBUG -c $< -o $@
 
 $(TESTS_LIB).a:
 	$(MAKE) -C cpp_tests -j lib
@@ -66,7 +73,7 @@ $(TESTS_LIB).a:
 # Rule for compiling all object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CPP_C) $(CPP_FLAGS) -c $< -o $@
 
 # Include dependency files if they exist
 # -include $(DEPS)

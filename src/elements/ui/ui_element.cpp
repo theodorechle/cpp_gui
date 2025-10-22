@@ -33,26 +33,26 @@ namespace gui {
             return rule->getValue();
         }
 
-        std::string UiElement::getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
+        std::string UiElement::getEnumFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
                                                      const std::string &defaultValue, bool canInherit) const {
             if (style == nullptr) return defaultValue;
             style::StyleValue *rule = nullptr;
             style->getRule(ruleName, &rule, canInherit);
             if (rule == nullptr
-                || rule->getType() != style::StyleValueType::NameString
+                || rule->getType() != style::StyleValueType::Enum
                 || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend())) {
                 return defaultValue;
             }
             return rule->getValue();
         }
 
-        std::string UiElement::getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
+        std::string UiElement::getEnumFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
                                                       const std::string &defaultValue, bool canInherit) const {
             if (style == nullptr) return defaultValue;
             style::StyleValue *rule = nullptr;
             style->getRule(ruleNames, &rule, canInherit);
             if (rule == nullptr
-                || rule->getType() != style::StyleValueType::NameString
+                || rule->getType() != style::StyleValueType::Enum
                 || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend())) {
                 return defaultValue;
             }
@@ -481,12 +481,12 @@ namespace gui {
         void UiElement::renderBordersWrapper() const { renderBorders(); }
 
         void UiElement::renderVerticalScrollBarWrapper(int totalHeight, ui::Size clippedSize, int offset) const {
-            std::string value = getNameStringFromRule("overflow-y", {"hidden", "scroll", "auto"}, "auto");
+            std::string value = getEnumFromRule("overflow-y", {"hidden", "scroll", "auto"}, "auto");
             if (value == "scroll" || (value == "auto" && totalHeight > clippedSize.height)) renderVerticalScrollBar(totalHeight, clippedSize, offset);
         }
 
         void UiElement::renderHorizontalScrollBarWrapper(int totalWidth, ui::Size clippedSize, int offset) const {
-            std::string value = getNameStringFromRule("overflow-x", {"hidden", "scroll", "auto"}, "auto");
+            std::string value = getEnumFromRule("overflow-x", {"hidden", "scroll", "auto"}, "auto");
             if (value == "scroll" || (value == "auto" && totalWidth > clippedSize.width)) renderHorizontalScrollBar(totalWidth, clippedSize, offset);
         }
 

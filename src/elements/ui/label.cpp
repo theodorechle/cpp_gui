@@ -18,7 +18,7 @@ namespace gui {
             }
 
             int style = TTF_STYLE_NORMAL;
-            std::string fontWeight = getNameStringFromRule("font-weight", {"normal", "bold"}, "normal", true);
+            std::string fontWeight = getEnumFromRule("font-weight", {"normal", "bold"}, "normal", true);
             if (fontWeight == "bold") style |= TTF_STYLE_BOLD;
             if (getBoolFromRule({"font-italic"}, false, true)) style |= TTF_STYLE_ITALIC;
             if (getBoolFromRule({"font-underline"}, false, true)) style |= TTF_STYLE_UNDERLINE;
@@ -30,7 +30,7 @@ namespace gui {
 
         void Label::getTextSize(int *width, int *height) const {
             if (ttfFont) {
-                std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "line-break"}, "line-break", true);
+                std::string wrapping = getEnumFromRule("text-wrap", {"wrapped", "line-break"}, "line-break", true);
                 if (wrapping == "wrapped") {
                     int wrapWidth = this->width();
                     if (wrapWidth != 0) {
@@ -58,7 +58,7 @@ namespace gui {
 
             if (ttfText == nullptr) return;
 
-            std::string wrapping = getNameStringFromRule("text-wrap", {"wrapped", "line-break"}, "line-break", true);
+            std::string wrapping = getEnumFromRule("text-wrap", {"wrapped", "line-break"}, "line-break", true);
             if (wrapping == "wrapped") {
                 int wrapWidth = rect.w;
                 if (!TTF_SetTextWrapWidth(ttfText, wrapWidth)) {
@@ -80,7 +80,7 @@ namespace gui {
             int textWidth, textHeight;
             getTextSize(&textWidth, &textHeight);
 
-            std::string horizontalAlignment = getNameStringFromRule("horizontal-alignment", {"start", "centered", "end"}, "start", true);
+            std::string horizontalAlignment = getEnumFromRule("horizontal-alignment", {"start", "centered", "end"}, "start", true);
 
             // TODO: add support for reversed languages
             if (horizontalAlignment == "start") {
@@ -91,7 +91,7 @@ namespace gui {
             else {
                 rect.x += (rect.w - textWidth);
             }
-            std::string verticalAlignment = getNameStringFromRule("vertical-alignment", {"start", "centered", "end"}, "start", true);
+            std::string verticalAlignment = getEnumFromRule("vertical-alignment", {"start", "centered", "end"}, "start", true);
 
             // TODO: add support for reversed languages
             if (verticalAlignment == "start") {

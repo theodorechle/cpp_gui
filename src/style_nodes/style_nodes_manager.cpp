@@ -92,10 +92,7 @@ namespace gui {
                 std::cerr << "Adding file '" << fileName << "'\n";
 #endif
                 int fileNumber = findFile(fileName); //  TODO: allow force reload
-                if (fileNumber != -1) {
-                    updateRulesPriorities(fileNumber);
-                    return fileNumber;
-                }
+                if (fileNumber != -1) removeStyle(fileNumber);
                 std::ifstream file(fileName);
                 std::stringstream buffer;
                 if (!file.is_open()) {

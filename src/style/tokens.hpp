@@ -50,7 +50,7 @@ namespace style {
         // NullRoot is used only when an algorithm must start with an existing node
         NullRoot,
         // value types
-        NameString,
+        Enum,
         Tuple,
         String,
         Function,

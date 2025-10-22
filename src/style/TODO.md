@@ -2,6 +2,7 @@
 - enable modifiers who aren't at the end of the required components list
 - check for multiple same identifiers
 - nested tuples?
-- assert modifiers without other component who affect all styles (:hovered {...}) are working
 - rename: styleComponent
 - remove empty blocks
+
+- style validity (enums, existing units, ...) should be done here directly, not in external (gui here)

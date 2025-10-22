@@ -450,13 +450,13 @@ namespace style {
         if (parsedTree->getToken() == Token::Assignment) {
             removeSpace();
 
-            if (parsedTree->getNbChilds() != 1) throw MalformedExpression("Can't have more than one rvalue in an assignment");
-            parsedTree->appendChild(new Node{Token::NameString, currentNode->getValue()});
+            if (parsedTree->getNbChilds() != 1) throw MalformedExpression("Can only have one rvalue in an assignment");
+            parsedTree->appendChild(new Node{Token::Enum, currentNode->getValue()});
         }
         else if (parsedTree->getToken() == Token::Tuple || parsedTree->getToken() == Token::Function) {
             removeSpace();
 
-            if (parsedTree->getNbChilds() > 1) throw MalformedExpression("Can only have one rvalue in an assignment");
+            if (parsedTree->getNbChilds() != 1) throw MalformedExpression("Can only have one rvalue in an assignment");
             lastChild = parsedTree->getLastChild();
             if (lastChild != nullptr && lastChild->getToken() != Token::ArgSeparator)
                 throw MalformedExpression("The elements in a tuple or the parameters of a function must be comma separated");

@@ -46,44 +46,18 @@ namespace gui {
                                           bool canInherit = false) const;
 
             /**
-             * Name strings are values who are valid rule names, but since they are values, they are considered as strings without quotes.
-             * For example, in
-             ```
-             list {
-                childs-size: biggest;
-             }
-             ```
-             * 'biggest' would be a valid rule name, as 'childs-size' is, but is considered as a string because it's a value.
-             *
-             * Specifically, name strings should be a set of possible values, restraining the possibilities, whereas strings could be anything,
-             although you can still put anything in name strings.
-             * It's just not what they were made for in the first place.
-             *
              * If no allowed value is given, it will return the found value.
              * If no value is found, it returns the defaultValue.
              */
-            std::string getNameStringFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
-                                              const std::string &defaultValue = "", bool canInherit = false) const;
+            std::string getEnumFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
+                                        const std::string &defaultValue = "", bool canInherit = false) const;
 
             /**
-             * Name strings are values who are valid rule names, but since they are values, they are considered as strings without quotes.
-             * For example, in
-             ```
-             list {
-                childs-size: biggest;
-             }
-             ```
-             * 'biggest' would be a valid rule name, as 'childs-size' is, but is considered as a string because it's a value.
-             *
-             * Specifically, name strings should be a set of possible values, restraining the possibilities, whereas strings could be anything,
-             although you can still put anything in name strings.
-             * It's just not what they were made for in the first place.
-             *
              * If no allowed value is given, it will return the found value.
              * If no value is found, it returns the defaultValue.
              */
-            std::string getNameStringFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
-                                               const std::string &defaultValue = "", bool canInherit = false) const;
+            std::string getEnumFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
+                                         const std::string &defaultValue = "", bool canInherit = false) const;
             bool getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool = false, bool canInherit = false) const;
 
             /**
