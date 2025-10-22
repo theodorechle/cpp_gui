@@ -59,7 +59,7 @@ $(MAIN): $(OBJ_MAIN) $(LIB).a
 
 # Build the tests executable (tests + all style sources)
 $(BIN_TESTS): $(OBJ_TESTS) $(TESTS_LIB).a
-	@CPP_C -p $(BIN_DIR)
+	@mkdir -p $(BIN_DIR)
 	$(CPP_C) $(CPP_FLAGS) -o $@ $^
 
 # Rule for compiling all object files
@@ -68,7 +68,7 @@ $(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CPP_C) $(CPP_FLAGS) -DDEBUG -c $< -o $@
 
 $(TESTS_LIB).a:
-	$(MAKE) -C cpp_tests -j lib
+	$(MAKE) -C cpp_tests -j lib DEBUG=DEBUG
 
 # Rule for compiling all object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
