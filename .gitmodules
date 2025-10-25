@@ -1,3 +1,6 @@
 [submodule "cpp_tests"]
 	path = cpp_tests
 	url = https://github.com/theodorechle/cpp_tests
+[submodule "cpp_style"]
+	path = cpp_style
+	url = https://github.com/theodorechle/cpp_style

@@ -39,7 +39,7 @@ namespace gui {
             style::StyleValue *rule = nullptr;
             style->getRule(ruleName, &rule, canInherit);
             if (rule == nullptr
-                || rule->getType() != style::StyleValueType::Enum
+                || rule->getType() != style::StyleValueType::EnumValue
                 || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend())) {
                 return defaultValue;
             }
@@ -52,7 +52,7 @@ namespace gui {
             style::StyleValue *rule = nullptr;
             style->getRule(ruleNames, &rule, canInherit);
             if (rule == nullptr
-                || rule->getType() != style::StyleValueType::Enum
+                || rule->getType() != style::StyleValueType::EnumValue
                 || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend())) {
                 return defaultValue;
             }
