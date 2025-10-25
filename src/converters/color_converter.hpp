@@ -1,7 +1,7 @@
 #ifndef COLOR_CONVERTER_HPP
 #define COLOR_CONVERTER_HPP
 
-#include "../style/style_component.hpp"
+#include "../../cpp_style/src/style/style_component.hpp"
 #include "number_converter.hpp"
 #include <SDL3/SDL_pixels.h>
 #include <string>

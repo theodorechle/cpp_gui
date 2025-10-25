@@ -1,7 +1,7 @@
 #ifndef ABSTRACT_ELEMENT_HPP
 #define ABSTRACT_ELEMENT_HPP
 
-#include "../../style_nodes/style_nodes_manager.hpp"
+#include "../../../cpp_style/src/style_nodes/style_nodes_manager.hpp"
 #include "abstract_utils.hpp"
 
 #include <string>

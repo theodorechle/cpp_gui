@@ -28,3 +28,6 @@ update elements on events (hovered, clicked, ...) only if they do something (hav
 don't re-render elements who don't change (only the ones who changes and their parents)
 
 don't redraw parents if size don't change (draw directly, bypass parent)
+
+Add option in makefile for -j
+Prevent having multiple times submodule cpp_tests

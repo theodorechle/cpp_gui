@@ -8,9 +8,9 @@
 #include "elements/ui/ui_element.hpp"
 #include "elements/ui/ui_manager.hpp"
 #include "elements/ui/view_container.hpp"
-#include "style/style_deserializer.hpp"
-#include "style_nodes/style_node.hpp"
-#include "style_nodes/style_nodes_manager.hpp"
+#include "../cpp_style/src/style/style_deserializer.hpp"
+#include "../cpp_style/src/style_nodes/style_node.hpp"
+#include "../cpp_style/src/style_nodes/style_nodes_manager.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include <SDL3/SDL_main.h>
@@ -62,7 +62,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     *appstate = new AppState(manager, sdl_window, sdl_renderer, elementsStyleManager, textEngine);
 
     elementsStyleManager->setFontsPath("tests/fonts");
-    elementsStyleManager->addStyleFile("tests/style_deserialization_tests/tests-files/main-test.txt");
+    elementsStyleManager->addStyleFile("tests/tests-files/main-test.txt");
 
     gui::element::UiElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
     manager->setSubRootElement(parentContainer);

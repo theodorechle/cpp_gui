@@ -1,7 +1,7 @@
 #ifndef SIZE_CONVERTER_HPP
 #define SIZE_CONVERTER_HPP
 
-#include "../style/style_component.hpp"
+#include "../../cpp_style/src/style/style_component.hpp"
 #include "number_converter.hpp"
 #include <string>
 

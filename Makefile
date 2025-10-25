@@ -26,11 +26,11 @@ OBJ_TESTS=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_TEST_DIR)/%.o, $(SRC_TESTS))
 # Executable targets
 MAIN=$(BIN_DIR)/cpp_gui
 BIN_ALL=$(BIN_DIR)/all
-BIN_TESTS=$(BIN_DIR)/tests
+TESTS=$(BIN_DIR)/tests
 
 .PHONY: all clean tests
 
-ifdef DEBUG
+ifeq ($(DEBUG),1)
 CPP_FLAGS += -DDEBUG
 endif
 
@@ -38,19 +38,19 @@ all: $(MAIN)
 
 lib: $(LIB).a
 
-tests: $(BIN_TESTS)
+tests: $(TESTS)
 
-$(LIB).a:$(OBJ_SUBDIRS) $(STYLE_LIB).a
+$(LIB).a: $(OBJ_SUBDIRS)
 	@mkdir -p $(BIN_DIR)
 	ar -r $@ $^
 
 # Build everything except tests
-$(MAIN): $(OBJ_MAIN) $(LIB).a
+$(MAIN): $(OBJ_MAIN) $(LIB).a $(STYLE_LIB).a
 	@mkdir -p $(BIN_DIR)
 	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD)
 
 # Build the tests executable (tests + lib)
-$(BIN_TESTS): $(OBJ_TESTS) $(LIB).a $(STYLE_LIB).a $(TESTS_LIB).a
+$(TESTS): $(OBJ_TESTS) $(LIB).a $(TESTS_LIB).a
 	@mkdir -p $(BIN_DIR)
 	$(CPP_C) $(CPP_FLAGS) -o $@ $^
 
@@ -60,10 +60,10 @@ $(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CPP_C) $(CPP_FLAGS) -DDEBUG -c $< -o $@
 
 $(STYLE_LIB).a:
-	$(MAKE) -C cpp_style -j lib DEBUG=DEBUG
+	$(MAKE) -C cpp_style -j lib DEBUG=$(DEBUG)
 
 $(TESTS_LIB).a:
-	$(MAKE) -C cpp_tests -j lib DEBUG=DEBUG
+	$(MAKE) -C cpp_tests -j lib DEBUG=$(DEBUG)
 
 # Rule for compiling all object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
@@ -74,4 +74,5 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 clean:
 	@find obj -mindepth 1 ! -name .gitkeep -delete
 	@find bin -mindepth 1 ! -name .gitkeep -delete
+	$(MAKE) -C cpp_style clean
 	$(MAKE) -C cpp_tests clean

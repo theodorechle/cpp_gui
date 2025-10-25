@@ -1,7 +1,7 @@
 #ifndef NUMBER_CONVERTER_HPP
 #define NUMBER_CONVERTER_HPP
 
-#include "../style/style_component.hpp"
+#include "../../cpp_style/src/style/style_component.hpp"
 #include <string>
 
 namespace gui {
