@@ -1,23 +1,25 @@
-name: C++ CI
+# If re-activate, need sdl3 to be compiled
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+# name: C++ CI
 
-jobs:
-  build:
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
 
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
 
-    steps:
-    - name: Checkout repository and submodules
-      uses: actions/checkout@v4
-      with:
-        submodules: true
+#     runs-on: ubuntu-latest
 
-    - name: Compile tests
-      run: make -j tests
-    - name: Execute tests
-      run: bin/tests
+#     steps:
+#     - name: Checkout repository and submodules
+#       uses: actions/checkout@v4
+#       with:
+#         submodules: true
+
+#     - name: Compile tests
+#       run: make -j tests
+#     - name: Execute tests
+#       run: bin/tests
