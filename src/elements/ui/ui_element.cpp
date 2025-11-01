@@ -34,7 +34,7 @@ namespace gui {
         }
 
         std::string UiElement::getEnumFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
-                                                     const std::string &defaultValue, bool canInherit) const {
+                                               const std::string &defaultValue, bool canInherit) const {
             if (style == nullptr) return defaultValue;
             style::StyleValue *rule = nullptr;
             style->getRule(ruleName, &rule, canInherit);
@@ -47,7 +47,7 @@ namespace gui {
         }
 
         std::string UiElement::getEnumFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
-                                                      const std::string &defaultValue, bool canInherit) const {
+                                                const std::string &defaultValue, bool canInherit) const {
             if (style == nullptr) return defaultValue;
             style::StyleValue *rule = nullptr;
             style->getRule(ruleNames, &rule, canInherit);
@@ -107,110 +107,110 @@ namespace gui {
 
         void UiElement::setWindow(SDL_Window *window) {
             this->window = window;
-            UiElement *c = child();
+            UiElement *c = static_cast<UiElement *>(child());
             while (c != nullptr) {
                 c->setWindow(window);
-                c = c->next();
+                c = static_cast<UiElement *>(c->next());
             }
         }
 
         void UiElement::setRenderer(SDL_Renderer *renderer) {
             this->renderer = renderer;
-            UiElement *c = child();
+            UiElement *c = static_cast<UiElement *>(child());
             while (c != nullptr) {
                 c->setRenderer(renderer);
-                c = c->next();
+                c = static_cast<UiElement *>(c->next());
             }
         }
 
         int UiElement::marginLeft(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"margin-left", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"margin-left", "margin"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getWidth(), found);
         }
 
         int UiElement::marginRight(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"margin-right", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"margin-right", "margin"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getWidth(), found);
         }
 
         int UiElement::marginTop(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"margin-top", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"margin-top", "margin"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         }
 
         int UiElement::marginBottom(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"margin-bottom", "margin"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"margin-bottom", "margin"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         }
 
         int UiElement::paddingLeft(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"padding-left", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"padding-left", "padding"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getWidth(), found);
         }
 
         int UiElement::paddingRight(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"padding-right", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"padding-right", "padding"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getWidth(), found);
         }
 
         int UiElement::paddingTop(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"padding-top", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"padding-top", "padding"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         }
 
         int UiElement::paddingBottom(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"padding-bottom", "padding"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"padding-bottom", "padding"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         }
 
         int UiElement::borderLeft(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"border-left", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"border-left", "border"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getWidth(), found);
         }
 
         int UiElement::borderRight(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"border-right", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"border-right", "border"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getWidth(), found);
         }
 
         int UiElement::borderTop(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"border-top", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"border-top", "border"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         }
 
         int UiElement::borderBottom(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"border-bottom", "border"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"border-bottom", "border"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         }
 
         int UiElement::width(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"width"}, 0, false, (parent == nullptr) ? 0 : parent->getWidth(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"width"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getWidth(), found);
         };
 
         int UiElement::height(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"height"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         };
 
         int UiElement::maxWidth(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"max-width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"max-width"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         };
 
         int UiElement::minWidth(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"min-width"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"min-width"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         };
 
         int UiElement::maxHeight(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"max-height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"max-height"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         };
 
         int UiElement::minHeight(bool *found) const {
-            const UiElement *parent = constParent();
-            return computeSize({"min-height"}, 0, false, (parent == nullptr) ? 0 : parent->getHeight(), found);
+            const UiElement *elementParent = static_cast<const UiElement *>(parent());
+            return computeSize({"min-height"}, 0, false, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
         };
 
         SDL_Color UiElement::borderLeftColor() const { return computeColor({"border-left-color", "border-color"}); }
@@ -413,7 +413,9 @@ namespace gui {
             SDL_FRect rect = {static_cast<float>(clippedSize.width) - scrollBarWidth, static_cast<float>(offset), static_cast<float>(scrollBarWidth),
                               static_cast<float>(clippedSize.height) / (static_cast<float>(totalHeight) / clippedSize.height)};
             SDL_RenderFillRect(renderer, &rect);
+#ifdef DEBUG
             std::cerr << "scroll-y: scrollable-size=" << (totalHeight - clippedSize.height) << ", offset=" << offset << "\n";
+#endif
 
             if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderVerticalScrollBar: Can't set draw color '%s'", SDL_GetError());
@@ -440,7 +442,9 @@ namespace gui {
                 static_cast<float>(scrollBarWidth),
             };
             SDL_RenderFillRect(renderer, &rect);
+#ifdef DEBUG
             std::cerr << "scroll-x: scrollable-size=" << (totalWidth - clippedSize.width) << ", offset=" << offset << "\n";
+#endif
 
             if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiElement::renderVerticalScrollBar: Can't set draw color '%s'", SDL_GetError());

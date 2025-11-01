@@ -1,6 +1,7 @@
 #ifndef ABSTRACT_ELEMENT_HPP
 #define ABSTRACT_ELEMENT_HPP
 
+#include "../../../cpp_commons/node.hpp"
 #include "../../../cpp_style/src/style_nodes/style_nodes_manager.hpp"
 #include "abstract_utils.hpp"
 
@@ -12,22 +13,15 @@ namespace gui::element {
         class AbstractManager;
     }
 
-    class AbstractElement {
+    class AbstractElement : public commons::Node<AbstractElement> {
         std::string elementName;
-        AbstractElement *_parent = nullptr;
-        AbstractElement *_child = nullptr;
-        AbstractElement *_next = nullptr;
         manager::AbstractManager *elementManager = nullptr;
-        gui::elementStyle::manager::StyleNodesManager *elementsStyleManager;
-        int _nbChilds = 0;
+        style::elementStyle::manager::StyleNodesManager *elementsStyleManager;
         bool _updated = false;
 
     protected:
-        gui::elementStyle::StyleNode *style = nullptr;
-        void parent(AbstractElement *parent);
+        style::elementStyle::StyleNode *style = nullptr;
         void updateStyle();
-
-        int nbChilds() const { return _nbChilds; }
 
         void updated() { _updated = true; }
 
@@ -40,19 +34,13 @@ namespace gui::element {
         /**
          * If no style manager is given, the element can't have style
          */
-        AbstractElement(std::string elementName, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
+        AbstractElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                         std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
         const std::string &name() const { return elementName; }
-        AbstractElement *parent() { return _parent; }
-        const AbstractElement *constParent() const { return _parent; }
         void addChild(AbstractElement *child);
-        AbstractElement *child() { return _child; }
-        const AbstractElement *constChild() const { return _child; }
         // remove pointer to childs, but does not delete them
         void removeChilds();
-        void next(AbstractElement *next) { this->_next = next; }
-        AbstractElement *next() { return _next; }
-        const AbstractElement *constNext() const { return _next; }
+        void setParent(AbstractElement *parent);
 
         void manager(manager::AbstractManager *manager);
 

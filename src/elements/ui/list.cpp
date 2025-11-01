@@ -2,7 +2,7 @@
 
 namespace gui {
     namespace element {
-        List::List(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
+        List::List(style::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
                    const std::string &identifier)
             : UiElement{"list", elementsStyleManager, classes, identifier} {}
 
@@ -21,13 +21,13 @@ namespace gui {
             if (vertical) {
                 (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
                 (*selfHeight) = std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0);
-                gap = computeSize({"gap"}, 0, false, (constParent() == nullptr) ? 0 : constParent()->getHeight()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChilds() - 1);
                 (*selfHeight) += gap * (childsSizes.size() - 1);
             }
             else {
                 (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
                 (*selfWidth) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
-                gap = computeSize({"gap"}, 0, false, (constParent() == nullptr) ? 0 : constParent()->getWidth()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChilds() - 1);
                 (*selfWidth) += gap * (childsSizes.size() - 1);
             }
         }
@@ -37,24 +37,24 @@ namespace gui {
             bool vertical = getBoolFromRule({"vertical"});
             int gap;
             if (vertical) {
-                gap = computeSize({"gap"}, 0, false, (constParent() == nullptr) ? 0 : constParent()->getHeight()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChilds() - 1);
             }
             else {
-                gap = computeSize({"gap"}, 0, false, (constParent() == nullptr) ? 0 : constParent()->getWidth()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, false, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChilds() - 1);
             }
             const ui::UiElementData *childData;
             ui::Pos childCoords = {0, 0};
-            const UiElement *child = constChild();
-            while (child != nullptr) {
-                renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, childCoords);
-                childData = static_cast<const ui::UiElementData *>(childInfosCallback(child));
+            const UiElement *elementChild = static_cast<const UiElement *>(child());
+            while (elementChild != nullptr) {
+                renderSingleChildWrapper(renderChildCallback, childInfosCallback, elementChild, childCoords);
+                childData = static_cast<const ui::UiElementData *>(childInfosCallback(elementChild));
                 if (vertical) {
                     childCoords.y += childData->clippedElementSize.height + gap;
                 }
                 else {
                     childCoords.x += childData->clippedElementSize.width + gap;
                 }
-                child = child->constNext();
+                elementChild = static_cast<const UiElement *>(elementChild->next());
             }
         }
     } // namespace element

@@ -26,8 +26,6 @@ namespace gui {
             TTF_TextEngine *textEngine = nullptr;
             bool _focus = false;
 
-            void setParent(UiElement *parent) { AbstractElement::parent(parent); }
-
             /**
              * Return a modified version of wantedNewClipRect who fits in oldClipRect
              * Does not alter any of the given rects
@@ -75,18 +73,12 @@ namespace gui {
                                    bool canInherit = false) const;
 
         public:
-            UiElement(std::string elementName, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
+            UiElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
                 : AbstractElement{elementName, elementsStyleManager, classes, identifier}, textEngine{textEngine} {}
 
-            UiElement *parent() { return static_cast<UiElement *>(AbstractElement::parent()); }
-            const UiElement *constParent() const { return static_cast<const UiElement *>(AbstractElement::constParent()); }
-            void addChild(UiElement *child);
-            UiElement *child() { return static_cast<UiElement *>(AbstractElement::child()); }
-            const UiElement *constChild() const { return static_cast<const UiElement *>(AbstractElement::constChild()); }
-            void next(UiElement *next) { AbstractElement::next(next); }
-            UiElement *next() { return static_cast<UiElement *>(AbstractElement::next()); }
-            const UiElement *constNext() const { return static_cast<const UiElement *>(AbstractElement::constNext()); }
+
+            void addChild(UiElement *child); // TODO
 
             void setWindow(SDL_Window *window);
             void setRenderer(SDL_Renderer *renderer);

@@ -20,7 +20,7 @@ root {
 //    width: 100px;
 }
 */
-@import "tests/style_deserialization_tests/tests-files/imported-file.txt";
+@import "tests/tests-files/imported-file.txt";
 
 #red-container {
     // padding: 100px;

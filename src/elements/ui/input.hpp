@@ -16,7 +16,7 @@ namespace gui {
             void onFocusLoose() override;
 
         public:
-            Input(const std::string &text = "", const std::string &placeholder = "", gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+            Input(const std::string &text = "", const std::string &placeholder = "", style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                   const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
 
             void catchEvent(const SDL_Event &event) override;

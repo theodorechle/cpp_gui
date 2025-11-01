@@ -22,14 +22,10 @@ namespace gui {
 
         bool gui::converter::SizeConverter::convert(style::StyleValue *value, int *size, int parentSize) {
             if (value == nullptr || size == nullptr) return false;
-            switch (value->getType()) {
-            case style::StyleValueType::PixelUnit:
-                return convertFromPixel(value, size);
-            case style::StyleValueType::PercentageUnit:
-                return convertFromPercentage(value, size, parentSize);
-            default:
-                return false;
-            }
+            std::string v = value->getValue();
+            if (v == "px") return convertFromPixel(value, size);
+            if (v == "%") return convertFromPercentage(value, size, parentSize);
+            return false;
         }
 
     } // namespace converter

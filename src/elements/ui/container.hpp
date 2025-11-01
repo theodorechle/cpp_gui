@@ -8,7 +8,7 @@ namespace gui {
 
         class Container : public UiElement {
         public:
-            Container(gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+            Container(style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                       const std::string &identifier = "");
             void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
                                             std::list<std::tuple<int, int>> childsSizes) const override;

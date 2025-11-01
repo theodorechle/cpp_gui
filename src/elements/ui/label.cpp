@@ -107,11 +107,11 @@ namespace gui {
             }
         }
 
-        Label::Label(const std::string &elementName, const std::string &text, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager,
+        Label::Label(const std::string &elementName, const std::string &text, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : UiElement{elementName, elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 
-        Label::Label(const std::string &text, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
+        Label::Label(const std::string &text, style::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
                      const std::string &identifier, TTF_TextEngine *textEngine)
             : UiElement{"label", elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 

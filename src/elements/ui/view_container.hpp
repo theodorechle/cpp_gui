@@ -25,7 +25,7 @@ namespace gui {
 
         public:
             ViewContainer(gui::element::manager::UIManager *viewManager,
-                          gui::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+                          style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                           const std::string &identifier = "");
         };
 

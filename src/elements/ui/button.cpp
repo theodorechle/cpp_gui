@@ -3,7 +3,7 @@
 namespace gui {
     namespace element {
 
-        Button::Button(std::function<void()> onClick, gui::elementStyle::manager::StyleNodesManager *elementsStyleManager,
+        Button::Button(std::function<void()> onClick, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
                        std::vector<std::string> *classes, const std::string &identifier)
             : UiElement{"button", elementsStyleManager, classes, identifier}, onClickFunction{onClick} {}
 
@@ -27,12 +27,12 @@ namespace gui {
 
         void Button::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                   std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
-            const UiElement *child = constChild();
+            const UiElement *elementChild = static_cast<const UiElement *>(child());
             int childNb = 1;
-            while (child != nullptr) {
-                renderSingleChildWrapper(renderChildCallback, childInfosCallback, child, {0, 0});
+            while (elementChild != nullptr) {
+                renderSingleChildWrapper(renderChildCallback, childInfosCallback, elementChild, {0, 0});
                 childNb++;
-                child = child->constNext();
+                elementChild = static_cast<const UiElement *>(elementChild->next());
             }
         }
     } // namespace element

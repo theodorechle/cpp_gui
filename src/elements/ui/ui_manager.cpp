@@ -48,7 +48,7 @@ namespace gui {
                 std::list<const gui::element::AbstractElement *> pathElement;
                 while (node) {
                     pathElement.push_front(node);
-                    node = node->constParent();
+                    node = node->parent();
                 }
 
                 pathElement.pop_front(); // no need of root since it has already been checked
@@ -120,8 +120,8 @@ namespace gui {
                 while (currentElement) {
                     currentRenderNode = new ui::render::UiRenderNode(renderer, rootRenderNode, currentElement);
                     rootRenderNode->addChild(currentRenderNode);
-                    prepareRenderNodes(currentElement->child(), currentRenderNode);
-                    currentElement = currentElement->next();
+                    prepareRenderNodes(static_cast<UiElement *>(currentElement->child()), currentRenderNode);
+                    currentElement = static_cast<UiElement *>(currentElement->next());
                 }
             }
 
@@ -143,6 +143,7 @@ namespace gui {
 
             void UIManager::computeElementsLayout() {
                 if (!elementsToUpdate.size()) return;
+#ifdef DEBUG
                 std::cerr << "hovered element: " << hoveredElement << "\n";
                 std::cerr << "clicked element: " << clickedElement << "\n";
                 std::cerr << "focused element: " << focusedElement << "\n";
@@ -150,28 +151,38 @@ namespace gui {
                 elementsTree->debugDisplay();
                 std::cerr << "render_nodes\n";
                 rootRenderNode->debugDisplay();
+#endif
                 const UiElement *hoveredUiElement = hoveredElement ? hoveredElement->baseElement : nullptr;
                 const UiElement *clickedUiElement = clickedElement ? clickedElement->baseElement : nullptr;
                 const UiElement *focusedUiElement = focusedElement ? focusedElement->baseElement : nullptr;
                 for (AbstractElement *elementToUpdate : elementsToUpdate) {
                     ui::render::UiRenderNode *renderNode = renderNodeOf(elementToUpdate);
+#ifdef DEBUG
                     std::cerr << "element to refresh: " << renderNode << "\n";
+#endif
                     if (!renderNode) continue;
                     delete renderNode->child();
                     renderNode->removeChilds();
+#ifdef DEBUG
+
                     std::cerr << "render_nodes after removing\n";
                     rootRenderNode->debugDisplay();
-                    prepareRenderNodes(static_cast<UiElement *>(elementToUpdate)->child(), renderNode);
+#endif
+                    prepareRenderNodes(static_cast<UiElement *>(elementToUpdate->child()), renderNode);
+#ifdef DEBUG
                     std::cerr << "render_nodes after preparation\n";
                     rootRenderNode->debugDisplay();
+#endif
                 }
                 initElementsBeforeLayoutComputing(rootRenderNode);
                 hoveredElement = renderNodeOf(hoveredUiElement);
                 clickedElement = renderNodeOf(clickedUiElement);
                 focusedElement = renderNodeOf(focusedUiElement);
+#ifdef DEBUG
                 std::cerr << "hovered element: " << hoveredElement << "\n";
                 std::cerr << "clicked element: " << clickedElement << "\n";
                 std::cerr << "focused element: " << focusedElement << "\n";
+#endif
                 computeNodesLayout(rootRenderNode);
                 computeNodesAndChildsLayout(rootRenderNode);
                 computeNodesRelativeLayout(rootRenderNode);
@@ -304,7 +315,7 @@ namespace gui {
                 if (element == nullptr) return;
                 while (element != nullptr) {
                     element->catchEvent(event);
-                    element = element->parent();
+                    element = static_cast<UiElement *>(element->parent());
                 }
             }
 
@@ -313,7 +324,7 @@ namespace gui {
                 while (element != nullptr) {
                     element->setModifierState(modifier, enabled);
                     if (enabled) element->catchEvent(event);
-                    element = element->parent();
+                    element = static_cast<UiElement *>(element->parent());
                 }
                 needUpdate(leafElement);
             }

@@ -1,8 +1,8 @@
 #include "abstract_element.hpp"
 
 namespace gui::element {
-    void AbstractElement::parent(AbstractElement *parent) {
-        this->_parent = parent;
+    void AbstractElement::setParent(AbstractElement *parent) {
+        commons::Node<AbstractElement>::parent(parent);
         updateStyle();
     }
 
@@ -19,11 +19,11 @@ namespace gui::element {
         elementManager->elementEvent(event, this);
     }
 
-    AbstractElement::AbstractElement(std::string elementName, elementStyle::manager::StyleNodesManager *elementsStyleManager,
+    AbstractElement::AbstractElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
                                      std::vector<std::string> *classes, const std::string &identifier)
         : elementName{elementName}, elementsStyleManager{elementsStyleManager} {
 
-        style = new gui::elementStyle::StyleNode();
+        style = new style::elementStyle::StyleNode();
         if (elementsStyleManager != nullptr) {
             style->setFontsPath(elementsStyleManager->getFontsPath());
         }
@@ -42,38 +42,21 @@ namespace gui::element {
 
     void AbstractElement::addChild(AbstractElement *newChild) {
         if (newChild == nullptr) return;
-        AbstractElement *nextChild = child();
-        AbstractElement *selfChild;
-        if (nextChild == nullptr) {
-            this->_child = newChild;
-        }
-        else {
-            do {
-                selfChild = nextChild;
-                nextChild = selfChild->next();
-            } while (nextChild != nullptr);
-            selfChild->next(newChild);
-        }
+        commons::Node<AbstractElement>::child(newChild);
         style->addChild(newChild->style);
-        newChild->parent(this);
-        _nbChilds++;
         newChild->manager(elementManager);
         sendEventToManager(ElementEvent::ADD_CHILD);
     }
 
     void AbstractElement::removeChilds() {
-        _child = nullptr;
+        commons::Node<AbstractElement>::removeChilds();
         style->removeChilds();
         sendEventToManager(ElementEvent::REMOVE_CHILDS);
     }
 
     void AbstractElement::manager(manager::AbstractManager *manager) { elementManager = manager; }
 
-    AbstractElement::~AbstractElement() {
-        delete style;
-        delete _child;
-        delete _next;
-    }
+    AbstractElement::~AbstractElement() { delete style; }
 
     void AbstractElement::setModifierState(std::string modifierName, bool enabled) { style->setModifierState(modifierName, enabled); }
 
@@ -82,7 +65,7 @@ namespace gui::element {
         std::cerr << "path in tree:\n";
         const AbstractElement *node = this;
         std::list<std::list<std::string>> path = {};
-        while (node->_parent != nullptr) {
+        while (node->parent() != nullptr) {
             std::list<std::string> pathFragment = {};
             for (style::StyleComponentData selector : *(node->style->getSelectors())) {
                 char firstChar[2] = "";
@@ -102,7 +85,7 @@ namespace gui::element {
                 pathFragment.push_back(firstChar + selector.first);
             }
             path.push_front(pathFragment);
-            node = node->_parent;
+            node = node->parent();
         }
         for (const std::list<std::string> &path_fragment : path) {
             std::cerr << "/";
@@ -121,7 +104,7 @@ namespace gui::element {
             std::cerr << "(" << style::styleComponentTypeToString(selector.second) << ") " << selector.first << "\n";
         }
         std::cerr << "applied rules:\n";
-        for (std::pair<std::string, elementStyle::StyleRules> rule : style->getStyle()) {
+        for (std::pair<std::string, style::elementStyle::StyleRules> rule : style->getStyle()) {
             std::cerr << rule.first << " -> ";
             style::StyleValue *value = rule.second.front().value;
             std::cerr << value->getValue();
@@ -140,10 +123,10 @@ namespace gui::element {
             std::cerr << "\t";
         }
         std::cerr << "(" << this << ") " << elementName << "\n";
-        const AbstractElement *child = constChild();
-        while (child) {
-            child->debugDisplay(indent + 1);
-            child = child->constNext();
+        const AbstractElement *elementChild = child();
+        while (elementChild) {
+            elementChild->debugDisplay(indent + 1);
+            elementChild = elementChild->next();
         }
     }
 } // namespace gui::element
