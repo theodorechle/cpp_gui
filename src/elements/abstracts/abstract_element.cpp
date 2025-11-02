@@ -42,7 +42,7 @@ namespace gui::element {
 
     void AbstractElement::addChild(AbstractElement *newChild) {
         if (newChild == nullptr) return;
-        commons::Node<AbstractElement>::child(newChild);
+        commons::Node<AbstractElement>::addChild(newChild);
         style->addChild(newChild->style);
         newChild->manager(elementManager);
         sendEventToManager(ElementEvent::ADD_CHILD);
@@ -56,7 +56,11 @@ namespace gui::element {
 
     void AbstractElement::manager(manager::AbstractManager *manager) { elementManager = manager; }
 
-    AbstractElement::~AbstractElement() { delete style; }
+    AbstractElement::~AbstractElement() {
+        style->removeChilds();
+        style->next(nullptr);
+        delete style;
+    }
 
     void AbstractElement::setModifierState(std::string modifierName, bool enabled) { style->setModifierState(modifierName, enabled); }
 
