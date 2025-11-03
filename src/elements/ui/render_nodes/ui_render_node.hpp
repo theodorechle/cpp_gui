@@ -1,6 +1,7 @@
 #ifndef UI_RENDER_NODE_HPP
 #define UI_RENDER_NODE_HPP
 
+#include "../../../../cpp_commons/src/node.hpp"
 #include "../../abstracts/abstract_element.hpp"
 #include "../../abstracts/abstract_utils.hpp"
 #include "../ui_element.hpp"
@@ -9,12 +10,8 @@
 #include <SDL3/SDL_render.h>
 
 namespace gui::element::ui::render {
-    class UiRenderNode {
+    class UiRenderNode : public commons::Node<UiRenderNode> {
         SDL_Renderer *renderer = nullptr;
-        // tree structure
-        UiRenderNode *_parent = nullptr;
-        UiRenderNode *_child = nullptr;
-        UiRenderNode *_next = nullptr;
 
         // computed by computeSelfLayout
         Size defaultSelfSize = {0, 0};
@@ -40,24 +37,15 @@ namespace gui::element::ui::render {
 
         SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
 
+        void debugValue(int indent = 0) const override;
+
     public:
         // the UiElement corresponding to this node. Used for computing layouts.
         gui::element::UiElement *baseElement; // FIXME: should be private, but needed by the ui manager
 
         UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent = nullptr, gui::element::UiElement *baseElement = nullptr);
         ~UiRenderNode();
-        // tree
-        const UiRenderNode *constParent() const { return _parent; }
-        const UiRenderNode *constChild() const { return _child; }
-        const UiRenderNode *constNext() const { return _next; }
-        UiRenderNode *parent() { return _parent; }
-        UiRenderNode *child() { return _child; }
-        UiRenderNode *next() { return _next; }
         // remove pointer to childs, but does not delete them
-        void removeChilds();
-        void addChild(UiRenderNode *newChild);
-        void next(UiRenderNode *nextNode) { _next = nextNode; }
-        void parent(UiRenderNode *parentNode) { _parent = parentNode; }
 
         void computeSelfLayout();
         void computeSelfAndChildsLayout();
@@ -79,7 +67,6 @@ namespace gui::element::ui::render {
         void scroll(int x, int y);
 
         const UiElementData *childData(const UiElement *child) const;
-        void debugDisplay(int indent = 0) const;
 
         bool isParentOf(const UiRenderNode *node) const;
     };

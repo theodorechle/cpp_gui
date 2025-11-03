@@ -5,32 +5,7 @@ namespace gui::element::ui::render {
     UiRenderNode::UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent, gui::element::UiElement *baseElement)
         : renderer{renderer}, _parent{parent}, baseElement{baseElement} {}
 
-    UiRenderNode::~UiRenderNode() {
-        SDL_DestroyTexture(nodeTexture);
-        delete _child;
-        delete _next;
-    }
-
-    void UiRenderNode::removeChilds() { _child = nullptr; }
-
-    void UiRenderNode::addChild(UiRenderNode *newChild) {
-        if (newChild == nullptr) return;
-        UiRenderNode *nextChild = child();
-        UiRenderNode *selfChild;
-        if (nextChild == nullptr) {
-            this->_child = newChild;
-        }
-        else {
-            do {
-                selfChild = nextChild;
-                nextChild = selfChild->next();
-            } while (nextChild != nullptr);
-            selfChild->next(newChild);
-        }
-        if (newChild != nullptr) {
-            newChild->parent(this);
-        }
-    }
+    UiRenderNode::~UiRenderNode() { SDL_DestroyTexture(nodeTexture); }
 
     void UiRenderNode::computeSelfLayout() {
         if (baseElement == nullptr) return;
@@ -217,43 +192,35 @@ namespace gui::element::ui::render {
     }
 
     const UiElementData *UiRenderNode::childData(const UiElement *child) const {
-        const UiRenderNode *node = constChild();
+        const UiRenderNode *node = child();
         while (node != nullptr) {
             if (node->baseElement == child) {
                 return new UiElementData({node->usedLayout.elementRect.w, node->usedLayout.elementRect.h},
                                          {node->usedLayout.elementClippedRect.w, node->usedLayout.elementClippedRect.h},
                                          node->usedLayout.scrollOffset);
             }
-            node = node->constNext();
+            node = node->next();
         }
         return nullptr;
     }
 
-    void UiRenderNode::debugDisplay(int indent) const {
-        for (int i = 0; i < indent; i++) {
-            std::cerr << "\t";
-        }
-        std::cerr
-            << "("
-            << this
-            << ") "
-            << baseElement->name()
-            << "{x="
-            << usedLayout.startCoords.x
-            << ",y="
-            << usedLayout.startCoords.y
-            << ",w="
-            << usedLayout.elementClippedRect.w
-            << ",h="
-            << usedLayout.elementClippedRect.h
-            << "}";
-        if (baseElement->name() == "label") std::cerr << " (" << static_cast<gui::element::Label *>(baseElement)->getText() << ")";
-        std::cerr << "\n";
-        const UiRenderNode *child = constChild();
-        while (child) {
-            child->debugDisplay(indent + 1);
-            child = child->constNext();
-        }
+    std::string UiRenderNode::debugValue() const {
+        // FIXME: will not compile but I don't have a compiler right now
+        std::string value = "("
+                            + this
+                            + ") "
+                            + baseElement->name()
+                            + "{x="
+                            + usedLayout.startCoords.x
+                            + ",y="
+                            + usedLayout.startCoords.y
+                            + ",w="
+                            + usedLayout.elementClippedRect.w
+                            + ",h="
+                            + usedLayout.elementClippedRect.h
+                            + "}";
+        if (baseElement->name() == "label") value += " (" + static_cast<gui::element::Label *>(baseElement)->getText() + ")";
+        return value;
     }
 
     bool UiRenderNode::isParentOf(const UiRenderNode *node) const {

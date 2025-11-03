@@ -122,15 +122,6 @@ namespace gui::element {
         std::cerr << "########################################################\n";
     }
 
-    void AbstractElement::debugDisplay(int indent) const {
-        for (int i = 0; i < indent; i++) {
-            std::cerr << "\t";
-        }
-        std::cerr << "(" << this << ") " << elementName << "\n";
-        const AbstractElement *elementChild = child();
-        while (elementChild) {
-            elementChild->debugDisplay(indent + 1);
-            elementChild = elementChild->next();
-        }
-    }
+    std::string AbstractElement::debugValue() const { return "(" + this + ") " + elementName; }// FIXME: will not compile but I don't have a compiler right now
+
 } // namespace gui::element

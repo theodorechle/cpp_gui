@@ -27,6 +27,8 @@ namespace gui::element {
 
         void sendEventToManager(ElementEvent event);
 
+        void debugValue(int indent = 0) const override;
+
     public:
         bool isUpdated() const { return _updated; }
         void updateDone() { _updated = false; }
@@ -78,8 +80,6 @@ namespace gui::element {
         void setModifierState(std::string modifierName, bool enabled);
 
         void displayStyle();
-
-        void debugDisplay(int indent = 0) const;
     };
 } // namespace gui::element
 
