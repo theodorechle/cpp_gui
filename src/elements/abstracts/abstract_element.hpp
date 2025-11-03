@@ -27,7 +27,7 @@ namespace gui::element {
 
         void sendEventToManager(ElementEvent event);
 
-        void debugValue(int indent = 0) const override;
+        std::string debugValue() const override;
 
     public:
         bool isUpdated() const { return _updated; }
@@ -39,7 +39,7 @@ namespace gui::element {
         AbstractElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                         std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
         const std::string &name() const { return elementName; }
-        void addChild(AbstractElement *child);
+        void addChild(AbstractElement *newChild);
         // remove pointer to childs, but does not delete them
         void removeChilds();
         void setParent(AbstractElement *parent);

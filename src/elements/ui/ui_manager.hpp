@@ -2,7 +2,6 @@
 #define UIMANAGER_HPP
 
 #include "../abstracts/abstract_manager.hpp"
-#include "render_nodes/element_to_render_node_converter.hpp"
 #include "render_nodes/ui_render_node.hpp"
 #include "root_element.hpp"
 #include "ui_element.hpp"

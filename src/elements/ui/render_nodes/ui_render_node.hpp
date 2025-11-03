@@ -37,13 +37,13 @@ namespace gui::element::ui::render {
 
         SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
 
-        void debugValue(int indent = 0) const override;
+        std::string debugValue() const override;
 
     public:
         // the UiElement corresponding to this node. Used for computing layouts.
         gui::element::UiElement *baseElement; // FIXME: should be private, but needed by the ui manager
 
-        UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent = nullptr, gui::element::UiElement *baseElement = nullptr);
+        UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parentNode = nullptr, gui::element::UiElement *baseElement = nullptr);
         ~UiRenderNode();
         // remove pointer to childs, but does not delete them
 
@@ -66,7 +66,7 @@ namespace gui::element::ui::render {
 
         void scroll(int x, int y);
 
-        const UiElementData *childData(const UiElement *child) const;
+        const UiElementData *childData(const UiElement *childElement) const;
 
         bool isParentOf(const UiRenderNode *node) const;
     };

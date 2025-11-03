@@ -2,8 +2,10 @@
 #include "../label.hpp"
 
 namespace gui::element::ui::render {
-    UiRenderNode::UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parent, gui::element::UiElement *baseElement)
-        : renderer{renderer}, _parent{parent}, baseElement{baseElement} {}
+    UiRenderNode::UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parentNode, gui::element::UiElement *baseElement)
+        : renderer{renderer}, baseElement{baseElement} {
+        parent(parentNode);
+    }
 
     UiRenderNode::~UiRenderNode() { SDL_DestroyTexture(nodeTexture); }
 
@@ -16,11 +18,11 @@ namespace gui::element::ui::render {
     void UiRenderNode::computeSelfAndChildsLayout() {
         if (baseElement == nullptr) return;
         std::list<std::tuple<int, int>> childsSizes = {};
-        UiRenderNode *child = _child;
-        while (child != nullptr) {
-            child->computeSelfAndChildsLayout();
-            childsSizes.push_back(std::tuple<int, int>(child->defaultSizeWithChilds.width, child->defaultSizeWithChilds.height));
-            child = child->_next;
+        UiRenderNode *childNode = child();
+        while (childNode != nullptr) {
+            childNode->computeSelfAndChildsLayout();
+            childsSizes.push_back(std::tuple<int, int>(childNode->defaultSizeWithChilds.width, childNode->defaultSizeWithChilds.height));
+            childNode = childNode->next();
         }
 
         baseElement->computeSelfAndChildsLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height), &(defaultSelfSize.width),
@@ -33,11 +35,11 @@ namespace gui::element::ui::render {
         // set variables like rem, em, ...
         // percentages should be set at this moment
         std::list<std::tuple<int, int>> childsSizes = {};
-        UiRenderNode *child = _child;
-        while (child != nullptr) {
-            child->computeRelativeLayout();
-            childsSizes.push_back(std::tuple<int, int>(child->relativeSize.width, child->relativeSize.height));
-            child = child->_next;
+        UiRenderNode *nodeChild = child();
+        while (nodeChild != nullptr) {
+            nodeChild->computeRelativeLayout();
+            childsSizes.push_back(std::tuple<int, int>(nodeChild->relativeSize.width, nodeChild->relativeSize.height));
+            nodeChild = nodeChild->next();
         }
 
         baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), &(defaultSizeWithChilds.width),
@@ -191,10 +193,10 @@ namespace gui::element::ui::render {
                                    std::max(std::min(usedLayout.scrollOffset.y + y, usedLayout.elementRect.h - usedLayout.elementClippedRect.h), 0)};
     }
 
-    const UiElementData *UiRenderNode::childData(const UiElement *child) const {
+    const UiElementData *UiRenderNode::childData(const UiElement *childElement) const {
         const UiRenderNode *node = child();
         while (node != nullptr) {
-            if (node->baseElement == child) {
+            if (node->baseElement == childElement) {
                 return new UiElementData({node->usedLayout.elementRect.w, node->usedLayout.elementRect.h},
                                          {node->usedLayout.elementClippedRect.w, node->usedLayout.elementClippedRect.h},
                                          node->usedLayout.scrollOffset);
@@ -205,28 +207,29 @@ namespace gui::element::ui::render {
     }
 
     std::string UiRenderNode::debugValue() const {
-        // FIXME: will not compile but I don't have a compiler right now
-        std::string value = "("
-                            + this
-                            + ") "
-                            + baseElement->name()
-                            + "{x="
-                            + usedLayout.startCoords.x
-                            + ",y="
-                            + usedLayout.startCoords.y
-                            + ",w="
-                            + usedLayout.elementClippedRect.w
-                            + ",h="
-                            + usedLayout.elementClippedRect.h
-                            + "}";
-        if (baseElement->name() == "label") value += " (" + static_cast<gui::element::Label *>(baseElement)->getText() + ")";
-        return value;
+        std::stringstream stringStream;
+        stringStream
+            << "("
+            << this
+            << ") "
+            << baseElement->name()
+            << "{x="
+            << usedLayout.startCoords.x
+            << ",y="
+            << usedLayout.startCoords.y
+            << ",w="
+            << usedLayout.elementClippedRect.w
+            << ",h="
+            << usedLayout.elementClippedRect.h
+            << "}";
+        if (baseElement->name() == "label") stringStream << " (" << static_cast<gui::element::Label *>(baseElement)->getText() << ")";
+        return stringStream.str();
     }
 
     bool UiRenderNode::isParentOf(const UiRenderNode *node) const {
         while (node) {
             if (node == this) return true;
-            node = node->_parent;
+            node = node->parent();
         }
         return false;
     }

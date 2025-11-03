@@ -122,6 +122,10 @@ namespace gui::element {
         std::cerr << "########################################################\n";
     }
 
-    std::string AbstractElement::debugValue() const { return "(" + this + ") " + elementName; }// FIXME: will not compile but I don't have a compiler right now
+    std::string AbstractElement::debugValue() const {
+        std::stringstream stringStream;
+        stringStream << "(" << this << ") " << elementName;
+        return stringStream.str();
+    }
 
 } // namespace gui::element
