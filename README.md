@@ -15,6 +15,8 @@ To use this program, you need g++ and make.
 
 ![Install SDL_ttf](https://github.com/libsdl-org/SDL_ttf/blob/main/INSTALL.md)
 
+/!\ This documentation is not up-to-date.
+
 ## Elements
 The gui is designed so you can implements easily your own elements
 
