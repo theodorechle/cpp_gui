@@ -16,7 +16,7 @@ namespace gui::element {
 
     class AbstractElement : public commons::Node<AbstractElement> {
         std::string elementName;
-        manager::AbstractManager *elementManager = nullptr;
+        manager::AbstractManager *elementManager = nullptr; 
         style::elementStyle::manager::StyleNodesManager *elementsStyleManager;
         bool _updated = false;
 

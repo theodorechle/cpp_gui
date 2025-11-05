@@ -1,9 +1,12 @@
 [submodule "cpp_tests"]
 	path = cpp_tests
 	url = https://github.com/theodorechle/cpp_tests
+	branch = main
 [submodule "cpp_style"]
 	path = cpp_style
 	url = https://github.com/theodorechle/cpp_style
+	branch = main
 [submodule "cpp_commons"]
 	path = cpp_commons
 	url = https://github.com/theodorechle/cpp_commons.git
+	branch = main
