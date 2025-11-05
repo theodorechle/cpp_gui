@@ -85,14 +85,14 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     list->addChild(new gui::element::Label("hello world!", elementsStyleManager, &lastLabelClasses, "", textEngine));
     parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
 
-    gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
+    // gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
-    style::elementStyle::manager::StyleNodesManager *subElementsStyleManager = new style::elementStyle::manager::StyleNodesManager(&guiStyleConfig);
-    subElementsStyleManager->addStyleFile("tests/tests-files/main-test-sub-view.txt");
+    // style::elementStyle::manager::StyleNodesManager *subElementsStyleManager = new style::elementStyle::manager::StyleNodesManager(&guiStyleConfig);
+    // subElementsStyleManager->addStyleFile("tests/tests-files/main-test-sub-view.txt");
 
-    parentContainer->addChild(new gui::element::ViewContainer(subManager, subElementsStyleManager));
+    // parentContainer->addChild(new gui::element::ViewContainer(subManager, subElementsStyleManager));
 
-    subManager->setSubRootElement(new gui::element::Button(displayAlsoHelloWorld, subElementsStyleManager));
+    // subManager->setSubRootElement(new gui::element::Button(displayAlsoHelloWorld, subElementsStyleManager));
 
     return SDL_APP_CONTINUE;
 }
