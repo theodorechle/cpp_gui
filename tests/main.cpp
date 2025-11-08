@@ -3,8 +3,7 @@
 
 int main() {
     test::Tests tests = test::Tests();
-    tests.start();
-    tests.stop();
+    tests.runTests();
     tests.displaySummary();
     return !tests.allTestsPassed();
 }
