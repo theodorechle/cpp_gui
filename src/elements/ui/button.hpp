@@ -15,7 +15,7 @@ namespace gui {
             Button(std::function<void()> onClick, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                    std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
 
-            void catchEvent(const SDL_Event &event) override;
+            void catchEvent(const SDL_Event *event) override;
             void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
                                             std::list<std::tuple<int, int>> childsSizes) const override;
 

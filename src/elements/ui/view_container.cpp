@@ -26,7 +26,7 @@ namespace gui {
             // viewManager->render(false);
         }
 
-        void ViewContainer::catchEvent(const SDL_Event &event) {
+        void ViewContainer::catchEvent(const SDL_Event *event) {
             if (viewManager == nullptr) return;
             // TODO: re-add
             // viewManager->processEvent(event);
@@ -37,7 +37,7 @@ namespace gui {
         void ViewContainer::setModifierState(std::string modifierName, bool enabled) {
             // TODO: re-add
             // AbstractElement::setModifierState(modifierName, enabled);
-            // viewManager->processMouseEvents();
+            // viewManager->processMouseEvent();
             // askRecomputeLayout();
             // viewManager->needRecomputeLayout();
         }

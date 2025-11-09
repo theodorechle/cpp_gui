@@ -44,13 +44,13 @@ namespace gui {
                 void renderElements(bool clear = true) const override;
                 void update() override;
 
-                void sendEvent(const SDL_Event &event, UiElement *leafElement);
+                void sendEvent(const SDL_Event *event, UiElement *leafElement);
 
                 /**
                  * set the modifier's state (enabled, disabled) on leafElement and all its parents
                  * if enabled is true, it will also throw the given event on each concerned elements
                  */
-                void setElementsModifierState(const std::string &modifier, UiElement *leafElement, bool enabled, const SDL_Event &event);
+                void setElementsModifierState(const std::string &modifier, UiElement *leafElement, bool enabled, const SDL_Event *event = nullptr);
 
                 void updateRenderingData();
 
@@ -73,9 +73,9 @@ namespace gui {
 
                 void setClipRect(const SDL_Rect &clipRect) { this->clipRect = clipRect; }
 
-                void processEvent(const SDL_Event &event);
+                void processEvent(const SDL_Event *event);
 
-                void processMouseEvents();
+                void processMouseEvent(const SDL_Event *event);
 
                 void scroll(int x, int y);
 

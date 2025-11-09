@@ -219,15 +219,15 @@ namespace gui {
                 createRenderedTexture();
             }
 
-            void UIManager::processEvent(const SDL_Event &event) {
-                switch (event.type) {
+            void UIManager::processEvent(const SDL_Event *event) {
+                switch (event->type) {
                 case SDL_EVENT_QUIT:
                     status(Status::ENDED);
                     return;
                 case SDL_EVENT_MOUSE_MOTION:
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
                 case SDL_EVENT_MOUSE_BUTTON_UP:
-                    processMouseEvents();
+                    processMouseEvent(event);
                     return;
                 case SDL_EVENT_WINDOW_RESIZED:
                     needUpdate(elementsTree);
@@ -239,7 +239,7 @@ namespace gui {
                     windowFocused = true;
                     return;
                 case SDL_EVENT_MOUSE_WHEEL:
-                    scroll(event.wheel.x, event.wheel.y);
+                    scroll(event->wheel.x, event->wheel.y);
                     return;
                 default:
                     return;
@@ -248,7 +248,7 @@ namespace gui {
                 sendEvent(event, focusedElement->baseElement);
             }
 
-            void UIManager::processMouseEvents() { // TODO: split into different functions for each mouse events
+            void UIManager::processMouseEvent(const SDL_Event *event) { // TODO: split into different functions for each mouse events
                 if (elementsTree == nullptr) return;
                 float x, y;
                 SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
@@ -283,34 +283,41 @@ namespace gui {
                     if (!clicked && !clickedElement) {
                         clickedElement = currentHoveredElement;
                         clicked = true;
-                        if (focusedElement) focusedElement->baseElement->focus(false);
+                        if (focusedElement) {
+                            SDL_Event event = SDL_Event();
+                            SDL_zero(event);
+                            event.user.type = ui::FOCUS_LOST;
+                            event.user.code = ui::eventCode(event.user.type);
+                            setElementsModifierState("focused", focusedElement->baseElement, false, &event);
+                        }
                         focusedElement = clickedElement;
-                        if (focusedElement) focusedElement->baseElement->focus(true);
-                        if (clickedElement)
-                            setElementsModifierState("clicked", clickedElement->baseElement, true, SDL_Event{SDL_EVENT_MOUSE_BUTTON_DOWN});
+                        if (focusedElement) {
+                            SDL_Event event = SDL_Event();
+                            SDL_zero(event);
+                            event.user.type = ui::FOCUS;
+                            event.user.code = ui::eventCode(event.user.type);
+                            setElementsModifierState("focused", focusedElement->baseElement, true, &event);
+                        }
+                        if (clickedElement) setElementsModifierState("clicked", clickedElement->baseElement, true, event);
                     }
                 }
                 else {
                     clicked = false;
                     if (clickedElement) {
-                        setElementsModifierState("clicked", clickedElement->baseElement, false, SDL_Event{SDL_EVENT_MOUSE_BUTTON_DOWN});
+                        setElementsModifierState("clicked", clickedElement->baseElement, false, event);
                         clickedElement = nullptr;
                     }
                 }
                 if ((hoveredElement != currentHoveredElement) || (hoveredElement && !windowFocused)) {
-                    if (hoveredElement) setElementsModifierState("hovered", hoveredElement->baseElement, false, SDL_Event{SDL_EVENT_MOUSE_MOTION});
-                    if (currentHoveredElement)
-                        setElementsModifierState("hovered", currentHoveredElement->baseElement, true, SDL_Event{SDL_EVENT_MOUSE_MOTION});
+                    if (hoveredElement) setElementsModifierState("hovered", hoveredElement->baseElement, false, event);
+                    if (currentHoveredElement) setElementsModifierState("hovered", currentHoveredElement->baseElement, true, event);
                     hoveredElement = currentHoveredElement;
                 }
             }
 
-            // FIXME: scrolls are registered in the UiRenderNodes.
-            // Since they are resetted every redraw, scroll is reset every time.
-            // Scroll should be registered dirdctly in the UiElement
             void UIManager::scroll(int x, int y) { hoveredElement->scroll(x, y); }
 
-            void UIManager::sendEvent(const SDL_Event &event, UiElement *leafElement) {
+            void UIManager::sendEvent(const SDL_Event *event, UiElement *leafElement) {
                 UiElement *element = leafElement;
                 if (element == nullptr) return;
                 while (element != nullptr) {
@@ -319,11 +326,11 @@ namespace gui {
                 }
             }
 
-            void UIManager::setElementsModifierState(const std::string &modifier, UiElement *leafElement, bool enabled, const SDL_Event &event) {
+            void UIManager::setElementsModifierState(const std::string &modifier, UiElement *leafElement, bool enabled, const SDL_Event *event) {
                 UiElement *element = leafElement;
                 while (element != nullptr) {
                     element->setModifierState(modifier, enabled);
-                    if (enabled) element->catchEvent(event);
+                    if (enabled && event) element->catchEvent(event);
                     element = static_cast<UiElement *>(element->parent());
                 }
                 needUpdate(leafElement);

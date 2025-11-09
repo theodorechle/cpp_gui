@@ -7,8 +7,8 @@ namespace gui {
                        std::vector<std::string> *classes, const std::string &identifier)
             : UiElement{"button", elementsStyleManager, classes, identifier}, onClickFunction{onClick} {}
 
-        void Button::catchEvent(const SDL_Event &event) {
-            if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && onClickFunction) (onClickFunction)();
+        void Button::catchEvent(const SDL_Event *event) {
+            if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && onClickFunction) (onClickFunction)();
         }
 
         void Button::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,

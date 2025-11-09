@@ -100,7 +100,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     AppState *state = static_cast<AppState *>(appstate);
     gui::element::manager::AbstractManager *manager = state->getManager();
-    static_cast<gui::element::manager::UIManager *>(manager)->processEvent(*event);
+    static_cast<gui::element::manager::UIManager *>(manager)->processEvent(event);
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;
     }

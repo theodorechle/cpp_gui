@@ -493,11 +493,5 @@ namespace gui {
             std::string value = getEnumFromRule("overflow-x", {"hidden", "scroll", "auto"}, "auto");
             if (value == "scroll" || (value == "auto" && totalWidth > clippedSize.width)) renderHorizontalScrollBar(totalWidth, clippedSize, offset);
         }
-
-        void UiElement::focus(bool focused) {
-            _focus = focused;
-            if (focused) onFocusGet();
-            else onFocusLoose();
-        }
     } // namespace element
 } // namespace gui

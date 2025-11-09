@@ -2,7 +2,7 @@ CPP_C=g++
 CPP_FLAGS=-std=c++17 -Wall -g -MMD -MP
 SDL_CMD=`pkg-config sdl3 sdl3-ttf --cflags --libs`
 BIN_DIR=bin
-OBJ_DIR=obj/normal
+OBJ_DIR=obj/lib
 OBJ_TEST_DIR=obj/test
 SRC_DIR=src
 TESTS_DIR=tests

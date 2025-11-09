@@ -24,16 +24,12 @@ namespace gui {
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *textEngine = nullptr;
-            bool _focus = false;
 
             /**
              * Return a modified version of wantedNewClipRect who fits in oldClipRect
              * Does not alter any of the given rects
              */
             static SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
-
-            virtual void onFocusGet() {}
-            virtual void onFocusLoose() {}
 
         protected:
             TTF_TextEngine *getTextEngine() const { return textEngine; }
@@ -76,7 +72,6 @@ namespace gui {
             UiElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
                 : AbstractElement{elementName, elementsStyleManager, classes, identifier}, textEngine{textEngine} {}
-
 
             void addChild(UiElement *child); // TODO
 
@@ -184,10 +179,7 @@ namespace gui {
             bool render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                         std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
 
-            virtual void catchEvent(const SDL_Event &event) {}
-
-            void focus(bool focused);
-            bool focus() { return _focus; };
+            virtual void catchEvent(const SDL_Event *event) {}
         };
 
         class NoRendererException : public std::runtime_error {

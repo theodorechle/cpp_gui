@@ -16,7 +16,7 @@ namespace gui {
 
             void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                      std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
-            virtual void catchEvent(const SDL_Event &event) override;
+            virtual void catchEvent(const SDL_Event *event) override;
 
             /**
              * true if should propagate to the parent, false else
