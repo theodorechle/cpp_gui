@@ -223,29 +223,27 @@ namespace gui {
                 switch (event->type) {
                 case SDL_EVENT_QUIT:
                     status(Status::ENDED);
-                    return;
+                    break;
                 case SDL_EVENT_MOUSE_MOTION:
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
                 case SDL_EVENT_MOUSE_BUTTON_UP:
                     processMouseEvent(event);
-                    return;
+                    break;
                 case SDL_EVENT_WINDOW_RESIZED:
                     needUpdate(elementsTree);
-                    return;
+                    break;
                 case SDL_EVENT_WINDOW_MOUSE_LEAVE:
                     windowFocused = false;
-                    return;
+                    break;
                 case SDL_EVENT_WINDOW_MOUSE_ENTER:
                     windowFocused = true;
-                    return;
+                    break;
                 case SDL_EVENT_MOUSE_WHEEL:
                     scroll(event->wheel.x, event->wheel.y);
-                    return;
+                    break;
                 default:
-                    return;
+                    if (focusedElement != nullptr) sendEvent(event, focusedElement->baseElement);
                 }
-
-                sendEvent(event, focusedElement->baseElement);
             }
 
             void UIManager::processMouseEvent(const SDL_Event *event) { // TODO: split into different functions for each mouse events

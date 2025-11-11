@@ -29,5 +29,6 @@ don't re-render elements who don't change (only the ones who changes and their p
 
 don't redraw parents if size don't change (draw directly, bypass parent)
 
-Add option in makefile for -j
 Prevent having multiple times submodule cpp_tests
+
+redraw doesn't works well (see input redraw)

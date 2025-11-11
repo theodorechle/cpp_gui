@@ -71,6 +71,7 @@ namespace gui::element::manager {
         switch (event) {
         case ElementEvent::REMOVE_CHILDS:
         case ElementEvent::ADD_CHILD:
+        case ElementEvent::CONTENT_CHANGED:
             needUpdate(caller);
             break;
         default:
