@@ -1,3 +1,6 @@
+#include "../cpp_style/src/style/style_deserializer.hpp"
+#include "../cpp_style/src/style_nodes/style_node.hpp"
+#include "../cpp_style/src/style_nodes/style_nodes_manager.hpp"
 #include "app_utils/app_state.hpp"
 #include "elements/abstracts/abstract_manager.hpp"
 #include "elements/ui/button.hpp"
@@ -5,21 +8,18 @@
 #include "elements/ui/input.hpp"
 #include "elements/ui/label.hpp"
 #include "elements/ui/list.hpp"
+#include "elements/ui/style_config.hpp"
 #include "elements/ui/ui_element.hpp"
 #include "elements/ui/ui_manager.hpp"
 #include "elements/ui/view_container.hpp"
-#include "../cpp_style/src/style/style_deserializer.hpp"
-#include "../cpp_style/src/style_nodes/style_node.hpp"
-#include "../cpp_style/src/style_nodes/style_nodes_manager.hpp"
-#include "elements/ui/style_config.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
-#include <SDL3/SDL_main.h>
+#include <SDL3/SDL_error.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
+#include <SDL3/SDL_main.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
-#include <SDL3/SDL_error.h>
 
 #include <SDL3_ttf/SDL_ttf.h>
 
@@ -53,7 +53,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     gui::element::manager::AbstractManager *manager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
-    style::elementStyle::manager::StyleNodesManager *elementsStyleManager = new style::elementStyle::manager::StyleNodesManager(&guiStyleConfig);
+    style::elementStyle::manager::StyleNodesManager *elementsStyleManager =
+        new style::elementStyle::manager::StyleNodesManager(style::config::testConfig());
     TTF_TextEngine *textEngine = TTF_CreateRendererTextEngine(sdl_renderer);
 
     if (textEngine == nullptr) {
@@ -87,7 +88,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     // gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
-    // style::elementStyle::manager::StyleNodesManager *subElementsStyleManager = new style::elementStyle::manager::StyleNodesManager(&guiStyleConfig);
+    // style::elementStyle::manager::StyleNodesManager *subElementsStyleManager = new
+    // style::elementStyle::manager::StyleNodesManager(&guiStyleConfig);
     // subElementsStyleManager->addStyleFile("tests/tests-files/main-test-sub-view.txt");
 
     // parentContainer->addChild(new gui::element::ViewContainer(subManager, subElementsStyleManager));
