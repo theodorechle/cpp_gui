@@ -4,7 +4,7 @@
 #include "../../../cpp_style/src/style/abstract_configuration.hpp"
 
 namespace style::config {
-    Config *testConfig();
+    Config *config();
 } // namespace style::config
 
 #endif // STYLE_CONFIG_HPP

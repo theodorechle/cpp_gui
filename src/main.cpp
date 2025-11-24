@@ -54,7 +54,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     gui::element::manager::AbstractManager *manager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
     style::elementStyle::manager::StyleNodesManager *elementsStyleManager =
-        new style::elementStyle::manager::StyleNodesManager(style::config::testConfig());
+        new style::elementStyle::manager::StyleNodesManager(style::config::config());
     TTF_TextEngine *textEngine = TTF_CreateRendererTextEngine(sdl_renderer);
 
     if (textEngine == nullptr) {

@@ -1,8 +1,8 @@
 #include "style_config.hpp"
 
 namespace style::config {
-    Config *testConfig() {
-        Config *guiStyleConfig = new Config{
+    Config *config() {
+        return new Config{
             {{"padding", {new ConfigRuleNode(style::Token::Unit, new ConfigRuleNode(style::Token::Int))}},
              {"padding-left", {new ConfigRuleNode(style::Token::Unit, new ConfigRuleNode(style::Token::Int))}},
              {"padding-right", {new ConfigRuleNode(style::Token::Unit, new ConfigRuleNode(style::Token::Int))}},
@@ -53,7 +53,6 @@ namespace style::config {
              {"font-underline", {new ConfigRuleNode(style::Token::Bool)}},
              {"font-strike-through", {new ConfigRuleNode(style::Token::Bool)}}},
             {"px", "%"}};
-        return guiStyleConfig;
     }
 
 } // namespace style::config
