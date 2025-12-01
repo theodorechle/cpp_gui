@@ -23,7 +23,7 @@ namespace gui {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0}; // TODO: update it to be able to use percentages
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
-            TTF_TextEngine *textEngine = nullptr;
+            TTF_TextEngine *_textEngine = nullptr;
 
             /**
              * Return a modified version of wantedNewClipRect who fits in oldClipRect
@@ -32,7 +32,6 @@ namespace gui {
             static SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
 
         protected:
-            TTF_TextEngine *getTextEngine() const { return textEngine; }
             static SDL_FRect createFRect(int x, int y, int width, int height);
 
             int getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize = 0, bool canInherit = false) const;
@@ -71,7 +70,7 @@ namespace gui {
         public:
             UiElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
-                : AbstractElement{elementName, elementsStyleManager, classes, identifier}, textEngine{textEngine} {}
+                : AbstractElement{elementName, elementsStyleManager, classes, identifier}, _textEngine{textEngine} {}
 
             void addChild(UiElement *child); // TODO
 
@@ -155,6 +154,9 @@ namespace gui {
             virtual void renderHorizontalScrollBar(int totalWidth, ui::Size clippedSize, int offset) const;
 
         public:
+            void textEngine(TTF_TextEngine *textEngine);
+            TTF_TextEngine *textEngine() const { return _textEngine; };
+
             void renderSelfBeforeChildsWrapper() const override;
             void renderSelfAfterChildsWrapper() const override;
             void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,

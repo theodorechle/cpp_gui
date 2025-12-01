@@ -102,7 +102,12 @@ namespace gui {
             AbstractElement::addChild(child);
             child->setRenderer(renderer);
             child->setWindow(window);
-            updated();
+        }
+
+        void UiElement::textEngine(TTF_TextEngine *textEngine) {
+            _textEngine = textEngine;
+            if (child()) static_cast<UiElement *>(child())->textEngine(textEngine);
+            if (next()) static_cast<UiElement *>(next())->textEngine(textEngine);
         }
 
         void UiElement::setWindow(SDL_Window *window) {
@@ -294,24 +299,29 @@ namespace gui {
 
             renderBackgroundWrapper();
 
-            innerRect.x += paddingLeft();
-            innerRect.y += paddingTop();
-            innerRect.w -= paddingLeft() + paddingRight();
-            innerRect.h -= paddingTop() + paddingBottom();
+            SDL_Rect paddedRect = {
+                innerRect.x + paddingLeft(),
+                innerRect.y + paddingTop(),
+                innerRect.w - paddingLeft() + paddingRight(),
+                innerRect.h - paddingTop() + paddingBottom(),
+            };
 
-            if (!setClipRect(&innerRect, "UiElement::render (inner rect)")) return false;
+            if (!setClipRect(&paddedRect, "UiElement::render (inner rect)")) return false;
 
             renderSelfBeforeChildsWrapper();
 
             renderChildsWrapper(renderChildCallback, childInfosCallback);
 
             renderSelfAfterChildsWrapper();
-            if (!setClipRect(&clipRect, "UiElement::render (restore)")) return false;
+
+            if (!setClipRect(&innerRect, "UiElement::render (inner rect)")) return false;
 
             const ui::UiElementData *data = static_cast<const ui::UiElementData *>(elementData);
 
             renderVerticalScrollBarWrapper(data->elementSize.height, data->clippedElementSize, data->scrollOffset.y);
             renderHorizontalScrollBarWrapper(data->elementSize.width, data->clippedElementSize, data->scrollOffset.x);
+
+            if (!setClipRect(&clipRect, "UiElement::render (restore)")) return false;
 
             return true;
         }
@@ -409,12 +419,29 @@ namespace gui {
             SDL_Color color = computeColor({"scroll-bar-color"}, SDL_Color{200, 200, 200, 255});
             SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
+            float clippedHeight = clippedSize.height;
             int scrollBarWidth = getIntFromRule({"scroll-bar-size"}, 5);
-            SDL_FRect rect = {static_cast<float>(clippedSize.width) - scrollBarWidth, static_cast<float>(offset), static_cast<float>(scrollBarWidth),
-                              static_cast<float>(clippedSize.height) / (static_cast<float>(totalHeight) / clippedSize.height)};
+            float scrollBarHeight = clippedHeight / (totalHeight / clippedHeight);
+
+            float addedY = totalHeight == clippedHeight
+                               ? offset
+                               : offset / static_cast<float>((totalHeight - clippedHeight)) * (clippedHeight - scrollBarHeight);
+
+            SDL_FRect rect = {static_cast<float>(clippedSize.width) - scrollBarWidth, static_cast<float>(offset + addedY),
+                              static_cast<float>(scrollBarWidth), scrollBarHeight};
+
             SDL_RenderFillRect(renderer, &rect);
 #ifdef DEBUG
-            std::cerr << "scroll-y: scrollable-size=" << (totalHeight - clippedSize.height) << ", offset=" << offset << "\n";
+            std::cerr
+                << "scroll-y ("
+                << name()
+                << "): scrollable-size="
+                << (totalHeight - clippedSize.height)
+                << ", offset="
+                << offset
+                << "("
+                << offset / static_cast<float>((totalHeight - clippedSize.height)) * 100
+                << "%)\n";
 #endif
 
             if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {
@@ -434,16 +461,32 @@ namespace gui {
             SDL_Color color = computeColor({"scroll-bar-color"}, SDL_Color{200, 200, 200, 255});
             SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
-            int scrollBarWidth = getIntFromRule({"scroll-bar-size"}, 5);
+            float clippedWidth = clippedSize.width;
+
+            int scrollBarHeight = getIntFromRule({"scroll-bar-size"}, 5);
+            float scrollBarWidth = clippedWidth / (totalWidth / clippedWidth);
+
+            float addedX =
+                totalWidth == clippedWidth ? offset : offset / static_cast<float>((totalWidth - clippedWidth)) * (clippedWidth - scrollBarWidth);
+
             SDL_FRect rect = {
-                static_cast<float>(offset),
-                static_cast<float>(clippedSize.height) - scrollBarWidth,
-                static_cast<float>(clippedSize.width) / (static_cast<float>(totalWidth) / clippedSize.width),
-                static_cast<float>(scrollBarWidth),
+                static_cast<float>(offset + addedX),
+                static_cast<float>(clippedSize.height) - scrollBarHeight,
+                scrollBarWidth,
+                static_cast<float>(scrollBarHeight),
             };
             SDL_RenderFillRect(renderer, &rect);
 #ifdef DEBUG
-            std::cerr << "scroll-x: scrollable-size=" << (totalWidth - clippedSize.width) << ", offset=" << offset << "\n";
+            std::cerr
+                << "scroll-x ("
+                << name()
+                << "): scrollable-size="
+                << (totalWidth - clippedSize.width)
+                << ", offset="
+                << offset
+                << "("
+                << offset / static_cast<float>((totalWidth - clippedSize.width)) * 100
+                << "%)\n";
 #endif
 
             if (!SDL_SetRenderDrawColor(renderer, r, g, b, a)) {

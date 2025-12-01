@@ -313,7 +313,16 @@ namespace gui {
                 }
             }
 
-            void UIManager::scroll(int x, int y) { hoveredElement->scroll(x, y); }
+            void UIManager::scroll(int x, int y) {
+                ui::render::UiRenderNode *element = hoveredElement;
+                while (element) {
+                    if (element->scroll(x, -y)) {
+                        needUpdate(element->baseElement);
+                        return;
+                    }
+                    element = element->parent();
+                }
+            }
 
             void UIManager::sendEvent(const SDL_Event *event, UiElement *leafElement) {
                 UiElement *element = leafElement;

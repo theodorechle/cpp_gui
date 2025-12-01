@@ -15,8 +15,8 @@ namespace gui::element {
     }
 
     void AbstractElement::sendEventToManager(ElementEvent event) {
-        if (elementManager == nullptr) return;
-        elementManager->elementEvent(event, this);
+        if (_manager == nullptr) return;
+        _manager->elementEvent(event, this);
     }
 
     AbstractElement::AbstractElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
@@ -44,7 +44,7 @@ namespace gui::element {
         if (newChild == nullptr) return;
         commons::Node<AbstractElement>::addChild(newChild);
         style->addChild(newChild->style);
-        newChild->manager(elementManager);
+        newChild->manager(_manager);
         sendEventToManager(ElementEvent::ADD_CHILD);
     }
 
@@ -54,7 +54,11 @@ namespace gui::element {
         sendEventToManager(ElementEvent::REMOVE_CHILDS);
     }
 
-    void AbstractElement::manager(manager::AbstractManager *manager) { elementManager = manager; }
+    void AbstractElement::manager(manager::AbstractManager *manager) {
+        _manager = manager;
+        if (child()) child()->manager(manager);
+        if (next()) next()->manager(manager);
+    }
 
     AbstractElement::~AbstractElement() {
         style->removeChilds();

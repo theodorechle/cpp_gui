@@ -28,7 +28,9 @@ void displayHelloWorld() { std::cout << "hello world!\n"; }
 void displayAlsoHelloWorld() { std::cout << "also hello world!\n"; }
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
+#ifdef DEBUG
     SDL_SetLogPriorities(SDL_LOG_PRIORITY_DEBUG);
+#endif
     int windowLength = 500;
     int windowHeight = 500;
     SDL_Window *sdl_window = nullptr;

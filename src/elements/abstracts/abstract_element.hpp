@@ -5,9 +5,9 @@
 #include "../../../cpp_style/src/style_nodes/style_nodes_manager.hpp"
 #include "abstract_utils.hpp"
 
+#include <functional>
 #include <string>
 #include <vector>
-#include <functional>
 
 namespace gui::element {
     namespace manager {
@@ -16,24 +16,18 @@ namespace gui::element {
 
     class AbstractElement : public commons::Node<AbstractElement> {
         std::string elementName;
-        manager::AbstractManager *elementManager = nullptr; 
+        manager::AbstractManager *_manager = nullptr;
         style::elementStyle::manager::StyleNodesManager *elementsStyleManager;
-        bool _updated = false;
 
     protected:
         style::elementStyle::StyleNode *style = nullptr;
         void updateStyle();
-
-        void updated() { _updated = true; }
 
         void sendEventToManager(ElementEvent event);
 
         std::string debugValue() const override;
 
     public:
-        bool isUpdated() const { return _updated; }
-        void updateDone() { _updated = false; }
-
         /**
          * If no style manager is given, the element can't have style
          */
@@ -46,6 +40,7 @@ namespace gui::element {
         void setParent(AbstractElement *parent);
 
         void manager(manager::AbstractManager *manager);
+        manager::AbstractManager *manager() { return _manager; };
 
         virtual ~AbstractElement();
 
@@ -72,8 +67,6 @@ namespace gui::element {
          */
         virtual bool render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                             std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const = 0;
-
-        bool styleManagerAvailable() const { return elementsStyleManager != nullptr; }
 
         /**
          * true if should propagate to the parent, false else

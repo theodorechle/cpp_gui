@@ -54,8 +54,6 @@ namespace gui::element::ui::render {
     const Pos *UiRenderNode::startCoords() const { return &usedLayout.startCoords; }
 
     void UiRenderNode::computeFinalLayout(SDL_Rect *clipRect, bool forceSize) {
-        // TODO: overflows, ...
-
         usedLayout.elementRect.w = relativeSize.width;
         usedLayout.elementRect.h = relativeSize.height;
 
@@ -164,11 +162,29 @@ namespace gui::element::ui::render {
 
         SDL_SetRenderClipRect(renderer, nullptr);
 
-        SDL_FRect renderFRect;
-        SDL_RectToFRect(&(usedLayout.elementRect), &renderFRect);
-        renderFRect.x = usedLayout.startCoords.x;
-        renderFRect.y = usedLayout.startCoords.y;
-        if (!SDL_RenderTexture(renderer, nodeTexture, nullptr, &renderFRect)) {
+        std::cerr
+            << "rects ("
+            << baseElement->name()
+            << "): {"
+            << usedLayout.elementRect.w
+            << ","
+            << usedLayout.elementRect.h
+            << "}"
+            << "; {"
+            << usedLayout.elementClippedRect.w
+            << ","
+            << usedLayout.elementClippedRect.h
+            << "}\n";
+        SDL_FRect sourceFRect;
+        SDL_RectToFRect(&(usedLayout.elementClippedRect), &sourceFRect);
+        sourceFRect.x = usedLayout.scrollOffset.x;
+        sourceFRect.y = usedLayout.scrollOffset.y;
+
+        SDL_FRect destFRect;
+        SDL_RectToFRect(&(usedLayout.elementClippedRect), &destFRect);
+        destFRect.x = usedLayout.startCoords.x;
+        destFRect.y = usedLayout.startCoords.y;
+        if (!SDL_RenderTexture(renderer, nodeTexture, &sourceFRect, &destFRect)) {
             SDL_LogError(GUI_RENDERING, "UiRenderNode::renderOnParentSurface: Can't render current surface on parent surface : '%s'", SDL_GetError());
         }
 
@@ -188,9 +204,15 @@ namespace gui::element::ui::render {
         return false;
     }
 
-    void UiRenderNode::scroll(int x, int y) {
-        usedLayout.scrollOffset = {std::max(std::min(usedLayout.scrollOffset.x + x, usedLayout.elementRect.w - usedLayout.elementClippedRect.w), 0),
-                                   std::max(std::min(usedLayout.scrollOffset.y + y, usedLayout.elementRect.h - usedLayout.elementClippedRect.h), 0)};
+    bool UiRenderNode::scroll(int x, int y) {
+        if ((x != 0 && usedLayout.elementClippedRect.w != usedLayout.elementRect.w)
+            || (y != 0 && usedLayout.elementClippedRect.h != usedLayout.elementRect.h)) {
+            usedLayout.scrollOffset = {
+                std::max(std::min(usedLayout.scrollOffset.x + x, usedLayout.elementRect.w - usedLayout.elementClippedRect.w), 0),
+                std::max(std::min(usedLayout.scrollOffset.y + y, usedLayout.elementRect.h - usedLayout.elementClippedRect.h), 0)};
+            return true;
+        }
+        return false;
     }
 
     const UiElementData *UiRenderNode::childData(const UiElement *childElement) const {

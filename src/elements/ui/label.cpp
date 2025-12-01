@@ -11,7 +11,7 @@ namespace gui {
             }
 
             TTF_DestroyText(ttfText);
-            ttfText = TTF_CreateText(getTextEngine(), ttfFont, text.c_str(), text.size());
+            ttfText = TTF_CreateText(textEngine(), ttfFont, text.c_str(), text.size());
             if (ttfText == nullptr) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::initBeforeLayoutComputing: Can't create text: %s", SDL_GetError());
                 return;
@@ -51,7 +51,7 @@ namespace gui {
             SDL_Rect rect;
             SDL_Color color;
             SDL_GetRenderClipRect(getRenderer(), &rect);
-            if (getTextEngine() == nullptr) {
+            if (textEngine() == nullptr) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Text engine is not defined.");
                 return;
             }
@@ -111,8 +111,8 @@ namespace gui {
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : UiElement{elementName, elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 
-        Label::Label(const std::string &text, style::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
-                     const std::string &identifier, TTF_TextEngine *textEngine)
+        Label::Label(const std::string &text, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
+                     std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : UiElement{"label", elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 
         Label::~Label() {
@@ -124,26 +124,16 @@ namespace gui {
         int Label::fontSize() const { return computeSize({"font-size"}, 15, true); }
         std::string Label::fontName() const { return style->getFontsPath() + getStringFromRule({"font-name"}, "", true); }
 
-        void Label::setText(const std::string &newText) {
-            text = newText;
-            updated();
-        }
+        void Label::setText(const std::string &newText) { text = newText; }
 
-        void Label::addText(const std::string &toAdd) {
-            text.append(toAdd);
-            updated();
-        }
+        void Label::addText(const std::string &toAdd) { text.append(toAdd); }
 
         void Label::removeText(int nbChars) {
             if (text.empty()) return;
             text.resize(text.size() - nbChars);
-            updated();
         }
 
-        void Label::clearText() {
-            text.clear();
-            updated();
-        }
+        void Label::clearText() { text.clear(); }
 
     } // namespace element
 } // namespace gui

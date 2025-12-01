@@ -45,8 +45,17 @@ namespace style::config {
                                   new ConfigRuleNode(style::Token::Int, nullptr,
                                                      new ConfigRuleNode(style::Token::Int, nullptr, new ConfigRuleNode(style::Token::Int))))}},
 
+             {"scroll-bar-color",
+              {new ConfigRuleNode(style::Token::Hex),
+               new ConfigRuleNode(style::Token::Tuple,
+                                  new ConfigRuleNode(style::Token::Int, nullptr,
+                                                     new ConfigRuleNode(style::Token::Int, nullptr, new ConfigRuleNode(style::Token::Int))))}},
+             {"scroll-bar-size", {new ConfigRuleNode(style::Token::Unit, new ConfigRuleNode(style::Token::Int))}},
+             {"overflow-x", {new ConfigRuleNodeEnum({"hidden", "scroll", "auto"})}},
+             {"overflow-y", {new ConfigRuleNodeEnum({"hidden", "scroll", "auto"})}},
+
              {"text-wrap", {new ConfigRuleNodeEnum({"wrapped", "line-break"})}},
-             {"font-size", {new ConfigRuleNode(style::Token::Int)}},
+             {"font-size", {new ConfigRuleNode(style::Token::Unit, new ConfigRuleNode(style::Token::Int))}},
              {"font-name", {new ConfigRuleNode(style::Token::String)}},
              {"font-weight", {new ConfigRuleNodeEnum({"normal", "bold"})}},
              {"font-italic", {new ConfigRuleNode(style::Token::Bool)}},

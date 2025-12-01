@@ -64,7 +64,10 @@ namespace gui::element::ui::render {
         void renderOnParentSurface() const;
         bool renderChildElement(const UiElement *element, UiRenderData *data);
 
-        void scroll(int x, int y);
+        /*
+        returns whether it can scroll or not (and so if it has scrolled)
+        */
+        bool scroll(int x, int y);
 
         const UiElementData *childData(const UiElement *childElement) const;
 

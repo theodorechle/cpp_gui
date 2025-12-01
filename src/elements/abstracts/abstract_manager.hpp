@@ -48,7 +48,7 @@ namespace gui::element::manager {
         void render(bool clear = true);
 
         Status status() { return _currentStatus; }
-        bool needUpdate() { return elementsToUpdate.size(); }
+        bool needUpdate() { return !elementsToUpdate.empty(); }
     };
 } // namespace gui::element::manager
 
