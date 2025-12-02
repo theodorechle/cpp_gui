@@ -11,12 +11,12 @@ STYLE_LIB=cpp_style/bin/cpp_style_lib
 TESTS_LIB=cpp_tests/bin/cpp_tests_lib
 
 # Subdirectories
-SUBDIRS=elements/abstracts elements/ui elements/ui/render_nodes converters app_utils
+SUBDIRS=elements/abstracts elements/ui elements/ui/render_nodes converters app_utils style_nodes
 
 # Source files
 SRC_MAIN=$(SRC_DIR)/main.cpp
 SRC_SUBDIRS=$(foreach dir, $(SUBDIRS), $(wildcard $(SRC_DIR)/$(dir)/*.cpp))
-SRC_TESTS=$(wildcard $(TESTS_DIR)/*/*.cpp) $(TESTS_DIR)/main.cpp
+SRC_TESTS=$(wildcard $(TESTS_DIR)/*.cpp) $(wildcard $(TESTS_DIR)/*/*.cpp)
 
 # Object files
 OBJ_MAIN=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_MAIN))
@@ -50,7 +50,7 @@ $(MAIN): $(OBJ_MAIN) $(LIB).a $(STYLE_LIB).a
 	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD)
 
 # Build the tests executable (tests + lib)
-$(TESTS): $(OBJ_TESTS) $(LIB).a $(TESTS_LIB).a
+$(TESTS): $(OBJ_TESTS) $(LIB).a $(TESTS_LIB).a $(STYLE_LIB).a
 	@mkdir -p $(BIN_DIR)
 	$(CPP_C) $(CPP_FLAGS) -o $@ $^
 

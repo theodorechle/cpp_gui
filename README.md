@@ -5,7 +5,7 @@ A cpp replacement and improvement of my ![python_gui](https://github.com/theodor
 
 This GUI is made on top of the ![SDL3 library](https://wiki.libsdl.org/SDL3/FrontPage)
 
-![Readme for the gui's style](src/style/README.md)
+![Readme for the gui's style](cpp_style/README.md)
 
 # Installation
 

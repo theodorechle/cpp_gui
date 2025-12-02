@@ -1,7 +1,7 @@
 #ifndef BOOL_CONVERTER_HPP
 #define BOOL_CONVERTER_HPP
 
-#include "../../cpp_style/src/style/style_component.hpp"
+#include "../../cpp_style/src/style_component.hpp"
 
 namespace gui {
     namespace converter {
