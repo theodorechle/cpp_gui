@@ -76,7 +76,7 @@ namespace gui::element::ui::render {
         while (childNode != nullptr) {
             childClipRect = {0, 0, childNode->relativeSize.width, childNode->relativeSize.height};
             if (clipRect != nullptr) {
-                newClipRect = computeNewClipRect(clipRect, &childClipRect);
+                newClipRect = computeNewClipRect(&(usedLayout.elementRect), &childClipRect);
             }
             childNode->computeFinalLayout(&newClipRect);
             childNode = childNode->next();
