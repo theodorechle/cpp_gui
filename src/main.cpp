@@ -1,5 +1,5 @@
 #include "../cpp_style/src/style_deserializer.hpp"
-#include "element_style/style_node.hpp"
+#include "element_style/element_style.hpp"
 #include "element_style/style_manager.hpp"
 #include "app_utils/app_state.hpp"
 #include "elements/abstracts/abstract_manager.hpp"
