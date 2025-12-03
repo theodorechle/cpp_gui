@@ -2,8 +2,7 @@
 
 namespace gui {
     namespace element {
-        List::List(style::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
-                   const std::string &identifier)
+        List::List(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
             : UiElement{"list", elementsStyleManager, classes, identifier} {}
 
         void List::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
@@ -21,13 +20,13 @@ namespace gui {
             if (vertical) {
                 (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
                 (*selfHeight) = std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0);
-                gap = computeSize({"gap"}, 0, false, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChilds() - 1);
                 (*selfHeight) += gap * (childsSizes.size() - 1);
             }
             else {
                 (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
                 (*selfWidth) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
-                gap = computeSize({"gap"}, 0, false, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChilds() - 1);
                 (*selfWidth) += gap * (childsSizes.size() - 1);
             }
         }
@@ -37,10 +36,10 @@ namespace gui {
             bool vertical = getBoolFromRule({"vertical"});
             int gap;
             if (vertical) {
-                gap = computeSize({"gap"}, 0, false, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChilds() - 1);
             }
             else {
-                gap = computeSize({"gap"}, 0, false, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChilds() - 1);
+                gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChilds() - 1);
             }
             const ui::UiElementData *childData;
             ui::Pos childCoords = {0, 0};

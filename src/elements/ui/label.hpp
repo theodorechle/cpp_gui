@@ -18,11 +18,11 @@ namespace gui {
 
         protected:
             Label(const std::string &elementName, const std::string &text,
-                  style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+                  gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                   const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
 
         public:
-            Label(const std::string &text, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
+            Label(const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
                   std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
 
             ~Label() override;

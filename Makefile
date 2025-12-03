@@ -11,7 +11,7 @@ STYLE_LIB=cpp_style/bin/cpp_style_lib
 TESTS_LIB=cpp_tests/bin/cpp_tests_lib
 
 # Subdirectories
-SUBDIRS=elements/abstracts elements/ui elements/ui/render_nodes converters app_utils style_nodes
+SUBDIRS=elements/abstracts elements/ui elements/ui/render_nodes converters app_utils element_style
 
 # Source files
 SRC_MAIN=$(SRC_DIR)/main.cpp

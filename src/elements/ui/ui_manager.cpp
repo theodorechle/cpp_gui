@@ -336,7 +336,8 @@ namespace gui {
             void UIManager::setElementsModifierState(const std::string &modifier, UiElement *leafElement, bool enabled, const SDL_Event *event) {
                 UiElement *element = leafElement;
                 while (element != nullptr) {
-                    element->setModifierState(modifier, enabled);
+                    // TODO: update element style
+                    // element->setModifierState(modifier, enabled);
                     if (enabled && event) element->catchEvent(event);
                     element = static_cast<UiElement *>(element->parent());
                 }

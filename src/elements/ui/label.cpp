@@ -18,11 +18,11 @@ namespace gui {
             }
 
             int style = TTF_STYLE_NORMAL;
-            std::string fontWeight = getEnumFromRule("font-weight", {"normal", "bold"}, "normal", true);
+            std::string fontWeight = getEnumFromRule("font-weight", {"normal", "bold"}, "normal");
             if (fontWeight == "bold") style |= TTF_STYLE_BOLD;
-            if (getBoolFromRule({"font-italic"}, false, true)) style |= TTF_STYLE_ITALIC;
-            if (getBoolFromRule({"font-underline"}, false, true)) style |= TTF_STYLE_UNDERLINE;
-            if (getBoolFromRule({"font-strike-through"}, false, true)) style |= TTF_STYLE_STRIKETHROUGH;
+            if (getBoolFromRule({"font-italic"}, false)) style |= TTF_STYLE_ITALIC;
+            if (getBoolFromRule({"font-underline"}, false)) style |= TTF_STYLE_UNDERLINE;
+            if (getBoolFromRule({"font-strike-through"}, false)) style |= TTF_STYLE_STRIKETHROUGH;
             TTF_SetFontStyle(ttfFont, style);
         }
 
@@ -30,7 +30,7 @@ namespace gui {
 
         void Label::getTextSize(int *width, int *height) const {
             if (ttfFont) {
-                std::string wrapping = getEnumFromRule("text-wrap", {"wrapped", "line-break"}, "line-break", true);
+                std::string wrapping = getEnumFromRule("text-wrap", {"wrapped", "line-break"}, "line-break");
                 if (wrapping == "wrapped") {
                     int wrapWidth = this->width();
                     if (wrapWidth != 0) {
@@ -58,7 +58,7 @@ namespace gui {
 
             if (ttfText == nullptr) return;
 
-            std::string wrapping = getEnumFromRule("text-wrap", {"wrapped", "line-break"}, "line-break", true);
+            std::string wrapping = getEnumFromRule("text-wrap", {"wrapped", "line-break"}, "line-break");
             if (wrapping == "wrapped") {
                 int wrapWidth = rect.w;
                 if (!TTF_SetTextWrapWidth(ttfText, wrapWidth)) {
@@ -80,7 +80,7 @@ namespace gui {
             int textWidth, textHeight;
             getTextSize(&textWidth, &textHeight);
 
-            std::string horizontalAlignment = getEnumFromRule("horizontal-alignment", {"start", "centered", "end"}, "start", true);
+            std::string horizontalAlignment = getEnumFromRule("horizontal-alignment", {"start", "centered", "end"}, "start");
 
             // TODO: add support for reversed languages
             if (horizontalAlignment == "start") {
@@ -91,7 +91,7 @@ namespace gui {
             else {
                 rect.x += (rect.w - textWidth);
             }
-            std::string verticalAlignment = getEnumFromRule("vertical-alignment", {"start", "centered", "end"}, "start", true);
+            std::string verticalAlignment = getEnumFromRule("vertical-alignment", {"start", "centered", "end"}, "start");
 
             // TODO: add support for reversed languages
             if (verticalAlignment == "start") {
@@ -107,12 +107,12 @@ namespace gui {
             }
         }
 
-        Label::Label(const std::string &elementName, const std::string &text, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
+        Label::Label(const std::string &elementName, const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager,
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : UiElement{elementName, elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 
-        Label::Label(const std::string &text, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
-                     std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
+        Label::Label(const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes,
+                     const std::string &identifier, TTF_TextEngine *textEngine)
             : UiElement{"label", elementsStyleManager, classes, identifier, textEngine}, text{text} {}
 
         Label::~Label() {
@@ -120,9 +120,11 @@ namespace gui {
             TTF_CloseFont(ttfFont);
         }
 
-        SDL_Color Label::textColor() const { return computeColor({"text-color"}, SDL_Color{0, 0, 0, 255}, true); }
+        SDL_Color Label::textColor() const { return computeColor({"text-color"}, SDL_Color{0, 0, 0, 255}); }
         int Label::fontSize() const { return computeSize({"font-size"}, 15, true); }
-        std::string Label::fontName() const { return style->getFontsPath() + getStringFromRule({"font-name"}, "", true); }
+
+        // TODO: use default fonts paths
+        std::string Label::fontName() const { return getStringFromRule({"font-name"}, ""); }
 
         void Label::setText(const std::string &newText) { text = newText; }
 

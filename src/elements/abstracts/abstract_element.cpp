@@ -8,7 +8,7 @@ namespace gui::element {
 
     void AbstractElement::updateStyle() {
         if (elementsStyleManager != nullptr) {
-            elementsStyleManager->applyStyleToElement(style);
+            elementsStyleManager->applyStyleToElement(this);
         }
         if (child() != nullptr) child()->updateStyle();
         if (next() != nullptr) next()->updateStyle();
@@ -19,38 +19,36 @@ namespace gui::element {
         _manager->elementEvent(event, this);
     }
 
-    AbstractElement::AbstractElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
+    AbstractElement::AbstractElement(std::string elementName, elementStyle::manager::StyleManager *elementsStyleManager,
                                      std::vector<std::string> *classes, const std::string &identifier)
         : elementName{elementName}, elementsStyleManager{elementsStyleManager} {
 
-        style = new style::elementStyle::StyleNode();
+        _style = elementStyle::ElementStyle();
         if (elementsStyleManager != nullptr) {
-            style->setFontsPath(elementsStyleManager->getFontsPath());
+            _style.addDefaultFontPath(elementsStyleManager->getFontsPath());
         }
 
-        style->addSelector(elementName, style::StyleComponentType::ElementName);
+        _style.addSelector(elementName, style::StyleComponentType::ElementName);
         // set selectors
         if (classes != nullptr) {
             for (std::string c : *classes) {
-                style->addSelector(c, style::StyleComponentType::Class);
+                _style.addSelector(c, style::StyleComponentType::Class);
             }
         }
-        if (!identifier.empty()) style->addSelector(identifier, style::StyleComponentType::Identifier);
+        if (!identifier.empty()) _style.addSelector(identifier, style::StyleComponentType::Identifier);
         if (elementsStyleManager == nullptr) return;
-        elementsStyleManager->addElementStyle(style);
+        elementsStyleManager->addElementStyle(this);
     }
 
     void AbstractElement::addChild(AbstractElement *newChild) {
         if (newChild == nullptr) return;
         commons::Node<AbstractElement>::addChild(newChild);
-        style->addChild(newChild->style);
         newChild->manager(_manager);
         sendEventToManager(ElementEvent::ADD_CHILD);
     }
 
     void AbstractElement::removeChilds() {
         commons::Node<AbstractElement>::removeChilds();
-        style->removeChilds();
         sendEventToManager(ElementEvent::REMOVE_CHILDS);
     }
 
@@ -60,41 +58,17 @@ namespace gui::element {
         if (next()) next()->manager(manager);
     }
 
-    AbstractElement::~AbstractElement() {
-        style->removeChilds();
-        style->next(nullptr);
-        delete style;
-    }
-
-    void AbstractElement::setModifierState(std::string modifierName, bool enabled) { style->setModifierState(modifierName, enabled); }
-
     void AbstractElement::displayStyle() {
         std::cerr << "########################################################\n";
         std::cerr << "path in tree:\n";
         const AbstractElement *node = this;
         std::list<std::list<std::string>> path = {};
         while (node->parent() != nullptr) {
-            std::list<std::string> pathFragment = {};
-            for (style::StyleComponentData selector : *(node->style->getSelectors())) {
-                char firstChar[2] = "";
-                switch (selector.second) {
-                case style::StyleComponentType::Identifier:
-                    firstChar[0] = '#';
-                    break;
-                case style::StyleComponentType::Class:
-                    firstChar[0] = '.';
-                    break;
-                case style::StyleComponentType::Modifier:
-                    firstChar[0] = ':';
-                    break;
-                default:
-                    break;
-                }
-                pathFragment.push_back(firstChar + selector.first);
-            }
-            path.push_front(pathFragment);
+            path.push_front(_style.debugToString());
             node = node->parent();
         }
+
+        std::cerr << "selectors:\n";
         for (const std::list<std::string> &path_fragment : path) {
             std::cerr << "/";
             std::size_t index = 0;
@@ -107,14 +81,10 @@ namespace gui::element {
 
         std::cerr << "\n";
 
-        std::cerr << "selectors:\n";
-        for (style::StyleComponentData selector : *(style->getSelectors())) {
-            std::cerr << "(" << style::styleComponentTypeToString(selector.second) << ") " << selector.first << "\n";
-        }
         std::cerr << "applied rules:\n";
-        for (std::pair<std::string, style::elementStyle::StyleRules> rule : style->getStyle()) {
+        for (std::pair<std::string, style::StyleRule> rule : _style.rules()) {
             std::cerr << rule.first << " -> ";
-            style::StyleValue *value = rule.second.front().value;
+            style::StyleValue *value = rule.second.value;
             std::cerr << value->getValue();
             value = value->getChild();
             while (value != nullptr) {

@@ -1,6 +1,6 @@
 #include "../cpp_style/src/style_deserializer.hpp"
-#include "style_nodes/style_node.hpp"
-#include "style_nodes/style_nodes_manager.hpp"
+#include "element_style/style_node.hpp"
+#include "element_style/style_manager.hpp"
 #include "app_utils/app_state.hpp"
 #include "elements/abstracts/abstract_manager.hpp"
 #include "elements/ui/button.hpp"
@@ -55,8 +55,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     gui::element::manager::AbstractManager *manager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
-    style::elementStyle::manager::StyleNodesManager *elementsStyleManager =
-        new style::elementStyle::manager::StyleNodesManager(style::config::config());
+    gui::elementStyle::manager::StyleManager *elementsStyleManager =
+        new gui::elementStyle::manager::StyleManager(style::config::config());
     TTF_TextEngine *textEngine = TTF_CreateRendererTextEngine(sdl_renderer);
 
     if (textEngine == nullptr) {
@@ -90,8 +90,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     // gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
 
-    // style::elementStyle::manager::StyleNodesManager *subElementsStyleManager = new
-    // style::elementStyle::manager::StyleNodesManager(&guiStyleConfig);
+    // gui::elementStyle::manager::StyleManager *subElementsStyleManager = new
+    // gui::elementStyle::manager::StyleManager(&guiStyleConfig);
     // subElementsStyleManager->addStyleFile("tests/tests-files/main-test-sub-view.txt");
 
     // parentContainer->addChild(new gui::element::ViewContainer(subManager, subElementsStyleManager));

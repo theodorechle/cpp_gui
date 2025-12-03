@@ -2,13 +2,17 @@
 #define ABSTRACT_ELEMENT_HPP
 
 #include "../../../cpp_commons/src/node.hpp"
-#include "../../style_nodes/style_nodes_manager.hpp"
+#include "../../../cpp_style/src/style_component.hpp"
+#include "../../element_style/element_style.hpp"
 #include "abstract_utils.hpp"
 
 #include <functional>
 #include <string>
 #include <vector>
 
+namespace gui::elementStyle::manager {
+    class StyleManager;
+}
 namespace gui::element {
     namespace manager {
         class AbstractManager;
@@ -17,10 +21,11 @@ namespace gui::element {
     class AbstractElement : public commons::Node<AbstractElement> {
         std::string elementName;
         manager::AbstractManager *_manager = nullptr;
-        style::elementStyle::manager::StyleNodesManager *elementsStyleManager;
+        elementStyle::manager::StyleManager *elementsStyleManager;
 
     protected:
-        style::elementStyle::StyleNode *style = nullptr;
+        elementStyle::ElementStyle _style;
+
         void updateStyle();
 
         void sendEventToManager(ElementEvent event);
@@ -31,7 +36,7 @@ namespace gui::element {
         /**
          * If no style manager is given, the element can't have style
          */
-        AbstractElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
+        AbstractElement(std::string elementName, elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
                         std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
         const std::string &name() const { return elementName; }
         void addChild(AbstractElement *newChild);
@@ -40,9 +45,11 @@ namespace gui::element {
         void setParent(AbstractElement *parent);
 
         void manager(manager::AbstractManager *manager);
-        manager::AbstractManager *manager() { return _manager; };
+        manager::AbstractManager *manager() { return _manager; }
 
-        virtual ~AbstractElement();
+        elementStyle::ElementStyle *style() { return &_style; }
+
+        virtual ~AbstractElement() {};
 
         /**
          * Override this function to draw self element.
@@ -68,15 +75,11 @@ namespace gui::element {
         virtual bool render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                             std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const = 0;
 
-        /**
-         * true if should propagate to the parent, false else
-         */
-        void setModifierState(std::string modifierName, bool enabled);
-
         void displayStyle();
     };
 } // namespace gui::element
 
+#include "../../element_style/style_manager.hpp"
 #include "abstract_manager.hpp"
 
 #endif // ABSTRACT_ELEMENT_HPP

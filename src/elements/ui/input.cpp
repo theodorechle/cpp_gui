@@ -3,7 +3,7 @@
 namespace gui {
     namespace element {
 
-        Input::Input(const std::string &text, const std::string &placeholder, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
+        Input::Input(const std::string &text, const std::string &placeholder, gui::elementStyle::manager::StyleManager *elementsStyleManager,
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
             : Label{"input", text, elementsStyleManager, classes, identifier, textEngine}, placeholder{placeholder} {}
 

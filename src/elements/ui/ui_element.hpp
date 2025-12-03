@@ -34,41 +34,38 @@ namespace gui {
         protected:
             static SDL_FRect createFRect(int x, int y, int width, int height);
 
-            int getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize = 0, bool canInherit = false) const;
-            std::string getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString = "",
-                                          bool canInherit = false) const;
+            int getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize = 0) const;
+            std::string getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString = "") const;
 
             /**
              * If no allowed value is given, it will return the found value.
              * If no value is found, it returns the defaultValue.
              */
             std::string getEnumFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
-                                        const std::string &defaultValue = "", bool canInherit = false) const;
+                                        const std::string &defaultValue = "") const;
 
             /**
              * If no allowed value is given, it will return the found value.
              * If no value is found, it returns the defaultValue.
              */
             std::string getEnumFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
-                                         const std::string &defaultValue = "", bool canInherit = false) const;
-            bool getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool = false, bool canInherit = false) const;
+                                         const std::string &defaultValue = "") const;
+            bool getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool = false) const;
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
              * Else returns default;
              */
-            int computeSize(const std::vector<std::string> &ruleNames, int defaultSize = 0, bool canInherit = false, int parentSize = 0,
-                            bool *found = nullptr) const;
+            int computeSize(const std::vector<std::string> &ruleNames, int defaultSize = 0, int parentSize = 0, bool *found = nullptr) const;
 
             /**
              * If any of the style names is found in current loaded style, returns the corresponding value.
              * Else returns default;
              */
-            SDL_Color computeColor(const std::vector<std::string> &ruleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255},
-                                   bool canInherit = false) const;
+            SDL_Color computeColor(const std::vector<std::string> &ruleNames, SDL_Color defaultColor = SDL_Color{0, 0, 0, 255}) const;
 
         public:
-            UiElement(std::string elementName, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
+            UiElement(std::string elementName, gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
                       std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
                 : AbstractElement{elementName, elementsStyleManager, classes, identifier}, _textEngine{textEngine} {}
 

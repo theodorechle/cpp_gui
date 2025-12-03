@@ -2,7 +2,7 @@
 
 namespace gui {
     namespace element {
-        RootElement::RootElement(style::elementStyle::manager::StyleNodesManager *elementsStyleManager, std::vector<std::string> *classes,
+        RootElement::RootElement(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes,
                                  const std::string &identifier)
             : UiElement{"root", elementsStyleManager, classes, identifier} {}
 

@@ -3,7 +3,7 @@
 namespace gui {
     namespace element {
 
-        Button::Button(std::function<void()> onClick, style::elementStyle::manager::StyleNodesManager *elementsStyleManager,
+        Button::Button(std::function<void()> onClick, gui::elementStyle::manager::StyleManager *elementsStyleManager,
                        std::vector<std::string> *classes, const std::string &identifier)
             : UiElement{"button", elementsStyleManager, classes, identifier}, onClickFunction{onClick} {}
 

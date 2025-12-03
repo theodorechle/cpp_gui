@@ -40,7 +40,7 @@ jobs:
         sudo cmake --install build --prefix /usr/local
 
     - name: Compile tests
-      run: make -j tests
+      run: make -j tests BASH_COLORS=1
     
     - name: Execute tests
       run: bin/tests

@@ -12,7 +12,7 @@ namespace gui {
             std::function<void()> onClickFunction;
 
         public:
-            Button(std::function<void()> onClick, style::elementStyle::manager::StyleNodesManager *elementsStyleManager = nullptr,
+            Button(std::function<void()> onClick, gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
                    std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
 
             void catchEvent(const SDL_Event *event) override;

@@ -1,9 +1,9 @@
-#ifndef STYLE_NODES_TESTS_HPP
-#define STYLE_NODES_TESTS_HPP
+#ifndef element_style_TESTS_HPP
+#define element_style_TESTS_HPP
 
 #include "../../cpp_tests/src/tests.hpp"
 #include "../../cpp_style/src/style_component.hpp"
-#include "../../src/style_nodes/style_node.hpp"
+#include "../../src/element_style/element_style.hpp"
 #include "../test_config.hpp"
 
 namespace styleNodesTests {
@@ -14,4 +14,4 @@ namespace styleNodesTests {
     void testsStyleNodes(test::Tests *tests);
 } // namespace styleNodesTests
 
-#endif // STYLE_NODES_TESTS_HPP
+#endif // element_style_TESTS_HPP
