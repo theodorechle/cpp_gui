@@ -45,20 +45,20 @@ namespace gui::elementStyle {
 
     void ElementStyle::deactivateModifier(const std::string &modifier) { _selectors.erase({modifier, style::StyleComponentType::Modifier}); }
 
-    bool ElementStyle::deleteStyle(int fileNumber, int ruleNumber) {
+    void ElementStyle::deleteStyle(int fileNumber, int ruleNumber) {
         for (style::RulesMap::iterator it = _rules.begin(); it != _rules.end(); it++) {
             if (it->second.fileNumber == fileNumber && it->second.ruleNumber == ruleNumber) {
                 _rules.erase(it->first);
-                return true; // should not have multiple rules with same file and rule number
+                return;
             }
         }
-        return false;
     }
 
     void ElementStyle::deleteStyleFromFile(int fileNumber) {
         for (style::RulesMap::iterator it = _rules.begin(); it != _rules.end(); it++) {
             if (it->second.fileNumber == fileNumber) {
                 _rules.erase(it->first);
+                return;
             }
         }
     }
@@ -112,6 +112,8 @@ namespace gui::elementStyle {
         *ruleValue = defaultStyle;
         return (defaultStyle != nullptr);
     }
+
+    int ElementStyle::nbRules() const { return _rules.size(); }
 
 } // namespace gui::elementStyle
 

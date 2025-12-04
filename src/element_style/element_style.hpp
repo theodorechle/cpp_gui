@@ -31,7 +31,7 @@ namespace gui::elementStyle {
         void activateModifier(const std::string &modifier);
         void deactivateModifier(const std::string &modifier);
 
-        bool deleteStyle(int fileNumber, int ruleNumber);
+        void deleteStyle(int fileNumber, int ruleNumber);
         void deleteStyleFromFile(int fileNumber);
 
         std::list<std::string> debugToString();
@@ -53,6 +53,8 @@ namespace gui::elementStyle {
          * If two values have same specificity, first in the rulesNames list will be prioritized.
          */
         bool getRule(const std::vector<std::string> &ruleNames, style::StyleValue **ruleValue, style::StyleValue *defaultStyle = nullptr) const;
+
+        int nbRules() const;
     };
 } // namespace gui::elementStyle
 
