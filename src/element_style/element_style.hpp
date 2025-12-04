@@ -13,7 +13,7 @@ namespace gui::elementStyle {
         std::unordered_set<std::string> defaultFontsPaths = {};
         std::set<style::StyleComponentData> _selectors = {};
 
-        static bool compareRulesPriorityDescending(const style::StyleRule &rule1, const style::StyleRule &rule2); // TODO: take as references
+        static bool compareRulesPriorityDescending(const style::StyleRule &rule1, const style::StyleRule &rule2);
         static bool compareRulesPriorityAscending(const style::StyleRule &rule1, const style::StyleRule &rule2);
 
     public:
