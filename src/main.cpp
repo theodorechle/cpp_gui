@@ -65,7 +65,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     *appstate = new AppState(manager, sdl_window, sdl_renderer, elementsStyleManager, textEngine);
 
-    elementsStyleManager->setFontsPath("tests/fonts");
+    elementsStyleManager->addDefaultFontPath("tests/fonts");
     elementsStyleManager->addStyleFile("tests/tests-files/main-test.txt");
 
     gui::element::UiElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");

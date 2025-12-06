@@ -2,6 +2,7 @@
 #define LABEL_HPP
 
 #include "ui_element.hpp"
+#include <filesystem>
 
 namespace gui {
     namespace element {

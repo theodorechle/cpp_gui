@@ -123,8 +123,20 @@ namespace gui {
         SDL_Color Label::textColor() const { return computeColor({"text-color"}, SDL_Color{0, 0, 0, 255}); }
         int Label::fontSize() const { return computeSize({"font-size"}, 15, true); }
 
-        // TODO: use default fonts paths
-        std::string Label::fontName() const { return getStringFromRule({"font-name"}, ""); }
+        std::string Label::fontName() const {
+            std::string fontName = getStringFromRule({"font-name"}, "");
+            if (fontName.find_first_of("/\\") != std::string::npos) return fontName; // TODO: find safer way to check separations
+
+            for (const std::string &defaultFontPath : elementsStyleManager->getDefaultFontsPaths()) {
+                std::filesystem::path fontPath = std::filesystem::path(defaultFontPath);
+                fontPath.append(fontName);
+#ifdef DEBUG
+                std::cerr << "trying font path '" << fontPath << "': " << (std::filesystem::exists(fontPath) ? "valid" : "invalid") << "\n";
+#endif
+                if (std::filesystem::exists(fontPath)) return fontPath;
+            }
+            return "";
+        }
 
         void Label::setText(const std::string &newText) { text = newText; }
 

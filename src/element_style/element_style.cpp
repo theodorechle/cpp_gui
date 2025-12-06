@@ -22,16 +22,12 @@ namespace gui::elementStyle {
         }
         return false;
     }
-
-    void ElementStyle::addDefaultFontPath(const std::string &path) { defaultFontsPaths.insert(path); }
-
-    const std::unordered_set<std::string> &ElementStyle::getDefaultFontsPaths() { return defaultFontsPaths; }
-
+    
     void ElementStyle::addSelector(const std::string &selectorName, style::StyleComponentType selectorType) {
         _selectors.insert(style::StyleComponentData(selectorName, selectorType));
     }
 
-    bool ElementStyle::hasSelector(const style::StyleComponentData &selector) { return _selectors.find(selector) != _selectors.cend(); }
+    bool ElementStyle::hasSelector(const style::StyleComponentData &selector) const { return _selectors.find(selector) != _selectors.cend(); }
 
     void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNumber) {
         for (style::RulesMap::iterator it = _rules.begin(); it != _rules.end(); it++) {
@@ -65,7 +61,7 @@ namespace gui::elementStyle {
         }
     }
 
-    std::list<std::string> ElementStyle::debugToString() {
+    std::list<std::string> ElementStyle::debugToString() const {
         std::list<std::string> pathFragment = {};
         for (const style::StyleComponentData &selector : _selectors) {
             char firstChar[2] = "";

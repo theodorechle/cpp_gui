@@ -24,10 +24,6 @@ namespace gui::element {
         : elementName{elementName}, elementsStyleManager{elementsStyleManager} {
 
         _style = elementStyle::ElementStyle();
-        if (elementsStyleManager != nullptr) {
-            _style.addDefaultFontPath(elementsStyleManager->getFontsPath());
-        }
-
         _style.addSelector(elementName, style::StyleComponentType::ElementName);
         // set selectors
         if (classes != nullptr) {

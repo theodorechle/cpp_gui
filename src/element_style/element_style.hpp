@@ -10,7 +10,6 @@
 namespace gui::elementStyle {
     class ElementStyle {
         style::RulesMap _rules = {};
-        std::unordered_set<std::string> defaultFontsPaths = {};
         std::set<style::StyleComponentData> _selectors = {};
 
         static bool compareRulesPriorityDescending(const style::StyleRule &rule1, const style::StyleRule &rule2);
@@ -19,11 +18,8 @@ namespace gui::elementStyle {
     public:
         void rules(const style::RulesMap &newStyle) { _rules = newStyle; }
 
-        void addDefaultFontPath(const std::string &path);
-        const std::unordered_set<std::string> &getDefaultFontsPaths();
-
         void addSelector(const std::string &selectorName, style::StyleComponentType selectorType);
-        bool hasSelector(const style::StyleComponentData &selector);
+        bool hasSelector(const style::StyleComponentData &selector) const;
 
         void updateStylePriorityFromFile(int oldFileNumber, int newFileNumber);
         void clear();
@@ -34,7 +30,7 @@ namespace gui::elementStyle {
         void deleteStyle(int fileNumber, int ruleNumber);
         void deleteStyleFromFile(int fileNumber);
 
-        std::list<std::string> debugToString();
+        std::list<std::string> debugToString() const;
 
         const style::RulesMap &rules() { return _rules; }
 

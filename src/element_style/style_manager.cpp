@@ -69,12 +69,9 @@ namespace gui::elementStyle::manager {
         }
     }
 
-    void StyleManager::setFontsPath(const std::string &path) {
-        if (path[path.size() - 1] != '/') fontsPath = path + '/';
-        else fontsPath = path;
-    }
+    void StyleManager::addDefaultFontPath(const std::string &path) { defaultFontsPaths.insert(path); }
 
-    const std::string &StyleManager::getFontsPath() const { return fontsPath; }
+    const std::unordered_set<std::string> &StyleManager::getDefaultFontsPaths() const { return defaultFontsPaths; }
 
     int StyleManager::addStyleFile(const std::string &fileName) {
 #ifdef DEBUG

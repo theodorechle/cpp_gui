@@ -16,14 +16,14 @@
 namespace gui::elementStyle::manager {
 
     class StyleManager {
-        element::AbstractElement *rootElement;
+        element::AbstractElement *rootElement = nullptr;
 
         const style::config::Config *config;
         std::list<style::StyleBlock *> style = {};
         int fileCount = 0;
         // file number: <file name, nb rules>
         std::unordered_map<int, std::pair<std::string, int>> files = {};
-        std::string fontsPath = "";
+        std::unordered_set<std::string> defaultFontsPaths = {};
 
         int findFile(const std::string &fileName);
         void updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber, element::AbstractElement *element);
@@ -39,8 +39,7 @@ namespace gui::elementStyle::manager {
         StyleManager(const style::config::Config *config) : config{config} {}
         ~StyleManager();
         void setParentElementStyle(element::AbstractElement *elementStyle) { rootElement = elementStyle; }
-        void setFontsPath(const std::string &path);
-        const std::string &getFontsPath() const;
+
         // returns a number who corresponds to the file number (used to delete it) or -1 if not added
         int addStyleFile(const std::string &fileName);
         // returns a number who corresponds to the style pseudo-file number (used to delete it) or -1 if not added
@@ -51,6 +50,9 @@ namespace gui::elementStyle::manager {
         // TODO: Are both methods needed?
         void applyStyleToElement(element::AbstractElement *elementStyle, bool recursive = false);
         void addElementStyle(element::AbstractElement *elementStyle);
+
+        void addDefaultFontPath(const std::string &path);
+        const std::unordered_set<std::string> &getDefaultFontsPaths() const;
     };
 
 } // namespace gui::elementStyle::manager
