@@ -42,7 +42,7 @@ namespace gui {
             // viewManager->needRecomputeLayout();
         }
 
-        ViewContainer::ViewContainer(gui::element::manager::UIManager *viewManager,
+        ViewContainer::ViewContainer(gui::element::manager::UiManager *viewManager,
                                      gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes,
                                      const std::string &identifier)
             : UiElement("view-container", elementsStyleManager, classes, identifier), viewManager{viewManager} {

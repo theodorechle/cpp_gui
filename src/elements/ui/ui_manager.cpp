@@ -4,7 +4,7 @@
 namespace gui {
     namespace element {
         namespace manager {
-            UIManager::UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect) : window{window}, renderer{renderer} {
+            UiManager::UiManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect) : window{window}, renderer{renderer} {
                 if (clipRect != nullptr) {
                     this->clipRect = *clipRect;
                     canChangeSize = false;
@@ -14,7 +14,7 @@ namespace gui {
                 }
             }
 
-            void UIManager::createRootElement() {
+            void UiManager::createRootElement() {
                 UiElement *rootElement = new RootElement();
                 rootElement->setRenderer(renderer);
                 rootElement->setWindow(window);
@@ -23,25 +23,25 @@ namespace gui {
                 rootRenderNode = new ui::render::UiRenderNode(renderer, nullptr, rootElement);
             }
 
-            void UIManager::updateRenderingData() {
+            void UiManager::updateRenderingData() {
                 if (!canChangeSize) return;
                 int width = 0;
                 int height = 0;
                 if (!SDL_GetCurrentRenderOutputSize(renderer, &width, &height)) {
-                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UIManager::updateRenderingData: Can't get render size");
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiManager::updateRenderingData: Can't get render size");
                 }
                 this->clipRect = SDL_Rect{0, 0, width, height};
                 renderedTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, clipRect.w, clipRect.h);
                 if (renderedTexture == nullptr) {
-                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UIManager::updateRenderingData: Can't create a texture for rendering: %s", SDL_GetError());
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "UiManager::updateRenderingData: Can't create a texture for rendering: %s", SDL_GetError());
                 }
             }
 
-            void UIManager::addChildToRootElement(AbstractElement *childElement) {
+            void UiManager::addChildToRootElement(AbstractElement *childElement) {
                 static_cast<UiElement *>(elementsTree)->addChild(static_cast<UiElement *>(childElement));
             }
 
-            ui::render::UiRenderNode *UIManager::renderNodeOf(const AbstractElement *element) {
+            ui::render::UiRenderNode *UiManager::renderNodeOf(const AbstractElement *element) {
                 if (!element) return nullptr;
                 if (element == rootRenderNode->baseElement) return rootRenderNode;
                 const AbstractElement *node = element; // TODO: should be useless
@@ -64,7 +64,7 @@ namespace gui {
                 return renderNode;
             }
 
-            void UIManager::resetInvalidPointersOnNodesDeletion(const ui::render::UiRenderNode *parentNode, bool deleteUpdateElement) {
+            void UiManager::resetInvalidPointersOnNodesDeletion(const ui::render::UiRenderNode *parentNode, bool deleteUpdateElement) {
                 if (!parentNode) return;
                 if (clickedElement && (parentNode->isParentOf(clickedElement))) clickedElement = nullptr;
                 if (hoveredElement && (parentNode->isParentOf(hoveredElement))) hoveredElement = nullptr;
@@ -78,7 +78,7 @@ namespace gui {
                 }
             }
 
-            void UIManager::elementEvent(ElementEvent event, AbstractElement *caller) {
+            void UiManager::elementEvent(ElementEvent event, AbstractElement *caller) {
                 AbstractManager::elementEvent(event, caller);
                 switch (event) {
                 case ElementEvent::REMOVE_CHILDS: {
@@ -99,7 +99,7 @@ namespace gui {
                 }
             }
 
-            void UIManager::computeNodesLayout(ui::render::UiRenderNode *renderNode) {
+            void UiManager::computeNodesLayout(ui::render::UiRenderNode *renderNode) {
                 renderNode->computeSelfLayout();
                 ui::render::UiRenderNode *child = renderNode->child();
                 while (child != nullptr) {
@@ -108,13 +108,13 @@ namespace gui {
                 }
             }
 
-            void UIManager::initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode) {
+            void UiManager::initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode) {
                 rootRenderNode->initBeforeLayoutComputing();
             }
 
-            void UIManager::restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode) { rootRenderNode->restoreAfterLayoutComputing(); }
+            void UiManager::restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode) { rootRenderNode->restoreAfterLayoutComputing(); }
 
-            void UIManager::prepareRenderNodes(UiElement *rootElement, ui::render::UiRenderNode *rootRenderNode) {
+            void UiManager::prepareRenderNodes(UiElement *rootElement, ui::render::UiRenderNode *rootRenderNode) {
                 UiElement *currentElement = rootElement;
                 ui::render::UiRenderNode *currentRenderNode;
                 while (currentElement) {
@@ -125,9 +125,9 @@ namespace gui {
                 }
             }
 
-            void UIManager::computeNodesAndChildsLayout(ui::render::UiRenderNode *node) { node->computeSelfAndChildsLayout(); }
+            void UiManager::computeNodesAndChildsLayout(ui::render::UiRenderNode *node) { node->computeSelfAndChildsLayout(); }
 
-            void UIManager::computeNodesRelativeLayout(ui::render::UiRenderNode *node) {
+            void UiManager::computeNodesRelativeLayout(ui::render::UiRenderNode *node) {
                 ui::render::UiRenderNode *currentNode = node;
                 while (currentNode) {
                     currentNode->computeRelativeLayout();
@@ -135,13 +135,14 @@ namespace gui {
                 }
             }
 
-            void UIManager::computeNodesFinalLayout(ui::render::UiRenderNode *node, SDL_Rect *rootClipRect) {
+            void UiManager::computeNodesFinalLayout(ui::render::UiRenderNode *node, SDL_Rect *rootClipRect) {
                 if (!node) return;
                 if (!rootClipRect) node->computeFinalLayout();
                 else node->computeFinalLayout(rootClipRect, true);
             }
 
-            void UIManager::computeElementsLayout() {
+            void UiManager::updateModifiedElements() {
+                // TODO: some part should be done in abstract manager, at least calling the method
                 if (!elementsToUpdate.size()) return;
 #ifdef DEBUG
                 std::cerr << "hovered element: " << hoveredElement << "\n";
@@ -183,6 +184,9 @@ namespace gui {
                 std::cerr << "clicked element: " << clickedElement << "\n";
                 std::cerr << "focused element: " << focusedElement << "\n";
 #endif
+            }
+
+            void UiManager::computeElementsLayout() {
                 computeNodesLayout(rootRenderNode);
                 computeNodesAndChildsLayout(rootRenderNode);
                 computeNodesRelativeLayout(rootRenderNode);
@@ -190,7 +194,7 @@ namespace gui {
                 restoreAfterLayoutComputing(rootRenderNode);
             }
 
-            void UIManager::createNodesTextures(ui::render::UiRenderNode *node) {
+            void UiManager::createNodesTextures(ui::render::UiRenderNode *node) {
                 ui::render::UiRenderNode *currentNode = node;
                 while (currentNode != nullptr) {
                     currentNode->createTexture();
@@ -199,7 +203,7 @@ namespace gui {
                 }
             }
 
-            void UIManager::createRenderedTexture() {
+            void UiManager::createRenderedTexture() {
                 if (!elementsToUpdate.size()) return;
                 createNodesTextures(rootRenderNode);
                 SDL_SetRenderTarget(renderer, renderedTexture);
@@ -207,19 +211,38 @@ namespace gui {
                 SDL_SetRenderTarget(renderer, nullptr);
             }
 
-            void UIManager::renderElements(bool clear) const {
+            void UiManager::renderElements(bool clear) const {
                 if (renderedTexture != nullptr) {
                     SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
                 }
                 SDL_RenderPresent(renderer);
             }
 
-            void UIManager::update() {
+            void UiManager::update() {
+                updateModifiedElements();
                 computeElementsLayout(); // TODO: improve to only render updated elements
                 createRenderedTexture();
             }
 
-            void UIManager::processEvent(const SDL_Event *event) {
+            void UiManager::windowFocusLost() {
+                if (focusedElement) {
+                    setElementsModifierState("focused", focusedElement->baseElement, false);
+                    focusedElement = nullptr;
+                }
+                if (clickedElement) {
+                    setElementsModifierState("clicked", clickedElement->baseElement, false);
+                    clickedElement = nullptr;
+                }
+                if (hoveredElement) {
+                    setElementsModifierState("hovered", hoveredElement->baseElement, false);
+                    hoveredElement = nullptr;
+                }
+#ifdef DEBUG
+                std::cerr << "window focus lost, removed events\n";
+#endif
+            }
+
+            void UiManager::processEvent(const SDL_Event *event) {
                 switch (event->type) {
                 case SDL_EVENT_QUIT:
                     status(Status::ENDED);
@@ -232,9 +255,12 @@ namespace gui {
                 case SDL_EVENT_WINDOW_RESIZED:
                     needUpdate(elementsTree);
                     break;
+                case SDL_EVENT_WINDOW_FOCUS_LOST:
                 case SDL_EVENT_WINDOW_MOUSE_LEAVE:
                     windowFocused = false;
+                    windowFocusLost();
                     break;
+                case SDL_EVENT_WINDOW_FOCUS_GAINED:
                 case SDL_EVENT_WINDOW_MOUSE_ENTER:
                     windowFocused = true;
                     break;
@@ -246,7 +272,7 @@ namespace gui {
                 }
             }
 
-            void UIManager::processMouseEvent(const SDL_Event *event) { // TODO: split into different functions for each mouse events
+            void UiManager::processMouseEvent(const SDL_Event *event) { // TODO: split into different functions for each mouse events
                 if (elementsTree == nullptr) return;
                 float x, y;
                 SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
@@ -277,11 +303,13 @@ namespace gui {
                         }
                     }
                 }
+
                 if (mouseFlags) {
                     if (!clicked && !clickedElement) {
                         clickedElement = currentHoveredElement;
                         clicked = true;
                         if (focusedElement) {
+                            // TODO: useless, the event is never sent
                             SDL_Event event = SDL_Event();
                             SDL_zero(event);
                             event.user.type = ui::FOCUS_LOST;
@@ -292,7 +320,7 @@ namespace gui {
                         if (focusedElement) {
                             SDL_Event event = SDL_Event();
                             SDL_zero(event);
-                            event.user.type = ui::FOCUS;
+                            event.user.type = ui::FOCUS_GAINED;
                             event.user.code = ui::eventCode(event.user.type);
                             setElementsModifierState("focused", focusedElement->baseElement, true, &event);
                         }
@@ -306,14 +334,14 @@ namespace gui {
                         clickedElement = nullptr;
                     }
                 }
-                if ((hoveredElement != currentHoveredElement) || (hoveredElement && !windowFocused)) {
+                if (hoveredElement != currentHoveredElement) {
                     if (hoveredElement) setElementsModifierState("hovered", hoveredElement->baseElement, false, event);
                     if (currentHoveredElement) setElementsModifierState("hovered", currentHoveredElement->baseElement, true, event);
                     hoveredElement = currentHoveredElement;
                 }
             }
 
-            void UIManager::scroll(int x, int y) {
+            void UiManager::scroll(int x, int y) {
                 ui::render::UiRenderNode *element = hoveredElement;
                 while (element) {
                     if (element->scroll(x, -y)) {
@@ -324,24 +352,13 @@ namespace gui {
                 }
             }
 
-            void UIManager::sendEvent(const SDL_Event *event, UiElement *leafElement) {
+            void UiManager::sendEvent(const SDL_Event *event, UiElement *leafElement) {
                 UiElement *element = leafElement;
                 if (element == nullptr) return;
                 while (element != nullptr) {
                     element->catchEvent(event);
                     element = static_cast<UiElement *>(element->parent());
                 }
-            }
-
-            void UIManager::setElementsModifierState(const std::string &modifier, UiElement *leafElement, bool enabled, const SDL_Event *event) {
-                UiElement *element = leafElement;
-                while (element != nullptr) {
-                    // TODO: update element style
-                    // element->setModifierState(modifier, enabled);
-                    if (enabled && event) element->catchEvent(event);
-                    element = static_cast<UiElement *>(element->parent());
-                }
-                needUpdate(leafElement);
             }
 
         } // namespace manager

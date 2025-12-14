@@ -12,19 +12,12 @@ namespace gui::elementStyle {
         return false;
     }
 
-    bool ElementStyle::compareRulesPriorityDescending(const style::StyleRule &rule1, const style::StyleRule &rule2) {
-        if (rule1.specificity > rule2.specificity) return true;
-        if (rule1.specificity == rule2.specificity) {
-            if (rule1.fileNumber > rule2.fileNumber) return true;
-            if (rule1.fileNumber == rule2.fileNumber) {
-                if (rule1.ruleNumber > rule2.ruleNumber) return true;
-            }
-        }
-        return false;
-    }
-    
     void ElementStyle::addSelector(const std::string &selectorName, style::StyleComponentType selectorType) {
         _selectors.insert(style::StyleComponentData(selectorName, selectorType));
+    }
+
+    void ElementStyle::removeSelector(const std::string &selectorName, style::StyleComponentType selectorType) {
+        _selectors.erase(style::StyleComponentData(selectorName, selectorType));
     }
 
     bool ElementStyle::hasSelector(const style::StyleComponentData &selector) const { return _selectors.find(selector) != _selectors.cend(); }
@@ -112,5 +105,16 @@ namespace gui::elementStyle {
     }
 
     int ElementStyle::nbRules() const { return _rules.size(); }
+
+    std::string ElementStyle::debugValue() {
+        std::stringstream stringStream;
+        bool first = true;
+        for (style::StyleComponentData selector : _selectors) {
+            if (!first) stringStream << ",";
+            first = false;
+            stringStream << selector.first << "(" << style::styleComponentTypeToString(selector.second) << ")";
+        }
+        return stringStream.str();
+    }
 
 } // namespace gui::elementStyle

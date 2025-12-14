@@ -40,10 +40,30 @@ namespace gui::element::manager {
     void AbstractManager::deleteElementsTree() { delete elementsTree; }
 
     void AbstractManager::render(bool clear) {
+        if (_currentStatus == Status::NOT_STARTED) {
+            if (_styleManager) {
+                _styleManager->rootElement(elementsTree);
+                // TODO: style should be applied to elementsTree from here, they don't need to know the styleManager
+                elementsTree->updateStyle();
+            }
+            _currentStatus = Status::RUNNING;
+        }
         if (needUpdate()) {
             update();
             needUpdate(nullptr);
         };
         renderElements(clear);
     }
+
+    void AbstractManager::setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const SDL_Event *event) {
+        AbstractElement *element = leafElement;
+        while (element != nullptr) {
+            element->setModifierState(modifier, enabled);
+            element->updateStyle();
+            if (enabled && event) element->catchEvent(event);
+            element = element->parent();
+        }
+        needUpdate(leafElement);
+    }
+
 } // namespace gui::element::manager

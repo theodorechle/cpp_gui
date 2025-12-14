@@ -161,7 +161,7 @@ namespace gui::element::ui::render {
         }
 
         SDL_SetRenderClipRect(renderer, nullptr);
-
+#ifdef DEBUG
         std::cerr
             << "rects ("
             << baseElement->name()
@@ -175,6 +175,7 @@ namespace gui::element::ui::render {
             << ","
             << usedLayout.elementClippedRect.h
             << "}\n";
+#endif
         SDL_FRect sourceFRect;
         SDL_RectToFRect(&(usedLayout.elementClippedRect), &sourceFRect);
         sourceFRect.x = usedLayout.scrollOffset.x;
@@ -235,7 +236,7 @@ namespace gui::element::ui::render {
             << this
             << ") "
             << baseElement->name()
-            << "{x="
+            << " {x="
             << usedLayout.startCoords.x
             << ",y="
             << usedLayout.startCoords.y
@@ -243,8 +244,11 @@ namespace gui::element::ui::render {
             << usedLayout.elementClippedRect.w
             << ",h="
             << usedLayout.elementClippedRect.h
+            << "} {"
+            << baseElement->style()->debugValue()
             << "}";
-        if (baseElement->name() == "label") stringStream << " (" << static_cast<gui::element::Label *>(baseElement)->getText() << ")";
+        // TODO: use UiElement debugValue
+        if (baseElement->name() == "label") stringStream << " (" << static_cast<gui::element::Label *>(baseElement)->text() << ")";
         return stringStream.str();
     }
 

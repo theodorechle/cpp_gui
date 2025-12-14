@@ -33,7 +33,6 @@ namespace gui::element {
         }
         if (!identifier.empty()) _style.addSelector(identifier, style::StyleComponentType::Identifier);
         if (elementsStyleManager == nullptr) return;
-        elementsStyleManager->addElementStyle(this);
     }
 
     void AbstractElement::addChild(AbstractElement *newChild) {
@@ -81,15 +80,20 @@ namespace gui::element {
         for (std::pair<std::string, style::StyleRule> rule : _style.rules()) {
             std::cerr << rule.first << " -> ";
             style::StyleValue *value = rule.second.value;
-            std::cerr << value->getValue();
-            value = value->getChild();
+            std::cerr << value->value();
+            value = value->child();
             while (value != nullptr) {
-                std::cerr << value->getValue();
-                value = value->getNext();
+                std::cerr << value->value();
+                value = value->next();
             }
             std::cerr << "\n";
         }
         std::cerr << "########################################################\n";
+    }
+
+    void AbstractElement::setModifierState(std::string modifier, bool enabled) {
+        if (enabled) _style.addSelector(modifier, style::StyleComponentType::Modifier);
+        else _style.removeSelector(modifier, style::StyleComponentType::Modifier);
     }
 
     std::string AbstractElement::debugValue() const {

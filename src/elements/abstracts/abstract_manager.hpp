@@ -1,9 +1,11 @@
 #ifndef ABSTRACT_MANAGER_HPP
 #define ABSTRACT_MANAGER_HPP
 
+#include <SDL3/SDL_events.h>
 #include <algorithm>
 #include <list>
 
+#include "../../element_style/style_manager.hpp"
 #include "abstract_element.hpp"
 #include "abstract_utils.hpp"
 
@@ -11,13 +13,16 @@ namespace gui::element::manager {
     class AbstractManager {
     public:
         enum class Status {
+            NOT_STARTED,
             RUNNING,
             ENDED,
             ERROR,
         };
 
     private:
-        Status _currentStatus = Status::RUNNING;
+        Status _currentStatus = Status::NOT_STARTED;
+        elementStyle::manager::StyleManager *_styleManager = nullptr;
+
         virtual void renderElements(bool clear = true) const = 0;
         virtual void createRootElement() = 0;
         virtual void update() = 0;
@@ -34,9 +39,17 @@ namespace gui::element::manager {
          */
         void needUpdate(AbstractElement *element);
 
+        /**
+         * set the modifier's state (enabled, disabled) on leafElement and all its parents
+         * if enabled is true, it will also throw the given event on each concerned elements
+         */
+        void setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const SDL_Event *event = nullptr);
+
     public:
         virtual ~AbstractManager();
         void setSubRootElement(AbstractElement *element);
+
+        void styleManager(elementStyle::manager::StyleManager *manager) { _styleManager = manager; }
 
         /**
          * Do actions when an element sends an event (for example, if the element tree changed, it should be re-rendered).

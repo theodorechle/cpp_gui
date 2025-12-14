@@ -1,7 +1,7 @@
 #include "../cpp_style/src/style_deserializer.hpp"
+#include "app_utils/app_state.hpp"
 #include "element_style/element_style.hpp"
 #include "element_style/style_manager.hpp"
-#include "app_utils/app_state.hpp"
 #include "elements/abstracts/abstract_manager.hpp"
 #include "elements/ui/button.hpp"
 #include "elements/ui/container.hpp"
@@ -53,10 +53,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     SDL_SetRenderDrawBlendMode(sdl_renderer, SDL_BLENDMODE_BLEND);
 
-    gui::element::manager::AbstractManager *manager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
+    gui::element::manager::AbstractManager *manager = new gui::element::manager::UiManager(sdl_window, sdl_renderer);
 
-    gui::elementStyle::manager::StyleManager *elementsStyleManager =
-        new gui::elementStyle::manager::StyleManager(style::config::config());
+    gui::elementStyle::manager::StyleManager *elementsStyleManager = new gui::elementStyle::manager::StyleManager(style::config::config());
+    manager->styleManager(elementsStyleManager);
     TTF_TextEngine *textEngine = TTF_CreateRendererTextEngine(sdl_renderer);
 
     if (textEngine == nullptr) {
@@ -88,7 +88,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     list->addChild(new gui::element::Label("hello world!", elementsStyleManager, &lastLabelClasses, "", textEngine));
     parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
 
-    // gui::element::manager::UIManager *subManager = new gui::element::manager::UIManager(sdl_window, sdl_renderer);
+    // gui::element::manager::UiManager *subManager = new gui::element::manager::UiManager(sdl_window, sdl_renderer);
 
     // gui::elementStyle::manager::StyleManager *subElementsStyleManager = new
     // gui::elementStyle::manager::StyleManager(&guiStyleConfig);
@@ -104,7 +104,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     AppState *state = static_cast<AppState *>(appstate);
     gui::element::manager::AbstractManager *manager = state->getManager();
-    static_cast<gui::element::manager::UIManager *>(manager)->processEvent(event);
+    static_cast<gui::element::manager::UiManager *>(manager)->processEvent(event);
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;
     }
@@ -114,7 +114,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *state = static_cast<AppState *>(appstate);
     gui::element::manager::AbstractManager *manager = state->getManager();
-    if (manager->needUpdate()) manager->render();
+    manager->render();
     return SDL_APP_CONTINUE;
 }
 

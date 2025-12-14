@@ -6,18 +6,18 @@ namespace styleNodesTests {
             std::cerr << "null";
             return;
         }
-        std::cerr << value->getValue() << "<" << style::styleValueTypeToString(value->getType()) << ">";
-        style::StyleValue *next = value->getNext();
+        std::cerr << value->value() << "<" << style::styleValueTypeToString(value->type()) << ">";
+        style::StyleValue *next = value->next();
         if (next != nullptr) {
             std::cerr << ",";
             displayValue(next);
         }
-        style::StyleValue *child = value->getChild();
+        style::StyleValue *child = value->child();
         if (child != nullptr) {
             std::cerr << "(";
             while (child != nullptr) {
                 displayValue(child);
-                child = child->getChild();
+                child = child->child();
             }
             std::cerr << ")";
         }
@@ -26,7 +26,7 @@ namespace styleNodesTests {
     bool testValue(bool equal, style::StyleValue *value, style::StyleValue *expected, bool displayDebug) {
         bool result = (value == nullptr || expected == nullptr)
                           ? (value == expected) == equal
-                          : ((value->getValue() == expected->getValue() && value->getType() == expected->getType()) == equal);
+                          : ((value->value() == expected->value() && value->type() == expected->type()) == equal);
         if (!result && displayDebug) {
             std::cerr << "attribute -> given\t|\texpected:\n";
             std::cerr << "value -> ";
@@ -599,34 +599,34 @@ namespace styleNodesTests {
         return testResult;
     }
 
-    test::Result testFontsPathEmpty() {
-        gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        test::Result testResult;
-        testResult = test::booleanToResult(node->getDefaultFontsPaths().empty());
-        delete node;
-        return testResult;
-    }
+    // test::Result testFontsPathEmpty() {
+    //     gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
+    //     test::Result testResult;
+    //     testResult = test::booleanToResult(node->getDefaultFontsPaths().empty());
+    //     delete node;
+    //     return testResult;
+    // }
 
-    test::Result testFontsPath() {
-        gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        test::Result testResult;
-        node->addDefaultFontPath("path");
-        const std::unordered_set<std::string> &paths = node->getDefaultFontsPaths();
-        testResult = test::booleanToResult(paths.size() == 1 && paths.find("path") != nullptr);
-        delete node;
-        return testResult;
-    }
+    // test::Result testFontsPath() {
+    //     gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
+    //     test::Result testResult;
+    //     node->addDefaultFontPath("path");
+    //     const std::unordered_set<std::string> &paths = node->getDefaultFontsPaths();
+    //     testResult = test::booleanToResult(paths.size() == 1 && paths.find("path") != nullptr);
+    //     delete node;
+    //     return testResult;
+    // }
 
-    test::Result testMultipleFontsPaths() {
-        gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        test::Result testResult;
-        node->addDefaultFontPath("path");
-        node->addDefaultFontPath("path2");
-        const std::unordered_set<std::string> &paths = node->getDefaultFontsPaths();
-        testResult = test::booleanToResult(paths.size() == 2 && paths.find("path") != nullptr && paths.find("path2") != nullptr);
-        delete node;
-        return testResult;
-    }
+    // test::Result testMultipleFontsPaths() {
+    //     gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
+    //     test::Result testResult;
+    //     node->addDefaultFontPath("path");
+    //     node->addDefaultFontPath("path2");
+    //     const std::unordered_set<std::string> &paths = node->getDefaultFontsPaths();
+    //     testResult = test::booleanToResult(paths.size() == 2 && paths.find("path") != nullptr && paths.find("path2") != nullptr);
+    //     delete node;
+    //     return testResult;
+    // }
 
     void testsStyleNodes(test::Tests *tests) {
         tests->beginTestBlock("Tests style nodes");
@@ -670,11 +670,11 @@ namespace styleNodesTests {
         tests->addTest(testSetAndGetMultipleSelectors, "set and get multiple selectors");
         tests->addTest(testSetAndGetMultipleSelectorsSameType, "set and get multiple selectors of same type");
         tests->endTestBlock();
-        tests->beginTestBlock("default fonts paths");
-        tests->addTest(testFontsPathEmpty, "fonts path empty");
-        tests->addTest(testFontsPath, "fonts path");
-        tests->addTest(testMultipleFontsPaths, "fonts path override");
-        tests->endTestBlock();
+        // tests->beginTestBlock("default fonts paths");
+        // tests->addTest(testFontsPathEmpty, "fonts path empty");
+        // tests->addTest(testFontsPath, "fonts path");
+        // tests->addTest(testMultipleFontsPaths, "fonts path override");
+        // tests->endTestBlock();
         tests->endTestBlock();
     }
 

@@ -11,7 +11,7 @@ namespace gui {
             }
 
             TTF_DestroyText(ttfText);
-            ttfText = TTF_CreateText(textEngine(), ttfFont, text.c_str(), text.size());
+            ttfText = TTF_CreateText(textEngine(), ttfFont, _text.c_str(), _text.size());
             if (ttfText == nullptr) {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::initBeforeLayoutComputing: Can't create text: %s", SDL_GetError());
                 return;
@@ -34,12 +34,12 @@ namespace gui {
                 if (wrapping == "wrapped") {
                     int wrapWidth = this->width();
                     if (wrapWidth != 0) {
-                        TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), wrapWidth, width, height);
+                        TTF_GetStringSizeWrapped(ttfFont, _text.c_str(), _text.size(), wrapWidth, width, height);
                         return;
                     }
                 }
                 else if (wrapping == "line-break") {
-                    TTF_GetStringSizeWrapped(ttfFont, text.c_str(), text.size(), 0, width, height);
+                    TTF_GetStringSizeWrapped(ttfFont, _text.c_str(), _text.size(), 0, width, height);
                     return;
                 }
             }
@@ -109,11 +109,11 @@ namespace gui {
 
         Label::Label(const std::string &elementName, const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager,
                      std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
-            : UiElement{elementName, elementsStyleManager, classes, identifier, textEngine}, text{text} {}
+            : UiElement{elementName, elementsStyleManager, classes, identifier, textEngine}, _text{text} {}
 
         Label::Label(const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes,
                      const std::string &identifier, TTF_TextEngine *textEngine)
-            : UiElement{"label", elementsStyleManager, classes, identifier, textEngine}, text{text} {}
+            : UiElement{"label", elementsStyleManager, classes, identifier, textEngine}, _text{text} {}
 
         Label::~Label() {
             TTF_DestroyText(ttfText);
@@ -125,8 +125,13 @@ namespace gui {
 
         std::string Label::fontName() const {
             std::string fontName = getStringFromRule({"font-name"}, "");
+            if (fontName.empty()) {
+#ifdef DEBUG
+                std::cerr << "no font defined\n";
+#endif
+                return "";
+            }
             if (fontName.find_first_of("/\\") != std::string::npos) return fontName; // TODO: find safer way to check separations
-
             for (const std::string &defaultFontPath : elementsStyleManager->getDefaultFontsPaths()) {
                 std::filesystem::path fontPath = std::filesystem::path(defaultFontPath);
                 fontPath.append(fontName);
@@ -138,16 +143,14 @@ namespace gui {
             return "";
         }
 
-        void Label::setText(const std::string &newText) { text = newText; }
-
-        void Label::addText(const std::string &toAdd) { text.append(toAdd); }
+        void Label::addText(const std::string &toAdd) { _text.append(toAdd); }
 
         void Label::removeText(int nbChars) {
-            if (text.empty()) return;
-            text.resize(text.size() - nbChars);
+            if (_text.empty()) return;
+            _text.resize(_text.size() - nbChars);
         }
 
-        void Label::clearText() { text.clear(); }
+        void Label::clearText() { _text.clear(); }
 
     } // namespace element
 } // namespace gui

@@ -6,7 +6,6 @@
 #include "root_element.hpp"
 #include "ui_element.hpp"
 #include "utils.hpp"
-#include <SDL3/SDL_events.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
 
@@ -14,7 +13,7 @@ namespace gui {
     namespace element {
         namespace manager {
 
-            class UIManager : public AbstractManager {
+            class UiManager : public AbstractManager {
                 SDL_Window *window = nullptr;
                 SDL_Renderer *renderer = nullptr;
                 ui::render::UiRenderNode *clickedElement = nullptr;
@@ -30,6 +29,7 @@ namespace gui {
 
                 void createRootElement() override;
 
+                void updateModifiedElements();
                 void computeNodesLayout(ui::render::UiRenderNode *renderNode);
                 void initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
                 void restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
@@ -44,13 +44,9 @@ namespace gui {
                 void renderElements(bool clear = true) const override;
                 void update() override;
 
-                void sendEvent(const SDL_Event *event, UiElement *leafElement);
+                void windowFocusLost();
 
-                /**
-                 * set the modifier's state (enabled, disabled) on leafElement and all its parents
-                 * if enabled is true, it will also throw the given event on each concerned elements
-                 */
-                void setElementsModifierState(const std::string &modifier, UiElement *leafElement, bool enabled, const SDL_Event *event = nullptr);
+                void sendEvent(const SDL_Event *event, UiElement *leafElement);
 
                 void updateRenderingData();
 
@@ -69,7 +65,7 @@ namespace gui {
                 void resetInvalidPointersOnNodesDeletion(const ui::render::UiRenderNode *parentNode, bool deleteUpdateElement = true);
 
             public:
-                UIManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect = nullptr);
+                UiManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect = nullptr);
 
                 void setClipRect(const SDL_Rect &clipRect) { this->clipRect = clipRect; }
 

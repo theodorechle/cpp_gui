@@ -21,8 +21,8 @@ namespace gui::elementStyle::manager {
 
     void StyleManager::updateRulesPriorities(int fileNumber) {
         std::unordered_map<int, std::pair<std::string, int>>::node_type node;
-        if (rootElement != nullptr) {
-            updateRulesPrioritiesInElements(fileNumber, fileCount, rootElement);
+        if (_rootElement != nullptr) {
+            updateRulesPrioritiesInElements(fileNumber, fileCount, _rootElement);
             node = files.extract(fileNumber);
             node.key() = fileCount;
             files.insert(std::move(node));
@@ -30,42 +30,51 @@ namespace gui::elementStyle::manager {
         }
     }
 
-    void StyleManager::applySpecificStyleToElement(std::list<style::StyleBlock *> specificStyle, element::AbstractElement *elementStyle,
-                                                   bool recursive) {
+    void StyleManager::applyStyleToElement(element::AbstractElement *elementStyle) {
         if (elementStyle == nullptr) return;
         element::AbstractElement *actualElementStyle = elementStyle;
         const style::StyleValuesMap *styleMap;
-        style::RulesMap elementRulesMap;
+        style::RulesMap elementRulesMap = style::RulesMap();
         actualElementStyle->style()->clear();
-        for (style::StyleBlock *styleComponent : specificStyle) {
-            const style::StyleComponentDataList *componentsList = styleComponent->getComponentsList();
+        for (style::StyleDefinition *styleComponent : style) {
+            if (!elementSelectorsCompatibles(actualElementStyle, &styleComponent->first)) continue;
 
-            if (!elementSelectorsCompatibles(actualElementStyle, componentsList)) continue;
+            styleMap = &styleComponent->second;
 
-            styleMap = styleComponent->getStyleMap();
-            elementRulesMap = style::RulesMap();
-
-            // TODO: add parent style
-            // TODO: add config for inheritance of rules
             for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
                 elementRulesMap[styleRule.first] = style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
                                                                     styleRule.second.fileNumber, styleRule.second.ruleNumber};
             }
-            actualElementStyle->style()->rules(elementRulesMap);
         }
 
-        if (recursive) {
-            actualElementStyle = actualElementStyle->child();
-            while (actualElementStyle != nullptr) {
-                applySpecificStyleToElement(specificStyle, actualElementStyle, recursive);
-                actualElementStyle = actualElementStyle->next();
+        // TODO: find more optimized way to get inherited style
+        actualElementStyle = actualElementStyle->parent();
+        while (actualElementStyle != nullptr) {
+            for (style::StyleDefinition *styleComponent : style) {
+                if (!elementSelectorsCompatibles(actualElementStyle, &styleComponent->first)) continue;
+
+                styleMap = &styleComponent->second;
+
+                for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
+                    if (config->inheritableRules.find(styleRule.first) == config->inheritableRules.cend()) continue;
+                    style::RulesMap::const_iterator existingRule = elementRulesMap.find(styleRule.first);
+                    if (existingRule != elementRulesMap.cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
+                    elementRulesMap[styleRule.first] = style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
+                                                                        styleRule.second.fileNumber, styleRule.second.ruleNumber};
+                }
             }
+            actualElementStyle = actualElementStyle->parent();
         }
+
+        elementStyle->style()->rules(elementRulesMap);
     }
 
     StyleManager::~StyleManager() {
-        for (style::StyleBlock *styleBlock : style) {
-            delete styleBlock;
+        for (style::StyleDefinition *styleDefinition : style) {
+            for (std::pair<std::string, style::StyleRule> rule : styleDefinition->second) {
+                delete rule.second.value;
+            }
+            delete styleDefinition;
         }
     }
 
@@ -93,11 +102,12 @@ namespace gui::elementStyle::manager {
 
     int StyleManager::addStyle(const std::string &styleFileContent) {
         int ruleNumber;
-        std::list<style::StyleBlock *> *fileRules;
+        std::list<style::StyleDefinition *> *fileRules;
         fileRules = style::StyleDeserializer::deserialize(styleFileContent, fileCount, &ruleNumber, config);
         if (fileRules == nullptr || fileRules->empty()) return -1;
         style.splice(style.end(), *fileRules);
-        applySpecificStyleToElement(style, rootElement, true);
+        // FIXME: should apply to all elements, not only root
+        applyStyleToElement(_rootElement);
         delete fileRules;
         files[fileCount] = std::pair<std::string, int>("", ruleNumber);
         fileCount++;
@@ -120,12 +130,12 @@ namespace gui::elementStyle::manager {
     void StyleManager::removeStyle(int fileNumber) {
         for (std::pair<int, std::pair<std::string, int>> file : files) {
         }
-        if (rootElement != nullptr && files.find(fileNumber) != files.cend()) {
-            removeStyleInElements(fileNumber, rootElement);
-            for (style::StyleBlock *block : style) {
-                style::StyleValuesMap *styleMap = block->getStyleMap();
-                for (style::StyleValuesMap::iterator ruleIt = styleMap->begin(); ruleIt != styleMap->end();) {
-                    if (ruleIt->second.fileNumber == fileNumber) ruleIt = styleMap->erase(ruleIt);
+        if (_rootElement != nullptr && files.find(fileNumber) != files.cend()) {
+            removeStyleInElements(fileNumber, _rootElement);
+            for (style::StyleDefinition *block : style) {
+                style::StyleValuesMap &styleMap = block->second;
+                for (style::StyleValuesMap::iterator ruleIt = styleMap.begin(); ruleIt != styleMap.end();) {
+                    if (ruleIt->second.fileNumber == fileNumber) ruleIt = styleMap.erase(ruleIt);
                     else ruleIt++;
                 }
             }
@@ -153,21 +163,19 @@ namespace gui::elementStyle::manager {
                 break;
             case style::StyleRelation::DirectParent:
                 element = element->parent();
-                if (!element) return false;
-                if (!element->style()->hasSelector(it->first)) return false;
+                if (!element || !element->style()->hasSelector(it->first)) return false;
                 break;
             case style::StyleRelation::AnyParent:
                 while (element) {
                     element = element->parent();
                     if (!element) return false;
-
-                    if (element->style()->hasSelector(it->first)) continue;
+                    if (element->style()->hasSelector(it->first)) break; // found, go back to for-loop
                     style::StyleComponentDataList::const_reverse_iterator nextIt = std::next(it);
-                    if (nextIt == componentDataListEndIt || elementSelectorsCompatiblesLoop(nextIt, componentDataListEndIt, element)) {
-                        return true;
+                    if (nextIt == componentDataListEndIt || !elementSelectorsCompatiblesLoop(nextIt, componentDataListEndIt, element)) {
+                        return false;
                     }
                 }
-                return false;
+                break;
             default:
                 return false;
             }
@@ -175,13 +183,9 @@ namespace gui::elementStyle::manager {
         return true;
     }
 
-    void StyleManager::applyStyleToElement(element::AbstractElement *elementStyle, bool recursive) {
-        applySpecificStyleToElement(style, elementStyle, recursive);
-    }
-
     void StyleManager::addElementStyle(element::AbstractElement *elementStyle) {
-        if (rootElement == nullptr) setParentElementStyle(elementStyle);
-        applyStyleToElement(elementStyle, true);
+        if (_rootElement == nullptr) rootElement(elementStyle);
+        applyStyleToElement(elementStyle);
     }
 
 } // namespace gui::elementStyle::manager

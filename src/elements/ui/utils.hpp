@@ -8,7 +8,7 @@
 
 namespace gui::element::ui {
     enum GuiLogCategory { GUI_RENDERING = SDL_LOG_CATEGORY_CUSTOM };
-    enum GuiEvent { FOCUS = SDL_EVENT_USER, FOCUS_LOST, GUI_EVENTS_ENUM_SIZE };
+    enum GuiEvent { FOCUS_GAINED = SDL_EVENT_USER, FOCUS_LOST, GUI_EVENTS_ENUM_SIZE };
 
     const int guiEventsStartingCode = SDL_RegisterEvents(GUI_EVENTS_ENUM_SIZE - SDL_EVENT_USER);
 

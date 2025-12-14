@@ -61,7 +61,8 @@ namespace style::config {
              {"font-italic", {new ConfigRuleNode(style::Token::Bool)}},
              {"font-underline", {new ConfigRuleNode(style::Token::Bool)}},
              {"font-strike-through", {new ConfigRuleNode(style::Token::Bool)}}},
-            {"px", "%"}};
+            {"px", "%"},
+            {"font-size", "font-name", "font-weight", "font-italic", "font-underline", "font-strike-through", "text-color"}};
     }
 
 } // namespace style::config

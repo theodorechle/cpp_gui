@@ -25,10 +25,10 @@ namespace gui {
         std::string UiElement::getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString) const {
             style::StyleValue *rule = nullptr;
             _style.getRule(ruleNames, &rule);
-            if (rule == nullptr || rule->getType() != style::StyleValueType::String) {
+            if (rule == nullptr || rule->type() != style::StyleValueType::String) {
                 return defaultString;
             }
-            return rule->getValue();
+            return rule->value();
         }
 
         std::string UiElement::getEnumFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
@@ -36,11 +36,11 @@ namespace gui {
             style::StyleValue *rule = nullptr;
             _style.getRule(ruleName, &rule);
             if (rule == nullptr
-                || rule->getType() != style::StyleValueType::EnumValue
-                || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend())) {
+                || rule->type() != style::StyleValueType::EnumValue
+                || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->value()) == allowedValues.cend())) {
                 return defaultValue;
             }
-            return rule->getValue();
+            return rule->value();
         }
 
         std::string UiElement::getEnumFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
@@ -48,11 +48,11 @@ namespace gui {
             style::StyleValue *rule = nullptr;
             _style.getRule(ruleNames, &rule);
             if (rule == nullptr
-                || rule->getType() != style::StyleValueType::EnumValue
-                || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->getValue()) == allowedValues.cend())) {
+                || rule->type() != style::StyleValueType::EnumValue
+                || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->value()) == allowedValues.cend())) {
                 return defaultValue;
             }
-            return rule->getValue();
+            return rule->value();
         }
 
         bool UiElement::getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool) const {

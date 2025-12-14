@@ -6,6 +6,7 @@
 #include "../../abstracts/abstract_utils.hpp"
 #include "../ui_element.hpp"
 #include "../utils.hpp"
+#include <sstream>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 

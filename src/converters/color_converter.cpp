@@ -4,7 +4,7 @@ namespace gui {
     namespace converter {
 
         bool ColorConverter::convertFromHex(style::StyleValue *value, SDL_Color *color) {
-            std::string valueStr = value->getValue();
+            std::string valueStr = value->value();
             switch (valueStr.size()) {
             case 3:
                 color->r = std::stoul(valueStr.substr(0, 1) + valueStr.substr(0, 1), nullptr, 16);
@@ -30,16 +30,16 @@ namespace gui {
         }
 
         bool ColorConverter::convertFromTuple(style::StyleValue *value, SDL_Color *color) {
-            style::StyleValue *child = value->getChild();
+            style::StyleValue *child = value->child();
             int intResult;
             switch (value->nbChilds()) {
             case 3:
                 if (!NumberConverter::convertToInt(child, &intResult)) return false;
                 color->r = intResult;
-                child = child->getNext();
+                child = child->next();
                 if (!NumberConverter::convertToInt(child, &intResult)) return false;
                 color->g = intResult;
-                child = child->getNext();
+                child = child->next();
                 if (!NumberConverter::convertToInt(child, &intResult)) return false;
                 color->b = intResult;
                 color->a = 255;
@@ -47,13 +47,13 @@ namespace gui {
             case 4:
                 if (!NumberConverter::convertToInt(child, &intResult)) return false;
                 color->r = intResult;
-                child = child->getNext();
+                child = child->next();
                 if (!NumberConverter::convertToInt(child, &intResult)) return false;
                 color->g = intResult;
-                child = child->getNext();
+                child = child->next();
                 if (!NumberConverter::convertToInt(child, &intResult)) return false;
                 color->b = intResult;
-                child = child->getNext();
+                child = child->next();
                 if (!NumberConverter::convertToInt(child, &intResult)) return false;
                 color->a = intResult;
                 return true;
@@ -64,7 +64,7 @@ namespace gui {
 
         bool ColorConverter::convert(style::StyleValue *value, SDL_Color *color) {
             if (value == nullptr || color == nullptr) return false;
-            switch (value->getType()) {
+            switch (value->type()) {
             case style::StyleValueType::Hex:
                 return convertFromHex(value, color);
             case style::StyleValueType::Tuple:

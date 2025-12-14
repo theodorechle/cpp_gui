@@ -9,6 +9,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <SDL3/SDL_events.h>
 
 namespace gui::elementStyle::manager {
     class StyleManager;
@@ -26,13 +27,13 @@ namespace gui::element {
         elementStyle::manager::StyleManager *elementsStyleManager;
         elementStyle::ElementStyle _style;
 
-        void updateStyle();
-
         void sendEventToManager(ElementEvent event);
 
         std::string debugValue() const override;
 
     public:
+        void updateStyle();
+
         /**
          * If no style manager is given, the element can't have style
          */
@@ -76,6 +77,10 @@ namespace gui::element {
                             std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const = 0;
 
         void displayStyle();
+
+        void setModifierState(std::string modifier, bool enabled);
+
+        virtual void catchEvent(const SDL_Event *event) {}
     };
 } // namespace gui::element
 

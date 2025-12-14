@@ -21,6 +21,7 @@ namespace gui {
 
         class UiElement : public AbstractElement {
             SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0}; // TODO: update it to be able to use percentages
+            // TODO: why?
             SDL_Window *window;
             SDL_Renderer *renderer = nullptr;
             TTF_TextEngine *_textEngine = nullptr;
@@ -177,8 +178,6 @@ namespace gui {
              */
             bool render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                         std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
-
-            virtual void catchEvent(const SDL_Event *event) {}
         };
 
         class NoRendererException : public std::runtime_error {

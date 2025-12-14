@@ -6,19 +6,20 @@
 #include <set>
 #include <string>
 #include <unordered_set>
+#include <sstream>
 
 namespace gui::elementStyle {
     class ElementStyle {
         style::RulesMap _rules = {};
         std::set<style::StyleComponentData> _selectors = {};
 
-        static bool compareRulesPriorityDescending(const style::StyleRule &rule1, const style::StyleRule &rule2);
         static bool compareRulesPriorityAscending(const style::StyleRule &rule1, const style::StyleRule &rule2);
 
     public:
         void rules(const style::RulesMap &newStyle) { _rules = newStyle; }
 
         void addSelector(const std::string &selectorName, style::StyleComponentType selectorType);
+        void removeSelector(const std::string &selectorName, style::StyleComponentType selectorType);
         bool hasSelector(const style::StyleComponentData &selector) const;
 
         void updateStylePriorityFromFile(int oldFileNumber, int newFileNumber);
@@ -51,6 +52,8 @@ namespace gui::elementStyle {
         bool getRule(const std::vector<std::string> &ruleNames, style::StyleValue **ruleValue, style::StyleValue *defaultStyle = nullptr) const;
 
         int nbRules() const;
+
+        std::string debugValue();
     };
 } // namespace gui::elementStyle
 

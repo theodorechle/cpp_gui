@@ -8,7 +8,7 @@ namespace gui {
     namespace element {
 
         class ViewContainer : public UiElement {
-            gui::element::manager::UIManager *viewManager = nullptr;
+            gui::element::manager::UiManager *viewManager = nullptr;
 
             void computeTotalLayout(int *width, int *height) const override;
             void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
@@ -24,7 +24,7 @@ namespace gui {
             void setModifierState(std::string modifierName, bool enabled);
 
         public:
-            ViewContainer(gui::element::manager::UIManager *viewManager,
+            ViewContainer(gui::element::manager::UiManager *viewManager,
                           gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
                           const std::string &identifier = "");
         };

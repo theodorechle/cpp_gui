@@ -9,7 +9,7 @@ namespace gui {
 
         void Input::catchEvent(const SDL_Event *event) {
             switch (event->type) {
-            case ui::FOCUS:
+            case ui::FOCUS_GAINED:
                 SDL_Rect rect;
                 SDL_GetRenderClipRect(getRenderer(), &rect);
                 if (!SDL_StartTextInput(getWindow())) {

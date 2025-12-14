@@ -36,5 +36,5 @@ Shift + scroll -> horizontal scroll
 Allow updating classes and id of an element
 
 Remove style tree :
-- recompute style on every style change
+- recompute style on every style change (hover, ...)
 - cache style
