@@ -41,7 +41,7 @@ namespace gui::element::manager {
 
     void AbstractManager::render(bool clear) {
         if (_currentStatus == Status::NOT_STARTED) {
-            if (_styleManager) {
+            if (_styleManager && elementsTree) {
                 _styleManager->rootElement(elementsTree);
                 // TODO: style should be applied to elementsTree from here, they don't need to know the styleManager
                 elementsTree->updateStyle();
