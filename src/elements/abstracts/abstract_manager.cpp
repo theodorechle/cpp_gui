@@ -50,9 +50,9 @@ namespace gui::element::manager {
         }
         if (needUpdate()) {
             update();
+            renderElements(clear);
             needUpdate(nullptr);
         };
-        renderElements(clear);
     }
 
     void AbstractManager::setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const SDL_Event *event) {

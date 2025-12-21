@@ -16,6 +16,7 @@
 #include <iostream>
 #include <vector>
 
+// FIXME: in directory ui but not in namespace ui
 namespace gui {
     namespace element {
 

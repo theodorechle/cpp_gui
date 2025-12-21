@@ -11,10 +11,10 @@ STYLE_LIB=cpp_style/bin/cpp_style_lib
 TESTS_LIB=cpp_tests/bin/cpp_tests_lib
 
 # Subdirectories
-SUBDIRS=elements/abstracts elements/ui elements/ui/render_nodes converters app_utils element_style
+SUBDIRS=elements/abstracts elements/ui elements/ui/render_nodes converters element_style
 
 # Source files
-SRC_MAIN=$(SRC_DIR)/main.cpp
+SRC_MAIN=$(SRC_DIR)/main.cpp $(SRC_DIR)/app_utils/app_state.cpp
 SRC_SUBDIRS=$(foreach dir, $(SUBDIRS), $(wildcard $(SRC_DIR)/$(dir)/*.cpp))
 SRC_TESTS=$(wildcard $(TESTS_DIR)/*.cpp) $(wildcard $(TESTS_DIR)/*/*.cpp)
 
@@ -28,7 +28,7 @@ MAIN=$(BIN_DIR)/cpp_gui
 BIN_ALL=$(BIN_DIR)/all
 TESTS=$(BIN_DIR)/tests
 
-.PHONY: all clean tests
+.PHONY: all clean lib tests
 
 ifeq ($(DEBUG),1)
 CPP_FLAGS += -DDEBUG

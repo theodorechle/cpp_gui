@@ -2,10 +2,10 @@
 
 AppState::AppState(gui::element::manager::AbstractManager *manager, SDL_Window *window, SDL_Renderer *renderer,
                    gui::elementStyle::manager::StyleManager *styleManager, TTF_TextEngine *textEngine)
-    : manager{manager}, styleManager{styleManager}, window{window}, renderer{renderer}, textEngine{textEngine} {}
+    : _manager{manager}, _styleManager{styleManager}, _window{window}, _renderer{renderer}, _textEngine{textEngine} {}
 
 AppState::~AppState() {
-    delete manager;
-    delete styleManager;
-    TTF_DestroyRendererTextEngine(textEngine);
+    delete _manager;
+    delete _styleManager;
+    TTF_DestroyRendererTextEngine(_textEngine);
 }

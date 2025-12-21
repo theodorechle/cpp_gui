@@ -103,7 +103,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     AppState *state = static_cast<AppState *>(appstate);
-    gui::element::manager::AbstractManager *manager = state->getManager();
+    gui::element::manager::AbstractManager *manager = state->manager();
     static_cast<gui::element::manager::UiManager *>(manager)->processEvent(event);
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;
@@ -113,7 +113,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *state = static_cast<AppState *>(appstate);
-    gui::element::manager::AbstractManager *manager = state->getManager();
+    gui::element::manager::AbstractManager *manager = state->manager();
     manager->render();
     return SDL_APP_CONTINUE;
 }

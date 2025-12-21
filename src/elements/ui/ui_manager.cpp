@@ -212,6 +212,7 @@ namespace gui {
             }
 
             void UiManager::renderElements(bool clear) const {
+                std::cerr << "RENDERING!!!!\n";
                 if (renderedTexture != nullptr) {
                     SDL_RenderTexture(renderer, renderedTexture, nullptr, nullptr);
                 }
@@ -219,6 +220,7 @@ namespace gui {
             }
 
             void UiManager::update() {
+                std::cerr << "UPDATE!!!!\n";
                 updateModifiedElements();
                 computeElementsLayout(); // TODO: improve to only render updated elements
                 createRenderedTexture();

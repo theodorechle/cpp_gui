@@ -42,6 +42,9 @@ namespace gui::elementStyle::manager {
             styleMap = &styleComponent->second;
 
             for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
+                style::RulesMap::const_iterator existingRule = elementRulesMap.find(styleRule.first);
+                if (existingRule != elementRulesMap.cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
+                // TODO: just need a copy method, no ?
                 elementRulesMap[styleRule.first] = style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
                                                                     styleRule.second.fileNumber, styleRule.second.ruleNumber};
             }
@@ -59,6 +62,7 @@ namespace gui::elementStyle::manager {
                     if (config->inheritableRules.find(styleRule.first) == config->inheritableRules.cend()) continue;
                     style::RulesMap::const_iterator existingRule = elementRulesMap.find(styleRule.first);
                     if (existingRule != elementRulesMap.cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
+                    // TODO: copy method
                     elementRulesMap[styleRule.first] = style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
                                                                         styleRule.second.fileNumber, styleRule.second.ruleNumber};
                 }
