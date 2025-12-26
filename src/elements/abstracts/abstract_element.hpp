@@ -8,8 +8,8 @@
 
 #include <functional>
 #include <string>
+#include <unordered_map>
 #include <vector>
-#include <SDL3/SDL_events.h>
 
 namespace gui::elementStyle::manager {
     class StyleManager;
@@ -19,15 +19,19 @@ namespace gui::element {
         class AbstractManager;
     }
 
+    typedef std::function<void(const event::Event *)> EventHandler;
+
     class AbstractElement : public commons::Node<AbstractElement> {
         std::string elementName;
         manager::AbstractManager *_manager = nullptr;
+
+        std::unordered_multimap<uint32_t, EventHandler> registeredEventsHandlers;
 
     protected:
         elementStyle::manager::StyleManager *elementsStyleManager;
         elementStyle::ElementStyle _style;
 
-        void sendEventToManager(ElementEvent event);
+        void sendEventToManager(event::ElementEvent event);
 
         std::string debugValue() const override;
 
@@ -80,7 +84,11 @@ namespace gui::element {
 
         void setModifierState(std::string modifier, bool enabled);
 
-        virtual void catchEvent(const SDL_Event *event) {}
+        void catchEvent(const event::Event *event);
+
+        void registerEventHandler(uint32_t eventType, EventHandler function);
+
+        void unregisterEventHandler(uint32_t eventType, EventHandler function);
     };
 } // namespace gui::element
 

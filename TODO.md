@@ -3,24 +3,10 @@
 - allow re-computing the layout only of modified elements and their parents
 
 Recompute on size changing (modifiers, ...)
-add overflow (scroll)
 add width and height auto (100% parent)
 force style flag file reloading when receiving it twice
 
-
-Rendering:
-clipping
-
-- border OVERRIDABLE
-- background OVERRIDABLE
-- rendering before child OVERRIDABLE
-- render childs OVERRIDABLE
-- rendering after child OVERRIDABLE
-
 Simplify the use of the text engine
-Update namespaces
-
-merge all trees into one class to reduce bugs and simplify tests
 
 fix resize
 
@@ -33,8 +19,8 @@ Prevent having multiple times submodule cpp_tests -> dynamic library loading
 
 Shift + scroll -> horizontal scroll
 
-Allow updating classes and id of an element
-
 Remove style tree :
 - recompute style on every style change (hover, ...)
 - cache style
+
+Fix inconsistencies on namespaces (for example, some classes are in ui and others not)

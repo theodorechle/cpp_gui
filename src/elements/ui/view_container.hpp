@@ -4,32 +4,26 @@
 #include "ui_element.hpp"
 #include "ui_manager.hpp"
 
-namespace gui {
-    namespace element {
+namespace gui::element {
+    class ViewContainer : public UiElement {
+        gui::element::manager::UiManager *viewManager = nullptr;
 
-        class ViewContainer : public UiElement {
-            gui::element::manager::UiManager *viewManager = nullptr;
+        void computeTotalLayout(int *width, int *height) const override;
+        void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
+                                        std::list<std::tuple<int, int>> childsSizes) const override;
 
-            void computeTotalLayout(int *width, int *height) const override;
-            void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
-                                            std::list<std::tuple<int, int>> childsSizes) const override;
+        void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                 std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
 
-            void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
-                                     std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
-            virtual void catchEvent(const SDL_Event *event) override;
+        /**
+         * true if should propagate to the parent, false else
+         */
+        void setModifierState(std::string modifierName, bool enabled);
 
-            /**
-             * true if should propagate to the parent, false else
-             */
-            void setModifierState(std::string modifierName, bool enabled);
-
-        public:
-            ViewContainer(gui::element::manager::UiManager *viewManager,
-                          gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
-                          const std::string &identifier = "");
-        };
-
-    } // namespace element
-} // namespace gui
+    public:
+        ViewContainer(gui::element::manager::UiManager *viewManager, gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
+                      std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
+    };
+} // namespace gui::element
 
 #endif // VIEW_CONTAINER_HPP

@@ -23,9 +23,9 @@
 
 #include <SDL3_ttf/SDL_ttf.h>
 
-void displayHelloWorld() { std::cout << "hello world!\n"; }
+void displayHelloWorld(SDL_Event) { std::cout << "hello world!\n"; }
 
-void displayAlsoHelloWorld() { std::cout << "also hello world!\n"; }
+void displayAlsoHelloWorld(SDL_Event) { std::cout << "also hello world!\n"; }
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 #ifdef DEBUG
@@ -78,7 +78,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     parentContainer->addChild(new gui::element::Label("an other text rendered (a big big big very really big text)\non multiple lines",
                                                       elementsStyleManager, &labelClasses, "test-label", textEngine));
     parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
-    gui::element::UiElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
+    gui::element::UiElement *button = new gui::element::Button(&displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
     parentContainer->addChild(button);
     gui::element::UiElement *list = new gui::element::List(elementsStyleManager);
     button->addChild(list);

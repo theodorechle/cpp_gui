@@ -25,11 +25,11 @@ namespace gui::element::manager {
         addChildToRootElement(element);
     }
 
-    void AbstractManager::elementEvent(ElementEvent event, AbstractElement *caller) {
+    void AbstractManager::elementEvent(event::ElementEvent event, AbstractElement *caller) {
         switch (event) {
-        case ElementEvent::REMOVE_CHILDS:
-        case ElementEvent::ADD_CHILD:
-        case ElementEvent::CONTENT_CHANGED:
+        case event::ElementEvent::REMOVE_CHILDS:
+        case event::ElementEvent::ADD_CHILD:
+        case event::ElementEvent::CONTENT_CHANGED:
             needUpdate(caller);
             break;
         default:
@@ -55,12 +55,14 @@ namespace gui::element::manager {
         };
     }
 
-    void AbstractManager::setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const SDL_Event *event) {
+    // FIXME: not sure this function should be keeped as one function
+    // also, sendEvent function is defined in ui_manager but could be here
+    void AbstractManager::setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const event::Event *event) {
         AbstractElement *element = leafElement;
         while (element != nullptr) {
             element->setModifierState(modifier, enabled);
             element->updateStyle();
-            if (enabled && event) element->catchEvent(event);
+            element->catchEvent(event);
             element = element->parent();
         }
         needUpdate(leafElement);

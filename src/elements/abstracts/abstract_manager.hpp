@@ -1,7 +1,6 @@
 #ifndef ABSTRACT_MANAGER_HPP
 #define ABSTRACT_MANAGER_HPP
 
-#include <SDL3/SDL_events.h>
 #include <algorithm>
 #include <list>
 
@@ -43,7 +42,7 @@ namespace gui::element::manager {
          * set the modifier's state (enabled, disabled) on leafElement and all its parents
          * if enabled is true, it will also throw the given event on each concerned elements
          */
-        void setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const SDL_Event *event = nullptr);
+        void setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const event::Event *event);
 
     public:
         virtual ~AbstractManager();
@@ -55,7 +54,7 @@ namespace gui::element::manager {
          * Do actions when an element sends an event (for example, if the element tree changed, it should be re-rendered).
          * This method can be overriden, but if you want to keep the original behavior, don't forget to call this function.
          */
-        virtual void elementEvent(ElementEvent event, AbstractElement *caller);
+        virtual void elementEvent(event::ElementEvent event, AbstractElement *caller);
 
         void deleteElementsTree();
         void render(bool clear = true);

@@ -9,13 +9,13 @@ namespace gui::element {
     void AbstractElement::updateStyle() {
         if (elementsStyleManager != nullptr) {
             elementsStyleManager->applyStyleToElement(this);
-            sendEventToManager(ElementEvent::CONTENT_CHANGED);
+            sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
         }
         if (child() != nullptr) child()->updateStyle();
         if (next() != nullptr) next()->updateStyle();
     }
 
-    void AbstractElement::sendEventToManager(ElementEvent event) {
+    void AbstractElement::sendEventToManager(event::ElementEvent event) {
         if (_manager == nullptr) return;
         _manager->elementEvent(event, this);
     }
@@ -40,12 +40,12 @@ namespace gui::element {
         if (newChild == nullptr) return;
         commons::Node<AbstractElement>::addChild(newChild);
         newChild->manager(_manager);
-        sendEventToManager(ElementEvent::ADD_CHILD);
+        sendEventToManager(event::ElementEvent::ADD_CHILD);
     }
 
     void AbstractElement::removeChilds() {
         commons::Node<AbstractElement>::removeChilds();
-        sendEventToManager(ElementEvent::REMOVE_CHILDS);
+        sendEventToManager(event::ElementEvent::REMOVE_CHILDS);
     }
 
     void AbstractElement::manager(manager::AbstractManager *manager) {
@@ -95,6 +95,27 @@ namespace gui::element {
     void AbstractElement::setModifierState(std::string modifier, bool enabled) {
         if (enabled) _style.addSelector(modifier, style::StyleComponentType::Modifier);
         else _style.removeSelector(modifier, style::StyleComponentType::Modifier);
+    }
+
+    void AbstractElement::catchEvent(const event::Event *event) {
+        std::pair<std::unordered_multimap<uint32_t, EventHandler>::iterator, std::unordered_multimap<uint32_t, EventHandler>::iterator> range =
+            registeredEventsHandlers.equal_range(event->type);
+        for (std::unordered_multimap<uint32_t, EventHandler>::iterator it = range.first; it != range.second; it++) {
+            it->second(event);
+        }
+    }
+
+    void AbstractElement::registerEventHandler(uint32_t eventType, EventHandler function) { registeredEventsHandlers.insert({eventType, function}); }
+
+    void AbstractElement::unregisterEventHandler(uint32_t eventType, EventHandler function) {
+        std::pair<std::unordered_multimap<uint32_t, EventHandler>::iterator, std::unordered_multimap<uint32_t, EventHandler>::iterator> range =
+            registeredEventsHandlers.equal_range(eventType);
+        for (std::unordered_multimap<uint32_t, EventHandler>::iterator it = range.first; it != range.second; it++) {
+            if (it->second.target_type() == function.target_type() && it->second.target<EventHandler>() == function.target<EventHandler>()) {
+                registeredEventsHandlers.erase(it);
+                return;
+            }
+        }
     }
 
     std::string AbstractElement::debugValue() const {

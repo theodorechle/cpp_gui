@@ -64,5 +64,4 @@ namespace style::config {
             {"px", "%"},
             {"font-size", "font-name", "font-weight", "font-italic", "font-underline", "font-strike-through", "text-color"}};
     }
-
 } // namespace style::config

@@ -3,24 +3,27 @@
 
 #include "label.hpp"
 
-namespace gui {
-    namespace element {
+namespace gui::element {
+    class Input : public Label {
+        const std::string placeholder;
+        struct {
+            int x;
+            int y;
+        } cursorPos;
 
-        class Input : public Label {
-            const std::string placeholder;
-            struct {
-                int x;
-                int y;
-            } cursorPos;
+    public:
+        Input(const std::string &text = "", const std::string &placeholder = "",
+              gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+              const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
+        
+        void focusGained(const event::Event *event);
 
-        public:
-            Input(const std::string &text = "", const std::string &placeholder = "", gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
-                  const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
+        void focusLost(const event::Event *event);
 
-            void catchEvent(const SDL_Event *event) override;
-        };
+        void textInput(const ui::event::TextEvent *event);
 
-    } // namespace element
-} // namespace gui
+        void keyDown(const ui::event::KeyEvent *event);
+    };
+} // namespace gui::element
 
 #endif // INPUT_HPP
