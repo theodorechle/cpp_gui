@@ -40,6 +40,7 @@ namespace gui::element::ui {
         enum GuiEventType {
             EVENT_MOUSE_BUTTON_DOWN = gui::element::event::OTHER_EVENTS,
             EVENT_MOUSE_BUTTON_UP,
+            EVENT_MOUSE_MOTION,
             EVENT_HOVER,
             EVENT_UNHOVER,
             EVENT_SCROLL,
@@ -53,11 +54,12 @@ namespace gui::element::ui {
         struct MouseEvent : gui::element::event::Event {
             float x;
             float y;
+            Uint8 button;
         };
 
-        struct MouseMotionEvent : MouseEvent {
-            float moveX;
-            float moveY;
+        struct MouseWheelEvent : MouseEvent {
+            float scrollX;
+            float scrollY;
         };
 
         struct KeyEvent : gui::element::event::Event {

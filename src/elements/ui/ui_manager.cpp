@@ -13,6 +13,11 @@ namespace gui::element {
             }
         }
 
+        UiManager::~UiManager() {
+            delete rootRenderNode;
+            SDL_DestroyTexture(renderedTexture);
+        }
+
         void UiManager::createRootElement() {
             UiElement *rootElement = new RootElement();
             rootElement->renderer(renderer);
@@ -242,38 +247,64 @@ namespace gui::element {
 #endif
         }
 
-        void UiManager::processEvent(const SDL_Event *event) {
+        void UiManager::processEvent(const SDL_Event *sdlEvent) {
             // TODO: elements should be able to stop the propagation of some events (for example scroll (canvas))
-            switch (event->type) {
+            switch (sdlEvent->type) {
             case SDL_EVENT_QUIT:
                 status(Status::ENDED);
                 break;
-            case SDL_EVENT_MOUSE_MOTION:
-            case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            case SDL_EVENT_MOUSE_BUTTON_UP:
-                processMouseEvent(event);
-                break;
             case SDL_EVENT_WINDOW_RESIZED:
                 needUpdate(elementsTree);
+                break;
+            case SDL_EVENT_WINDOW_FOCUS_GAINED:
+            case SDL_EVENT_WINDOW_MOUSE_ENTER:
+                windowFocused = true;
                 break;
             case SDL_EVENT_WINDOW_FOCUS_LOST:
             case SDL_EVENT_WINDOW_MOUSE_LEAVE:
                 windowFocused = false;
                 windowFocusLost();
                 break;
-            case SDL_EVENT_WINDOW_FOCUS_GAINED:
-            case SDL_EVENT_WINDOW_MOUSE_ENTER:
-                windowFocused = true;
+            case SDL_EVENT_MOUSE_MOTION:
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+                processMouseEvent(sdlEvent);
                 break;
-            case SDL_EVENT_MOUSE_WHEEL:
-                scroll(event->wheel.x, event->wheel.y); // TODO: elements should be able to intercept the event (canvas for example)
+            case SDL_EVENT_MOUSE_WHEEL: {
+                const ui::event::MouseWheelEvent event = ui::event::MouseWheelEvent{ui::event::EVENT_SCROLL,
+                                                                                    sdlEvent->wheel.mouse_x,
+                                                                                    sdlEvent->wheel.mouse_y,
+                                                                                    sdlEvent->button.button,
+                                                                                    static_cast<float>(sdlEvent->wheel.integer_x),
+                                                                                    static_cast<float>(sdlEvent->wheel.integer_y)};
+                sendEvent(&event, hoveredElement->baseElement); // FIXME: may be invalid if moving mouse at same time as scrolling: should be done
+                                                                // with other mouse events
+                scroll(event.scrollX, event.scrollY);           // TODO: elements should be able to intercept the event (canvas for example)
                 break;
+            }
+            // TODO: find a better way to do all of this
+            case SDL_EVENT_KEY_DOWN: {
+                if (focusedElement) {
+                    const ui::event::KeyEvent event =
+                        ui::event::KeyEvent{ui::event::EVENT_KEY_DOWN, sdlEvent->key.scancode, sdlEvent->key.key, sdlEvent->key.mod};
+                    sendEvent(&event, focusedElement->baseElement);
+                }
+                break;
+            }
+            case SDL_EVENT_KEY_UP: {
+                if (focusedElement) {
+                    const ui::event::KeyEvent event =
+                        ui::event::KeyEvent{ui::event::EVENT_KEY_UP, sdlEvent->key.scancode, sdlEvent->key.key, sdlEvent->key.mod};
+                    sendEvent(&event, focusedElement->baseElement);
+                }
+                break;
+            }
                 // default:
-                //     if (focusedElement != nullptr) sendEvent(event, focusedElement->baseElement);
+                // if (focusedElement != nullptr) sendEvent(event, focusedElement->baseElement);
             }
         }
 
-        void UiManager::processMouseEvent(const SDL_Event *event) { // TODO: split into different functions for each mouse events
+        void UiManager::processMouseEvent(const SDL_Event *sdlEvent) { // TODO: split into different functions for each mouse event
             if (elementsTree == nullptr) return;
             float x, y;
             SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
@@ -306,6 +337,12 @@ namespace gui::element {
                 }
             }
 
+            if (sdlEvent->type == SDL_EVENT_MOUSE_MOTION && hoveredElement) {
+                ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_MOUSE_MOTION, static_cast<float>(mousePos.x - currentX),
+                                                                    static_cast<float>(mousePos.y - currentY), sdlEvent->button.button};
+                sendEvent(&event, hoveredElement->baseElement);
+            }
+
             // send events to elements and update clicked/hovered/focused pointers
             if (mouseFlags) {
                 if (!clicked && !clickedElement) {
@@ -326,8 +363,9 @@ namespace gui::element {
                         // would be better if it translate to relative coords only if element asks for it
                         // (no need to translate for every element)
                         // but the element would know his place in the window (is it harmful, I don't know)
-                        ui::event::MouseEvent event = ui::event::MouseEvent{
-                            ui::event::EVENT_MOUSE_BUTTON_DOWN, static_cast<float>(mousePos.x - currentX), static_cast<float>(mousePos.y - currentY)};
+                        ui::event::MouseEvent event =
+                            ui::event::MouseEvent{ui::event::EVENT_MOUSE_BUTTON_DOWN, static_cast<float>(mousePos.x - currentX),
+                                                  static_cast<float>(mousePos.y - currentY), sdlEvent->button.button};
                         setElementsModifierState("clicked", clickedElement->baseElement, true, &event);
                     }
                 }
@@ -335,18 +373,19 @@ namespace gui::element {
             else {
                 clicked = false;
                 if (clickedElement) {
-                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_MOUSE_BUTTON_UP, 0, 0};
+                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_MOUSE_BUTTON_UP, 0, 0, sdlEvent->button.button};
                     setElementsModifierState("clicked", clickedElement->baseElement, false, &event);
                     clickedElement = nullptr;
                 }
             }
             if (hoveredElement != currentHoveredElement) {
                 if (hoveredElement) {
-                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_UNHOVER, 0, 0};
+                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_UNHOVER, 0, 0, 0};
                     setElementsModifierState("hovered", hoveredElement->baseElement, false, &event);
                 }
                 if (currentHoveredElement) {
-                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_HOVER, 0, 0};
+                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_HOVER, static_cast<float>(mousePos.x - currentX),
+                                                                        static_cast<float>(mousePos.y - currentY), sdlEvent->button.button};
                     setElementsModifierState("hovered", currentHoveredElement->baseElement, true, &event);
                 }
                 hoveredElement = currentHoveredElement;

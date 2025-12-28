@@ -65,6 +65,7 @@ namespace gui::element {
 
         public:
             UiManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect = nullptr);
+            ~UiManager();
 
             void setClipRect(const SDL_Rect &clipRect) { this->clipRect = clipRect; }
 

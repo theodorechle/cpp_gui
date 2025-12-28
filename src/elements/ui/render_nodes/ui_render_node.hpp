@@ -66,7 +66,7 @@ namespace gui::element::ui::render {
         bool renderChildElement(const UiElement *element, UiRenderData *data);
 
         /*
-        returns whether it can scroll or not (and so if it has scrolled)
+        returns whether it has successfully scrolled (even if not as much as the asked scroll)
         */
         bool scroll(int x, int y);
 
