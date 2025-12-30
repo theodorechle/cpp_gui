@@ -14,14 +14,16 @@ namespace gui::element {
         void renderSelfBeforeChilds() const override;
 
     public:
-        Canvas(gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
-               std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
+        Canvas(gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+               const std::string &identifier = "");
 
         ~Canvas() override;
 
         void init(int width, int height);
 
         void fillRect(int x, int y, int width, int height, SDL_Color color);
+
+        void fillRects(SDL_FRect rects[], size_t nbRects, SDL_Color color);
 
         void clear();
 

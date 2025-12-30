@@ -33,6 +33,19 @@ namespace gui::element {
         SDL_SetRenderTarget(renderer(), previousTexture);
     }
 
+    void Canvas::fillRects(SDL_FRect rects[], size_t nbRects, SDL_Color color) {
+        Uint8 r, g, b, a;
+        SDL_GetRenderDrawColor(renderer(), &r, &g, &b, &a);
+        SDL_Texture *previousTexture = SDL_GetRenderTarget(renderer());
+        SDL_SetRenderTarget(renderer(), texture);
+        SDL_SetRenderDrawColor(renderer(), color.r, color.g, color.b, color.a);
+
+        SDL_RenderFillRects(renderer(), rects, nbRects); // actual drawing
+
+        SDL_SetRenderDrawColor(renderer(), r, g, b, a);
+        SDL_SetRenderTarget(renderer(), previousTexture);
+    }
+
     void Canvas::clear() { fillRect(0, 0, texture->w, texture->h, SDL_Color{0, 0, 0, 0}); }
 
 } // namespace gui::element
