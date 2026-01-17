@@ -39,11 +39,9 @@ namespace gui::element {
 
     void Input::textInput(const ui::event::TextEvent *event) {
         addText(event->text);
-        sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
 
     void Input::keyDown(const ui::event::KeyEvent *event) {
         if (event->key == SDLK_BACKSPACE) removeText(1);
-        sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
 } // namespace gui::element

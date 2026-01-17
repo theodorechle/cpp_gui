@@ -28,7 +28,7 @@ namespace gui::element {
         std::unordered_multimap<uint32_t, EventHandler> registeredEventsHandlers;
 
     protected:
-        elementStyle::manager::StyleManager *elementsStyleManager;
+        elementStyle::manager::StyleManager *elementsStyleManager = nullptr;
         elementStyle::ElementStyle _style;
 
         void sendEventToManager(event::ElementEvent event);

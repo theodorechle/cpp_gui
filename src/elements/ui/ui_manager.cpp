@@ -271,15 +271,17 @@ namespace gui::element {
                 processMouseEvent(sdlEvent);
                 break;
             case SDL_EVENT_MOUSE_WHEEL: {
-                const ui::event::MouseWheelEvent event = ui::event::MouseWheelEvent{ui::event::EVENT_SCROLL,
-                                                                                    sdlEvent->wheel.mouse_x,
-                                                                                    sdlEvent->wheel.mouse_y,
-                                                                                    sdlEvent->button.button,
-                                                                                    static_cast<float>(sdlEvent->wheel.integer_x),
-                                                                                    static_cast<float>(sdlEvent->wheel.integer_y)};
-                sendEvent(&event, hoveredElement->baseElement); // FIXME: may be invalid if moving mouse at same time as scrolling: should be done
-                                                                // with other mouse events
-                scroll(event.scrollX, event.scrollY);           // TODO: elements should be able to intercept the event (canvas for example)
+                if (hoveredElement) {
+                    const ui::event::MouseWheelEvent event = ui::event::MouseWheelEvent{ui::event::EVENT_SCROLL,
+                                                                                        sdlEvent->wheel.mouse_x,
+                                                                                        sdlEvent->wheel.mouse_y,
+                                                                                        sdlEvent->button.button,
+                                                                                        static_cast<float>(sdlEvent->wheel.integer_x),
+                                                                                        static_cast<float>(sdlEvent->wheel.integer_y)};
+                    sendEvent(&event, hoveredElement->baseElement); // FIXME: may be invalid if moving mouse at same time as scrolling: should be done
+                                                                    // with other mouse events
+                    scroll(event.scrollX, event.scrollY);           // TODO: elements should be able to intercept the event (canvas for example)
+                }
                 break;
             }
             // TODO: find a better way to do all of this
@@ -338,8 +340,8 @@ namespace gui::element {
             }
 
             if (sdlEvent->type == SDL_EVENT_MOUSE_MOTION && hoveredElement) {
-                ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_MOUSE_MOTION, static_cast<float>(mousePos.x - currentX),
-                                                                    static_cast<float>(mousePos.y - currentY), sdlEvent->button.button};
+                ui::event::MouseMotionEvent event = ui::event::MouseMotionEvent{ui::event::EVENT_MOUSE_MOTION, static_cast<float>(mousePos.x - currentX),
+                                                                    static_cast<float>(mousePos.y - currentY), mouseFlags};
                 sendEvent(&event, hoveredElement->baseElement);
             }
 

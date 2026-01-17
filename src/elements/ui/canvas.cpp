@@ -31,6 +31,7 @@ namespace gui::element {
 
         SDL_SetRenderDrawColor(renderer(), r, g, b, a);
         SDL_SetRenderTarget(renderer(), previousTexture);
+        sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
 
     void Canvas::fillRects(SDL_FRect rects[], size_t nbRects, SDL_Color color) {
@@ -44,8 +45,12 @@ namespace gui::element {
 
         SDL_SetRenderDrawColor(renderer(), r, g, b, a);
         SDL_SetRenderTarget(renderer(), previousTexture);
+        sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
 
-    void Canvas::clear() { fillRect(0, 0, texture->w, texture->h, SDL_Color{0, 0, 0, 0}); }
+    void Canvas::clear() {
+        fillRect(0, 0, texture->w, texture->h, SDL_Color{0, 0, 0, 0});
+        sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
+    }
 
 } // namespace gui::element

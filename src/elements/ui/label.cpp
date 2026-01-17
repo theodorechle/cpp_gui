@@ -142,12 +142,19 @@ namespace gui::element {
         return "";
     }
 
-    void Label::addText(const std::string &toAdd) { _text.append(toAdd); }
+    void Label::addText(const std::string &toAdd) {
+        _text.append(toAdd);
+        sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
+    }
 
     void Label::removeText(int nbChars) {
         if (_text.empty()) return;
         _text.resize(_text.size() - nbChars);
+        sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
 
-    void Label::clearText() { _text.clear(); }
+    void Label::clearText() {
+        _text.clear();
+        sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
+    }
 } // namespace gui::element

@@ -57,6 +57,12 @@ namespace gui::element::ui {
             Uint8 button;
         };
 
+        struct MouseMotionEvent : gui::element::event::Event {
+            float x;
+            float y;
+            SDL_MouseButtonFlags mouseFlags;
+        };
+
         struct MouseWheelEvent : MouseEvent {
             float scrollX;
             float scrollY;
