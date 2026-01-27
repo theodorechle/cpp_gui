@@ -44,9 +44,6 @@ namespace gui::element {
 
             void windowFocusLost();
 
-            // TODO: move to abstract_manager
-            void sendEvent(const event::Event *event, UiElement *leafElement);
-
             void updateRenderingData();
 
             // childElement must be a UiElement
@@ -63,15 +60,17 @@ namespace gui::element {
              */
             void resetInvalidPointersOnNodesDeletion(const ui::render::UiRenderNode *parentNode, bool deleteUpdateElement = true);
 
+            ui::render::UiRenderNode *hoveredLeafElement(SDL_Point *coordinates);
+
         public:
+            void processMouseEvent(const SDL_Event *event);
+
             UiManager(SDL_Window *window, SDL_Renderer *renderer, SDL_Rect *clipRect = nullptr);
             ~UiManager();
 
             void setClipRect(const SDL_Rect &clipRect) { this->clipRect = clipRect; }
 
             void processEvent(const SDL_Event *event);
-
-            void processMouseEvent(const SDL_Event *event);
 
             void scroll(int x, int y);
 

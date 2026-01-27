@@ -34,6 +34,8 @@ namespace gui::element {
         void addText(const std::string &toAdd);
         void removeText(int nbChars);
         void clearText();
+
+        std::string debugValue() const override;
     };
 } // namespace gui::element
 

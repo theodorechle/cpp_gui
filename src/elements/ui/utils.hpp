@@ -20,6 +20,11 @@ namespace gui::element::ui {
         int y;
     };
 
+    struct FPos {
+        float x;
+        float y;
+    };
+
     struct UiRenderData : RenderData {
         SDL_Rect elementRect;
 

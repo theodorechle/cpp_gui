@@ -513,7 +513,6 @@ namespace gui::element {
         return childRendered;
     }
 
-    // TODO: should I remove these useless wrapper and call directly the methods? Or force inline?
     void UiElement::renderBackgroundWrapper() const { renderBackground(); }
 
     void UiElement::renderBordersWrapper() const { renderBorders(); }

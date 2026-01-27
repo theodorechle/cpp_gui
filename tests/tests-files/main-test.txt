@@ -1,8 +1,8 @@
 #red-container {
     border-color: #ff0000;
     border: 10px;
-//    width: 50px;
-//    height: 50px;
+    //    width: 50px;
+    //    height: 50px;
     background-color: #0000ff;
     vertical: true;
 }
@@ -14,6 +14,7 @@
     border-color: #00ff00;
     text-wrap: wrapped;
 }
+
 /*
 root {
     background-color: #00ff00;
@@ -30,8 +31,8 @@ root {
     you can specify the font default directory in your program using the setFontsPath method of the ElementsStyleManager class instances
     */
     font-name: "Courgette-Regular.ttf";
-    
-    > label.red#test-label {
+
+    >label.red#test-label {
         text-color: (255, 102, 102);
         padding: 5px;
         border-left-color: #ff0000;
@@ -57,7 +58,7 @@ root {
         border-color: #aa0099;
         background-color: #dddddd;
     }
-  
+
 }
 
 #red-container label.red#test-label:clicked {
@@ -79,9 +80,6 @@ list {
     font-underline: true;
     font-weight: bold;
     font-italic: true;
-    :hovered {
-        background-color: #aaaaaa;
-    }
 
     list {
         vertical: false;
@@ -105,6 +103,10 @@ input {
     width: 50px;
 }
 
-#hello-world-button > list > * {
-    background-color:(203, 42, 198);
+#hello-world-button>list>* {
+    background-color: (203, 42, 198);
+
+    &:hovered {
+        background-color: #aaaaaa;
+    }
 }

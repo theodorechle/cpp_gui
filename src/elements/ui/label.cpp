@@ -130,7 +130,7 @@ namespace gui::element {
 #endif
             return "";
         }
-        if (fontName.find_first_of("/\\") != std::string::npos) return fontName; // TODO: find safer way to check separations
+        if (std::filesystem::path(fontName).has_parent_path()) return fontName; // TODO: find safer way to check separations
         for (const std::string &defaultFontPath : elementsStyleManager->getDefaultFontsPaths()) {
             std::filesystem::path fontPath = std::filesystem::path(defaultFontPath);
             fontPath.append(fontName);
@@ -157,4 +157,6 @@ namespace gui::element {
         _text.clear();
         sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
+
+    std::string Label::debugValue() const { return '"' + _text + '"'; }
 } // namespace gui::element

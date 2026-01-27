@@ -111,6 +111,7 @@ namespace gui::elementStyle::manager {
         if (fileRules == nullptr || fileRules->empty()) return -1;
         style.splice(style.end(), *fileRules);
         // FIXME: should apply to all elements, not only root
+        // I don't know why, but it already seems to work
         applyStyleToElement(_rootElement);
         delete fileRules;
         files[fileCount] = std::pair<std::string, int>("", ruleNumber);
@@ -186,10 +187,4 @@ namespace gui::elementStyle::manager {
         }
         return true;
     }
-
-    void StyleManager::addElementStyle(element::AbstractElement *elementStyle) {
-        if (_rootElement == nullptr) rootElement(elementStyle);
-        applyStyleToElement(elementStyle);
-    }
-
 } // namespace gui::elementStyle::manager

@@ -69,7 +69,7 @@ namespace gui::element {
                   std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
             : AbstractElement{elementName, elementsStyleManager, classes, identifier}, _textEngine{textEngine} {}
 
-        void addChild(UiElement *child); // TODO
+        void addChild(UiElement *child);
 
         void window(SDL_Window *window);
         SDL_Window *window() const { return _window; }

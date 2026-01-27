@@ -44,6 +44,8 @@ namespace gui::element::manager {
          */
         void setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const event::Event *event);
 
+        void sendEvent(const event::Event *event, AbstractElement *leafElement);
+
     public:
         virtual ~AbstractManager();
         void setSubRootElement(AbstractElement *element);

@@ -47,7 +47,6 @@ namespace gui::elementStyle::manager {
 
         // TODO: Are both methods needed?
         void applyStyleToElement(element::AbstractElement *elementStyle);
-        void addElementStyle(element::AbstractElement *elementStyle);
 
         void addDefaultFontPath(const std::string &path);
         const std::unordered_set<std::string> &getDefaultFontsPaths() const;

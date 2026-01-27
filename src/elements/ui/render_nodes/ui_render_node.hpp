@@ -6,9 +6,9 @@
 #include "../../abstracts/abstract_utils.hpp"
 #include "../ui_element.hpp"
 #include "../utils.hpp"
-#include <sstream>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
+#include <sstream>
 
 namespace gui::element::ui::render {
     class UiRenderNode : public commons::Node<UiRenderNode> {
@@ -25,20 +25,21 @@ namespace gui::element::ui::render {
 
         // computed by computeFinalLayout
         struct {
-            SDL_Rect elementRect =
-                SDL_Rect{0, 0, 0, 0}; // the rect containing the entire element corresponding to this node, including margin, padding and borders
-            SDL_Rect elementClippedRect = SDL_Rect{0, 0, 0, 0};
+            /*
+            the rect containing the entire element corresponding to this node, including margins, paddings and borders
+            the coordinates are relative to the parent
+            */
+            SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0};
+            SDL_Rect elementClippedRect = SDL_Rect{0, 0, 0, 0}; // same as elementRect but clipped to fit in parent element
             // contentRect is implementation detail and thus should not be usable outside this class
-            SDL_Rect contentRect = SDL_Rect{0, 0, 0, 0}; // relative to the elementRect
+            SDL_Rect contentRect = SDL_Rect{0, 0, 0, 0}; // relative to the elementRect (coordinates are relative)
             Pos scrollOffset = {0, 0};
-            Pos startCoords = {0, 0};
+            Pos startCoords = {0, 0}; // absolute coordinates
         } usedLayout;
 
         SDL_Texture *nodeTexture = nullptr;
 
         SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
-
-        std::string debugValue() const override;
 
     public:
         // the UiElement corresponding to this node. Used for computing layouts.
@@ -73,6 +74,8 @@ namespace gui::element::ui::render {
         const UiElementData *childData(const UiElement *childElement) const;
 
         bool isParentOf(const UiRenderNode *node) const;
+
+        std::string debugValue() const override;
     };
 } // namespace gui::element::ui::render
 

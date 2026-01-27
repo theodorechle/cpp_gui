@@ -33,8 +33,6 @@ namespace gui::element {
 
         void sendEventToManager(event::ElementEvent event);
 
-        std::string debugValue() const override;
-
     public:
         void updateStyle();
 
@@ -89,6 +87,8 @@ namespace gui::element {
         void registerEventHandler(uint32_t eventType, EventHandler function);
 
         void unregisterEventHandler(uint32_t eventType, EventHandler function);
+
+        std::string debugValue() const override;
     };
 } // namespace gui::element
 

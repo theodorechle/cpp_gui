@@ -4,7 +4,7 @@ namespace gui::element {
     Button::Button(EventHandler onClick, gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes,
                    const std::string &identifier)
         : UiElement{"button", elementsStyleManager, classes, identifier} {
-            registerEventHandler(SDL_EVENT_MOUSE_BUTTON_DOWN, onClick);
+            registerEventHandler(ui::event::EVENT_MOUSE_BUTTON_DOWN, onClick);
         }
 
     void Button::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,

@@ -12,6 +12,28 @@ namespace gui::element::manager {
         elementsToUpdate.insert(element);
     }
 
+    // FIXME: not sure this function should be keeped as one function
+    // also, sendEvent function is defined in ui_manager but could be here
+    void AbstractManager::setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled,
+                                                   const event::Event *event) {
+        AbstractElement *element = leafElement;
+        while (element != nullptr) {
+            element->setModifierState(modifier, enabled);
+            element->updateStyle();
+            element->catchEvent(event);
+            element = element->parent();
+        }
+    }
+
+    void AbstractManager::sendEvent(const event::Event *event, AbstractElement *leafElement) {
+        AbstractElement *element = leafElement;
+        if (element == nullptr) return;
+        while (element != nullptr) {
+            element->catchEvent(event);
+            element = static_cast<AbstractElement *>(element->parent());
+        }
+    }
+
     AbstractManager::~AbstractManager() { deleteElementsTree(); }
 
     void AbstractManager::setSubRootElement(AbstractElement *element) {
@@ -53,19 +75,6 @@ namespace gui::element::manager {
             renderElements(clear);
             needUpdate(nullptr);
         };
-    }
-
-    // FIXME: not sure this function should be keeped as one function
-    // also, sendEvent function is defined in ui_manager but could be here
-    void AbstractManager::setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const event::Event *event) {
-        AbstractElement *element = leafElement;
-        while (element != nullptr) {
-            element->setModifierState(modifier, enabled);
-            element->updateStyle();
-            element->catchEvent(event);
-            element = element->parent();
-        }
-        needUpdate(leafElement);
     }
 
 } // namespace gui::element::manager

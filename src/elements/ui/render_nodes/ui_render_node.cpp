@@ -229,6 +229,14 @@ namespace gui::element::ui::render {
         return nullptr;
     }
 
+    bool UiRenderNode::isParentOf(const UiRenderNode *node) const {
+        while (node) {
+            if (node == this) return true;
+            node = node->parent();
+        }
+        return false;
+    }
+
     std::string UiRenderNode::debugValue() const {
         std::stringstream stringStream;
         stringStream
@@ -246,18 +254,9 @@ namespace gui::element::ui::render {
             << usedLayout.elementClippedRect.h
             << "} {"
             << baseElement->style()->debugValue()
-            << "}";
-        // TODO: use UiElement debugValue
-        if (baseElement->name() == "label") stringStream << " (" << static_cast<gui::element::Label *>(baseElement)->text() << ")";
+            << "} "
+            << baseElement->debugValue();
         return stringStream.str();
-    }
-
-    bool UiRenderNode::isParentOf(const UiRenderNode *node) const {
-        while (node) {
-            if (node == this) return true;
-            node = node->parent();
-        }
-        return false;
     }
 
 } // namespace gui::element::ui::render

@@ -48,11 +48,10 @@ namespace gui::element {
         ui::render::UiRenderNode *UiManager::renderNodeOf(const AbstractElement *element) {
             if (!element) return nullptr;
             if (element == rootRenderNode->baseElement) return rootRenderNode;
-            const AbstractElement *node = element; // TODO: should be useless
             std::list<const gui::element::AbstractElement *> pathElement;
-            while (node) {
-                pathElement.push_front(node);
-                node = node->parent();
+            while (element) {
+                pathElement.push_front(element);
+                element = element->parent();
             }
 
             pathElement.pop_front(); // no need of root since it has already been checked
@@ -79,6 +78,95 @@ namespace gui::element {
                     if ((parentNode->isParentOf(updateNode))) it = elementsToUpdate.erase(it);
                     else it++;
                 }
+            }
+        }
+
+        ui::render::UiRenderNode *UiManager::hoveredLeafElement(SDL_Point *coordinates) {
+            ui::render::UiRenderNode *renderNode = rootRenderNode;
+            SDL_Rect rect;
+            ui::Pos pos;
+
+            while (true) {
+                rect = *renderNode->elementClippedRect();
+                pos = *renderNode->startCoords();
+                rect.x += pos.x;
+                rect.y += pos.y;
+                if (SDL_PointInRect(coordinates, &rect)) {
+                    if (!renderNode->child()) return renderNode;
+                    renderNode = renderNode->child();
+                }
+                else {
+                    if (!renderNode->next()) return renderNode->parent() ? renderNode->parent() : renderNode;
+                    renderNode = renderNode->next();
+                }
+            }
+        }
+
+        void UiManager::processMouseEvent(const SDL_Event *sdlEvent) { // TODO: split into different functions for each mouse event
+            if (elementsTree == nullptr || !windowFocused) return;
+            float x, y;
+            SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
+            SDL_Point mousePos = SDL_Point{static_cast<int>(x), static_cast<int>(y)};
+
+            ui::render::UiRenderNode *hoveredRenderNode = hoveredLeafElement(&mousePos);
+
+            const ui::Pos *startCoords = hoveredRenderNode->startCoords();
+
+            const ui::FPos relativeCoordinates = {static_cast<float>(mousePos.x - startCoords->x), static_cast<float>(mousePos.y - startCoords->y)};
+
+            if (sdlEvent->type == SDL_EVENT_MOUSE_MOTION && hoveredElement) {
+                ui::event::MouseMotionEvent event =
+                    ui::event::MouseMotionEvent{ui::event::EVENT_MOUSE_MOTION, relativeCoordinates.x, relativeCoordinates.y, mouseFlags};
+                sendEvent(&event, hoveredElement->baseElement);
+            }
+
+            // send events to elements and update clicked/hovered/focused pointers
+            if (mouseFlags) {
+                if (!clicked && !clickedElement) {
+                    clickedElement = hoveredRenderNode;
+                    clicked = true;
+                    if (focusedElement) {
+                        event::Event event = event::Event{ui::event::EVENT_FOCUS_LOST};
+                        setElementsModifierState("focused", focusedElement->baseElement, false, &event);
+                    }
+                    focusedElement = clickedElement;
+                    if (focusedElement) {
+                        event::Event event = event::Event{ui::event::EVENT_FOCUS_GAINED};
+                        setElementsModifierState("focused", focusedElement->baseElement, true, &event);
+                    }
+                    if (clickedElement) {
+                        ui::render::UiRenderNode *element = clickedElement;
+                        while (element != nullptr) {
+                            ui::event::MouseEvent event =
+                                ui::event::MouseEvent{ui::event::EVENT_MOUSE_BUTTON_DOWN, relativeCoordinates.x - element->startCoords()->x,
+                                                      relativeCoordinates.y - element->startCoords()->y, sdlEvent->button.button};
+                            element->baseElement->setModifierState("clicked", true);
+                            element->baseElement->updateStyle();
+                            element->baseElement->catchEvent(&event);
+                            element = element->parent();
+                        }
+                    }
+                }
+            }
+            else {
+                clicked = false;
+                if (clickedElement) {
+                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_MOUSE_BUTTON_UP, 0, 0, sdlEvent->button.button};
+                    setElementsModifierState("clicked", clickedElement->baseElement, false, &event);
+                    clickedElement = nullptr;
+                }
+            }
+            if (hoveredElement != hoveredRenderNode) {
+                if (hoveredElement) {
+                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_UNHOVER, 0, 0, 0};
+                    setElementsModifierState("hovered", hoveredElement->baseElement, false, &event);
+                }
+                if (hoveredRenderNode) {
+                    ui::event::MouseEvent event =
+                        ui::event::MouseEvent{ui::event::EVENT_HOVER, relativeCoordinates.x, relativeCoordinates.y, sdlEvent->button.button};
+                    setElementsModifierState("hovered", hoveredRenderNode->baseElement, true, &event);
+                }
+                hoveredElement = hoveredRenderNode;
             }
         }
 
@@ -306,94 +394,6 @@ namespace gui::element {
             }
         }
 
-        void UiManager::processMouseEvent(const SDL_Event *sdlEvent) { // TODO: split into different functions for each mouse event
-            if (elementsTree == nullptr) return;
-            float x, y;
-            SDL_MouseButtonFlags mouseFlags = SDL_GetMouseState(&x, &y);
-            SDL_Point mousePos = SDL_Point{(int)x, (int)y};
-            ui::render::UiRenderNode *currentRenderNode = rootRenderNode->child();
-            ui::render::UiRenderNode *currentElement = nullptr;
-            ui::render::UiRenderNode *currentHoveredElement = nullptr;
-            SDL_Rect currentElementRect = SDL_Rect();
-            int currentX = 0;
-            int currentY = 0;
-            if (windowFocused) {
-                // search the hovered leaf element
-                while (currentRenderNode != nullptr) {
-                    currentElement = currentRenderNode;
-                    currentX = currentElementRect.x;
-                    currentY = currentElementRect.y;
-                    currentElementRect = *currentRenderNode->elementClippedRect(); // copy
-                    const ui::Pos pos = *currentRenderNode->startCoords();
-                    currentElementRect.x += pos.x + currentX;
-                    currentElementRect.y += pos.y + currentY;
-                    if (SDL_PointInRect(&mousePos, &currentElementRect)) {
-                        currentHoveredElement = currentElement;
-                        currentRenderNode = currentRenderNode->child();
-                    }
-                    else {
-                        currentElementRect.x -= pos.x;
-                        currentElementRect.y -= pos.y;
-                        currentRenderNode = currentRenderNode->next();
-                    }
-                }
-            }
-
-            if (sdlEvent->type == SDL_EVENT_MOUSE_MOTION && hoveredElement) {
-                ui::event::MouseMotionEvent event = ui::event::MouseMotionEvent{ui::event::EVENT_MOUSE_MOTION, static_cast<float>(mousePos.x - currentX),
-                                                                    static_cast<float>(mousePos.y - currentY), mouseFlags};
-                sendEvent(&event, hoveredElement->baseElement);
-            }
-
-            // send events to elements and update clicked/hovered/focused pointers
-            if (mouseFlags) {
-                if (!clicked && !clickedElement) {
-                    clickedElement = currentHoveredElement;
-                    clicked = true;
-                    if (focusedElement) {
-                        event::Event event = event::Event{ui::event::EVENT_FOCUS_LOST};
-                        setElementsModifierState("focused", focusedElement->baseElement, false, &event);
-                    }
-                    focusedElement = clickedElement;
-                    if (focusedElement) {
-                        event::Event event = event::Event{ui::event::EVENT_FOCUS_GAINED};
-                        setElementsModifierState("focused", focusedElement->baseElement, true, &event);
-                    }
-                    if (clickedElement) {
-                        // FIXME: UPDATE COORDS FOR EACH ELEMENT
-                        // for now, every element who get the event EXCEPT the leaf is receiving wrong coords
-                        // would be better if it translate to relative coords only if element asks for it
-                        // (no need to translate for every element)
-                        // but the element would know his place in the window (is it harmful, I don't know)
-                        ui::event::MouseEvent event =
-                            ui::event::MouseEvent{ui::event::EVENT_MOUSE_BUTTON_DOWN, static_cast<float>(mousePos.x - currentX),
-                                                  static_cast<float>(mousePos.y - currentY), sdlEvent->button.button};
-                        setElementsModifierState("clicked", clickedElement->baseElement, true, &event);
-                    }
-                }
-            }
-            else {
-                clicked = false;
-                if (clickedElement) {
-                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_MOUSE_BUTTON_UP, 0, 0, sdlEvent->button.button};
-                    setElementsModifierState("clicked", clickedElement->baseElement, false, &event);
-                    clickedElement = nullptr;
-                }
-            }
-            if (hoveredElement != currentHoveredElement) {
-                if (hoveredElement) {
-                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_UNHOVER, 0, 0, 0};
-                    setElementsModifierState("hovered", hoveredElement->baseElement, false, &event);
-                }
-                if (currentHoveredElement) {
-                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_HOVER, static_cast<float>(mousePos.x - currentX),
-                                                                        static_cast<float>(mousePos.y - currentY), sdlEvent->button.button};
-                    setElementsModifierState("hovered", currentHoveredElement->baseElement, true, &event);
-                }
-                hoveredElement = currentHoveredElement;
-            }
-        }
-
         void UiManager::scroll(int x, int y) {
             ui::render::UiRenderNode *element = hoveredElement;
             while (element) {
@@ -404,15 +404,5 @@ namespace gui::element {
                 element = element->parent();
             }
         }
-
-        void UiManager::sendEvent(const event::Event *event, UiElement *leafElement) {
-            UiElement *element = leafElement;
-            if (element == nullptr) return;
-            while (element != nullptr) {
-                element->catchEvent(event);
-                element = static_cast<UiElement *>(element->parent());
-            }
-        }
-
     } // namespace manager
 } // namespace gui::element
