@@ -34,6 +34,10 @@ ifeq ($(DEBUG),1)
 CPP_FLAGS += -DDEBUG
 endif
 
+ifeq ($(DEBUG_DEBUG),1)
+CPP_FLAGS += -DDEBUG -DDEBUG_DEBUG
+endif
+
 all: $(MAIN)
 
 lib: $(LIB).a
@@ -57,13 +61,13 @@ $(TESTS): $(OBJ_TESTS) $(LIB).a $(TESTS_LIB).a $(STYLE_LIB).a
 # Rule for compiling all object files
 $(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CPP_C) $(CPP_FLAGS) -DDEBUG -c $< -o $@
+	$(CPP_C) $(CPP_FLAGS) -c $< -o $@
 
 $(STYLE_LIB).a:
 	$(MAKE) -C cpp_style -j lib DEBUG=$(DEBUG)
 
 $(TESTS_LIB).a:
-	$(MAKE) -C cpp_tests -j lib DEBUG=$(DEBUG)
+	$(MAKE) -C cpp_tests -j lib BASH_COLORS=$(BASH_COLORS) DEBUG=$(DEBUG)
 
 # Rule for compiling all object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp

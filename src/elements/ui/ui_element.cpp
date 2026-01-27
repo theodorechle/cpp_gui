@@ -277,7 +277,10 @@ namespace gui::element {
 
     bool UiElement::render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                            std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
-        if (_renderer == nullptr) throw NoRendererException(); // TODO: exception or simple error log? (coherence with the entire program)
+        if (_renderer == nullptr) {
+            SDL_LogError(ui::GUI_RENDERING, "UiElement::render: no renderer '%s'", SDL_GetError());
+            return false;
+        }
 
         SDL_Rect clipRect;
         SDL_GetRenderClipRect(_renderer, &clipRect);
@@ -509,8 +512,7 @@ namespace gui::element {
         SDL_Rect selfRect;
         SDL_GetRenderClipRect(_renderer, &selfRect);
         ui::UiRenderData data = ui::UiRenderData(computeNewClipRect(&selfRect, &childRect));
-        bool childRendered = renderChildCallback(child, &data);
-        return childRendered;
+        return renderChildCallback(child, &data);
     }
 
     void UiElement::renderBackgroundWrapper() const { renderBackground(); }

@@ -130,7 +130,8 @@ namespace gui::element {
 #endif
             return "";
         }
-        if (std::filesystem::path(fontName).has_parent_path()) return fontName; // TODO: find safer way to check separations
+        
+        if (std::filesystem::exists(fontName)) return fontName;
         for (const std::string &defaultFontPath : elementsStyleManager->getDefaultFontsPaths()) {
             std::filesystem::path fontPath = std::filesystem::path(defaultFontPath);
             fontPath.append(fontName);

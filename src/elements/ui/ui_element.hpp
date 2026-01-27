@@ -123,7 +123,8 @@ namespace gui::element {
         /**
          * Adds the borders, margins, paddings to the element layout (width and height).
          */
-        virtual void computeTotalLayout(int *width, int *height) const; // TODO: why the ui_element computes it? it should be the ui_render_node who adds margins, paddings and borders. no ?
+        virtual void computeTotalLayout(int *width, int *height)
+            const; // TODO: why the ui_element computes it? it should be the ui_render_node who adds margins, paddings and borders. no ?
 
         /**
          * selfWidth and selfHeight are the new sizes
@@ -177,11 +178,6 @@ namespace gui::element {
          */
         bool render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                     std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
-    };
-
-    class NoRendererException : public std::runtime_error {
-    public:
-        NoRendererException() : std::runtime_error{"No renderer available"} {};
     };
 } // namespace gui::element
 

@@ -41,9 +41,11 @@ namespace gui::element::ui::render {
 
         SDL_Rect computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect);
 
-    public:
         // the UiElement corresponding to this node. Used for computing layouts.
-        gui::element::UiElement *baseElement; // FIXME: should be private, but needed by the ui manager
+        gui::element::UiElement *_baseElement;
+
+    public:
+        gui::element::UiElement *baseElement();
 
         UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parentNode = nullptr, gui::element::UiElement *baseElement = nullptr);
         ~UiRenderNode();
