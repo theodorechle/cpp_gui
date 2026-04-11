@@ -43,6 +43,7 @@ namespace gui::element {
             void update() override;
 
             void windowFocusLost();
+            void refreshAll();
 
             void updateRenderingData();
 

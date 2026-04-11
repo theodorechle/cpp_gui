@@ -336,6 +336,11 @@ namespace gui::element {
 #endif
         }
 
+        void UiManager::refreshAll() {
+            updateRenderingData();
+            needUpdate(elementsTree);
+        }
+
         void UiManager::processEvent(const SDL_Event *sdlEvent) {
             // TODO: elements should be able to stop the propagation of some events (for example scroll (canvas))
             switch (sdlEvent->type) {
@@ -343,7 +348,7 @@ namespace gui::element {
                 status(Status::ENDED);
                 break;
             case SDL_EVENT_WINDOW_RESIZED:
-                needUpdate(elementsTree);
+                refreshAll();
                 break;
             case SDL_EVENT_WINDOW_FOCUS_GAINED:
             case SDL_EVENT_WINDOW_MOUSE_ENTER:
@@ -369,7 +374,7 @@ namespace gui::element {
                                                                                         static_cast<float>(sdlEvent->wheel.integer_y)};
                     sendEvent(&event, hoveredElement->baseElement()); // FIXME: may be invalid if moving mouse at same time as scrolling: should be
                                                                       // done with other mouse events
-                    scroll(event.scrollX, event.scrollY); // TODO: elements should be able to intercept the event (canvas for example)
+                    scroll(event.scrollX, event.scrollY);             // TODO: elements should be able to intercept the event (canvas for example)
                 }
                 break;
             }
