@@ -67,7 +67,7 @@ $(STYLE_LIB).a:
 	$(MAKE) -C cpp_style -j lib DEBUG=$(DEBUG)
 
 $(TESTS_LIB).a:
-	$(MAKE) -C cpp_tests -j lib BASH_COLORS=$(BASH_COLORS) DEBUG=$(DEBUG)
+	$(MAKE) -C cpp_tests -j lib DEBUG=$(DEBUG)
 
 # Rule for compiling all object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
