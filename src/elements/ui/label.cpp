@@ -136,7 +136,7 @@ namespace gui::element {
             std::filesystem::path fontPath = std::filesystem::path(defaultFontPath);
             fontPath.append(fontName);
 #ifdef DEBUG
-            std::cerr << "trying font path '" << fontPath << "': " << (std::filesystem::exists(fontPath) ? "valid" : "invalid") << "\n";
+            std::clog << "trying font path '" << fontPath << "': " << (std::filesystem::exists(fontPath) ? "valid" : "invalid") << "\n";
 #endif
             if (std::filesystem::exists(fontPath)) return fontPath;
         }

@@ -426,7 +426,7 @@ namespace gui::element {
 
         SDL_RenderFillRect(_renderer, &rect);
 #ifdef DEBUG
-        std::cerr
+        std::clog
             << "scroll-y ("
             << name()
             << "): scrollable-size="
@@ -471,7 +471,7 @@ namespace gui::element {
         };
         SDL_RenderFillRect(_renderer, &rect);
 #ifdef DEBUG
-        std::cerr
+        std::clog
             << "scroll-x ("
             << name()
             << "): scrollable-size="

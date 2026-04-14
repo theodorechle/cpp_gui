@@ -85,13 +85,34 @@ namespace gui::element {
             ui::render::UiRenderNode *renderNode = rootRenderNode;
             SDL_Rect rect;
             ui::Pos pos;
+            ui::Pos absolutePos = {0, 0};
 
             while (true) {
                 rect = *renderNode->elementClippedRect();
                 pos = *renderNode->startCoords();
-                rect.x += pos.x;
-                rect.y += pos.y;
+                rect.x = absolutePos.x + pos.x;
+                rect.y = absolutePos.y + pos.y;
+                std::clog
+                    << "render node rect: x="
+                    << rect.x
+                    << ", y="
+                    << rect.y
+                    << ", w="
+                    << rect.w
+                    << ", h="
+                    << rect.h
+                    << "; "
+                    << renderNode
+                    << " (start coords: "
+                    << pos.x
+                    << ", "
+                    << pos.y
+                    << ")"
+                    << "\n";
                 if (SDL_PointInRect(coordinates, &rect)) {
+                    std::cerr << "choosed\n";
+                    absolutePos.x += pos.x;
+                    absolutePos.y += pos.y;
                     if (!renderNode->child()) return renderNode;
                     renderNode = renderNode->child();
                 }
@@ -109,6 +130,16 @@ namespace gui::element {
             SDL_Point mousePos = SDL_Point{static_cast<int>(x), static_cast<int>(y)};
 
             ui::render::UiRenderNode *hoveredRenderNode = hoveredLeafElement(&mousePos);
+            std::clog
+                << "mouse pos: ("
+                << mousePos.x
+                << ", "
+                << mousePos.y
+                << "), hovered leaf render node: "
+                << hoveredRenderNode->debugValue()
+                << "; element: "
+                << hoveredRenderNode->baseElement()->debugValue()
+                << "\n";
 
             const ui::Pos *startCoords = hoveredRenderNode->startCoords();
 
@@ -235,14 +266,14 @@ namespace gui::element {
             // TODO: some part should be done in abstract manager, at least calling the method
             if (!elementsToUpdate.size()) return;
 #ifdef DEBUG
-            std::cerr << "hovered element: " << hoveredElement << "\n";
-            std::cerr << "clicked element: " << clickedElement << "\n";
-            std::cerr << "focused element: " << focusedElement << "\n";
+            std::clog << "hovered element: " << hoveredElement << "\n";
+            std::clog << "clicked element: " << clickedElement << "\n";
+            std::clog << "focused element: " << focusedElement << "\n";
 #endif
 #ifdef DEBUG_DEBUG
-            std::cerr << "ui_elements\n";
+            std::clog << "ui_elements\n";
             elementsTree->debugDisplay();
-            std::cerr << "render_nodes\n";
+            std::clog << "render_nodes\n";
             rootRenderNode->debugDisplay();
 #endif
             const UiElement *hoveredUiElement = hoveredElement ? hoveredElement->baseElement() : nullptr;
@@ -251,18 +282,18 @@ namespace gui::element {
             for (AbstractElement *elementToUpdate : elementsToUpdate) {
                 ui::render::UiRenderNode *renderNode = renderNodeOf(elementToUpdate);
 #ifdef DEBUG
-                std::cerr << "element to refresh: " << renderNode << "\n";
+                std::clog << "element to refresh: " << renderNode << "\n";
 #endif
                 if (!renderNode) continue;
                 delete renderNode->child();
                 renderNode->removeChilds();
 #ifdef DEBUG_DEBUG
-                std::cerr << "render_nodes after removing\n";
+                std::clog << "render_nodes after removing\n";
                 rootRenderNode->debugDisplay();
 #endif
                 prepareRenderNodes(static_cast<UiElement *>(elementToUpdate->child()), renderNode);
 #ifdef DEBUG_DEBUG
-                std::cerr << "render_nodes after preparation\n";
+                std::clog << "render_nodes after preparation\n";
                 rootRenderNode->debugDisplay();
 #endif
             }
@@ -271,9 +302,9 @@ namespace gui::element {
             clickedElement = renderNodeOf(clickedUiElement);
             focusedElement = renderNodeOf(focusedUiElement);
 #ifdef DEBUG
-            std::cerr << "hovered element after update: " << hoveredElement << "\n";
-            std::cerr << "clicked element after update: " << clickedElement << "\n";
-            std::cerr << "focused element after update: " << focusedElement << "\n";
+            std::clog << "hovered element after update: " << hoveredElement << "\n";
+            std::clog << "clicked element after update: " << clickedElement << "\n";
+            std::clog << "focused element after update: " << focusedElement << "\n";
 #endif
         }
 
@@ -332,7 +363,7 @@ namespace gui::element {
                 hoveredElement = nullptr;
             }
 #ifdef DEBUG
-            std::cerr << "window focus lost, removed events\n";
+            std::clog << "window focus lost, removed events\n";
 #endif
         }
 

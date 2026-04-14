@@ -55,8 +55,8 @@ namespace gui::element {
     }
 
     void AbstractElement::displayStyle() {
-        std::cerr << "########################################################\n";
-        std::cerr << "path in tree:\n";
+        std::clog << "########################################################\n";
+        std::clog << "path in tree:\n";
         const AbstractElement *node = this;
         std::list<std::list<std::string>> path = {};
         while (node->parent() != nullptr) {
@@ -64,32 +64,32 @@ namespace gui::element {
             node = node->parent();
         }
 
-        std::cerr << "selectors:\n";
+        std::clog << "selectors:\n";
         for (const std::list<std::string> &path_fragment : path) {
-            std::cerr << "/";
+            std::clog << "/";
             std::size_t index = 0;
             for (const std::string &frag : path_fragment) {
-                std::cerr << frag;
-                if (index < path_fragment.size() - 1) std::cerr << "|";
+                std::clog << frag;
+                if (index < path_fragment.size() - 1) std::clog << "|";
                 index++;
             }
         }
 
-        std::cerr << "\n";
+        std::clog << "\n";
 
-        std::cerr << "applied rules:\n";
+        std::clog << "applied rules:\n";
         for (std::pair<std::string, style::StyleRule> rule : _style.rules()) {
-            std::cerr << rule.first << " -> ";
+            std::clog << rule.first << " -> ";
             style::StyleValue *value = rule.second.value;
-            std::cerr << value->value();
+            std::clog << value->value();
             value = value->child();
             while (value != nullptr) {
-                std::cerr << value->value();
+                std::clog << value->value();
                 value = value->next();
             }
-            std::cerr << "\n";
+            std::clog << "\n";
         }
-        std::cerr << "########################################################\n";
+        std::clog << "########################################################\n";
     }
 
     void AbstractElement::setModifierState(std::string modifier, bool enabled) {

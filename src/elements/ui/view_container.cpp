@@ -18,7 +18,7 @@ namespace gui::element {
     void ViewContainer::renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                             std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
         if (viewManager == nullptr) return;
-        std::cerr << "rendering\n";
+        std::clog << "rendering\n";
         // TODO: re-add
         // viewManager->askRendering();
         // viewManager->render(false);

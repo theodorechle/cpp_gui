@@ -88,7 +88,7 @@ namespace gui::elementStyle::manager {
 
     int StyleManager::addStyleFile(const std::string &fileName) {
 #ifdef DEBUG
-        std::cerr << "Adding file '" << fileName << "'\n";
+        std::clog << "Adding file '" << fileName << "'\n";
 #endif
         int fileNumber = findFile(fileName);
         if (fileNumber != -1) removeStyle(fileNumber);
@@ -121,7 +121,7 @@ namespace gui::elementStyle::manager {
 
     void StyleManager::removeStyleInElements(int fileNumber, element::AbstractElement *element) {
 #ifdef DEBUG
-        std::cerr << "Removing style from element\n";
+        std::clog << "Removing style from element\n";
 #endif
         element::AbstractElement *child;
         element->style()->deleteStyleFromFile(fileNumber);

@@ -164,7 +164,7 @@ namespace gui::element::ui::render {
 
         SDL_SetRenderClipRect(renderer, nullptr);
 #ifdef DEBUG
-        std::cerr
+        std::clog
             << "rects ("
             << _baseElement->name()
             << "): {"
@@ -246,7 +246,7 @@ namespace gui::element::ui::render {
             << this
             << ") "
             << _baseElement->name()
-            << " {x="
+            << "; coords: {x="
             << usedLayout.startCoords.x
             << ",y="
             << usedLayout.startCoords.y
@@ -254,9 +254,9 @@ namespace gui::element::ui::render {
             << usedLayout.elementClippedRect.w
             << ",h="
             << usedLayout.elementClippedRect.h
-            << "} {"
+            << "}; style: {"
             << _baseElement->style()->debugValue()
-            << "} "
+            << "}; element: "
             << _baseElement->debugValue();
         return stringStream.str();
     }
