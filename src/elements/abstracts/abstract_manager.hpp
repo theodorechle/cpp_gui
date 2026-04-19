@@ -24,7 +24,6 @@ namespace gui::element::manager {
 
         virtual void renderElements(bool clear = true) const = 0;
         virtual void createRootElement() = 0;
-        virtual void update() = 0;
         virtual void addChildToRootElement(AbstractElement *childElement);
 
     protected:
@@ -37,6 +36,9 @@ namespace gui::element::manager {
          * If passed nullptr, clear needed update (no update required)
          */
         void needUpdate(AbstractElement *element);
+
+        virtual void updateModifiedElements() = 0;
+        virtual void update();
 
         /**
          * set the modifier's state (enabled, disabled) on leafElement and all its parents

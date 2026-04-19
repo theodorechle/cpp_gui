@@ -12,8 +12,8 @@ namespace gui::element::manager {
         elementsToUpdate.insert(element);
     }
 
-    // FIXME: not sure this function should be keeped as one function
-    // Tell me, what should I do and why?
+    void AbstractManager::update() { updateModifiedElements(); }
+
     void AbstractManager::setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled,
                                                    const event::Event *event) {
         AbstractElement *element = leafElement;

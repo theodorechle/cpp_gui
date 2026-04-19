@@ -28,15 +28,16 @@ namespace gui::elementStyle::manager {
         int findFile(const std::string &fileName);
         void updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber, element::AbstractElement *element);
         void updateRulesPriorities(int fileNumber);
-        bool elementSelectorsCompatibles(element::AbstractElement *elementStyle, const style::StyleComponentDataList *componentsList);
-        bool elementSelectorsCompatiblesLoop(style::StyleComponentDataList::const_reverse_iterator componentDataIt,
-                                             style::StyleComponentDataList::const_reverse_iterator componentDataListEndIt,
-                                             element::AbstractElement *elementStyle);
+        bool elementMatchSelector(element::AbstractElement *element, const style::StyleComponentData &selector);
+        bool elementSelectorsCompatibles(element::AbstractElement *element, const style::StyleComponentDataList *componentsList);
+        bool elementSelectorsCompatibles(style::StyleComponentDataList::const_reverse_iterator componentDataIt,
+                                         style::StyleComponentDataList::const_reverse_iterator componentDataListEndIt,
+                                         element::AbstractElement *element);
 
     public:
         StyleManager(const style::config::Config *config) : config{config} {}
         ~StyleManager();
-        void rootElement(element::AbstractElement *elementStyle) { _rootElement = elementStyle; }
+        void rootElement(element::AbstractElement *element) { _rootElement = element; }
 
         // returns a number who corresponds to the file number (used to delete it) or -1 if not added
         int addStyleFile(const std::string &fileName);
@@ -46,7 +47,7 @@ namespace gui::elementStyle::manager {
         void removeStyle(int fileNumber);
 
         // TODO: Are both methods needed?
-        void applyStyleToElement(element::AbstractElement *elementStyle);
+        void applyStyleToElement(element::AbstractElement *element);
 
         void addDefaultFontPath(const std::string &path);
         const std::unordered_set<std::string> &getDefaultFontsPaths() const;

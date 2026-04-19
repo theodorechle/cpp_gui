@@ -30,14 +30,14 @@ namespace gui::elementStyle::manager {
         }
     }
 
-    void StyleManager::applyStyleToElement(element::AbstractElement *elementStyle) {
-        if (elementStyle == nullptr) return;
-        element::AbstractElement *actualElementStyle = elementStyle;
+    void StyleManager::applyStyleToElement(element::AbstractElement *element) {
+        if (element == nullptr) return;
+        element::AbstractElement *actualElement = element;
         const style::StyleValuesMap *styleMap;
         style::RulesMap elementRulesMap = style::RulesMap();
-        actualElementStyle->style()->clear();
+        actualElement->style()->clear();
         for (style::StyleDefinition *styleComponent : style) {
-            if (!elementSelectorsCompatibles(actualElementStyle, &styleComponent->first)) continue;
+            if (!elementSelectorsCompatibles(actualElement, &styleComponent->first)) continue;
 
             styleMap = &styleComponent->second;
 
@@ -51,10 +51,10 @@ namespace gui::elementStyle::manager {
         }
 
         // TODO: find more optimized way to get inherited style
-        actualElementStyle = actualElementStyle->parent();
-        while (actualElementStyle != nullptr) {
+        actualElement = actualElement->parent();
+        while (actualElement != nullptr) {
             for (style::StyleDefinition *styleComponent : style) {
-                if (!elementSelectorsCompatibles(actualElementStyle, &styleComponent->first)) continue;
+                if (!elementSelectorsCompatibles(actualElement, &styleComponent->first)) continue;
 
                 styleMap = &styleComponent->second;
 
@@ -67,10 +67,18 @@ namespace gui::elementStyle::manager {
                                                                         styleRule.second.fileNumber, styleRule.second.ruleNumber};
                 }
             }
-            actualElementStyle = actualElementStyle->parent();
+            actualElement = actualElement->parent();
         }
 
-        elementStyle->style()->rules(elementRulesMap);
+        element->style()->rules(elementRulesMap);
+
+#ifdef DEBUG_DEBUG
+        std::clog << "element " << element->debugValue() << " has the following style rules:\n";
+        for (std::pair<std::string, style::StyleRule> rule : element->style()->rules()) {
+            std::clog << rule.first << ": ";
+            rule.second.value->debugDisplay();
+        }
+#endif
     }
 
     StyleManager::~StyleManager() {
@@ -112,6 +120,7 @@ namespace gui::elementStyle::manager {
         style.splice(style.end(), *fileRules);
         // FIXME: should apply to all elements, not only root
         // I don't know why, but it already seems to work
+        // maybe because the other elements get refreshed and inherits the style? But all style is not inheritable
         applyStyleToElement(_rootElement);
         delete fileRules;
         files[fileCount] = std::pair<std::string, int>("", ruleNumber);
@@ -148,37 +157,36 @@ namespace gui::elementStyle::manager {
         }
     }
 
-    bool StyleManager::elementSelectorsCompatibles(element::AbstractElement *elementStyle, const style::StyleComponentDataList *componentsList) {
-        if (elementStyle == nullptr || componentsList == nullptr) return false;
-        style::StyleComponentDataList::const_reverse_iterator componentDataIt = componentsList->crbegin();
-        return elementSelectorsCompatiblesLoop(componentDataIt, componentsList->crend(), elementStyle);
+    bool StyleManager::elementMatchSelector(element::AbstractElement *element, const style::StyleComponentData &selector) {
+        return selector.second == style::StyleComponentType::StarWildcard || element->style()->hasSelector(selector);
     }
 
-    bool StyleManager::elementSelectorsCompatiblesLoop(style::StyleComponentDataList::const_reverse_iterator componentDataIt,
-                                                       style::StyleComponentDataList::const_reverse_iterator componentDataListEndIt,
-                                                       element::AbstractElement *elementStyle) {
-        element::AbstractElement *element = elementStyle;
+    bool StyleManager::elementSelectorsCompatibles(element::AbstractElement *element, const style::StyleComponentDataList *componentsList) {
+        if (element == nullptr || componentsList == nullptr) return false;
+        style::StyleComponentDataList::const_reverse_iterator componentDataIt = componentsList->crbegin();
+        return elementSelectorsCompatibles(componentDataIt, componentsList->crend(), element);
+    }
+
+    bool StyleManager::elementSelectorsCompatibles(style::StyleComponentDataList::const_reverse_iterator componentDataIt,
+                                                   style::StyleComponentDataList::const_reverse_iterator componentDataListEndIt,
+                                                   element::AbstractElement *element) {
+        element::AbstractElement *currentElement = element;
         for (style::StyleComponentDataList::const_reverse_iterator it = componentDataIt; it != componentDataListEndIt; it++) {
-            if (it->first.second == style::StyleComponentType::StarWildcard) {
-                continue;
-            }
             switch (it->second) {
             case style::StyleRelation::SameElement:
-                if (!element->style()->hasSelector(it->first)) return false;
+                if (!elementMatchSelector(currentElement, it->first)) return false;
                 break;
             case style::StyleRelation::DirectParent:
-                element = element->parent();
-                if (!element || !element->style()->hasSelector(it->first)) return false;
+                currentElement = currentElement->parent();
+                if (!currentElement || !elementMatchSelector(currentElement, it->first)) return false;
                 break;
             case style::StyleRelation::AnyParent:
-                while (element) {
-                    element = element->parent();
-                    if (!element) return false;
-                    if (element->style()->hasSelector(it->first)) break; // found, go back to for-loop
-                    style::StyleComponentDataList::const_reverse_iterator nextIt = std::next(it);
-                    if (nextIt == componentDataListEndIt || !elementSelectorsCompatiblesLoop(nextIt, componentDataListEndIt, element)) {
-                        return false;
-                    }
+                while (currentElement) {
+                    currentElement = currentElement->parent();
+                    if (!currentElement) return false;
+
+                    if (!elementMatchSelector(currentElement, it->first)) continue;
+                    if (elementSelectorsCompatibles(std::next(it), componentDataListEndIt, currentElement)) return true;
                 }
                 break;
             default:

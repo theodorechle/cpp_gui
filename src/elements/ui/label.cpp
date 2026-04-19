@@ -130,7 +130,7 @@ namespace gui::element {
 #endif
             return "";
         }
-        
+
         if (std::filesystem::exists(fontName)) return fontName;
         for (const std::string &defaultFontPath : elementsStyleManager->getDefaultFontsPaths()) {
             std::filesystem::path fontPath = std::filesystem::path(defaultFontPath);
@@ -159,5 +159,5 @@ namespace gui::element {
         sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
 
-    std::string Label::debugValue() const { return '"' + _text + '"'; }
+    std::string Label::debugValue() const { return UiElement::debugValue() + " \"" + _text + "\""; }
 } // namespace gui::element

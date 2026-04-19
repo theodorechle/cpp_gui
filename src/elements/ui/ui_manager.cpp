@@ -92,6 +92,7 @@ namespace gui::element {
                 pos = *renderNode->startCoords();
                 rect.x = absolutePos.x + pos.x;
                 rect.y = absolutePos.y + pos.y;
+#ifdef DEBUG
                 std::clog
                     << "render node rect: x="
                     << rect.x
@@ -109,8 +110,11 @@ namespace gui::element {
                     << pos.y
                     << ")"
                     << "\n";
+#endif
                 if (SDL_PointInRect(coordinates, &rect)) {
+#ifdef DEBUG
                     std::cerr << "choosed\n";
+#endif
                     absolutePos.x += pos.x;
                     absolutePos.y += pos.y;
                     if (!renderNode->child()) return renderNode;
@@ -130,6 +134,7 @@ namespace gui::element {
             SDL_Point mousePos = SDL_Point{static_cast<int>(x), static_cast<int>(y)};
 
             ui::render::UiRenderNode *hoveredRenderNode = hoveredLeafElement(&mousePos);
+#ifdef DEBUG
             std::clog
                 << "mouse pos: ("
                 << mousePos.x
@@ -140,6 +145,7 @@ namespace gui::element {
                 << "; element: "
                 << hoveredRenderNode->baseElement()->debugValue()
                 << "\n";
+#endif
 
             const ui::Pos *startCoords = hoveredRenderNode->startCoords();
 
@@ -263,7 +269,6 @@ namespace gui::element {
         }
 
         void UiManager::updateModifiedElements() {
-            // TODO: some part should be done in abstract manager, at least calling the method
             if (!elementsToUpdate.size()) return;
 #ifdef DEBUG
             std::clog << "hovered element: " << hoveredElement << "\n";
@@ -341,7 +346,7 @@ namespace gui::element {
         }
 
         void UiManager::update() {
-            updateModifiedElements();
+            AbstractManager::update();
             computeElementsLayout(); // TODO: improve to only render updated elements
             createRenderedTexture();
         }
