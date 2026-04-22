@@ -21,16 +21,14 @@ namespace gui::element {
     }
 
     AbstractElement::AbstractElement(std::string elementName, elementStyle::manager::StyleManager *elementsStyleManager,
-                                     std::vector<std::string> *classes, const std::string &identifier)
+                                     std::vector<std::string> classes, const std::string &identifier)
         : elementName{elementName}, elementsStyleManager{elementsStyleManager} {
 
         _style = elementStyle::ElementStyle();
         _style.addSelector(elementName, style::StyleComponentType::ElementName);
         // set selectors
-        if (classes != nullptr) {
-            for (std::string c : *classes) {
-                _style.addSelector(c, style::StyleComponentType::Class);
-            }
+        for (std::string c : classes) {
+            _style.addSelector(c, style::StyleComponentType::Class);
         }
         if (!identifier.empty()) _style.addSelector(identifier, style::StyleComponentType::Identifier);
         if (elementsStyleManager == nullptr) return;

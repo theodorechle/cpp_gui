@@ -56,7 +56,7 @@ $(MAIN): $(OBJ_MAIN) $(LIB).a $(STYLE_LIB).a
 # Build the tests executable (tests + lib)
 $(TESTS): $(OBJ_TESTS) $(LIB).a $(TESTS_LIB).a $(STYLE_LIB).a
 	@mkdir -p $(BIN_DIR)
-	$(CPP_C) $(CPP_FLAGS) -o $@ $^
+	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD)
 
 # Rule for compiling all object files
 $(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp

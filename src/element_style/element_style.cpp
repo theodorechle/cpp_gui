@@ -104,7 +104,7 @@ namespace gui::elementStyle {
         return (defaultStyle != nullptr);
     }
 
-    int ElementStyle::nbRules() const { return _rules.size(); }
+    size_t ElementStyle::nbRules() const { return _rules.size(); }
 
     std::string ElementStyle::debugValue() {
         std::stringstream stringStream;

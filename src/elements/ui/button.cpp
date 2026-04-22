@@ -1,7 +1,7 @@
 #include "button.hpp"
 
 namespace gui::element {
-    Button::Button(EventHandler onClick, gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes,
+    Button::Button(EventHandler onClick, gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes,
                    const std::string &identifier)
         : UiElement{"button", elementsStyleManager, classes, identifier} {
         if (onClick != nullptr) registerEventHandler(ui::event::EVENT_MOUSE_BUTTON_DOWN, onClick);

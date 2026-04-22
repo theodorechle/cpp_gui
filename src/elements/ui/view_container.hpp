@@ -22,7 +22,7 @@ namespace gui::element {
 
     public:
         ViewContainer(gui::element::manager::UiManager *viewManager, gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
-                      std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
+                      std::vector<std::string> classes = {}, const std::string &identifier = "");
     };
 } // namespace gui::element
 

@@ -1,7 +1,7 @@
 #include "list.hpp"
 
 namespace gui::element {
-    List::List(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
+    List::List(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes, const std::string &identifier)
         : UiElement{"list", elementsStyleManager, classes, identifier} {}
 
     void List::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,

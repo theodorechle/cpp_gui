@@ -14,7 +14,7 @@ namespace gui::element {
         void renderSelfBeforeChilds() const override;
 
     public:
-        Canvas(gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+        Canvas(gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> classes = {},
                const std::string &identifier = "");
 
         ~Canvas() override;

@@ -41,6 +41,7 @@ namespace gui::elementStyle {
          * If no defaultStyle is given, returns false if no value were found.
          */
         bool getRule(const std::string &ruleName, style::StyleValue **ruleValue, style::StyleValue *defaultStyle = nullptr) const;
+
         /**
          * Set the value in the ruleValue parameter.
          * Returns true if found or default value is returned.
@@ -51,7 +52,7 @@ namespace gui::elementStyle {
          */
         bool getRule(const std::vector<std::string> &ruleNames, style::StyleValue **ruleValue, style::StyleValue *defaultStyle = nullptr) const;
 
-        int nbRules() const;
+        size_t nbRules() const;
 
         std::string debugValue();
     };

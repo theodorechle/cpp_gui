@@ -1,7 +1,7 @@
 #include "container.hpp"
 
 namespace gui::element {
-    Container::Container(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes,
+    Container::Container(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes,
                          const std::string &identifier)
         : UiElement{"container", elementsStyleManager, classes, identifier} {}
 

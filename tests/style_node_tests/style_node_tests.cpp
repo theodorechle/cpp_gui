@@ -484,6 +484,7 @@ namespace styleNodesTests {
         style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
         style::StyleValue value2 = style::StyleValue("def", style::StyleValueType::String);
         style::RulesMap style = {{"test", {style::StyleRule(&value, true, 3, 5, 3)}}, {"test2", {style::StyleRule(&value2, true, 7, 5, 3)}}};
+        node->rules(style);
 
         test::Result testResult;
 

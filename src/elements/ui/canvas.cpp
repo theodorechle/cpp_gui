@@ -1,7 +1,7 @@
 #include "canvas.hpp"
 
 namespace gui::element {
-    Canvas::Canvas(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes, const std::string &identifier)
+    Canvas::Canvas(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes, const std::string &identifier)
         : UiElement{"canvas", elementsStyleManager, classes, identifier} {}
 
     Canvas::~Canvas() { SDL_DestroyTexture(texture); }

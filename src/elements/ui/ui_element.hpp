@@ -66,7 +66,7 @@ namespace gui::element {
 
     public:
         UiElement(std::string elementName, gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
-                  std::vector<std::string> *classes = nullptr, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
+                  std::vector<std::string> classes = {}, const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr)
             : AbstractElement{elementName, elementsStyleManager, classes, identifier}, _textEngine{textEngine} {}
 
         void addChild(UiElement *child);

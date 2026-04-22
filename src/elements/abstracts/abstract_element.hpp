@@ -40,7 +40,7 @@ namespace gui::element {
          * If no style manager is given, the element can't have style
          */
         AbstractElement(std::string elementName, elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
-                        std::vector<std::string> *classes = nullptr, const std::string &identifier = "");
+                        std::vector<std::string> classes = {}, const std::string &identifier = "");
         const std::string &name() const { return elementName; }
         void addChild(AbstractElement *newChild);
         // remove pointer to childs, but does not delete them

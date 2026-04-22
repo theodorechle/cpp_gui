@@ -2,7 +2,7 @@
 
 namespace gui::element {
     Input::Input(const std::string &text, const std::string &placeholder, gui::elementStyle::manager::StyleManager *elementsStyleManager,
-                 std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
+                 std::vector<std::string> classes, const std::string &identifier, TTF_TextEngine *textEngine)
         : Label{"input", text, elementsStyleManager, classes, identifier, textEngine}, placeholder{placeholder} {
         registerEventHandler(ui::event::EVENT_FOCUS_GAINED, [this](const event::Event *event) { this->focusGained(event); });
         registerEventHandler(ui::event::EVENT_FOCUS_LOST, [this](const event::Event *event) { this->focusLost(event); });

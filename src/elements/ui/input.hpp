@@ -13,7 +13,7 @@ namespace gui::element {
 
     public:
         Input(const std::string &text = "", const std::string &placeholder = "",
-              gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> *classes = nullptr,
+              gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> classes = {},
               const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
         
         void focusGained(const event::Event *event);

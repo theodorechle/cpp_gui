@@ -107,10 +107,10 @@ namespace gui::element {
     }
 
     Label::Label(const std::string &elementName, const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager,
-                 std::vector<std::string> *classes, const std::string &identifier, TTF_TextEngine *textEngine)
+                 std::vector<std::string> classes, const std::string &identifier, TTF_TextEngine *textEngine)
         : UiElement{elementName, elementsStyleManager, classes, identifier, textEngine}, _text{text} {}
 
-    Label::Label(const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> *classes,
+    Label::Label(const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes,
                  const std::string &identifier, TTF_TextEngine *textEngine)
         : UiElement{"label", elementsStyleManager, classes, identifier, textEngine}, _text{text} {}
 

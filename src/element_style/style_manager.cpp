@@ -121,6 +121,7 @@ namespace gui::elementStyle::manager {
         // FIXME: should apply to all elements, not only root
         // I don't know why, but it already seems to work
         // maybe because the other elements get refreshed and inherits the style? But all style is not inheritable
+        // it happened one time that the entire window was black until I throwed an event by moving my mouse on it.
         applyStyleToElement(_rootElement);
         delete fileRules;
         files[fileCount] = std::pair<std::string, int>("", ruleNumber);
