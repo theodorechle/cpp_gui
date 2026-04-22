@@ -19,8 +19,4 @@ Prevent having multiple times submodule cpp_tests -> dynamic library loading
 
 Shift + scroll -> horizontal scroll
 
-Remove style tree :
-- recompute style on every style change (hover, ...)
-- cache style
-
 Fix inconsistencies on namespaces (for example, some classes are in ui and others not)
