@@ -39,7 +39,7 @@ jobs:
         key: ${{ runner.os }}-cache-sdl
 
     - if: ${{ steps.cache-sdl.outputs.cache-hit != 'true' }}
-      name: Install libraries
+      name: Install SDL libraries
       run: |
         git clone https://github.com/libsdl-org/SDL.git
         cd SDL
