@@ -10,7 +10,7 @@ jobs:
   build:
 
     runs-on: ubuntu-22.04
-    envs:
+    env:
       SDL_DIRECTORY: "~/.local"
 
     steps:
