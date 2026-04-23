@@ -48,7 +48,8 @@ jobs:
         git clone https://github.com/libsdl-org/SDL_ttf/
         cd SDL_ttf
         ./external/download.sh
-        cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$SDL_DIRECTORY;$SDL_DIRECTORY/lib/cmake/SDL3"
+        cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$SDL_DIRECTORY" \
+        -DSDL3_DIR="$SDL_DIRECTORY/lib/cmake/SDL3"
         cmake --build build -j
         sudo cmake --install build --prefix "$SDL_DIRECTORY"
 
