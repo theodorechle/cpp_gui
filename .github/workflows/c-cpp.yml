@@ -27,7 +27,19 @@ jobs:
           libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
           libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev cmake libharfbuzz-dev
 
-    - name: Install libraries
+    - name: Cache SDL libraries
+      id: cache-sdl
+      uses: actions/cache@v4
+      with:
+        path: |
+          /usr/local/include/SDL3
+          /usr/local/include/SDL3_ttf
+          /usr/local/lib/cmake/SDL3
+          /usr/local/lib/cmake/SDL3_ttf
+        key: ${{ runner.os }}-cache-sdl
+
+    - if: ${{ steps.cache-sdl.outputs.cache-hit != 'true' }}
+      name: Install libraries
       run: |
         git clone https://github.com/libsdl-org/SDL.git
         cd SDL
