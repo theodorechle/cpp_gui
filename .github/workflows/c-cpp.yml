@@ -41,14 +41,14 @@ jobs:
       run: |
         git clone https://github.com/libsdl-org/SDL.git
         cd SDL
-        cmake -S . -B build
+        cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$PREFIX"
         cmake --build build -j
         sudo cmake --install build --prefix "$SDL_DIRECTORY"
 
         git clone https://github.com/libsdl-org/SDL_ttf/
         cd SDL_ttf
         ./external/download.sh
-        cmake -S . -B build
+        cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$PREFIX"
         cmake --build build -j
         sudo cmake --install build --prefix "$SDL_DIRECTORY"
 
