@@ -11,7 +11,7 @@ jobs:
 
     runs-on: ubuntu-22.04
     env:
-      SDL_DIRECTORY: "$HOME/local-sdl"
+      SDL_DIRECTORY: $HOME/local-sdl
 
     steps:
     - name: Checkout repository and submodules
