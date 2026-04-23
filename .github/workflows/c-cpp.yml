@@ -33,11 +33,7 @@ jobs:
       id: cache-sdl
       uses: actions/cache@v4
       with:
-        path: |
-          /usr/local/include/SDL3
-          /usr/local/include/SDL3_ttf
-          /usr/local/lib/cmake/SDL3
-          /usr/local/lib/cmake/SDL3_ttf
+        path: $SDL_DIRECTORY
         key: ${{ runner.os }}-cache-sdl
 
     - if: ${{ steps.cache-sdl.outputs.cache-hit != 'true' }}
