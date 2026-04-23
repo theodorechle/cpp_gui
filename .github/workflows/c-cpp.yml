@@ -11,7 +11,7 @@ jobs:
 
     runs-on: ubuntu-22.04
     env:
-      SDL_DIRECTORY: "~/.local"
+      SDL_DIRECTORY: "${{ runner.temp }}/local-sdl"
 
     steps:
     - name: Checkout repository and submodules
@@ -41,14 +41,14 @@ jobs:
       run: |
         git clone https://github.com/libsdl-org/SDL.git
         cd SDL
-        cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$PREFIX"
+        cmake -S . -B build
         cmake --build build -j
         sudo cmake --install build --prefix "$SDL_DIRECTORY"
 
         git clone https://github.com/libsdl-org/SDL_ttf/
         cd SDL_ttf
         ./external/download.sh
-        cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$PREFIX"
+        cmake -S . -B build
         cmake --build build -j
         sudo cmake --install build --prefix "$SDL_DIRECTORY"
 
