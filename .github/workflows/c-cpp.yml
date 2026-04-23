@@ -41,20 +41,20 @@ jobs:
       run: |
         git clone https://github.com/libsdl-org/SDL.git
         cd SDL
-        cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$SDL_DIRECTORY"
+        cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$SDL_DIRECTORY
         cmake --build build -j
-        sudo cmake --install build --prefix "$SDL_DIRECTORY"
+        sudo cmake --install build --prefix $SDL_DIRECTORY
 
         git clone https://github.com/libsdl-org/SDL_ttf/
         cd SDL_ttf
         ./external/download.sh
-        ls -R "$SDL_DIRECTORY"
-        cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$SDL_DIRECTORY" \
-        -DSDL3_DIR="$SDL_DIRECTORY/lib/cmake/SDL3"
+        ls -R $SDL_DIRECTORY
+        cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$SDL_DIRECTORY \
+        -DSDL3_DIR=$SDL_DIRECTORY/lib/cmake/SDL3
         echo "First"
         cmake --build build -j
         echo "Second"
-        sudo cmake --install build --prefix "$SDL_DIRECTORY"
+        sudo cmake --install build --prefix $SDL_DIRECTORY
         echo "Third"
 
     - name: Compile tests
