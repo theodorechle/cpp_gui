@@ -8,10 +8,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-22.04
-    env:
-      SDL_DIRECTORY: ~/local-sdl
 
     steps:
     - name: Checkout repository and submodules
@@ -29,11 +26,26 @@ jobs:
           libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
           libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev cmake libharfbuzz-dev
 
+    - name: Add permission to cache SDL
+      run: sudo chmod -R 777 /usr/local
+
     - name: Cache SDL libraries
       id: cache-sdl
       uses: actions/cache@v4
       with:
-        path: $SDL_DIRECTORY
+        path: |
+          /usr/local/lib/cmake/SDL3
+          /usr/local/lib/cmake/SDL3_ttf
+          /usr/local/lib/pkgconfig
+          /usr/local/lib/libSDL3.so
+          /usr/local/lib/libSDL3.so.0
+          /usr/local/lib/libSDL3.so.0.5.0
+          /usr/local/lib/libSDL3_ttf.so
+          /usr/local/lib/libSDL3_ttf.so.0
+          /usr/local/lib/libSDL3_ttf.so.0.3.0
+
+          /usr/local/include/SDL3
+          /usr/local/include/SDL3_ttf
         key: ${{ runner.os }}-cache-sdl
 
     - if: ${{ steps.cache-sdl.outputs.cache-hit != 'true' }}
@@ -41,24 +53,21 @@ jobs:
       run: |
         git clone https://github.com/libsdl-org/SDL.git
         cd SDL
-        cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$SDL_DIRECTORY
+        cmake -S . -B build
         cmake --build build -j
-        sudo cmake --install build --prefix $SDL_DIRECTORY
+        sudo cmake --install build --prefix /usr/local
 
         git clone https://github.com/libsdl-org/SDL_ttf/
         cd SDL_ttf
         ./external/download.sh
-        ls -R $SDL_DIRECTORY
-        cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$SDL_DIRECTORY \
-        -DSDL3_DIR=$SDL_DIRECTORY/lib/cmake/SDL3
-        echo "First"
+        cmake -S . -B build
         cmake --build build -j
-        echo "Second"
-        sudo cmake --install build --prefix $SDL_DIRECTORY
-        echo "Third"
+        sudo cmake --install build --prefix /usr/local
 
     - name: Compile tests
-      run: make -j tests
+      run: |
+        pkg-config sdl3 --libs
+        make -j tests
     
     - name: Execute tests
       run: bin/tests
