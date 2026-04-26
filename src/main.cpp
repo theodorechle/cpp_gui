@@ -68,24 +68,21 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     elementsStyleManager->addDefaultFontPath("tests/fonts");
     elementsStyleManager->addStyleFile("tests/tests-files/main-test.txt");
 
-    gui::element::UiElement *parentContainer = new gui::element::List(elementsStyleManager, nullptr, "red-container");
+    gui::element::UiElement *parentContainer = new gui::element::List(elementsStyleManager, {}, "red-container");
     manager->setSubRootElement(parentContainer);
 
-    std::vector<std::string> labelClasses = std::vector<std::string>{"red"};
-
     parentContainer->addChild(new gui::element::Label("a text rendered (a big big big very really big text)\non multiple lines", elementsStyleManager,
-                                                      &labelClasses, "test-label", textEngine));
+                                                      {"red"}, "test-label", textEngine));
     parentContainer->addChild(new gui::element::Label("an other text rendered (a big big big very really big text)\non multiple lines",
-                                                      elementsStyleManager, &labelClasses, "test-label", textEngine));
-    parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, &labelClasses, "aaaaa-label", textEngine));
+                                                      elementsStyleManager, {"red"}, "test-label", textEngine));
+    parentContainer->addChild(new gui::element::Label("aaaaa", elementsStyleManager, {"red"}, "aaaaa-label", textEngine));
     gui::element::UiElement *button = new gui::element::Button(displayHelloWorld, elementsStyleManager, {}, "hello-world-button");
     parentContainer->addChild(button);
     gui::element::UiElement *list = new gui::element::List(elementsStyleManager);
     button->addChild(list);
     list->addChild(new gui::element::Label("press this button", elementsStyleManager, {}, "", textEngine));
     list->addChild(new gui::element::Label("to display", elementsStyleManager, {}, "", textEngine));
-    std::vector<std::string> lastLabelClasses = std::vector<std::string>{"last"};
-    list->addChild(new gui::element::Label("hello world!", elementsStyleManager, &lastLabelClasses, "", textEngine));
+    list->addChild(new gui::element::Label("hello world!", elementsStyleManager, {"last"}, "", textEngine));
     parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
 
     // gui::element::manager::UiManager *subManager = new gui::element::manager::UiManager(sdl_window, sdl_renderer);
