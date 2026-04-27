@@ -2,7 +2,6 @@
 #define LABEL_HPP
 
 #include "ui_element.hpp"
-#include <filesystem>
 
 namespace gui::element {
     class Label : public UiElement {

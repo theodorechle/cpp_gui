@@ -1,4 +1,5 @@
 #include "list.hpp"
+#include <numeric>
 
 namespace gui::element {
     List::List(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes, const std::string &identifier)

@@ -1,17 +1,13 @@
-#include "../cpp_style/src/style_deserializer.hpp"
 #include "app_utils/app_state.hpp"
-#include "element_style/element_style.hpp"
 #include "element_style/style_manager.hpp"
 #include "elements/abstracts/abstract_manager.hpp"
 #include "elements/ui/button.hpp"
-#include "elements/ui/container.hpp"
 #include "elements/ui/input.hpp"
 #include "elements/ui/label.hpp"
 #include "elements/ui/list.hpp"
 #include "elements/ui/style_config.hpp"
 #include "elements/ui/ui_element.hpp"
 #include "elements/ui/ui_manager.hpp"
-#include "elements/ui/view_container.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include <SDL3/SDL_error.h>

@@ -1,4 +1,5 @@
 #include "label.hpp"
+#include <filesystem>
 
 namespace gui::element {
     void Label::initBeforeLayoutComputing() {

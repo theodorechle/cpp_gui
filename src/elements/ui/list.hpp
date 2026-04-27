@@ -2,7 +2,6 @@
 #define LIST_HPP
 
 #include "ui_element.hpp"
-#include <numeric>
 
 namespace gui::element {
     class List : public UiElement {
