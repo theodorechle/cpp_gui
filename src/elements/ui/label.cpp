@@ -1,4 +1,5 @@
 #include "label.hpp"
+#include <cstddef>
 #include <filesystem>
 
 namespace gui::element {
@@ -149,8 +150,10 @@ namespace gui::element {
         sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
 
-    void Label::removeText(int nbChars) {
+    void Label::removeText(size_t nbChars) {
         if (_text.empty()) return;
+
+        // FIXME: doesn't handle multi-byte UTF-8 characters
         _text.resize(_text.size() - nbChars);
         sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }

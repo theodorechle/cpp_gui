@@ -30,8 +30,10 @@ namespace gui::element {
         std::string fontName() const;
         const std::string &text() { return _text; }
         void text(const std::string &newText) { _text = newText; }
+        // append text at end
         void addText(const std::string &toAdd);
-        void removeText(int nbChars);
+        // remove text at end
+        void removeText(size_t nbChars);
         void clearText();
 
         std::string debugValue() const override;

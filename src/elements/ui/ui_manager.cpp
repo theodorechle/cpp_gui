@@ -1,5 +1,7 @@
 #include "ui_manager.hpp"
 #include "label.hpp"
+#include "utils.hpp"
+#include <SDL3/SDL_events.h>
 
 namespace gui::element {
     namespace manager {
@@ -152,8 +154,8 @@ namespace gui::element {
             const ui::FPos relativeCoordinates = {static_cast<float>(mousePos.x - startCoords->x), static_cast<float>(mousePos.y - startCoords->y)};
 
             if (sdlEvent->type == SDL_EVENT_MOUSE_MOTION && hoveredElement) {
-                ui::event::MouseMotionEvent event =
-                    ui::event::MouseMotionEvent{ui::event::EVENT_MOUSE_MOTION, relativeCoordinates.x, relativeCoordinates.y, mouseFlags};
+                ui::event::MouseMotionEvent event = ui::event::MouseMotionEvent{ui::event::GuiEventType::EVENT_MOUSE_MOTION, relativeCoordinates.x,
+                                                                                relativeCoordinates.y, mouseFlags};
                 sendEvent(&event, hoveredElement->baseElement());
             }
 
@@ -163,20 +165,20 @@ namespace gui::element {
                     clickedElement = hoveredRenderNode;
                     clicked = true;
                     if (focusedElement) {
-                        event::Event event = event::Event{ui::event::EVENT_FOCUS_LOST};
+                        event::Event event = event::Event{ui::event::GuiEventType::EVENT_FOCUS_LOST};
                         setElementsModifierState("focused", focusedElement->baseElement(), false, &event);
                     }
                     focusedElement = clickedElement;
                     if (focusedElement) {
-                        event::Event event = event::Event{ui::event::EVENT_FOCUS_GAINED};
+                        event::Event event = event::Event{ui::event::GuiEventType::EVENT_FOCUS_GAINED};
                         setElementsModifierState("focused", focusedElement->baseElement(), true, &event);
                     }
                     if (clickedElement) {
                         ui::render::UiRenderNode *element = clickedElement;
                         while (element != nullptr) {
-                            ui::event::MouseEvent event =
-                                ui::event::MouseEvent{ui::event::EVENT_MOUSE_BUTTON_DOWN, relativeCoordinates.x - element->startCoords()->x,
-                                                      relativeCoordinates.y - element->startCoords()->y, sdlEvent->button.button};
+                            ui::event::MouseEvent event = ui::event::MouseEvent{
+                                ui::event::GuiEventType::EVENT_MOUSE_BUTTON_DOWN, relativeCoordinates.x - element->startCoords()->x,
+                                relativeCoordinates.y - element->startCoords()->y, sdlEvent->button.button};
                             element->baseElement()->setModifierState("clicked", true);
                             element->baseElement()->updateStyle();
                             element->baseElement()->catchEvent(&event);
@@ -188,19 +190,20 @@ namespace gui::element {
             else {
                 clicked = false;
                 if (clickedElement) {
-                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_MOUSE_BUTTON_UP, 0, 0, sdlEvent->button.button};
+                    ui::event::MouseEvent event =
+                        ui::event::MouseEvent{ui::event::GuiEventType::EVENT_MOUSE_BUTTON_UP, 0, 0, sdlEvent->button.button};
                     setElementsModifierState("clicked", clickedElement->baseElement(), false, &event);
                     clickedElement = nullptr;
                 }
             }
             if (hoveredElement != hoveredRenderNode) {
                 if (hoveredElement) {
-                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_UNHOVER, 0, 0, 0};
+                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::GuiEventType::EVENT_UNHOVER, 0, 0, 0};
                     setElementsModifierState("hovered", hoveredElement->baseElement(), false, &event);
                 }
                 if (hoveredRenderNode) {
-                    ui::event::MouseEvent event =
-                        ui::event::MouseEvent{ui::event::EVENT_HOVER, relativeCoordinates.x, relativeCoordinates.y, sdlEvent->button.button};
+                    ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::GuiEventType::EVENT_HOVER, relativeCoordinates.x,
+                                                                        relativeCoordinates.y, sdlEvent->button.button};
                     setElementsModifierState("hovered", hoveredRenderNode->baseElement(), true, &event);
                 }
                 hoveredElement = hoveredRenderNode;
@@ -353,17 +356,17 @@ namespace gui::element {
 
         void UiManager::windowFocusLost() {
             if (focusedElement) {
-                event::Event event = event::Event{ui::event::EVENT_FOCUS_LOST};
+                event::Event event = event::Event{ui::event::GuiEventType::EVENT_FOCUS_LOST};
                 setElementsModifierState("focused", focusedElement->baseElement(), false, &event);
                 focusedElement = nullptr;
             }
             if (clickedElement) {
-                ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_HOVER, 0, 0};
+                ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::GuiEventType::EVENT_HOVER, 0, 0};
                 setElementsModifierState("clicked", clickedElement->baseElement(), false, &event);
                 clickedElement = nullptr;
             }
             if (hoveredElement) {
-                ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::EVENT_HOVER, 0, 0};
+                ui::event::MouseEvent event = ui::event::MouseEvent{ui::event::GuiEventType::EVENT_HOVER, 0, 0};
                 setElementsModifierState("hovered", hoveredElement->baseElement(), false, &event);
                 hoveredElement = nullptr;
             }
@@ -402,7 +405,7 @@ namespace gui::element {
                 break;
             case SDL_EVENT_MOUSE_WHEEL: {
                 if (hoveredElement) {
-                    const ui::event::MouseWheelEvent event = ui::event::MouseWheelEvent{ui::event::EVENT_SCROLL,
+                    const ui::event::MouseWheelEvent event = ui::event::MouseWheelEvent{ui::event::GuiEventType::EVENT_SCROLL,
                                                                                         sdlEvent->wheel.mouse_x,
                                                                                         sdlEvent->wheel.mouse_y,
                                                                                         sdlEvent->button.button,
@@ -418,7 +421,7 @@ namespace gui::element {
             case SDL_EVENT_KEY_DOWN: {
                 if (focusedElement) {
                     const ui::event::KeyEvent event =
-                        ui::event::KeyEvent{ui::event::EVENT_KEY_DOWN, sdlEvent->key.scancode, sdlEvent->key.key, sdlEvent->key.mod};
+                        ui::event::KeyEvent{ui::event::GuiEventType::EVENT_KEY_DOWN, sdlEvent->key.scancode, sdlEvent->key.key, sdlEvent->key.mod};
                     sendEvent(&event, focusedElement->baseElement());
                 }
                 break;
@@ -426,7 +429,15 @@ namespace gui::element {
             case SDL_EVENT_KEY_UP: {
                 if (focusedElement) {
                     const ui::event::KeyEvent event =
-                        ui::event::KeyEvent{ui::event::EVENT_KEY_UP, sdlEvent->key.scancode, sdlEvent->key.key, sdlEvent->key.mod};
+                        ui::event::KeyEvent{ui::event::GuiEventType::EVENT_KEY_UP, sdlEvent->key.scancode, sdlEvent->key.key, sdlEvent->key.mod};
+                    sendEvent(&event, focusedElement->baseElement());
+                }
+                break;
+            }
+            case SDL_EVENT_TEXT_INPUT: {
+                if (focusedElement) {
+                    const ui::event::TextEvent event =
+                        ui::event::TextEvent{ui::event::GuiEventType::EVENT_TEXT_INPUT, sdlEvent->text.text};
                     sendEvent(&event, focusedElement->baseElement());
                 }
                 break;
