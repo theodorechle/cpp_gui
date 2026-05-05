@@ -2,7 +2,6 @@
 #define ABSTRACT_ELEMENT_HPP
 
 #include "../../../cpp_commons/src/node.hpp"
-#include "../../../cpp_style/src/style_component.hpp"
 #include "../../element_style/element_style.hpp"
 #include "abstract_utils.hpp"
 
@@ -25,7 +24,7 @@ namespace gui::element {
         std::string elementName;
         manager::AbstractManager *_manager = nullptr;
 
-        std::unordered_multimap<uint32_t, EventHandler> registeredEventsHandlers;
+        std::unordered_multimap<uint32_t, EventHandler> registeredEventsHandlers = {};
 
     protected:
         elementStyle::manager::StyleManager *elementsStyleManager = nullptr;

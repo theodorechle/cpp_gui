@@ -1,5 +1,5 @@
 #include "ui_manager.hpp"
-#include "label.hpp"
+#include "root_element.hpp"
 #include "utils.hpp"
 #include <SDL3/SDL_events.h>
 
@@ -13,6 +13,46 @@ namespace gui::element {
             else {
                 updateRenderingData();
             }
+
+            registeredSdlEventHandlers.insert({SDL_EVENT_QUIT, [this](const SDL_Event *event) { this->status(Status::ENDED); }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_WINDOW_RESIZED, [this](const SDL_Event *event) { this->refreshAll(); }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_WINDOW_FOCUS_GAINED, [this](const SDL_Event *event) { this->windowFocusGained(); }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_WINDOW_MOUSE_ENTER, [this](const SDL_Event *event) { this->windowFocusGained(); }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_WINDOW_FOCUS_LOST, [this](const SDL_Event *event) { this->windowFocusLost(); }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_WINDOW_MOUSE_LEAVE, [this](const SDL_Event *event) { this->windowFocusLost(); }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_MOUSE_MOTION, [this](const SDL_Event *event) { this->processMouseEvent(event); }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_MOUSE_BUTTON_DOWN, [this](const SDL_Event *event) { this->processMouseEvent(event); }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_MOUSE_BUTTON_UP, [this](const SDL_Event *event) { this->processMouseEvent(event); }});
+            registeredSdlEventHandlers.insert(
+                {SDL_EVENT_MOUSE_WHEEL, [this](const SDL_Event *event) {
+                     if (hoveredElement) {
+                         const ui::event::MouseWheelEvent guiEvent = ui::event::MouseWheelEvent{ui::event::GuiEventType::EVENT_SCROLL,
+                                                                                                event->wheel.mouse_x,
+                                                                                                event->wheel.mouse_y,
+                                                                                                event->button.button,
+                                                                                                static_cast<float>(event->wheel.integer_x),
+                                                                                                static_cast<float>(event->wheel.integer_y)};
+                         sendEvent(&guiEvent, hoveredElement->baseElement());
+                         scroll(guiEvent.scrollX, guiEvent.scrollY); // TODO: elements should be able to intercept the event (canvas for example)
+                     }
+                 }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_KEY_DOWN, [this](const SDL_Event *event) {
+                                                   this->sendEventToUiRenderNodeElement(ui::event::KeyEvent{ui::event::GuiEventType::EVENT_KEY_DOWN,
+                                                                                                            event->key.scancode, event->key.key,
+                                                                                                            event->key.mod},
+                                                                                        focusedElement);
+                                               }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_KEY_UP, [this](const SDL_Event *event) {
+                                                   this->sendEventToUiRenderNodeElement(ui::event::KeyEvent{ui::event::GuiEventType::EVENT_KEY_UP,
+                                                                                                            event->key.scancode, event->key.key,
+                                                                                                            event->key.mod},
+                                                                                        focusedElement);
+                                               }});
+            registeredSdlEventHandlers.insert({SDL_EVENT_TEXT_INPUT, [this](const SDL_Event *event) {
+                                                   this->sendEventToUiRenderNodeElement(
+                                                       ui::event::TextEvent{ui::event::GuiEventType::EVENT_TEXT_INPUT, event->text.text},
+                                                       focusedElement);
+                                               }});
         }
 
         UiManager::~UiManager() {
@@ -126,6 +166,12 @@ namespace gui::element {
                     if (!renderNode->next()) return renderNode->parent() ? renderNode->parent() : renderNode;
                     renderNode = renderNode->next();
                 }
+            }
+        }
+
+        void UiManager::sendEventToUiRenderNodeElement(const event::Event &&event, ui::render::UiRenderNode *leafNode) {
+            if (leafNode != nullptr) {
+                sendEvent(&event, leafNode->baseElement());
             }
         }
 
@@ -354,7 +400,10 @@ namespace gui::element {
             createRenderedTexture();
         }
 
+        void UiManager::windowFocusGained() { this->windowFocused = true; }
+
         void UiManager::windowFocusLost() {
+            this->windowFocused = false;
             if (focusedElement) {
                 event::Event event = event::Event{ui::event::GuiEventType::EVENT_FOCUS_LOST};
                 setElementsModifierState("focused", focusedElement->baseElement(), false, &event);
@@ -382,69 +431,8 @@ namespace gui::element {
 
         void UiManager::processEvent(const SDL_Event *sdlEvent) {
             // TODO: elements should be able to stop the propagation of some events (for example scroll (canvas))
-            switch (sdlEvent->type) {
-            case SDL_EVENT_QUIT:
-                status(Status::ENDED);
-                break;
-            case SDL_EVENT_WINDOW_RESIZED:
-                refreshAll();
-                break;
-            case SDL_EVENT_WINDOW_FOCUS_GAINED:
-            case SDL_EVENT_WINDOW_MOUSE_ENTER:
-                windowFocused = true;
-                break;
-            case SDL_EVENT_WINDOW_FOCUS_LOST:
-            case SDL_EVENT_WINDOW_MOUSE_LEAVE:
-                windowFocused = false;
-                windowFocusLost();
-                break;
-            case SDL_EVENT_MOUSE_MOTION:
-            case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            case SDL_EVENT_MOUSE_BUTTON_UP:
-                processMouseEvent(sdlEvent);
-                break;
-            case SDL_EVENT_MOUSE_WHEEL: {
-                if (hoveredElement) {
-                    const ui::event::MouseWheelEvent event = ui::event::MouseWheelEvent{ui::event::GuiEventType::EVENT_SCROLL,
-                                                                                        sdlEvent->wheel.mouse_x,
-                                                                                        sdlEvent->wheel.mouse_y,
-                                                                                        sdlEvent->button.button,
-                                                                                        static_cast<float>(sdlEvent->wheel.integer_x),
-                                                                                        static_cast<float>(sdlEvent->wheel.integer_y)};
-                    sendEvent(&event, hoveredElement->baseElement()); // FIXME: may be invalid if moving mouse at same time as scrolling: should be
-                                                                      // done with other mouse events
-                    scroll(event.scrollX, event.scrollY);             // TODO: elements should be able to intercept the event (canvas for example)
-                }
-                break;
-            }
-            // TODO: find a better way to do all of this
-            case SDL_EVENT_KEY_DOWN: {
-                if (focusedElement) {
-                    const ui::event::KeyEvent event =
-                        ui::event::KeyEvent{ui::event::GuiEventType::EVENT_KEY_DOWN, sdlEvent->key.scancode, sdlEvent->key.key, sdlEvent->key.mod};
-                    sendEvent(&event, focusedElement->baseElement());
-                }
-                break;
-            }
-            case SDL_EVENT_KEY_UP: {
-                if (focusedElement) {
-                    const ui::event::KeyEvent event =
-                        ui::event::KeyEvent{ui::event::GuiEventType::EVENT_KEY_UP, sdlEvent->key.scancode, sdlEvent->key.key, sdlEvent->key.mod};
-                    sendEvent(&event, focusedElement->baseElement());
-                }
-                break;
-            }
-            case SDL_EVENT_TEXT_INPUT: {
-                if (focusedElement) {
-                    const ui::event::TextEvent event =
-                        ui::event::TextEvent{ui::event::GuiEventType::EVENT_TEXT_INPUT, sdlEvent->text.text};
-                    sendEvent(&event, focusedElement->baseElement());
-                }
-                break;
-            }
-                // default:
-                // if (focusedElement != nullptr) sendEvent(event, focusedElement->baseElement());
-            }
+            std::map<Uint32, EventHandler>::const_iterator it = registeredSdlEventHandlers.find(sdlEvent->type);
+            if (it != registeredSdlEventHandlers.cend()) it->second(sdlEvent);
         }
 
         void UiManager::scroll(int x, int y) {

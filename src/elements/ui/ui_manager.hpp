@@ -3,14 +3,16 @@
 
 #include "../abstracts/abstract_manager.hpp"
 #include "render_nodes/ui_render_node.hpp"
-#include "root_element.hpp"
 #include "ui_element.hpp"
-#include "utils.hpp"
+#include <SDL3/SDL_events.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
+#include <map>
 
 namespace gui::element {
     namespace manager {
+        typedef std::function<void(const SDL_Event *)> EventHandler;
+
         class UiManager : public AbstractManager {
             SDL_Window *window = nullptr;
             SDL_Renderer *renderer = nullptr;
@@ -25,9 +27,11 @@ namespace gui::element {
             ui::render::UiRenderNode *rootRenderNode = nullptr;
             SDL_Texture *renderedTexture = nullptr;
 
+            std::map<Uint32, EventHandler> registeredSdlEventHandlers = {};
+
             void createRootElement() override;
 
-            void updateModifiedElements();
+            void updateModifiedElements() override;
             void computeNodesLayout(ui::render::UiRenderNode *renderNode);
             void initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
             void restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
@@ -42,6 +46,7 @@ namespace gui::element {
             void renderElements(bool clear = true) const override;
             void update() override;
 
+            void windowFocusGained();
             void windowFocusLost();
             void refreshAll();
 
@@ -62,6 +67,8 @@ namespace gui::element {
             void resetInvalidPointersOnNodesDeletion(const ui::render::UiRenderNode *parentNode, bool deleteUpdateElement = true);
 
             ui::render::UiRenderNode *hoveredLeafElement(SDL_Point *coordinates);
+
+            void sendEventToUiRenderNodeElement(const event::Event &&event, ui::render::UiRenderNode *leafNode);
 
         public:
             void processMouseEvent(const SDL_Event *event);

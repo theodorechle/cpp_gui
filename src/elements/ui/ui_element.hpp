@@ -12,8 +12,6 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <algorithm>
-#include <iostream>
 #include <vector>
 
 // FIXME: in directory ui but not in namespace ui
