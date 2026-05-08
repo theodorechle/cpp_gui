@@ -2,9 +2,10 @@
 #define ROOT_ELEMENT_HPP
 
 #include "ui_element.hpp"
-#include <numeric>
+
 
 namespace gui::element {
+    // Internal use only
     class RootElement : public UiElement {
     public:
         RootElement(gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> classes = {},

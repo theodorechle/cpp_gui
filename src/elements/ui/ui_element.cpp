@@ -415,7 +415,7 @@ namespace gui::element {
         SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
 
         float clippedHeight = clippedSize.height;
-        int scrollBarWidth = getIntFromRule({"scroll-bar-size"}, 5);
+        int scrollBarWidth = getIntFromRule({"scroll-bar-size"}, 5); // FIXME: should be a size, not an integer
         float scrollBarHeight = clippedHeight / (totalHeight / clippedHeight);
 
         float addedY =

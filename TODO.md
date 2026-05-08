@@ -20,3 +20,7 @@ Prevent having multiple times submodule cpp_tests -> dynamic library loading
 Shift + scroll -> horizontal scroll
 
 Fix inconsistencies on namespaces (for example, some classes are in ui and others not)
+
+New README
+
+Search elements using style identifiers (name, id, class, ...)

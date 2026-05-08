@@ -59,7 +59,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
         SDL_Log("Can't create a renderer text engine %s", SDL_GetError());
     }
 
-    *appstate = new AppState(manager, sdl_window, sdl_renderer, elementsStyleManager, textEngine);
+    *appstate = new AppState(manager, elementsStyleManager, textEngine);
 
     elementsStyleManager->addDefaultFontPath("tests/fonts");
     elementsStyleManager->addStyleFile("tests/tests-files/main-test.txt");

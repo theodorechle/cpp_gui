@@ -1,9 +1,6 @@
 #ifndef ABSTRACT_MANAGER_HPP
 #define ABSTRACT_MANAGER_HPP
 
-#include <algorithm>
-#include <list>
-
 #include "../../element_style/style_manager.hpp"
 #include "abstract_element.hpp"
 #include "abstract_utils.hpp"
