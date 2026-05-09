@@ -69,7 +69,7 @@ Note that `UiManager` is the default one, included by the library, but the code 
 
 After that, if we want to be able to apply some style on our elements, we need to instanciate a style manager, who handles it:
 ```cpp
-    // an explanation of how to personalize the configuration may come in the README of the cpp_style library (https://github.com/theodorechle/cpp_style/blob/main/README.md)
+    // an explanation of how to personalize the configuration is available in the README of the cpp_style library (https://github.com/theodorechle/cpp_style/blob/main/README.md)
     gui::elementStyle::manager::StyleManager *elementsStyleManager = new gui::elementStyle::manager::StyleManager(style::config::config());
     manager->styleManager(elementsStyleManager); // let the element manager know of the style manager so it can use it
 ```

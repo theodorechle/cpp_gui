@@ -1,4 +1,5 @@
 #include "button.hpp"
+#include <algorithm>
 
 namespace gui::element {
     Button::Button(EventHandler onClick, gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes,

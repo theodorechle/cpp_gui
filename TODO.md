@@ -23,4 +23,4 @@ Fix inconsistencies on namespaces (for example, some classes are in ui and other
 
 New README
 
-Search elements using style identifiers (name, id, class, ...)
+Search elements using CSS like selectors/path/XPath (name, id, class, ...)

@@ -1,4 +1,5 @@
 #include "root_element.hpp"
+#include <algorithm>
 
 namespace gui::element {
     RootElement::RootElement(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes,

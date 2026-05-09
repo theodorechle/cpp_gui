@@ -1,4 +1,5 @@
 #include "list.hpp"
+#include <algorithm>
 #include <numeric>
 
 namespace gui::element {

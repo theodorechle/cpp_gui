@@ -1,4 +1,5 @@
 #include "container.hpp"
+#include <algorithm>
 
 namespace gui::element {
     Container::Container(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes,

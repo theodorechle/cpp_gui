@@ -1,4 +1,5 @@
 #include "ui_element.hpp"
+#include <algorithm>
 
 namespace gui::element {
     SDL_Rect UiElement::computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect) {
