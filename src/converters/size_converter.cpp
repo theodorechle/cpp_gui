@@ -17,12 +17,14 @@ namespace gui {
             // return false; // FIXME: don't work because parent's size is null on first iteration
             if (!NumberConverter::convertToInt(value->child(), size)) return false;
             (*size) = ((*size) * parentSize / 100);
+            std::cerr << "converting size: " << *size << "\n";
             return true;
         }
 
         bool gui::converter::SizeConverter::convert(style::StyleValue *value, int *size, int parentSize) {
             if (value == nullptr || size == nullptr) return false;
             std::string v = value->value();
+            std::cerr << v << "\n";
             if (v == "px") return convertFromPixel(value, size);
             if (v == "%") return convertFromPercentage(value, size, parentSize);
             return false;

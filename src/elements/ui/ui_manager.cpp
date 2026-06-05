@@ -279,11 +279,6 @@ namespace gui::element {
 
         void UiManager::computeNodesLayout(ui::render::UiRenderNode *renderNode) {
             renderNode->computeSelfLayout();
-            ui::render::UiRenderNode *child = renderNode->child();
-            while (child != nullptr) {
-                computeNodesLayout(child);
-                child = child->next();
-            }
         }
 
         void UiManager::initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode) { rootRenderNode->initBeforeLayoutComputing(); }

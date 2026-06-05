@@ -11,10 +11,18 @@ namespace gui::element::ui::render {
 
     UiRenderNode::~UiRenderNode() { SDL_DestroyTexture(nodeTexture); }
 
+    // XXX: is this useful?
+    // From what I see, a single iteration can be done, compute self size with childs, as in the second function
     void UiRenderNode::computeSelfLayout() {
         if (_baseElement == nullptr) return;
         _baseElement->computeInnerLayout(&(defaultSelfSize.width), &(defaultSelfSize.height));
         _baseElement->computeTotalLayout(&(defaultSelfSize.width), &(defaultSelfSize.height));
+
+        UiRenderNode *nodeChild = child();
+        while (nodeChild != nullptr) {
+            nodeChild->computeSelfLayout();
+            nodeChild = nodeChild->next();
+        }
     }
 
     void UiRenderNode::computeSelfAndChildsLayout() {
@@ -34,6 +42,7 @@ namespace gui::element::ui::render {
 
     void UiRenderNode::computeRelativeLayout() {
         if (_baseElement == nullptr) return;
+        _baseElement->setSize(defaultSizeWithChilds);
         // set variables like rem, em, ...
         // percentages should be set at this moment
         std::list<std::tuple<int, int>> childsSizes = {};
@@ -55,6 +64,7 @@ namespace gui::element::ui::render {
 
     const Pos *UiRenderNode::startCoords() const { return &usedLayout.startCoords; }
 
+    // restrain element size to a given rect (like window size)
     void UiRenderNode::computeFinalLayout(SDL_Rect *clipRect, bool forceSize) {
         usedLayout.elementRect.w = relativeSize.width;
         usedLayout.elementRect.h = relativeSize.height;

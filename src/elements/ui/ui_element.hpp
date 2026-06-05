@@ -17,7 +17,7 @@
 // FIXME: in directory ui but not in namespace ui
 namespace gui::element {
     class UiElement : public AbstractElement {
-        SDL_Rect elementRect = SDL_Rect{0, 0, 0, 0}; // TODO: update it to be able to use percentages
+        ui::Size elementSize = ui::Size{0, 0}; // TODO: update it to be able to use percentages
         // TODO: why should I do that?
         SDL_Window *_window;
         SDL_Renderer *_renderer = nullptr;
@@ -74,10 +74,10 @@ namespace gui::element {
         void renderer(SDL_Renderer *renderer);
         SDL_Renderer *renderer() const { return _renderer; }
 
-        int getWidth() const { return elementRect.w; };
-        int getHeight() const { return elementRect.h; };
-        int getXPos() const { return elementRect.x; };
-        int getYPos() const { return elementRect.y; };
+        int getWidth() const { return elementSize.width; };
+        int getHeight() const { return elementSize.height; };
+
+        void setSize(ui::Size &size) { this->elementSize = size; }
 
         int marginLeft(bool *found = nullptr) const;
         int marginRight(bool *found = nullptr) const;

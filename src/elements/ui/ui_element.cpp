@@ -183,11 +183,13 @@ namespace gui::element {
 
     int UiElement::width(bool *found) const {
         const UiElement *elementParent = static_cast<const UiElement *>(parent());
+        std::cerr << "computing width\n";
         return computeSize({"width"}, 0, (elementParent == nullptr) ? 0 : elementParent->getWidth(), found);
     };
 
     int UiElement::height(bool *found) const {
         const UiElement *elementParent = static_cast<const UiElement *>(parent());
+        std::cerr << "computing height\n";
         return computeSize({"height"}, 0, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
     };
 

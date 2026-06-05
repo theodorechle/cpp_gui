@@ -23,10 +23,8 @@ namespace gui::element {
     void RootElement::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                    std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
         const UiElement *elementChild = static_cast<const UiElement *>(child());
-        int childNb = 1;
         while (elementChild != nullptr) {
             renderSingleChildWrapper(renderChildCallback, childInfosCallback, elementChild, {0, 0});
-            childNb++;
             elementChild = static_cast<const UiElement *>(elementChild->next());
         }
     }
