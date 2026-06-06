@@ -277,10 +277,6 @@ namespace gui::element {
             }
         }
 
-        void UiManager::computeNodesLayout(ui::render::UiRenderNode *renderNode) {
-            renderNode->computeSelfLayout();
-        }
-
         void UiManager::initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode) { rootRenderNode->initBeforeLayoutComputing(); }
 
         void UiManager::restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode) { rootRenderNode->restoreAfterLayoutComputing(); }
@@ -358,7 +354,6 @@ namespace gui::element {
         }
 
         void UiManager::computeElementsLayout() {
-            computeNodesLayout(rootRenderNode);
             computeNodesAndChildsLayout(rootRenderNode);
             ui::Size size = ui::Size{clipRect.w, clipRect.h};
             computeNodesRelativeLayout(rootRenderNode, &size);

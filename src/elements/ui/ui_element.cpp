@@ -254,12 +254,7 @@ namespace gui::element {
         if (found) (*height) = std::min(*height, size);
     }
 
-    void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
-                                               std::list<std::tuple<int, int>> childsSizes) const {
-        // (*selfWidth) = (*selfWidthWithoutChilds);
-        // (*selfHeight) = (*selfHeightWithoutChilds);
-        computeInnerLayout(selfWidth, selfHeight);
-    }
+    void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {}
 
     bool UiElement::setClipRect(const SDL_Rect *clipRect, std::string callerName) const {
         if (!SDL_SetRenderClipRect(_renderer, clipRect)) {
@@ -275,8 +270,6 @@ namespace gui::element {
 
     void UiElement::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                  std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {}
-
-    void UiElement::computeInnerLayout(int *width, int *height) const {}
 
     bool UiElement::render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                            std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {

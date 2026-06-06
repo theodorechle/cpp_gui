@@ -10,10 +10,10 @@ namespace gui::element {
         texture = SDL_CreateTexture(renderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
     }
 
-    void Canvas::computeInnerLayout(int *width, int *height) const {
+    void Canvas::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
         if (texture != nullptr) {
-            (*width) = texture->w;
-            (*height) = texture->h;
+            (*selfWidth) = texture->w;
+            (*selfHeight) = texture->h;
         }
     }
 

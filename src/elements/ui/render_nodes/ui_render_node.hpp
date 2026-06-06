@@ -11,9 +11,6 @@ namespace gui::element::ui::render {
     class UiRenderNode : public commons::Node<UiRenderNode> {
         SDL_Renderer *renderer = nullptr;
 
-        // computed by computeSelfLayout
-        Size defaultSelfSize = {0, 0};
-
         // computed by computeSelfAndChildsLayout
         Size defaultSizeWithChilds = {0, 0};
 
@@ -47,7 +44,6 @@ namespace gui::element::ui::render {
         UiRenderNode(SDL_Renderer *renderer, UiRenderNode *parentNode = nullptr, gui::element::UiElement *baseElement = nullptr);
         ~UiRenderNode();
 
-        void computeSelfLayout();
         void computeSelfAndChildsLayout();
         void computeRelativeLayout(Size *size = nullptr);
         void computeFinalLayout(SDL_Rect *clipRect = nullptr, bool forceSize = false);

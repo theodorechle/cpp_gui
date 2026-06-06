@@ -9,7 +9,7 @@ namespace gui::element {
     class Canvas : public UiElement {
         SDL_Texture *texture = nullptr;
 
-        void computeInnerLayout(int *width, int *height) const override;
+        void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const override;
 
         void renderSelfBeforeChilds() const override;
 

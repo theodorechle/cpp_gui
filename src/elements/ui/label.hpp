@@ -11,7 +11,7 @@ namespace gui::element {
 
         void initBeforeLayoutComputing() override;
 
-        void computeInnerLayout(int *width, int *height) const override;
+        void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const;
         void getTextSize(int *width, int *height) const;
         void renderSelfAfterChilds() const override;
 

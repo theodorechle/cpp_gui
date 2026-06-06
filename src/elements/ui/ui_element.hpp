@@ -121,21 +121,12 @@ namespace gui::element {
         /**
          * Adds the borders, margins, paddings to the element layout (width and height).
          */
-        virtual void computeTotalLayout(int *width, int *height)
-            const; // TODO: why the ui_element computes it? it should be the ui_render_node who adds margins, paddings and borders. no ?
+        virtual void computeTotalLayout(int *width, int *height) const; // TODO: why the ui_element computes it? it should be the ui_render_node who adds margins, paddings and borders. no ?
 
         /**
          * selfWidth and selfHeight are the new sizes
-         * selfWidthWithoutChilds and selfHeightWithoutChilds are the previous sizes computed by computeSelfLayout
          */
-        virtual void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
-                                                std::list<std::tuple<int, int>> childsSizes) const;
-
-        /**
-         * Should compute only the layout of the content of the element, not borders, margins, paddings.
-         * To change the behavior of these, see the computeSelfLayout function
-         */
-        virtual void computeInnerLayout(int *width, int *height) const;
+        virtual void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const;
 
     private:
         bool setClipRect(const SDL_Rect *clipRect, std::string callerName = "") const;

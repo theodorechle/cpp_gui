@@ -27,7 +27,9 @@ namespace gui::element {
         TTF_SetFontStyle(ttfFont, style);
     }
 
-    void Label::computeInnerLayout(int *width, int *height) const { getTextSize(width, height); }
+    void Label::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
+        getTextSize(selfWidth, selfHeight);
+    }
 
     void Label::getTextSize(int *width, int *height) const {
         if (ttfFont) {

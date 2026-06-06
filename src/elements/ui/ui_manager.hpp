@@ -33,7 +33,6 @@ namespace gui::element {
             void createRootElement() override;
 
             void updateModifiedElements() override;
-            void computeNodesLayout(ui::render::UiRenderNode *renderNode);
             void initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
             void restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
             void prepareRenderNodes(UiElement *rootElement, ui::render::UiRenderNode *rootRenderNode);

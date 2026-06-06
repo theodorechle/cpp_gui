@@ -6,8 +6,7 @@ namespace gui::element {
                          const std::string &identifier)
         : UiElement{"container", elementsStyleManager, classes, identifier} {}
 
-    void Container::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
-                                               std::list<std::tuple<int, int>> childsSizes) const {
+    void Container::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
         std::list<int> childsWidths;
         std::list<int> childsHeights;
 

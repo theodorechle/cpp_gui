@@ -1,5 +1,4 @@
 #include "ui_render_node.hpp"
-#include "../label.hpp"
 
 namespace gui::element::ui::render {
     gui::element::UiElement *UiRenderNode::baseElement() { return _baseElement; }
@@ -11,20 +10,6 @@ namespace gui::element::ui::render {
 
     UiRenderNode::~UiRenderNode() { SDL_DestroyTexture(nodeTexture); }
 
-    // XXX: is this useful?
-    // From what I see, a single iteration can be done, compute self size with childs, as in the second function
-    void UiRenderNode::computeSelfLayout() {
-        if (_baseElement == nullptr) return;
-        _baseElement->computeInnerLayout(&(defaultSelfSize.width), &(defaultSelfSize.height));
-        _baseElement->computeTotalLayout(&(defaultSelfSize.width), &(defaultSelfSize.height));
-
-        UiRenderNode *nodeChild = child();
-        while (nodeChild != nullptr) {
-            nodeChild->computeSelfLayout();
-            nodeChild = nodeChild->next();
-        }
-    }
-
     void UiRenderNode::computeSelfAndChildsLayout() {
         if (_baseElement == nullptr) return;
         std::list<std::tuple<int, int>> childsSizes = {};
@@ -35,8 +20,7 @@ namespace gui::element::ui::render {
             childNode = childNode->next();
         }
 
-        _baseElement->computeSelfAndChildsLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height), &(defaultSelfSize.width),
-                                                 &(defaultSelfSize.height), childsSizes);
+        _baseElement->computeSelfAndChildsLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height), childsSizes);
         _baseElement->computeTotalLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height));
     }
 
@@ -55,11 +39,10 @@ namespace gui::element::ui::render {
         }
 
         if (size) {
-            _baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), &(size->width), &(size->height), childsSizes);
+            _baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), childsSizes);
         }
         else {
-            _baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), &(defaultSizeWithChilds.width),
-                                                     &(defaultSizeWithChilds.height), childsSizes);
+            _baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), childsSizes);
         }
         _baseElement->computeTotalLayout(&(relativeSize.width), &(relativeSize.height));
     }

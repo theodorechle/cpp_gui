@@ -6,8 +6,7 @@ namespace gui::element {
     List::List(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes, const std::string &identifier)
         : UiElement{"list", elementsStyleManager, classes, identifier} {}
 
-    void List::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, int *selfWidthWithoutChilds, int *selfHeightWithoutChilds,
-                                          std::list<std::tuple<int, int>> childsSizes) const {
+    void List::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
         bool vertical = getBoolFromRule({"vertical"});
         int gap;
         std::list<int> childsWidths;
