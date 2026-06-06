@@ -4,6 +4,7 @@
 #include "../abstracts/abstract_manager.hpp"
 #include "render_nodes/ui_render_node.hpp"
 #include "ui_element.hpp"
+#include "utils.hpp"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
@@ -37,7 +38,7 @@ namespace gui::element {
             void restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
             void prepareRenderNodes(UiElement *rootElement, ui::render::UiRenderNode *rootRenderNode);
             void computeNodesAndChildsLayout(ui::render::UiRenderNode *node);
-            void computeNodesRelativeLayout(ui::render::UiRenderNode *node);
+            void computeNodesRelativeLayout(ui::render::UiRenderNode *node, ui::Size *size = nullptr);
             void computeNodesFinalLayout(ui::render::UiRenderNode *node, SDL_Rect *rootClipRect = nullptr);
             void computeElementsLayout();
             void createNodesTextures(ui::render::UiRenderNode *node);

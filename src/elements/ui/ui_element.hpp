@@ -77,7 +77,7 @@ namespace gui::element {
         int getWidth() const { return elementSize.width; };
         int getHeight() const { return elementSize.height; };
 
-        void setSize(ui::Size &size) { this->elementSize = size; }
+        void setSize(ui::Size size) { this->elementSize = size; }
 
         int marginLeft(bool *found = nullptr) const;
         int marginRight(bool *found = nullptr) const;

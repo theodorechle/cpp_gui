@@ -49,7 +49,7 @@ namespace gui::element::ui::render {
 
         void computeSelfLayout();
         void computeSelfAndChildsLayout();
-        void computeRelativeLayout();
+        void computeRelativeLayout(Size *size = nullptr);
         void computeFinalLayout(SDL_Rect *clipRect = nullptr, bool forceSize = false);
         const SDL_Rect *elementRect() const;
         const SDL_Rect *elementClippedRect() const;

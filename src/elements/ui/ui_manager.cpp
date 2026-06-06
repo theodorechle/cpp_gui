@@ -298,10 +298,10 @@ namespace gui::element {
 
         void UiManager::computeNodesAndChildsLayout(ui::render::UiRenderNode *node) { node->computeSelfAndChildsLayout(); }
 
-        void UiManager::computeNodesRelativeLayout(ui::render::UiRenderNode *node) {
+        void UiManager::computeNodesRelativeLayout(ui::render::UiRenderNode *node, ui::Size *size) {
             ui::render::UiRenderNode *currentNode = node;
             while (currentNode) {
-                currentNode->computeRelativeLayout();
+                currentNode->computeRelativeLayout(size);
                 currentNode = currentNode->next();
             }
         }
@@ -360,7 +360,8 @@ namespace gui::element {
         void UiManager::computeElementsLayout() {
             computeNodesLayout(rootRenderNode);
             computeNodesAndChildsLayout(rootRenderNode);
-            computeNodesRelativeLayout(rootRenderNode);
+            ui::Size size = ui::Size{clipRect.w, clipRect.h};
+            computeNodesRelativeLayout(rootRenderNode, &size);
             computeNodesFinalLayout(rootRenderNode, &clipRect);
             restoreAfterLayoutComputing(rootRenderNode);
         }

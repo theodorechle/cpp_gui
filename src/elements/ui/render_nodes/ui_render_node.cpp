@@ -40,9 +40,10 @@ namespace gui::element::ui::render {
         _baseElement->computeTotalLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height));
     }
 
-    void UiRenderNode::computeRelativeLayout() {
+    void UiRenderNode::computeRelativeLayout(Size *size) {
         if (_baseElement == nullptr) return;
-        _baseElement->setSize(defaultSizeWithChilds);
+        if (size) _baseElement->setSize(*size);
+        else _baseElement->setSize(defaultSizeWithChilds);
         // set variables like rem, em, ...
         // percentages should be set at this moment
         std::list<std::tuple<int, int>> childsSizes = {};
@@ -53,8 +54,13 @@ namespace gui::element::ui::render {
             nodeChild = nodeChild->next();
         }
 
-        _baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), &(defaultSizeWithChilds.width),
-                                                 &(defaultSizeWithChilds.height), childsSizes);
+        if (size) {
+            _baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), &(size->width), &(size->height), childsSizes);
+        }
+        else {
+            _baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), &(defaultSizeWithChilds.width),
+                                                     &(defaultSizeWithChilds.height), childsSizes);
+        }
         _baseElement->computeTotalLayout(&(relativeSize.width), &(relativeSize.height));
     }
 
