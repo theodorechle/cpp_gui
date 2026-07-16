@@ -2,27 +2,31 @@
 - check if SDL3 supports multiple render depths (forward, backward, ...) without needing a redraw of the elements behind an other
 - allow re-computing the layout only of modified elements and their parents
 
-Recompute on size changing (modifiers, ...)
-add width and height auto (100% parent)
-force style flag file reloading when receiving it twice
+- Recompute on size changing (modifiers, ...)
+- add width and height auto (100% parent)
+- force style flag file reloading when receiving it twice
 
-Simplify the use of the text engine
+- Simplify the use of the text engine
 
-fix resize
+- fix resize
 
-update elements on events (hovered, clicked, ...) only if they do something (have a modifier, maybe other things)
-don't re-render elements who don't change (only the ones who changes and their parents)
+- update elements on events (hovered, clicked, ...) only if they do something (have a modifier, maybe other things)
+- don't re-render elements who don't change (only the ones who changes and their parents)
 
-don't redraw parents if size don't change (draw directly, bypass parent)
+- don't redraw parents if size don't change (draw directly, bypass parent)
 
-Prevent having multiple times submodule cpp_tests -> dynamic library loading
+- Prevent having multiple times submodule cpp_tests -> dynamic library loading
 
-Shift + scroll -> horizontal scroll
+- Shift + scroll -> horizontal scroll
 
-Fix inconsistencies on namespaces (for example, some classes are in ui and others not)
+- Fix inconsistencies on namespaces (for example, some classes are in ui and others not)
 
-New README
+- Search elements using CSS like selectors/path/XPath (name, id, class, ...)
 
-Search elements using CSS like selectors/path/XPath (name, id, class, ...)
+- rename childs -> children
 
-childs -> children
+- asynchronous:
+  - [ ] event thread safe queue for each element
+  - [ ] UiManager should tell each element if it is currently being redrawed, in which case it cannot process events (/!\ ensure all elements to redraw are known before starting to redraw them, for example parents who could need to be redrawed if a child changed size) -> needed for parallel computing, for the beginning they could juste be forbidden to change anything while re-render is occuring
+  - [ ] every alteration of an element must occur through the event handler so it is centralized and the lock discussed earlier can be set
+  - [x] thread safe set in abstract manager for elements to re-render

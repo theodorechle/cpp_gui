@@ -67,7 +67,7 @@ namespace gui::element::ui::render {
 
         const UiElementData *childData(const UiElement *childElement) const;
 
-        bool isParentOf(const UiRenderNode *node) const;
+        bool isSelfOrParentOf(const UiRenderNode *node) const;
 
         std::string debugValue() const override;
     };

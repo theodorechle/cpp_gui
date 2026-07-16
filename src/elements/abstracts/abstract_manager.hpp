@@ -2,8 +2,10 @@
 #define ABSTRACT_MANAGER_HPP
 
 #include "../../element_style/style_manager.hpp"
+#include "../../thread_safe/set.hpp"
 #include "abstract_element.hpp"
 #include "abstract_utils.hpp"
+#include <set>
 
 namespace gui::element::manager {
     class AbstractManager {
@@ -25,7 +27,7 @@ namespace gui::element::manager {
 
     protected:
         AbstractElement *elementsTree = nullptr;
-        std::set<AbstractElement *> elementsToUpdate = {};
+        threadSafe::Set<AbstractElement *> elementsToUpdate = {};
 
         void status(Status s) { _currentStatus = s; }
 

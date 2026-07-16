@@ -30,6 +30,8 @@ namespace gui::element {
 
             std::map<Uint32, EventHandler> registeredSdlEventHandlers = {};
 
+            std::set<AbstractElement *> *currentElementsToUpdate = {};
+
             void createRootElement() override;
 
             void updateModifiedElements() override;

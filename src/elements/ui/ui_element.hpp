@@ -1,10 +1,6 @@
 #ifndef UI_ELEMENT_HPP
 #define UI_ELEMENT_HPP
 
-#include "../../converters/bool_converter.hpp"
-#include "../../converters/color_converter.hpp"
-#include "../../converters/number_converter.hpp"
-#include "../../converters/size_converter.hpp"
 #include "../abstracts/abstract_element.hpp"
 #include "utils.hpp"
 

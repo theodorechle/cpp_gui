@@ -97,6 +97,7 @@ namespace gui::element {
             }
 
             pathElement.pop_front(); // no need of root since it has already been checked
+            // TODO: by the way, it's not really useful to do the first check separately, it could be simplified
 
             ui::render::UiRenderNode *renderNode = rootRenderNode;
             for (const gui::element::AbstractElement *pathFragment : pathElement) {
@@ -111,15 +112,12 @@ namespace gui::element {
 
         void UiManager::resetInvalidPointersOnNodesDeletion(const ui::render::UiRenderNode *parentNode, bool deleteUpdateElement) {
             if (!parentNode) return;
-            if (clickedElement && (parentNode->isParentOf(clickedElement))) clickedElement = nullptr;
-            if (hoveredElement && (parentNode->isParentOf(hoveredElement))) hoveredElement = nullptr;
-            if (focusedElement && (parentNode->isParentOf(focusedElement))) focusedElement = nullptr;
+            if (clickedElement && (parentNode->isSelfOrParentOf(clickedElement))) clickedElement = nullptr;
+            if (hoveredElement && (parentNode->isSelfOrParentOf(hoveredElement))) hoveredElement = nullptr;
+            if (focusedElement && (parentNode->isSelfOrParentOf(focusedElement))) focusedElement = nullptr;
             if (deleteUpdateElement) {
-                for (std::set<gui::element::AbstractElement *>::iterator it = elementsToUpdate.begin(); it != elementsToUpdate.end();) {
-                    const ui::render::UiRenderNode *updateNode = renderNodeOf(*it);
-                    if ((parentNode->isParentOf(updateNode))) it = elementsToUpdate.erase(it);
-                    else it++;
-                }
+                elementsToUpdate.deleteIf(
+                    [this, parentNode](AbstractElement *const &element) { return parentNode->isSelfOrParentOf(renderNodeOf(element)); });
             }
         }
 
@@ -309,7 +307,7 @@ namespace gui::element {
         }
 
         void UiManager::updateModifiedElements() {
-            if (!elementsToUpdate.size()) return;
+            if (currentElementsToUpdate->empty()) return;
 #ifdef DEBUG
             std::clog << "hovered element: " << hoveredElement << "\n";
             std::clog << "clicked element: " << clickedElement << "\n";
@@ -324,7 +322,7 @@ namespace gui::element {
             const UiElement *hoveredUiElement = hoveredElement ? hoveredElement->baseElement() : nullptr;
             const UiElement *clickedUiElement = clickedElement ? clickedElement->baseElement() : nullptr;
             const UiElement *focusedUiElement = focusedElement ? focusedElement->baseElement() : nullptr;
-            for (AbstractElement *elementToUpdate : elementsToUpdate) {
+            for (AbstractElement *elementToUpdate : *currentElementsToUpdate) {
                 ui::render::UiRenderNode *renderNode = renderNodeOf(elementToUpdate);
 #ifdef DEBUG
                 std::clog << "element to refresh: " << renderNode << "\n";
@@ -371,7 +369,7 @@ namespace gui::element {
         }
 
         void UiManager::createRenderedTexture() {
-            if (!elementsToUpdate.size()) return;
+            if (currentElementsToUpdate->empty()) return;
             createNodesTextures(rootRenderNode);
             SDL_SetRenderTarget(renderer, renderedTexture);
             rootRenderNode->render();
@@ -386,6 +384,7 @@ namespace gui::element {
         }
 
         void UiManager::update() {
+            currentElementsToUpdate = elementsToUpdate.readAndClear();
             AbstractManager::update();
             computeElementsLayout(); // TODO: improve to only render updated elements
             createRenderedTexture();

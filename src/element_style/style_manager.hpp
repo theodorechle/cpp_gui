@@ -3,13 +3,7 @@
 
 #include "../../cpp_style/src/abstract_configuration.hpp"
 #include "../../cpp_style/src/style_component.hpp"
-#include "../../cpp_style/src/style_deserializer.hpp"
 #include "../elements/abstracts/abstract_element.hpp"
-#include "element_style.hpp"
-#include <fstream>
-#include <iostream>
-#include <iterator>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 

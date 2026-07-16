@@ -4,11 +4,6 @@ namespace gui::element::manager {
     void AbstractManager::addChildToRootElement(AbstractElement *childElement) { elementsTree->addChild(childElement); }
 
     void AbstractManager::needUpdate(AbstractElement *element) {
-        if (elementsToUpdate.find(element) != elementsToUpdate.cend()) return;
-        if (!element) {
-            elementsToUpdate.clear();
-            return;
-        }
         elementsToUpdate.insert(element);
     }
 
@@ -73,7 +68,6 @@ namespace gui::element::manager {
         if (needUpdate()) {
             update();
             renderElements(clear);
-            needUpdate(nullptr);
         };
     }
 

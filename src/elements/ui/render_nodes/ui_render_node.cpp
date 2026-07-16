@@ -1,4 +1,5 @@
 #include "ui_render_node.hpp"
+#include <sstream>
 
 namespace gui::element::ui::render {
     gui::element::UiElement *UiRenderNode::baseElement() { return _baseElement; }
@@ -230,7 +231,7 @@ namespace gui::element::ui::render {
         return nullptr;
     }
 
-    bool UiRenderNode::isParentOf(const UiRenderNode *node) const {
+    bool UiRenderNode::isSelfOrParentOf(const UiRenderNode *node) const {
         while (node) {
             if (node == this) return true;
             node = node->parent();

@@ -1,12 +1,10 @@
 #ifndef STYLE_NODE_HPP
 #define STYLE_NODE_HPP
 
-#include "../../cpp_commons/src/node.hpp"
 #include "../../cpp_style/src/style_component.hpp"
 #include <set>
 #include <string>
-#include <unordered_set>
-#include <sstream>
+#include <vector>
 
 namespace gui::elementStyle {
     class ElementStyle {

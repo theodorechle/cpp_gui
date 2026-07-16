@@ -1,5 +1,9 @@
 #include "ui_element.hpp"
 #include <algorithm>
+#include "../../converters/bool_converter.hpp"
+#include "../../converters/color_converter.hpp"
+#include "../../converters/number_converter.hpp"
+#include "../../converters/size_converter.hpp"
 
 namespace gui::element {
     SDL_Rect UiElement::computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect) {

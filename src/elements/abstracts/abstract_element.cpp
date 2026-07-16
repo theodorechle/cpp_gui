@@ -1,4 +1,5 @@
 #include "abstract_element.hpp"
+#include <sstream>
 
 namespace gui::element {
     void AbstractElement::setParent(AbstractElement *parent) {

@@ -1,4 +1,6 @@
 #include "element_style.hpp"
+#include "../../cpp_commons/src/node.hpp"
+#include <sstream>
 
 namespace gui::elementStyle {
     bool ElementStyle::compareRulesPriorityAscending(const style::StyleRule &rule1, const style::StyleRule &rule2) {
