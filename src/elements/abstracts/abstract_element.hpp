@@ -3,6 +3,7 @@
 
 #include "../../../cpp_commons/src/node.hpp"
 #include "../../element_style/element_style.hpp"
+#include "../../thread_safe/queue.hpp"
 #include "abstract_utils.hpp"
 
 #include <functional>
@@ -25,6 +26,8 @@ namespace gui::element {
         manager::AbstractManager *_manager = nullptr;
 
         std::unordered_multimap<uint32_t, EventHandler> registeredEventsHandlers = {};
+
+        threadSafe::Queue<event::Event> eventQueue = {};
 
     protected:
         elementStyle::manager::StyleManager *elementsStyleManager = nullptr;
@@ -82,6 +85,8 @@ namespace gui::element {
         void setModifierState(std::string modifier, bool enabled);
 
         void catchEvent(const event::Event *event);
+
+        void handleNextEvent();
 
         void registerEventHandler(uint32_t eventType, EventHandler function);
 

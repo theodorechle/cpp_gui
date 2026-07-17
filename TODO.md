@@ -26,7 +26,8 @@
 - rename childs -> children
 
 - asynchronous:
-  - [ ] event thread safe queue for each element
+  - [x] event thread safe queue for each element
   - [ ] UiManager should tell each element if it is currently being redrawed, in which case it cannot process events (/!\ ensure all elements to redraw are known before starting to redraw them, for example parents who could need to be redrawed if a child changed size) -> needed for parallel computing, for the beginning they could juste be forbidden to change anything while re-render is occuring
-  - [ ] every alteration of an element must occur through the event handler so it is centralized and the lock discussed earlier can be set (find a way to do it without using the gui becoming less intuitive (I think of adding a child for example, which is cleaner with `element->addChild(child)` than `uiManager->addChild(element, child)` even tho it's still usable))
+  - [ ] every alteration of an element must occur through the event handler so it is centralized and the lock discussed earlier can be set (find a way to do it without using the gui becoming less intuitive (I think of adding a child for example, which is cleaner with `element->addChild(child)` than `uiManager->addChild(element, child)` even tho it's still usable)) -> no problem, element->addChild adds an event to the element queue, the manager don't need to know it
   - [x] thread safe set in abstract manager for elements to re-render
+  - [ ] ensure elements aren't accessed when being deleted (child, next, parent)

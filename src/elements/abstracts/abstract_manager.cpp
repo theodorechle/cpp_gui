@@ -16,6 +16,7 @@ namespace gui::element::manager {
             element->setModifierState(modifier, enabled);
             element->updateStyle();
             element->catchEvent(event);
+            element->handleNextEvent();
             element = element->parent();
         }
     }
@@ -25,6 +26,7 @@ namespace gui::element::manager {
         if (element == nullptr) return;
         while (element != nullptr) {
             element->catchEvent(event);
+            element->handleNextEvent();
             element = static_cast<AbstractElement *>(element->parent());
         }
     }

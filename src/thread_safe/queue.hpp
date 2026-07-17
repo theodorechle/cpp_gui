@@ -21,6 +21,10 @@ namespace threadSafe {
             _queue.push(value);
         }
 
+        /*
+         * return true if successfully popped and value and placed it in *value
+         * else return false
+         */
         bool tryPop(T *value) {
             std::lock_guard<std::mutex> lock(_mutex);
             if (_queue.empty()) return false;

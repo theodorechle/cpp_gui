@@ -1,4 +1,5 @@
 #include "abstract_element.hpp"
+#include "abstract_utils.hpp"
 #include <sstream>
 
 namespace gui::element {
@@ -97,10 +98,17 @@ namespace gui::element {
     }
 
     void AbstractElement::catchEvent(const event::Event *event) {
+        eventQueue.push(*event);
+    }
+
+    void AbstractElement::handleNextEvent() {
+        event::Event event;
+        if (!eventQueue.tryPop(&event)) return;
+
         std::pair<std::unordered_multimap<uint32_t, EventHandler>::iterator, std::unordered_multimap<uint32_t, EventHandler>::iterator> range =
-            registeredEventsHandlers.equal_range(event->type);
+            registeredEventsHandlers.equal_range(event.type);
         for (std::unordered_multimap<uint32_t, EventHandler>::iterator it = range.first; it != range.second; it++) {
-            it->second(event);
+            it->second(&event);
         }
     }
 

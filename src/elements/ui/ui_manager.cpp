@@ -226,6 +226,7 @@ namespace gui::element {
                             element->baseElement()->setModifierState("clicked", true);
                             element->baseElement()->updateStyle();
                             element->baseElement()->catchEvent(&event);
+                            element->baseElement()->handleNextEvent();
                             element = element->parent();
                         }
                     }
