@@ -307,6 +307,7 @@ namespace gui::element {
         }
 
         void UiManager::updateModifiedElements() {
+            std::set<AbstractElement *> *currentElementsToUpdate = elementsToUpdate.readAndClear();
             if (currentElementsToUpdate->empty()) return;
 #ifdef DEBUG
             std::clog << "hovered element: " << hoveredElement << "\n";
@@ -369,7 +370,6 @@ namespace gui::element {
         }
 
         void UiManager::createRenderedTexture() {
-            if (currentElementsToUpdate->empty()) return;
             createNodesTextures(rootRenderNode);
             SDL_SetRenderTarget(renderer, renderedTexture);
             rootRenderNode->render();
@@ -384,7 +384,6 @@ namespace gui::element {
         }
 
         void UiManager::update() {
-            currentElementsToUpdate = elementsToUpdate.readAndClear();
             AbstractManager::update();
             computeElementsLayout(); // TODO: improve to only render updated elements
             createRenderedTexture();

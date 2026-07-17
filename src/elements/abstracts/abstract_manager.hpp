@@ -5,7 +5,6 @@
 #include "../../thread_safe/set.hpp"
 #include "abstract_element.hpp"
 #include "abstract_utils.hpp"
-#include <set>
 
 namespace gui::element::manager {
     class AbstractManager {

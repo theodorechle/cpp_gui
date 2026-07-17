@@ -6,7 +6,7 @@
 
 namespace styleNodesTests {
     void displayValue(style::StyleValue *value);
-    bool testValue(bool equal, style::StyleValue *value, style::StyleValue *expected, bool disaplyDebug = false);
+    bool testValue(bool equal, style::StyleValue *value, style::StyleValue *expected, bool displayDebug = false);
     bool testRule(bool equal, const style::StyleRule &rule, const style::StyleRule &expected);
 
     void testsStyleNodes(test::Tests *tests);
