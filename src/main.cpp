@@ -79,7 +79,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     list->addChild(new gui::element::Label("press this button", elementsStyleManager, {}, "", textEngine));
     list->addChild(new gui::element::Label("to display", elementsStyleManager, {}, "", textEngine));
     list->addChild(new gui::element::Label("hello world!", elementsStyleManager, {"last"}, "", textEngine));
-    parentContainer->addChild(new gui::element::Input("", "type text", elementsStyleManager, {}, "", textEngine));
+    parentContainer->addChild(new gui::element::Input("coucou", "type text", elementsStyleManager, {}, "", textEngine));
 
     // gui::element::manager::UiManager *subManager = new gui::element::manager::UiManager(sdl_window, sdl_renderer);
 

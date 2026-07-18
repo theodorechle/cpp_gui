@@ -27,7 +27,7 @@ namespace gui::element {
 
         std::unordered_multimap<uint32_t, EventHandler> registeredEventsHandlers = {};
 
-        threadSafe::Queue<event::Event> eventQueue = {};
+        threadSafe::Queue<const event::Event *> eventQueue = {};
 
     protected:
         elementStyle::manager::StyleManager *elementsStyleManager = nullptr;
@@ -93,6 +93,8 @@ namespace gui::element {
         void unregisterEventHandler(uint32_t eventType, EventHandler function);
 
         std::string debugValue() const override;
+
+        bool eventInQueue();
     };
 } // namespace gui::element
 

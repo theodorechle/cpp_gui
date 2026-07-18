@@ -8,7 +8,7 @@ namespace gui::element {
         registerEventHandler(ui::event::GuiEventType::EVENT_FOCUS_GAINED, [this](const event::Event *event) { this->focusGained(event); });
         registerEventHandler(ui::event::GuiEventType::EVENT_FOCUS_LOST, [this](const event::Event *event) { this->focusLost(event); });
         registerEventHandler(ui::event::GuiEventType::EVENT_TEXT_INPUT,
-                             [this](const event::Event *event) { this->textInput(static_cast<const ui::event::TextEvent *>(event)); });
+                             [this](const event::Event *event) { this->textInput(static_cast<const ui::event::TextInputEvent *>(event)); });
         registerEventHandler(ui::event::GuiEventType::EVENT_KEY_DOWN,
                              [this](const event::Event *event) { this->keyDown(static_cast<const ui::event::KeyEvent *>(event)); });
     }
@@ -40,8 +40,8 @@ namespace gui::element {
         }
     }
 
-    void Input::textInput(const ui::event::TextEvent *event) {
-        addText(event->text);
+    void Input::textInput(const ui::event::TextInputEvent *event) {
+        setText(event->text, true);
     }
 
     void Input::keyDown(const ui::event::KeyEvent *event) {

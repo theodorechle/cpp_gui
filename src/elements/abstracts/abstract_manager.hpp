@@ -44,7 +44,10 @@ namespace gui::element::manager {
          */
         void setElementsModifierState(const std::string &modifier, AbstractElement *leafElement, bool enabled, const event::Event *event);
 
-        void sendEvent(const event::Event *event, AbstractElement *leafElement);
+        void sendEventToElementAndAncestors(const event::Event *event, AbstractElement *leafElement);
+
+    private:
+        void sendEventToElement(const event::Event *event, AbstractElement *element);
 
     public:
         virtual ~AbstractManager();
@@ -59,6 +62,9 @@ namespace gui::element::manager {
         virtual void elementEvent(event::ElementEvent event, AbstractElement *caller);
 
         void deleteElementsTree();
+
+        void letElementsHandleEvents(AbstractElement *element);
+
         void render(bool clear = true);
 
         Status status() { return _currentStatus; }

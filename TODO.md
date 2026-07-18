@@ -31,3 +31,7 @@
   - [ ] every alteration of an element must occur through the event handler so it is centralized and the lock discussed earlier can be set (find a way to do it without using the gui becoming less intuitive (I think of adding a child for example, which is cleaner with `element->addChild(child)` than `uiManager->addChild(element, child)` even tho it's still usable)) -> no problem, element->addChild adds an event to the element queue, the manager don't need to know it
   - [x] thread safe set in abstract manager for elements to re-render
   - [ ] ensure elements aren't accessed when being deleted (child, next, parent)
+  - [ ] add threads to run elements event handlers (and manager update?):
+    - thread pool?
+    - a thread for multiple elements?
+    - a thread per element?

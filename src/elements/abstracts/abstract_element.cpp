@@ -97,19 +97,19 @@ namespace gui::element {
         else _style.removeSelector(modifier, style::StyleComponentType::Modifier);
     }
 
-    void AbstractElement::catchEvent(const event::Event *event) {
-        eventQueue.push(*event);
-    }
+    void AbstractElement::catchEvent(const event::Event *event) { eventQueue.push(event); }
 
     void AbstractElement::handleNextEvent() {
-        event::Event event;
+        const event::Event *event;
         if (!eventQueue.tryPop(&event)) return;
 
         std::pair<std::unordered_multimap<uint32_t, EventHandler>::iterator, std::unordered_multimap<uint32_t, EventHandler>::iterator> range =
-            registeredEventsHandlers.equal_range(event.type);
+            registeredEventsHandlers.equal_range(event->type);
         for (std::unordered_multimap<uint32_t, EventHandler>::iterator it = range.first; it != range.second; it++) {
-            it->second(&event);
+            it->second(event);
         }
+
+        delete event;
     }
 
     void AbstractElement::registerEventHandler(uint32_t eventType, EventHandler function) { registeredEventsHandlers.insert({eventType, function}); }
@@ -130,5 +130,7 @@ namespace gui::element {
         stringStream << "(" << this << ") " << elementName;
         return stringStream.str();
     }
+
+    bool AbstractElement::eventInQueue() { return eventQueue.size(); }
 
 } // namespace gui::element

@@ -6,6 +6,9 @@
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_mouse.h"
 #include "SDL3/SDL_rect.h"
+#include <SDL3/SDL_scancode.h>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
 namespace gui::element::ui {
@@ -54,34 +57,75 @@ namespace gui::element::ui {
             EVENT_FOCUS_LOST,
             EVENT_KEY_DOWN,
             EVENT_KEY_UP,
-            EVENT_TEXT_INPUT
+            EVENT_TEXT_INPUT,
+            EVENT_TEXT_SET,
+            EVENT_TEXT_REMOVE,
+            EVENT_TEXT_CLEAR
+        };
+
+        struct FocusEvent : gui::element::event::Event {
+            FocusEvent(uint32_t type);
+            Event *copy() const override;
         };
 
         struct MouseEvent : gui::element::event::Event {
             float x;
             float y;
             Uint8 button;
+            MouseEvent(uint32_t type, float x, float y, Uint8 button);
+            Event *copy() const override;
+        };
+
+        struct MouseWheelEvent : MouseEvent {
+            float scrollX;
+            float scrollY;
+            MouseWheelEvent(uint32_t type, float x, float y, Uint8 button, float scrollX, float scrollY);
+            Event *copy() const override;
         };
 
         struct MouseMotionEvent : gui::element::event::Event {
             float x;
             float y;
             SDL_MouseButtonFlags mouseFlags;
-        };
-
-        struct MouseWheelEvent : MouseEvent {
-            float scrollX;
-            float scrollY;
+            MouseMotionEvent(uint32_t type, float x, float y, SDL_MouseButtonFlags mouseFlags);
+            Event *copy() const override;
         };
 
         struct KeyEvent : gui::element::event::Event {
             SDL_Scancode scancode; /**< SDL physical key code */
             SDL_Keycode key;       /**< SDL virtual key code */
             SDL_Keymod mod;        /**< current key modifiers */
+            KeyEvent(uint32_t type, SDL_Scancode scancode, SDL_Keycode key, SDL_Keymod mod);
+            Event *copy() const override;
         };
 
         struct TextEvent : gui::element::event::Event {
+            TextEvent(uint32_t type);
+            Event *copy() const override;
+        };
+
+        struct TextInputEvent : TextEvent {
             std::string text;
+            TextInputEvent(uint32_t type, const std::string &text);
+            Event *copy() const override;
+        };
+
+        struct TextSetEvent : TextEvent {
+            std::string text;
+            bool append; // whether to append or to replace
+            TextSetEvent(uint32_t type, const std::string &text, bool append);
+            Event *copy() const override;
+        };
+
+        struct TextRemoveEvent : TextEvent {
+            size_t nbToDelete;
+            TextRemoveEvent(uint32_t type, size_t nbToDelete);
+            Event *copy() const override;
+        };
+
+        struct TextClearEvent : TextEvent {
+            TextClearEvent(uint32_t type);
+            Event *copy() const override;
         };
 
     } // namespace event

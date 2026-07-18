@@ -15,12 +15,12 @@ namespace gui::element {
         Input(const std::string &text = "", const std::string &placeholder = "",
               gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> classes = {},
               const std::string &identifier = "", TTF_TextEngine *textEngine = nullptr);
-        
+
         void focusGained(const event::Event *event);
 
         void focusLost(const event::Event *event);
 
-        void textInput(const ui::event::TextEvent *event);
+        void textInput(const ui::event::TextInputEvent *event);
 
         void keyDown(const ui::event::KeyEvent *event);
     };

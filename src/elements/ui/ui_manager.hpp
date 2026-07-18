@@ -68,7 +68,7 @@ namespace gui::element {
 
             ui::render::UiRenderNode *hoveredLeafElement(SDL_Point *coordinates);
 
-            void sendEventToUiRenderNodeElement(const event::Event &&event, ui::render::UiRenderNode *leafNode);
+            void sendEventToUiRenderNodeElement(const event::Event *event, ui::render::UiRenderNode *leafNode);
 
         public:
             void processMouseEvent(const SDL_Event *event);

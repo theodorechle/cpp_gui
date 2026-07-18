@@ -1,4 +1,5 @@
 #include "label.hpp"
+#include "utils.hpp"
 #include <cstddef>
 #include <filesystem>
 
@@ -112,11 +113,17 @@ namespace gui::element {
 
     Label::Label(const std::string &elementName, const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager,
                  std::vector<std::string> classes, const std::string &identifier, TTF_TextEngine *textEngine)
-        : UiElement{elementName, elementsStyleManager, classes, identifier, textEngine}, _text{text} {}
+        : UiElement{elementName, elementsStyleManager, classes, identifier, textEngine}, _text{text} {
+        registerEventHandler(ui::event::GuiEventType::EVENT_TEXT_SET,
+                             [this](const event::Event *event) { _setText(static_cast<const ui::event::TextSetEvent *>(event)); });
+        registerEventHandler(ui::event::GuiEventType::EVENT_TEXT_REMOVE,
+                             [this](const event::Event *event) { _removeText(static_cast<const ui::event::TextRemoveEvent *>(event)->nbToDelete); });
+        registerEventHandler(ui::event::GuiEventType::EVENT_TEXT_CLEAR, [this](const event::Event *event) { _clearText(); });
+    }
 
     Label::Label(const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes,
                  const std::string &identifier, TTF_TextEngine *textEngine)
-        : UiElement{"label", elementsStyleManager, classes, identifier, textEngine}, _text{text} {}
+        : Label{"label", text, elementsStyleManager, classes, identifier, textEngine} {}
 
     Label::~Label() {
         TTF_DestroyText(ttfText);
@@ -147,12 +154,21 @@ namespace gui::element {
         return "";
     }
 
-    void Label::addText(const std::string &toAdd) {
-        _text.append(toAdd);
+    void Label::setText(const std::string &text, bool append) {
+        catchEvent(new ui::event::TextSetEvent{ui::event::GuiEventType::EVENT_TEXT_SET, text, append});
+    }
+
+    void Label::removeText(size_t nbChars) { catchEvent(new ui::event::TextRemoveEvent{ui::event::GuiEventType::EVENT_TEXT_REMOVE, nbChars}); }
+
+    void Label::clearText() { catchEvent(new ui::event::TextClearEvent{ui::event::GuiEventType::EVENT_TEXT_CLEAR}); }
+
+    void Label::_setText(const ui::event::TextSetEvent *event) {
+        if (event->append) _text.append(event->text);
+        else _text = event->text;
         sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
 
-    void Label::removeText(size_t nbChars) {
+    void Label::_removeText(size_t nbChars) {
         if (_text.empty()) return;
 
         // FIXME: doesn't handle multi-byte UTF-8 characters
@@ -160,7 +176,7 @@ namespace gui::element {
         sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }
 
-    void Label::clearText() {
+    void Label::_clearText() {
         _text.clear();
         sendEventToManager(event::ElementEvent::CONTENT_CHANGED);
     }

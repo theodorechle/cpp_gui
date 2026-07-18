@@ -100,7 +100,7 @@ list {
 
 input {
     border-top: 1px;
-    width: 50px;
+    font-size: 200px;
 }
 
 #hello-world-button>list>* {

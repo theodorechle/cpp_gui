@@ -1,6 +1,7 @@
 #ifndef ABSTRACT_UTILS_HPP
 #define ABSTRACT_UTILS_HPP
 
+#include <cstdint>
 #include <stdint.h>
 
 namespace gui::element {
@@ -13,6 +14,9 @@ namespace gui::element {
 
         struct Event {
             uint32_t type;
+            Event(uint32_t type) : type{type} {}
+            virtual ~Event() {}
+            virtual Event *copy() const = 0;
         };
 
         enum class ElementEvent { REMOVE_CHILDS, ADD_CHILD, CONTENT_CHANGED };

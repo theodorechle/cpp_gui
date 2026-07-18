@@ -2,6 +2,7 @@
 #define LABEL_HPP
 
 #include "ui_element.hpp"
+#include "utils.hpp"
 
 namespace gui::element {
     class Label : public UiElement {
@@ -11,7 +12,7 @@ namespace gui::element {
 
         void initBeforeLayoutComputing() override;
 
-        void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const;
+        void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const override;
         void getTextSize(int *width, int *height) const;
         void renderSelfAfterChilds() const override;
 
@@ -29,13 +30,22 @@ namespace gui::element {
         int fontSize() const;
         std::string fontName() const;
         const std::string &text() { return _text; }
-        void text(const std::string &newText) { _text = newText; }
-        // append text at end
-        void addText(const std::string &toAdd);
+
+        // methods which creates an internal event
+
+        // append text at end if append is true, else replace the text with the new one
+        void setText(const std::string &text, bool append);
         // remove text at end
         void removeText(size_t nbChars);
         void clearText();
 
+    private:
+        // actual setters, called by the event handler
+        void _setText(const ui::event::TextSetEvent *event);
+        void _removeText(size_t nbChars);
+        void _clearText();
+
+    public:
         std::string debugValue() const override;
     };
 } // namespace gui::element

@@ -1,11 +1,10 @@
 #include "abstract_manager.hpp"
+#include "abstract_element.hpp"
 
 namespace gui::element::manager {
     void AbstractManager::addChildToRootElement(AbstractElement *childElement) { elementsTree->addChild(childElement); }
 
-    void AbstractManager::needUpdate(AbstractElement *element) {
-        elementsToUpdate.insert(element);
-    }
+    void AbstractManager::needUpdate(AbstractElement *element) { elementsToUpdate.insert(element); }
 
     void AbstractManager::update() { updateModifiedElements(); }
 
@@ -15,21 +14,20 @@ namespace gui::element::manager {
         while (element != nullptr) {
             element->setModifierState(modifier, enabled);
             element->updateStyle();
-            element->catchEvent(event);
-            element->handleNextEvent();
+            sendEventToElement(event, element);
             element = element->parent();
         }
     }
 
-    void AbstractManager::sendEvent(const event::Event *event, AbstractElement *leafElement) {
+    void AbstractManager::sendEventToElementAndAncestors(const event::Event *event, AbstractElement *leafElement) {
         AbstractElement *element = leafElement;
-        if (element == nullptr) return;
         while (element != nullptr) {
-            element->catchEvent(event);
-            element->handleNextEvent();
-            element = static_cast<AbstractElement *>(element->parent());
+            sendEventToElement(event, element);
+            element = element->parent();
         }
     }
+
+    void AbstractManager::sendEventToElement(const event::Event *event, AbstractElement *element) { element->catchEvent(event->copy()); }
 
     AbstractManager::~AbstractManager() { deleteElementsTree(); }
 
@@ -58,6 +56,18 @@ namespace gui::element::manager {
 
     void AbstractManager::deleteElementsTree() { delete elementsTree; }
 
+    void AbstractManager::letElementsHandleEvents(AbstractElement *element) {
+        // TODO: update when threads will be implemented
+        AbstractElement *currentElement = element;
+        while (currentElement != nullptr) {
+            while (currentElement->eventInQueue()) {
+                currentElement->handleNextEvent();
+            }
+            letElementsHandleEvents(currentElement->child());
+            currentElement = currentElement->next();
+        }
+    }
+
     void AbstractManager::render(bool clear) {
         if (_currentStatus == Status::NOT_STARTED) { // move elsewhere to not run the condition on every call
             if (_styleManager && elementsTree) {
@@ -67,6 +77,10 @@ namespace gui::element::manager {
             }
             _currentStatus = Status::RUNNING;
         }
+
+        // TODO: update when threads will be implemented
+        letElementsHandleEvents(elementsTree);
+
         if (needUpdate()) {
             update();
             renderElements(clear);
