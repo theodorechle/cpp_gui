@@ -41,6 +41,7 @@ namespace gui::elementStyle::manager {
         void removeStyle(int fileNumber);
 
         // TODO: Are both methods needed?
+        void findRulesMatchingElementSelectors(element::AbstractElement *actualElement, style::RulesMap *elementRulesMap, bool inheritance = false);
         void applyStyleToElement(element::AbstractElement *element);
 
         void addDefaultFontPath(const std::string &path);

@@ -36,46 +36,32 @@ namespace gui::elementStyle::manager {
         }
     }
 
-    void StyleManager::applyStyleToElement(element::AbstractElement *element) {
-        if (element == nullptr) return;
-        element::AbstractElement *actualElement = element;
-        const style::StyleValuesMap *styleMap;
-        style::RulesMap *elementRulesMap = new style::RulesMap();
-        actualElement->style()->clear();
+    void StyleManager::findRulesMatchingElementSelectors(element::AbstractElement *actualElement, style::RulesMap *elementRulesMap,
+                                                         bool inheritance) {
         for (style::StyleDefinition *styleComponent : style) {
             if (!elementSelectorsCompatibles(actualElement, &styleComponent->first)) continue;
 
-            styleMap = &styleComponent->second;
+            const style::StyleValuesMap *styleMap = &styleComponent->second;
 
             for (const std::pair<const std::string, style::StyleRule> &styleRule : *styleMap) {
+                if (inheritance && config->inheritableRules.find(styleRule.first) == config->inheritableRules.cend()) continue;
                 style::RulesMap::const_iterator existingRule = elementRulesMap->find(styleRule.first);
                 if (existingRule != elementRulesMap->cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
-                // TODO: just need a copy method, no ?
-                elementRulesMap->insert_or_assign(styleRule.first,
-                                                  style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
-                                                                   styleRule.second.fileNumber, styleRule.second.ruleNumber});
+                elementRulesMap->insert_or_assign(styleRule.first, styleRule.second);
             }
         }
+    }
 
-        // TODO: find more optimized way to get inherited style
+    void StyleManager::applyStyleToElement(element::AbstractElement *element) {
+        if (element == nullptr) return;
+        element::AbstractElement *actualElement = element;
+        style::RulesMap *elementRulesMap = new style::RulesMap();
+        actualElement->style()->clear();
+        findRulesMatchingElementSelectors(actualElement, elementRulesMap);
+
         actualElement = actualElement->parent();
         while (actualElement != nullptr) {
-            for (style::StyleDefinition *styleComponent : style) {
-                if (!elementSelectorsCompatibles(actualElement, &styleComponent->first)) continue;
-
-                styleMap = &styleComponent->second;
-
-                // FIXME: except for the config->inheritableRules line, it's all duplicated code from the first for loop of the method
-                for (const std::pair<const std::string, style::StyleRule> &styleRule : *styleMap) {
-                    if (config->inheritableRules.find(styleRule.first) == config->inheritableRules.cend()) continue;
-                    style::RulesMap::const_iterator existingRule = elementRulesMap->find(styleRule.first);
-                    if (existingRule != elementRulesMap->cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
-                    // TODO: copy method
-                    elementRulesMap->insert_or_assign(styleRule.first,
-                                                      style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
-                                                                       styleRule.second.fileNumber, styleRule.second.ruleNumber});
-                }
-            }
+            findRulesMatchingElementSelectors(actualElement, elementRulesMap, true);
             actualElement = actualElement->parent();
         }
 
