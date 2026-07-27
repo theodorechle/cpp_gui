@@ -51,8 +51,9 @@ namespace gui::elementStyle::manager {
                 style::RulesMap::const_iterator existingRule = elementRulesMap->find(styleRule.first);
                 if (existingRule != elementRulesMap->cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
                 // TODO: just need a copy method, no ?
-                elementRulesMap->insert_or_assign(styleRule.first, style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
-                                                                                   styleRule.second.fileNumber, styleRule.second.ruleNumber});
+                elementRulesMap->insert_or_assign(styleRule.first,
+                                                  style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
+                                                                   styleRule.second.fileNumber, styleRule.second.ruleNumber});
             }
         }
 
@@ -71,8 +72,8 @@ namespace gui::elementStyle::manager {
                     if (existingRule != elementRulesMap->cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
                     // TODO: copy method
                     elementRulesMap->insert_or_assign(styleRule.first,
-                                                     style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
-                                                                      styleRule.second.fileNumber, styleRule.second.ruleNumber});
+                                                      style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
+                                                                       styleRule.second.fileNumber, styleRule.second.ruleNumber});
                 }
             }
             actualElement = actualElement->parent();
@@ -149,8 +150,6 @@ namespace gui::elementStyle::manager {
     }
 
     void StyleManager::removeStyle(int fileNumber) {
-        for (std::pair<int, std::pair<std::string, int>> file : files) {
-        }
         if (_rootElement != nullptr && files.find(fileNumber) != files.cend()) {
             removeStyleInElements(fileNumber, _rootElement);
             for (style::StyleDefinition *block : style) {
