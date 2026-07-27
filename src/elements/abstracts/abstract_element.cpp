@@ -24,9 +24,7 @@ namespace gui::element {
 
     AbstractElement::AbstractElement(std::string elementName, elementStyle::manager::StyleManager *elementsStyleManager,
                                      std::vector<std::string> classes, const std::string &identifier)
-        : elementName{elementName}, elementsStyleManager{elementsStyleManager} {
-
-        _style = elementStyle::ElementStyle();
+        : elementName{elementName}, elementsStyleManager{elementsStyleManager}, _style(elementStyle::ElementStyle()) {
         _style.addSelector(elementName, style::StyleComponentType::ElementName);
         // set selectors
         for (std::string c : classes) {
@@ -34,6 +32,13 @@ namespace gui::element {
         }
         if (!identifier.empty()) _style.addSelector(identifier, style::StyleComponentType::Identifier);
         if (elementsStyleManager == nullptr) return;
+    }
+
+    AbstractElement::~AbstractElement() {
+        const event::Event *event;
+        while (eventQueue.tryPop(&event)) {
+            delete event;
+        }
     }
 
     void AbstractElement::addChild(AbstractElement *newChild) {
@@ -78,7 +83,7 @@ namespace gui::element {
         std::clog << "\n";
 
         std::clog << "applied rules:\n";
-        for (std::pair<std::string, style::StyleRule> rule : _style.rules()) {
+        for (std::pair<std::string, style::StyleRule> rule : *(_style.rules())) {
             std::clog << rule.first << " -> ";
             style::StyleValue *value = rule.second.value;
             std::clog << value->value();

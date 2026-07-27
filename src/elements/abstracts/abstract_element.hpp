@@ -43,6 +43,8 @@ namespace gui::element {
          */
         AbstractElement(std::string elementName, elementStyle::manager::StyleManager *elementsStyleManager = nullptr,
                         std::vector<std::string> classes = {}, const std::string &identifier = "");
+        virtual ~AbstractElement();
+
         const std::string &name() const { return elementName; }
         void addChild(AbstractElement *newChild);
         // remove pointer to childs, but does not delete them
@@ -53,8 +55,6 @@ namespace gui::element {
         manager::AbstractManager *manager() { return _manager; }
 
         elementStyle::ElementStyle *style() { return &_style; }
-
-        virtual ~AbstractElement() {};
 
         /**
          * Override this function to draw self element.

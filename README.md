@@ -190,7 +190,7 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
 For below elements, Color in style rules means either:
 - a rgb (255, 0, 0) or rgba tuple (255, 0, 0, 0)
 - a hexadecimal value:
-  - 3-character format: #123 (rgb) (translated in the hoods to the 6 characters format #112233)
+  - 3-character format: #123 (rgb) (translated hunder the hoods to the 6 characters format #112233)
   - 6-character format: #123456 (rgb)
   - 8-character format: #12345678 (rgba)
 

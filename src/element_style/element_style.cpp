@@ -1,6 +1,7 @@
 #include "element_style.hpp"
 #include "../../cpp_commons/src/node.hpp"
 #include <sstream>
+#include <string>
 
 namespace gui::elementStyle {
     bool ElementStyle::compareRulesPriorityAscending(const style::StyleRule &rule1, const style::StyleRule &rule2) {
@@ -14,6 +15,13 @@ namespace gui::elementStyle {
         return false;
     }
 
+    ElementStyle::~ElementStyle() { delete _rules; }
+
+    void ElementStyle::rules(style::RulesMap *newStyle) {
+        delete _rules;
+        _rules = newStyle;
+    }
+
     void ElementStyle::addSelector(const std::string &selectorName, style::StyleComponentType selectorType) {
         _selectors.insert(style::StyleComponentData(selectorName, selectorType));
     }
@@ -25,32 +33,34 @@ namespace gui::elementStyle {
     bool ElementStyle::hasSelector(const style::StyleComponentData &selector) const { return _selectors.find(selector) != _selectors.cend(); }
 
     void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNumber) {
-        for (style::RulesMap::iterator it = _rules.begin(); it != _rules.end(); it++) {
+        for (style::RulesMap::iterator it = _rules->begin(); it != _rules->end(); it++) {
             if (it->second.fileNumber == oldFileNumber) {
                 it->second.fileNumber = newFileNumber;
             }
         }
     }
 
-    void ElementStyle::clear() { _rules.clear(); }
+    void ElementStyle::clear() {
+        _rules->clear();
+    }
 
     void ElementStyle::activateModifier(const std::string &modifier) { _selectors.insert({modifier, style::StyleComponentType::Modifier}); }
 
     void ElementStyle::deactivateModifier(const std::string &modifier) { _selectors.erase({modifier, style::StyleComponentType::Modifier}); }
 
     void ElementStyle::deleteStyle(int fileNumber, int ruleNumber) {
-        for (style::RulesMap::iterator it = _rules.begin(); it != _rules.end(); it++) {
+        for (style::RulesMap::iterator it = _rules->begin(); it != _rules->end(); it++) {
             if (it->second.fileNumber == fileNumber && it->second.ruleNumber == ruleNumber) {
-                _rules.erase(it->first);
+                _rules->erase(it->first);
                 return;
             }
         }
     }
 
     void ElementStyle::deleteStyleFromFile(int fileNumber) {
-        for (style::RulesMap::iterator it = _rules.begin(); it != _rules.end(); it++) {
+        for (style::RulesMap::iterator it = _rules->begin(); it != _rules->end(); it++) {
             if (it->second.fileNumber == fileNumber) {
-                _rules.erase(it->first);
+                _rules->erase(it->first);
                 return;
             }
         }
@@ -79,10 +89,10 @@ namespace gui::elementStyle {
     }
 
     bool ElementStyle::getRule(const std::string &ruleName, style::StyleValue **ruleValue, style::StyleValue *defaultStyle) const {
-        style::RulesMap::const_iterator rule = _rules.find(ruleName);
+        style::RulesMap::const_iterator rule = _rules->find(ruleName);
         if (rule != nullptr) {
             if (rule->second.enabled) {
-                *ruleValue = rule->second.value;
+                *ruleValue = rule->second.value->copy();
                 return true;
             }
         }
@@ -93,20 +103,20 @@ namespace gui::elementStyle {
     bool ElementStyle::getRule(const std::vector<std::string> &ruleNames, style::StyleValue **ruleValue, style::StyleValue *defaultStyle) const {
         const style::StyleRule *currentRule = nullptr;
         for (const std::string &ruleName : ruleNames) {
-            style::RulesMap::const_iterator rule = _rules.find(ruleName);
+            style::RulesMap::const_iterator rule = _rules->find(ruleName);
             if (rule != nullptr && rule->second.enabled) {
                 if (currentRule == nullptr || compareRulesPriorityAscending(*currentRule, rule->second)) currentRule = &(rule->second);
             }
         }
         if (currentRule != nullptr) {
-            *ruleValue = currentRule->value;
+            *ruleValue = currentRule->value->copy();
             return true;
         }
         *ruleValue = defaultStyle;
         return (defaultStyle != nullptr);
     }
 
-    size_t ElementStyle::nbRules() const { return _rules.size(); }
+    size_t ElementStyle::nbRules() const { return _rules->size(); }
 
     std::string ElementStyle::debugValue() {
         std::stringstream stringStream;

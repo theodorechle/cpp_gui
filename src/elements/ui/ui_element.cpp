@@ -1,9 +1,9 @@
 #include "ui_element.hpp"
-#include <algorithm>
 #include "../../converters/bool_converter.hpp"
 #include "../../converters/color_converter.hpp"
 #include "../../converters/number_converter.hpp"
 #include "../../converters/size_converter.hpp"
+#include <algorithm>
 
 namespace gui::element {
     SDL_Rect UiElement::computeNewClipRect(SDL_Rect *oldClipRect, SDL_Rect *wantedNewClipRect) {
@@ -15,82 +15,79 @@ namespace gui::element {
 
     int UiElement::getIntFromRule(const std::vector<std::string> &ruleNames, int defaultSize) const {
         style::StyleValue *rule = nullptr;
-        int size = 0;
+        int size = defaultSize;
         _style.getRule(ruleNames, &rule);
-        if (rule == nullptr) {
-            return defaultSize;
-        }
-        if (!converter::NumberConverter::convertToInt(rule, &size)) {
-            return defaultSize;
-        }
+        if (rule == nullptr || !converter::NumberConverter::convertToInt(rule, &size)) size = defaultSize;
+        delete rule;
         return size;
     }
 
     std::string UiElement::getStringFromRule(const std::vector<std::string> &ruleNames, const std::string &defaultString) const {
         style::StyleValue *rule = nullptr;
+        std::string value = defaultString;
         _style.getRule(ruleNames, &rule);
-        if (rule == nullptr || rule->type() != style::StyleValueType::String) {
-            return defaultString;
-        }
-        return rule->value();
+        if (rule != nullptr && rule->type() == style::StyleValueType::String) value = rule->value();
+        delete rule;
+        return value;
     }
 
     std::string UiElement::getEnumFromRule(const std::string &ruleName, const std::vector<std::string> &allowedValues,
                                            const std::string &defaultValue) const {
         style::StyleValue *rule = nullptr;
+        std::string value = defaultValue;
         _style.getRule(ruleName, &rule);
-        if (rule == nullptr
-            || rule->type() != style::StyleValueType::EnumValue
-            || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->value()) == allowedValues.cend())) {
-            return defaultValue;
+        if (rule != nullptr
+            && rule->type() == style::StyleValueType::EnumValue
+            && (allowedValues.empty() || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->value()) != allowedValues.cend())) {
+            value = rule->value();
         }
-        return rule->value();
+        delete rule;
+        return value;
     }
 
     std::string UiElement::getEnumFromRules(const std::vector<std::string> &ruleNames, const std::vector<std::string> &allowedValues,
                                             const std::string &defaultValue) const {
         style::StyleValue *rule = nullptr;
+        std::string value = defaultValue;
         _style.getRule(ruleNames, &rule);
-        if (rule == nullptr
-            || rule->type() != style::StyleValueType::EnumValue
-            || (!allowedValues.empty() && std::find(allowedValues.cbegin(), allowedValues.cend(), rule->value()) == allowedValues.cend())) {
-            return defaultValue;
+        if (rule != nullptr
+            && rule->type() == style::StyleValueType::EnumValue
+            && (allowedValues.empty() || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->value()) != allowedValues.cend())) {
+            value = rule->value();
         }
-        return rule->value();
+        delete rule;
+        return value;
     }
 
     bool UiElement::getBoolFromRule(const std::vector<std::string> &ruleNames, bool defaultBool) const {
-        bool value;
+        bool value = defaultBool;
         style::StyleValue *rule = nullptr;
         _style.getRule(ruleNames, &rule);
-        if (converter::BoolConverter::convert(rule, &value)) return value;
-        return defaultBool;
+        if (!converter::BoolConverter::convert(rule, &value)) value = defaultBool;
+        delete rule;
+        return value;
     }
 
     int UiElement::computeSize(const std::vector<std::string> &ruleNames, int defaultSize, int parentSize, bool *found) const {
         style::StyleValue *rule = nullptr;
-        int size = 0;
+        int size = defaultSize;
         _style.getRule(ruleNames, &rule);
         if (found != nullptr) (*found) = (rule != nullptr);
-        if (rule == nullptr) {
-            return defaultSize;
+        if (rule == nullptr || !converter::SizeConverter::convert(rule, &size, parentSize)) {
+            size = defaultSize;
         }
-        if (!converter::SizeConverter::convert(rule, &size, parentSize)) {
-            return defaultSize;
-        }
+        delete rule;
         return size;
     }
 
     SDL_Color UiElement::computeColor(const std::vector<std::string> &ruleNames, SDL_Color defaultColor) const {
         style::StyleValue *rule = nullptr;
-        SDL_Color color = SDL_Color();
+        SDL_Color color = defaultColor;
         _style.getRule(ruleNames, &rule);
-        if (rule == nullptr) {
-            return defaultColor;
+        if (rule == nullptr || !converter::ColorConverter::convert(rule, &color)) {
+            color = defaultColor;
         }
-        if (!converter::ColorConverter::convert(rule, &color)) {
-            return defaultColor;
-        }
+        delete rule;
         return color;
     }
 

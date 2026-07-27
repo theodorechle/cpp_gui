@@ -40,19 +40,19 @@ namespace gui::elementStyle::manager {
         if (element == nullptr) return;
         element::AbstractElement *actualElement = element;
         const style::StyleValuesMap *styleMap;
-        style::RulesMap elementRulesMap = style::RulesMap();
+        style::RulesMap *elementRulesMap = new style::RulesMap();
         actualElement->style()->clear();
         for (style::StyleDefinition *styleComponent : style) {
             if (!elementSelectorsCompatibles(actualElement, &styleComponent->first)) continue;
 
             styleMap = &styleComponent->second;
 
-            for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
-                style::RulesMap::const_iterator existingRule = elementRulesMap.find(styleRule.first);
-                if (existingRule != elementRulesMap.cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
+            for (const std::pair<const std::string, style::StyleRule> &styleRule : *styleMap) {
+                style::RulesMap::const_iterator existingRule = elementRulesMap->find(styleRule.first);
+                if (existingRule != elementRulesMap->cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
                 // TODO: just need a copy method, no ?
-                elementRulesMap[styleRule.first] = style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
-                                                                    styleRule.second.fileNumber, styleRule.second.ruleNumber};
+                elementRulesMap->insert_or_assign(styleRule.first, style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
+                                                                                   styleRule.second.fileNumber, styleRule.second.ruleNumber});
             }
         }
 
@@ -64,13 +64,15 @@ namespace gui::elementStyle::manager {
 
                 styleMap = &styleComponent->second;
 
-                for (std::pair<std::string, style::StyleRule> styleRule : *styleMap) {
+                // FIXME: except for the config->inheritableRules line, it's all duplicated code from the first for loop of the method
+                for (const std::pair<const std::string, style::StyleRule> &styleRule : *styleMap) {
                     if (config->inheritableRules.find(styleRule.first) == config->inheritableRules.cend()) continue;
-                    style::RulesMap::const_iterator existingRule = elementRulesMap.find(styleRule.first);
-                    if (existingRule != elementRulesMap.cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
+                    style::RulesMap::const_iterator existingRule = elementRulesMap->find(styleRule.first);
+                    if (existingRule != elementRulesMap->cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
                     // TODO: copy method
-                    elementRulesMap[styleRule.first] = style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
-                                                                        styleRule.second.fileNumber, styleRule.second.ruleNumber};
+                    elementRulesMap->insert_or_assign(styleRule.first,
+                                                     style::StyleRule{styleRule.second.value->copy(), true, styleRule.second.specificity,
+                                                                      styleRule.second.fileNumber, styleRule.second.ruleNumber});
                 }
             }
             actualElement = actualElement->parent();
@@ -89,11 +91,9 @@ namespace gui::elementStyle::manager {
 
     StyleManager::~StyleManager() {
         for (style::StyleDefinition *styleDefinition : style) {
-            for (std::pair<std::string, style::StyleRule> rule : styleDefinition->second) {
-                delete rule.second.value;
-            }
             delete styleDefinition;
         }
+        delete config;
     }
 
     void StyleManager::addDefaultFontPath(const std::string &path) { defaultFontsPaths.insert(path); }
@@ -156,7 +156,9 @@ namespace gui::elementStyle::manager {
             for (style::StyleDefinition *block : style) {
                 style::StyleValuesMap &styleMap = block->second;
                 for (style::StyleValuesMap::iterator ruleIt = styleMap.begin(); ruleIt != styleMap.end();) {
-                    if (ruleIt->second.fileNumber == fileNumber) ruleIt = styleMap.erase(ruleIt);
+                    if (ruleIt->second.fileNumber == fileNumber) {
+                        ruleIt = styleMap.erase(ruleIt);
+                    }
                     else ruleIt++;
                 }
             }

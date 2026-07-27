@@ -8,13 +8,15 @@
 
 namespace gui::elementStyle {
     class ElementStyle {
-        style::RulesMap _rules = {};
+        style::RulesMap *_rules = new style::RulesMap();
         std::set<style::StyleComponentData> _selectors = {};
 
         static bool compareRulesPriorityAscending(const style::StyleRule &rule1, const style::StyleRule &rule2);
 
     public:
-        void rules(const style::RulesMap &newStyle) { _rules = newStyle; }
+        ~ElementStyle();
+
+        void rules(style::RulesMap *newStyle);
 
         void addSelector(const std::string &selectorName, style::StyleComponentType selectorType);
         void removeSelector(const std::string &selectorName, style::StyleComponentType selectorType);
@@ -31,7 +33,7 @@ namespace gui::elementStyle {
 
         std::list<std::string> debugToString() const;
 
-        const style::RulesMap &rules() { return _rules; }
+        const style::RulesMap *rules() { return _rules; }
 
         /**
          * Set the value in the ruleValue parameter.
