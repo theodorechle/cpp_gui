@@ -53,6 +53,7 @@ namespace gui::element {
             else {
                 childCoords.x += childData->clippedElementSize.width + gap;
             }
+            delete childData;
             elementChild = static_cast<const UiElement *>(elementChild->next());
         }
     }

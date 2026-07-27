@@ -348,6 +348,8 @@ namespace gui::element {
             std::clog << "clicked element after update: " << clickedElement << "\n";
             std::clog << "focused element after update: " << focusedElement << "\n";
 #endif
+
+            delete currentElementsToUpdate;
         }
 
         void UiManager::computeElementsLayout() {

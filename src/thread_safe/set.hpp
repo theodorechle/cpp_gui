@@ -13,6 +13,7 @@ namespace threadSafe {
 
     public:
         Set() : _set{new std::set<T>()} {}
+        ~Set() { delete _set; }
 
         size_t size() {
             std::lock_guard<std::mutex> lock(_mutex);
