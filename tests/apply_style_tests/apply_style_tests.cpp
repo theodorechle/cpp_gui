@@ -5,12 +5,11 @@ namespace applyStyleTests {
                                    bool expectToFindValues) {
         style::config::Config *config = testConfig();
         gui::elementStyle::manager::StyleManager styleManager = gui::elementStyle::manager::StyleManager(config);
-        style::StyleValue *value;
+        style::StyleValue *value = nullptr;
 
         styleManager.addStyle(style);
 
         styleManager.applyStyleToElement(element);
-        delete config;
 
         if (element->style()->nbRules() != expectedRulesNames.size() && expectToFindValues) {
             std::cerr << "expected " << expectedRulesNames.size() << " rules, but got " << element->style()->nbRules() << "\n";

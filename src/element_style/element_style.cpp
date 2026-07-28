@@ -40,9 +40,7 @@ namespace gui::elementStyle {
         }
     }
 
-    void ElementStyle::clear() {
-        _rules->clear();
-    }
+    void ElementStyle::clear() { _rules->clear(); }
 
     void ElementStyle::activateModifier(const std::string &modifier) { _selectors.insert({modifier, style::StyleComponentType::Modifier}); }
 
@@ -90,11 +88,9 @@ namespace gui::elementStyle {
 
     bool ElementStyle::getRule(const std::string &ruleName, style::StyleValue **ruleValue, style::StyleValue *defaultStyle) const {
         style::RulesMap::const_iterator rule = _rules->find(ruleName);
-        if (rule != nullptr) {
-            if (rule->second.enabled) {
-                *ruleValue = rule->second.value->copy();
-                return true;
-            }
+        if (rule != nullptr && rule->second.enabled) {
+            *ruleValue = rule->second.value->copy();
+            return true;
         }
         *ruleValue = defaultStyle;
         return (defaultStyle != nullptr);

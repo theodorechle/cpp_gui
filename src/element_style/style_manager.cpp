@@ -57,19 +57,17 @@ namespace gui::elementStyle::manager {
         element::AbstractElement *actualElement = element;
         style::RulesMap *elementRulesMap = new style::RulesMap();
         actualElement->style()->clear();
-        findRulesMatchingElementSelectors(actualElement, elementRulesMap);
 
-        actualElement = actualElement->parent();
-        while (actualElement != nullptr) {
-            findRulesMatchingElementSelectors(actualElement, elementRulesMap, true);
+        do {
+            findRulesMatchingElementSelectors(actualElement, elementRulesMap, actualElement != element);
             actualElement = actualElement->parent();
-        }
+        } while (actualElement != nullptr);
 
         element->style()->rules(elementRulesMap);
 
 #ifdef DEBUG_DEBUG
         std::clog << "element " << element->debugValue() << " has the following style rules:\n";
-        for (std::pair<std::string, style::StyleRule> rule : element->style()->rules()) {
+        for (std::pair<std::string, style::StyleRule> rule : *element->style()->rules()) {
             std::clog << rule.first << ": ";
             rule.second.value->debugDisplay();
         }
