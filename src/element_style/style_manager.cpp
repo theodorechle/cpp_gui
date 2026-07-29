@@ -46,7 +46,10 @@ namespace gui::elementStyle::manager {
             for (const std::pair<const std::string, style::StyleRule> &styleRule : *styleMap) {
                 if (inheritance && config->inheritableRules.find(styleRule.first) == config->inheritableRules.cend()) continue;
                 style::RulesMap::const_iterator existingRule = elementRulesMap->find(styleRule.first);
-                if (existingRule != elementRulesMap->cend() && styleRule.second.specificity <= existingRule->second.specificity) continue;
+                if (existingRule != elementRulesMap->cend()) {
+                    if (styleRule.second.specificity <= existingRule->second.specificity) continue;
+                    else elementRulesMap->erase(existingRule);
+                }
                 elementRulesMap->insert_or_assign(styleRule.first, styleRule.second);
             }
         }

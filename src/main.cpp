@@ -116,4 +116,5 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     AppState *state = static_cast<AppState *>(appstate);
     delete state;
     TTF_Quit();
+    SDL_Quit();
 }
