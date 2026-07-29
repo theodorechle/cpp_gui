@@ -24,6 +24,7 @@
 - Search elements using CSS like selectors/path/XPath (name, id, class, ...)
 
 - rename childs -> children
+- previous draw not cleared properly when resizing an element on which size is set with percentages
 
 - asynchronous:
   - [x] event thread safe queue for each element
@@ -32,6 +33,7 @@
   - [x] thread safe set in abstract manager for elements to re-render
   - [ ] ensure elements aren't accessed when being deleted (child, next, parent)
   - [ ] ensure no event is added to an element queue when this element is being deleted
+  - [ ] more generally, ensure element is not accessed when being deleted
   - [ ] add threads to run elements event handlers (and manager update?):
     - thread pool?
     - a thread for multiple elements?
