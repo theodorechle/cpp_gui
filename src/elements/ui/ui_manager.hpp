@@ -50,6 +50,8 @@ namespace gui::element {
             void windowFocusLost();
             void refreshAll();
 
+            void focusNextElement();
+
             void updateRenderingData();
 
             // childElement must be a UiElement

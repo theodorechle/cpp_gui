@@ -1,5 +1,7 @@
 #include "ui_manager.hpp"
+#include "render_nodes/ui_render_node.hpp"
 #include "root_element.hpp"
+#include "ui_element.hpp"
 #include "utils.hpp"
 #include <SDL3/SDL_events.h>
 
@@ -43,6 +45,9 @@ namespace gui::element {
                                                    this->sendEventToUiRenderNodeElement(&event, focusedElement);
                                                }});
             registeredSdlEventHandlers.insert({SDL_EVENT_KEY_UP, [this](const SDL_Event *sdlEvent) {
+                                                   if (sdlEvent->key.key == SDLK_TAB) {
+                                                       this->focusNextElement();
+                                                   }
                                                    const ui::event::KeyEvent event =
                                                        ui::event::KeyEvent{ui::event::GuiEventType::EVENT_KEY_UP, sdlEvent->key.scancode,
                                                                            sdlEvent->key.key, sdlEvent->key.mod};
@@ -416,6 +421,27 @@ namespace gui::element {
         void UiManager::refreshAll() {
             updateRenderingData();
             needUpdate(elementsTree);
+        }
+
+        void UiManager::focusNextElement() {
+            if (focusedElement) {
+                const ui::event::FocusEvent event = ui::event::FocusEvent(ui::event::GuiEventType::EVENT_FOCUS_LOST);
+                setElementsModifierState("focused", focusedElement->baseElement(), false, &event);
+            }
+
+            ui::render::UiRenderNode *currentElement = focusedElement;
+            while (currentElement != nullptr && currentElement->next() == nullptr) {
+                currentElement = currentElement->parent();
+            }
+            if (currentElement == nullptr) currentElement = rootRenderNode;
+            else currentElement = currentElement->next();
+            while (currentElement->child() != nullptr) {
+                currentElement = currentElement->child();
+            }
+            focusedElement = currentElement;
+
+            const ui::event::FocusEvent event = ui::event::FocusEvent(ui::event::GuiEventType::EVENT_FOCUS_GAINED);
+            setElementsModifierState("focused", focusedElement->baseElement(), true, &event);
         }
 
         void UiManager::processEvent(const SDL_Event *sdlEvent) {
