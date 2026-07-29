@@ -99,7 +99,6 @@ namespace gui::element {
 
         ui::render::UiRenderNode *UiManager::renderNodeOf(const AbstractElement *element) {
             if (!element) return nullptr;
-            if (element == rootRenderNode->baseElement()) return rootRenderNode;
             std::list<const gui::element::AbstractElement *> pathElement;
             while (element) {
                 pathElement.push_front(element);
@@ -107,7 +106,6 @@ namespace gui::element {
             }
 
             pathElement.pop_front(); // no need of root since it has already been checked
-            // TODO: by the way, it's not really useful to do the first check separately, it could be simplified
 
             ui::render::UiRenderNode *renderNode = rootRenderNode;
             for (const gui::element::AbstractElement *pathFragment : pathElement) {
