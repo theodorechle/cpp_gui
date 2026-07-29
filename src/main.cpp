@@ -29,8 +29,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 #endif
     int windowLength = 500;
     int windowHeight = 500;
-    SDL_Window *sdl_window = nullptr;
-    SDL_Renderer *sdl_renderer = nullptr;
+    SDL_Window *sdlWindow = nullptr;
+    SDL_Renderer *sdlRenderer = nullptr;
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL! %s", SDL_GetError());
@@ -43,24 +43,24 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     }
 
     // FIXME: window and renderer should be cleared at end
-    if (!SDL_CreateWindowAndRenderer("GUI Tests", windowLength, windowHeight, SDL_WINDOW_RESIZABLE, &sdl_window, &sdl_renderer)) {
+    if (!SDL_CreateWindowAndRenderer("GUI Tests", windowLength, windowHeight, SDL_WINDOW_RESIZABLE, &sdlWindow, &sdlRenderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
-    SDL_SetRenderDrawBlendMode(sdl_renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
 
-    gui::element::manager::AbstractManager *manager = new gui::element::manager::UiManager(sdl_window, sdl_renderer);
+    gui::element::manager::AbstractManager *manager = new gui::element::manager::UiManager(sdlWindow, sdlRenderer);
 
     gui::elementStyle::manager::StyleManager *elementsStyleManager = new gui::elementStyle::manager::StyleManager(style::config::config());
     manager->styleManager(elementsStyleManager);
-    TTF_TextEngine *textEngine = TTF_CreateRendererTextEngine(sdl_renderer);
+    TTF_TextEngine *textEngine = TTF_CreateRendererTextEngine(sdlRenderer);
 
     if (textEngine == nullptr) {
         SDL_Log("Can't create a renderer text engine %s", SDL_GetError());
     }
 
-    *appstate = new AppState(manager, elementsStyleManager, textEngine);
+    *appstate = new AppState(manager, elementsStyleManager, textEngine, sdlWindow, sdlRenderer);
 
     elementsStyleManager->addDefaultFontPath("tests/fonts");
     elementsStyleManager->addStyleFile("tests/tests-files/main-test.txt");
