@@ -39,14 +39,19 @@ namespace gui::element {
                      }
                  }});
             registeredSdlEventHandlers.insert({SDL_EVENT_KEY_DOWN, [this](const SDL_Event *sdlEvent) {
+                                                   this->pressedKeys.insert(sdlEvent->key.key);
                                                    const ui::event::KeyEvent event =
                                                        ui::event::KeyEvent{ui::event::GuiEventType::EVENT_KEY_DOWN, sdlEvent->key.scancode,
                                                                            sdlEvent->key.key, sdlEvent->key.mod};
                                                    this->sendEventToUiRenderNodeElement(&event, focusedElement);
                                                }});
             registeredSdlEventHandlers.insert({SDL_EVENT_KEY_UP, [this](const SDL_Event *sdlEvent) {
+                                                   this->pressedKeys.erase(sdlEvent->key.key);
                                                    if (sdlEvent->key.key == SDLK_TAB) {
-                                                       this->focusNextElement();
+                                                       if (this->pressedKeys.find(SDLK_LSHIFT) != this->pressedKeys.cend()
+                                                           || this->pressedKeys.find(SDLK_RSHIFT) != this->pressedKeys.cend())
+                                                           this->focusPreviousElement();
+                                                       else this->focusNextElement();
                                                    }
                                                    const ui::event::KeyEvent event =
                                                        ui::event::KeyEvent{ui::event::GuiEventType::EVENT_KEY_UP, sdlEvent->key.scancode,
@@ -435,8 +440,42 @@ namespace gui::element {
             }
             if (currentElement == nullptr) currentElement = rootRenderNode;
             else currentElement = currentElement->next();
+
             while (currentElement->child() != nullptr) {
                 currentElement = currentElement->child();
+            }
+            focusedElement = currentElement;
+
+            const ui::event::FocusEvent event = ui::event::FocusEvent(ui::event::GuiEventType::EVENT_FOCUS_GAINED);
+            setElementsModifierState("focused", focusedElement->baseElement(), true, &event);
+        }
+
+        void UiManager::focusPreviousElement() {
+            if (focusedElement) {
+                const ui::event::FocusEvent event = ui::event::FocusEvent(ui::event::GuiEventType::EVENT_FOCUS_LOST);
+                setElementsModifierState("focused", focusedElement->baseElement(), false, &event);
+            }
+
+            ui::render::UiRenderNode *currentElement = focusedElement;
+
+            while (currentElement != nullptr && currentElement->parent() != nullptr && currentElement->parent()->child() == currentElement) {
+                currentElement = currentElement->parent();
+            }
+
+            if (currentElement == nullptr) currentElement = rootRenderNode;
+            else if (currentElement->parent() != nullptr) {
+                ui::render::UiRenderNode *parentChildElement = currentElement->parent()->child();
+                while (parentChildElement != nullptr) {
+                    if (parentChildElement->next() == currentElement) {
+                        currentElement = parentChildElement;
+                        break;
+                    }
+                    parentChildElement = parentChildElement->next();
+                }
+            }
+
+            while (currentElement->child() != nullptr) {
+                currentElement = currentElement->getLastChild();
             }
             focusedElement = currentElement;
 

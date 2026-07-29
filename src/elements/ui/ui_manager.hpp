@@ -9,6 +9,7 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
 #include <map>
+#include <unordered_set>
 
 namespace gui::element {
     namespace manager {
@@ -29,6 +30,7 @@ namespace gui::element {
             SDL_Texture *renderedTexture = nullptr;
 
             std::map<Uint32, EventHandler> registeredSdlEventHandlers = {};
+            std::unordered_set<Uint32> pressedKeys = {};
 
             void createRootElement() override;
 
@@ -51,6 +53,8 @@ namespace gui::element {
             void refreshAll();
 
             void focusNextElement();
+
+            void focusPreviousElement();
 
             void updateRenderingData();
 

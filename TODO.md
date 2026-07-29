@@ -1,4 +1,8 @@
-- add tab control (next, previous) + allow specifying an order => next is done
+- add tab control (next, previous) + allow specifying an order => next and previous are done
+- handlers (both in element and in manager):
+  - add handler for when given key is pressed => replace tab current check with that
+  - add handler for when given keys are pressed => useful for shift+tab for example
+  Not urgent, since I've added pressedKeys set.
 - check if SDL3 supports multiple render depths (forward, backward, ...) without needing a redraw of the elements behind an other
 - allow re-computing the layout only of modified elements and their parents
 
@@ -33,7 +37,7 @@
   - [x] thread safe set in abstract manager for elements to re-render
   - [ ] ensure elements aren't accessed when being deleted (child, next, parent)
   - [ ] ensure no event is added to an element queue when this element is being deleted
-  - [ ] more generally, ensure element is not accessed when being deleted
+  - [ ] more generally, ensure element is not accessed when being deleted (if a method is called while it's being deleted, it could be bad)
   - [ ] add threads to run elements event handlers (and manager update?):
     - thread pool?
     - a thread for multiple elements?
