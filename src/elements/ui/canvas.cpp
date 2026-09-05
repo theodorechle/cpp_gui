@@ -10,14 +10,14 @@ namespace gui::element {
         texture = SDL_CreateTexture(renderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
     }
 
-    void Canvas::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
+    void Canvas::computeSelfAndChildrenLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childrenSizes) const {
         if (texture != nullptr) {
             (*selfWidth) = texture->w;
             (*selfHeight) = texture->h;
         }
     }
 
-    void Canvas::renderSelfBeforeChilds() const { SDL_RenderTexture(renderer(), texture, nullptr, nullptr); }
+    void Canvas::renderSelfBeforeChildren() const { SDL_RenderTexture(renderer(), texture, nullptr, nullptr); }
 
     void Canvas::fillRect(int x, int y, int width, int height, SDL_Color color) {
         Uint8 r, g, b, a;

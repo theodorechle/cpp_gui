@@ -63,7 +63,7 @@ namespace applyStyleTests {
         gui::element::UiElement parentElement = gui::element::UiElement("element", nullptr, {"a-class"});
         parentElement.addChild(&element);
         test::Result result = testApplyingStyle(".a-class>button {text-color: #ff0000;}", &element, {"text-color"}, true);
-        parentElement.removeChilds();
+        parentElement.removeChildren();
         return result;
     }
 
@@ -72,7 +72,7 @@ namespace applyStyleTests {
         gui::element::UiElement parentElement = gui::element::UiElement("element", nullptr, {"a-class"});
         parentElement.addChild(&element);
         test::Result result = testApplyingStyle(".a-class button {text-color: #ff0000;}", &element, {"text-color"}, true);
-        parentElement.removeChilds();
+        parentElement.removeChildren();
         return result;
     }
 
@@ -83,8 +83,8 @@ namespace applyStyleTests {
         parentElement.addChild(&element);
         parentParentElement.addChild(&parentElement);
         test::Result result = testApplyingStyle(".a-class button {text-color: #ff0000;}", &element, {"text-color"}, true);
-        parentParentElement.removeChilds();
-        parentElement.removeChilds();
+        parentParentElement.removeChildren();
+        parentElement.removeChildren();
         return result;
     }
 
@@ -93,7 +93,7 @@ namespace applyStyleTests {
         gui::element::UiElement parentElement = gui::element::UiElement("element");
         parentElement.addChild(&element);
         test::Result result = testApplyingStyle(".a-class>button {text-color: #ff0000;}", &element, {"text-color"}, false);
-        parentElement.removeChilds();
+        parentElement.removeChildren();
         return result;
     }
 
@@ -102,7 +102,7 @@ namespace applyStyleTests {
         gui::element::UiElement parentElement = gui::element::UiElement("element");
         parentElement.addChild(&element);
         test::Result result = testApplyingStyle(".a-class button {text-color: #ff0000;}", &element, {"text-color"}, false);
-        parentElement.removeChilds();
+        parentElement.removeChildren();
         return result;
     }
 
@@ -113,8 +113,8 @@ namespace applyStyleTests {
         parentElement.addChild(&element);
         parentParentElement.addChild(&parentElement);
         test::Result result = testApplyingStyle(".a-class button {text-color: #ff0000;}", &element, {"text-color"}, false);
-        parentParentElement.removeChilds();
-        parentElement.removeChilds();
+        parentParentElement.removeChildren();
+        parentElement.removeChildren();
         return result;
     }
 
@@ -128,7 +128,7 @@ namespace applyStyleTests {
         gui::element::UiElement parentElement = gui::element::UiElement("element");
         parentElement.addChild(&element);
         test::Result result = testApplyingStyle("*>button {text-color: #ff0000;}", &element, {"text-color"}, true);
-        parentElement.removeChilds();
+        parentElement.removeChildren();
         return result;
     }
 
@@ -137,7 +137,7 @@ namespace applyStyleTests {
         gui::element::UiElement parentElement = gui::element::UiElement("element");
         parentElement.addChild(&element);
         test::Result result = testApplyingStyle("* button {text-color: #ff0000;}", &element, {"text-color"}, true);
-        parentElement.removeChilds();
+        parentElement.removeChildren();
         return result;
     }
 
@@ -148,8 +148,8 @@ namespace applyStyleTests {
         parentElement.addChild(&element);
         parentParentElement.addChild(&parentElement);
         test::Result result = testApplyingStyle("* button {text-color: #ff0000;}", &element, {"text-color"}, true);
-        parentParentElement.removeChilds();
-        parentElement.removeChilds();
+        parentParentElement.removeChildren();
+        parentElement.removeChildren();
         return result;
     }
 

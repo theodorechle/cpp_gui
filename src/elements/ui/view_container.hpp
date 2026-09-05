@@ -8,9 +8,9 @@ namespace gui::element {
     class ViewContainer : public UiElement {
         gui::element::manager::UiManager *viewManager = nullptr;
 
-        void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const override;
+        void computeSelfAndChildrenLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childrenSizes) const override;
 
-        void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+        void renderChildrenWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                  std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
 
         /**

@@ -1,6 +1,6 @@
 ### layout computing:
 - compute wanted size
-    - get wanted childs size
+    - get wanted children size
     - add padding
     - add self size
     - adjust with min and max sizes

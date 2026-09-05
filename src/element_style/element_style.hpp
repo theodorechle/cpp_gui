@@ -9,7 +9,7 @@
 namespace gui::elementStyle {
     class ElementStyle {
         style::RulesMap *_rules = new style::RulesMap();
-        std::set<style::StyleComponentData> _selectors = {};
+        std::set<style::SelectorData> _selectors = {};
 
         static bool compareRulesPriorityAscending(const style::StyleRule &rule1, const style::StyleRule &rule2);
 
@@ -18,9 +18,9 @@ namespace gui::elementStyle {
 
         void rules(style::RulesMap *newStyle);
 
-        void addSelector(const std::string &selectorName, style::StyleComponentType selectorType);
-        void removeSelector(const std::string &selectorName, style::StyleComponentType selectorType);
-        bool hasSelector(const style::StyleComponentData &selector) const;
+        void addSelector(const std::string &selectorName, style::SelectorType selectorType);
+        void removeSelector(const std::string &selectorName, style::SelectorType selectorType);
+        bool hasSelector(const style::SelectorData &selector) const;
 
         void updateStylePriorityFromFile(int oldFileNumber, int newFileNumber);
         void clear();

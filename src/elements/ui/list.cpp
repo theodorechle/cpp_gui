@@ -6,40 +6,40 @@ namespace gui::element {
     List::List(gui::elementStyle::manager::StyleManager *elementsStyleManager, std::vector<std::string> classes, const std::string &identifier)
         : UiElement{"list", elementsStyleManager, classes, identifier} {}
 
-    void List::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
+    void List::computeSelfAndChildrenLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childrenSizes) const {
         bool vertical = getBoolFromRule({"vertical"});
         int gap;
-        std::list<int> childsWidths;
-        std::list<int> childsHeights;
+        std::list<int> childrenWidths;
+        std::list<int> childrenHeights;
 
-        for (const std::tuple<int, int> &childSize : childsSizes) {
-            childsWidths.push_back(std::get<0>(childSize));
-            childsHeights.push_back(std::get<1>(childSize));
+        for (const std::tuple<int, int> &childSize : childrenSizes) {
+            childrenWidths.push_back(std::get<0>(childSize));
+            childrenHeights.push_back(std::get<1>(childSize));
         }
 
         if (vertical) {
-            (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
-            (*selfHeight) = std::accumulate(childsHeights.cbegin(), childsHeights.cend(), 0);
-            gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChilds() - 1);
-            (*selfHeight) += gap * (childsSizes.size() - 1);
+            (*selfWidth) = *std::max_element(childrenWidths.cbegin(), childrenWidths.cend());
+            (*selfHeight) = std::accumulate(childrenHeights.cbegin(), childrenHeights.cend(), 0);
+            gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChildren() - 1);
+            (*selfHeight) += gap * (childrenSizes.size() - 1);
         }
         else {
-            (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
-            (*selfWidth) = std::accumulate(childsWidths.cbegin(), childsWidths.cend(), 0);
-            gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChilds() - 1);
-            (*selfWidth) += gap * (childsSizes.size() - 1);
+            (*selfHeight) = *std::max_element(childrenHeights.cbegin(), childrenHeights.cend());
+            (*selfWidth) = std::accumulate(childrenWidths.cbegin(), childrenWidths.cend(), 0);
+            gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChildren() - 1);
+            (*selfWidth) += gap * (childrenSizes.size() - 1);
         }
     }
 
-    void List::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+    void List::renderChildren(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                             std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
         bool vertical = getBoolFromRule({"vertical"});
         int gap;
         if (vertical) {
-            gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChilds() - 1);
+            gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getHeight()) * (nbChildren() - 1);
         }
         else {
-            gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChilds() - 1);
+            gap = computeSize({"gap"}, 0, (parent() == nullptr) ? 0 : static_cast<const UiElement *>(parent())->getWidth()) * (nbChildren() - 1);
         }
         const ui::UiElementData *childData;
         ui::Pos childCoords = {0, 0};

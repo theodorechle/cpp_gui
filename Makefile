@@ -1,5 +1,5 @@
 CPP_C=g++
-CPP_FLAGS=-std=c++17 -Wall -g -MMD -MP
+CPP_FLAGS=-std=c++23 -Wall -g -MMD -MP
 SDL_CMD=`pkg-config sdl3 sdl3-ttf --cflags --libs`
 BIN_DIR=bin
 OBJ_DIR=obj/lib
@@ -64,10 +64,10 @@ $(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CPP_C) $(CPP_FLAGS) -c $< -o $@
 
 $(STYLE_LIB).a:
-	$(MAKE) -C cpp_style -j lib DEBUG=$(DEBUG)
+	$(MAKE) -C cpp_style lib DEBUG=$(DEBUG)
 
 $(TESTS_LIB).a:
-	$(MAKE) -C cpp_tests -j lib DEBUG=$(DEBUG)
+	$(MAKE) -C cpp_tests lib DEBUG=$(DEBUG)
 
 # Rule for compiling all object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp

@@ -9,9 +9,9 @@ namespace gui::element {
     class Canvas : public UiElement {
         SDL_Texture *texture = nullptr;
 
-        void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const override;
+        void computeSelfAndChildrenLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childrenSizes) const override;
 
-        void renderSelfBeforeChilds() const override;
+        void renderSelfBeforeChildren() const override;
 
     public:
         Canvas(gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr, std::vector<std::string> classes = {},

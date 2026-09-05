@@ -7,7 +7,7 @@ namespace styleNodesTests {
             std::cerr << "null";
             return;
         }
-        std::cerr << value->value() << "<" << style::styleValueTypeToString(value->type()) << ">";
+        std::cerr << value->value() << "<" << style::valueTypeToString(value->type()) << ">";
         style::StyleValue *next = value->next();
         if (next != nullptr) {
             std::cerr << ",";
@@ -96,7 +96,7 @@ namespace styleNodesTests {
 
     test::Result testAddDisabledRule() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, false, 3, 5, 3)}}});
         style::RulesMap::const_iterator result = node->rules()->find("test");
         test::Result testResult;
@@ -106,7 +106,7 @@ namespace styleNodesTests {
         }
         else {
             style::StyleRule rule = result->second;
-            style::StyleValue expectedValue = style::StyleValue("abc", style::StyleValueType::String);
+            style::StyleValue expectedValue = style::StyleValue("abc", style::ValueType::String);
             testResult = test::booleanToResult(testRule(true, rule, style::StyleRule(&expectedValue, false, 3, 5, 3)));
         }
         delete node;
@@ -115,7 +115,7 @@ namespace styleNodesTests {
 
     test::Result testAddCustomRule() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}});
         style::RulesMap::const_iterator result = node->rules()->find("test");
         test::Result testResult;
@@ -125,7 +125,7 @@ namespace styleNodesTests {
         }
         else {
             style::StyleRule rule = result->second;
-            style::StyleValue expectedValue = style::StyleValue("abc", style::StyleValueType::String);
+            style::StyleValue expectedValue = style::StyleValue("abc", style::ValueType::String);
             testResult = test::booleanToResult(testRule(true, rule, style::StyleRule(&expectedValue, true, 3, 5, 3)));
         }
         delete node;
@@ -134,7 +134,7 @@ namespace styleNodesTests {
 
     test::Result testDeleteRule() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 2, 3)}}});
         test::Result testResult;
 
@@ -151,7 +151,7 @@ namespace styleNodesTests {
 
     test::Result testDeleteDisabledRule() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 2, 3)}}});
         test::Result testResult;
 
@@ -168,7 +168,7 @@ namespace styleNodesTests {
 
     test::Result testDeleteRulesFromFile() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 2, 3)}}});
         test::Result testResult;
 
@@ -184,7 +184,7 @@ namespace styleNodesTests {
 
     test::Result testUpdateRulePriorityFromFile() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}});
         test::Result testResult;
 
@@ -196,7 +196,7 @@ namespace styleNodesTests {
         }
         else {
             style::StyleRule rule = result->second;
-            style::StyleValue expectedValue = style::StyleValue("abc", style::StyleValueType::String);
+            style::StyleValue expectedValue = style::StyleValue("abc", style::ValueType::String);
             testResult = test::booleanToResult(testRule(true, rule, style::StyleRule(&expectedValue, true, 3, 7, 3)));
         }
         delete node;
@@ -205,7 +205,7 @@ namespace styleNodesTests {
 
     test::Result testClear() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}});
 
         node->clear();
@@ -220,7 +220,7 @@ namespace styleNodesTests {
 
     test::Result testClearWithDisabledRule() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, false, 3, 5, 3)}}});
 
         node->clear();
@@ -235,8 +235,8 @@ namespace styleNodesTests {
 
     test::Result testClearMultipleRules() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value2 = style::StyleValue("pou", style::StyleValueType::Int);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value2 = style::StyleValue("pou", style::ValueType::Int);
         node->rules(
             new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}, {"test2", {style::StyleRule(&value2, false, 7, 2, 18)}}});
 
@@ -264,7 +264,7 @@ namespace styleNodesTests {
 
     test::Result testNbRulesOneRule() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}});
         int result = node->nbRules();
         delete node;
@@ -277,7 +277,7 @@ namespace styleNodesTests {
 
     test::Result testNbRulesOneDisabledRule() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, false, 3, 5, 3)}}});
         int result = node->nbRules();
         delete node;
@@ -290,11 +290,11 @@ namespace styleNodesTests {
 
     test::Result testNbRulesMultipleRules() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value2 = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value3 = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value4 = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value5 = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value2 = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value3 = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value4 = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value5 = style::StyleValue("abc", style::ValueType::String);
 
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}},
                                         {"aze", {style::StyleRule(&value2, true, 3, 5, 3)}},
@@ -313,7 +313,7 @@ namespace styleNodesTests {
 
     test::Result testNbRulesAfterCleared() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}});
         node->clear();
         int result = node->nbRules();
@@ -327,7 +327,7 @@ namespace styleNodesTests {
 
     test::Result testGetOneRuleOfOne() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}});
         test::Result testResult;
 
@@ -338,7 +338,7 @@ namespace styleNodesTests {
             testResult = test::Result::FAILURE;
         }
         else {
-            style::StyleValue expectedValue = style::StyleValue("abc", style::StyleValueType::String);
+            style::StyleValue expectedValue = style::StyleValue("abc", style::ValueType::String);
             testResult = test::booleanToResult(testValue(true, styleValue, &expectedValue, true));
         }
         delete node;
@@ -347,7 +347,7 @@ namespace styleNodesTests {
 
     test::Result testGetOneRuleOfOneDisabled() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, false, 3, 5, 3)}}});
         test::Result testResult;
 
@@ -364,8 +364,8 @@ namespace styleNodesTests {
 
     test::Result testGetOneRuleOfMultiple() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value2 = style::StyleValue("oiuy", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value2 = style::StyleValue("oiuy", style::ValueType::String);
 
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}, {"test2", {style::StyleRule(&value2, true, 3, 5, 3)}}});
         test::Result testResult;
@@ -377,7 +377,7 @@ namespace styleNodesTests {
             testResult = test::Result::FAILURE;
         }
         else {
-            style::StyleValue expectedValue = style::StyleValue("abc", style::StyleValueType::String);
+            style::StyleValue expectedValue = style::StyleValue("abc", style::ValueType::String);
             testResult = test::booleanToResult(testValue(true, styleValue, &expectedValue, true));
         }
         delete node;
@@ -386,7 +386,7 @@ namespace styleNodesTests {
 
     test::Result testGetRuleWithNoMatchingRules() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}});
         test::Result testResult;
 
@@ -419,8 +419,8 @@ namespace styleNodesTests {
 
     test::Result testGetRuleValueWithListOfRuleNamesWithSameSpecificity() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value2 = style::StyleValue("def", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value2 = style::StyleValue("def", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}, {"test2", {style::StyleRule(&value2, true, 3, 5, 3)}}});
         test::Result testResult;
 
@@ -432,7 +432,7 @@ namespace styleNodesTests {
             testResult = test::Result::FAILURE;
         }
         else {
-            style::StyleValue expectedValue = style::StyleValue("abc", style::StyleValueType::String);
+            style::StyleValue expectedValue = style::StyleValue("abc", style::ValueType::String);
             testResult = test::booleanToResult(testValue(true, styleValue, &expectedValue, true));
         }
         delete styleValue;
@@ -442,8 +442,8 @@ namespace styleNodesTests {
 
     test::Result testGetRuleValueWithListOfRuleNames() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value2 = style::StyleValue("def", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value2 = style::StyleValue("def", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}, {"test2", {style::StyleRule(&value2, true, 7, 5, 3)}}});
         test::Result testResult;
 
@@ -455,7 +455,7 @@ namespace styleNodesTests {
             testResult = test::Result::FAILURE;
         }
         else {
-            style::StyleValue expectedValue = style::StyleValue("def", style::StyleValueType::String);
+            style::StyleValue expectedValue = style::StyleValue("def", style::ValueType::String);
             testResult = test::booleanToResult(testValue(true, styleValue, &expectedValue, true));
         }
         delete styleValue;
@@ -465,8 +465,8 @@ namespace styleNodesTests {
 
     test::Result testGetRuleValueInEmptyListOfRuleNames() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value2 = style::StyleValue("def", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value2 = style::StyleValue("def", style::ValueType::String);
         node->rules(new style::RulesMap{{"test", {style::StyleRule(&value, true, 3, 5, 3)}}, {"test2", {style::StyleRule(&value2, true, 7, 5, 3)}}});
 
         test::Result testResult;
@@ -486,8 +486,8 @@ namespace styleNodesTests {
 
     test::Result testGetRuleValueWithNoMatchingRules() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
-        style::StyleValue value = style::StyleValue("abc", style::StyleValueType::String);
-        style::StyleValue value2 = style::StyleValue("def", style::StyleValueType::String);
+        style::StyleValue value = style::StyleValue("abc", style::ValueType::String);
+        style::StyleValue value2 = style::StyleValue("def", style::ValueType::String);
         style::RulesMap style = {{"test", {style::StyleRule(&value, true, 3, 5, 3)}}, {"test2", {style::StyleRule(&value2, true, 7, 5, 3)}}};
 
         test::Result testResult;
@@ -526,7 +526,7 @@ namespace styleNodesTests {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
         test::Result testResult;
 
-        if (node->hasSelector({"selector", style::StyleComponentType::Class})) {
+        if (node->hasSelector({"selector", style::SelectorType::Class})) {
             std::cerr << "selector found but wasn't created\n";
             testResult = test::Result::FAILURE;
         }
@@ -538,9 +538,9 @@ namespace styleNodesTests {
     test::Result testSetAndGetSelector() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
         test::Result testResult;
-        node->addSelector("myClass", style::StyleComponentType::Class);
+        node->addSelector("myClass", style::SelectorType::Class);
 
-        if (!node->hasSelector({"myClass", style::StyleComponentType::Class})) {
+        if (!node->hasSelector({"myClass", style::SelectorType::Class})) {
             std::cerr << "selector not found\n";
             testResult = test::Result::FAILURE;
         }
@@ -553,14 +553,14 @@ namespace styleNodesTests {
     test::Result testSetAndGetMultipleSelectors() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
         test::Result testResult = test::Result::SUCCESS;
-        node->addSelector("myClass", style::StyleComponentType::Class);
-        node->addSelector("myId", style::StyleComponentType::Identifier);
+        node->addSelector("myClass", style::SelectorType::Class);
+        node->addSelector("myId", style::SelectorType::Identifier);
 
-        if (!node->hasSelector({"myClass", style::StyleComponentType::Class})) {
+        if (!node->hasSelector({"myClass", style::SelectorType::Class})) {
             std::cerr << "first selector not found\n";
             testResult = test::Result::FAILURE;
         }
-        if (!node->hasSelector({"myId", style::StyleComponentType::Identifier})) {
+        if (!node->hasSelector({"myId", style::SelectorType::Identifier})) {
             std::cerr << "second selector not found\n";
             testResult = test::Result::FAILURE;
         }
@@ -571,14 +571,14 @@ namespace styleNodesTests {
     test::Result testSetAndGetMultipleSelectorsSameType() {
         gui::elementStyle::ElementStyle *node = new gui::elementStyle::ElementStyle();
         test::Result testResult = test::Result::SUCCESS;
-        node->addSelector("myClass", style::StyleComponentType::Class);
-        node->addSelector("mySecondClass", style::StyleComponentType::Class);
+        node->addSelector("myClass", style::SelectorType::Class);
+        node->addSelector("mySecondClass", style::SelectorType::Class);
 
-        if (!node->hasSelector({"myClass", style::StyleComponentType::Class})) {
+        if (!node->hasSelector({"myClass", style::SelectorType::Class})) {
             std::cerr << "first selector not found\n";
             testResult = test::Result::FAILURE;
         }
-        if (!node->hasSelector({"mySecondClass", style::StyleComponentType::Class})) {
+        if (!node->hasSelector({"mySecondClass", style::SelectorType::Class})) {
             std::cerr << "second selector not found\n";
             testResult = test::Result::FAILURE;
         }

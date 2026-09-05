@@ -105,12 +105,12 @@ namespace gui::element {
         SDL_Color backgroundColor() const;
 
         /**
-         * Must be tree independant (no use of parent or childs nor nexts)
+         * Must be tree independant (no use of parent or children nor nexts)
          */
         virtual void initBeforeLayoutComputing() {}
 
         /**
-         * Must be tree independant (no use of parent or childs nor nexts)
+         * Must be tree independant (no use of parent or children nor nexts)
          */
         virtual void restoreAfterLayoutComputing() {}
 
@@ -122,14 +122,14 @@ namespace gui::element {
         /**
          * selfWidth and selfHeight are the new sizes
          */
-        virtual void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const;
+        virtual void computeSelfAndChildrenLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childrenSizes) const;
 
     private:
         bool setClipRect(const SDL_Rect *clipRect, std::string callerName = "") const;
 
-        virtual void renderSelfBeforeChilds() const;
-        virtual void renderSelfAfterChilds() const;
-        virtual void renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+        virtual void renderSelfBeforeChildren() const;
+        virtual void renderSelfAfterChildren() const;
+        virtual void renderChildren(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                   std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const;
         virtual void renderBackground() const;
         virtual void renderBorders() const;
@@ -140,9 +140,9 @@ namespace gui::element {
         void textEngine(TTF_TextEngine *textEngine);
         TTF_TextEngine *textEngine() const { return _textEngine; };
 
-        void renderSelfBeforeChildsWrapper() const override;
-        void renderSelfAfterChildsWrapper() const override;
-        void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+        void renderSelfBeforeChildrenWrapper() const override;
+        void renderSelfAfterChildrenWrapper() const override;
+        void renderChildrenWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                  std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const override;
         bool renderSingleChildWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                       std::function<const ElementData *(const AbstractElement *)> childInfosCallback, const UiElement *child,
@@ -156,8 +156,8 @@ namespace gui::element {
          * Calls the rendering methods in this order:
          * - renderBordersWrapper
          * - renderBackgroundWrapper
-         * - renderSelfBeforeChildsWrapper
-         * - renderChildsWrapper
+         * - renderSelfBeforeChildrenWrapper
+         * - renderChildrenWrapper
          * - renderScrollBarsWrapper
          * Also manages the clip rect for content (everything except borders)
          */

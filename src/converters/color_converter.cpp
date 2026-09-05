@@ -32,7 +32,7 @@ namespace gui {
         bool ColorConverter::convertFromTuple(style::StyleValue *value, SDL_Color *color) {
             style::StyleValue *child = value->child();
             int intResult;
-            switch (value->nbChilds()) {
+            switch (value->nbChildren()) {
             case 3:
                 if (!NumberConverter::convertToInt(child, &intResult)) return false;
                 color->r = intResult;
@@ -65,9 +65,9 @@ namespace gui {
         bool ColorConverter::convert(style::StyleValue *value, SDL_Color *color) {
             if (value == nullptr || color == nullptr) return false;
             switch (value->type()) {
-            case style::StyleValueType::Hex:
+            case style::ValueType::Hex:
                 return convertFromHex(value, color);
-            case style::StyleValueType::Tuple:
+            case style::ValueType::Tuple:
                 return convertFromTuple(value, color);
             default:
                 return false;

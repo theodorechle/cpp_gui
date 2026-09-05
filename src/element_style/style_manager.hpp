@@ -22,10 +22,10 @@ namespace gui::elementStyle::manager {
         int findFile(const std::string &fileName);
         void updateRulesPrioritiesInElements(int oldFileNumber, int newFileNumber, element::AbstractElement *element);
         void updateRulesPriorities(int fileNumber);
-        bool elementMatchSelector(element::AbstractElement *element, const style::StyleComponentData &selector);
-        bool elementSelectorsCompatibles(element::AbstractElement *element, const style::StyleComponentDataList *componentsList);
-        bool elementSelectorsCompatibles(style::StyleComponentDataList::const_reverse_iterator componentDataIt,
-                                         style::StyleComponentDataList::const_reverse_iterator componentDataListEndIt,
+        bool elementMatchSelector(element::AbstractElement *element, const style::SelectorData &selector);
+        bool elementSelectorsCompatibles(element::AbstractElement *element, const style::SelectorDataList *componentsList);
+        bool elementSelectorsCompatibles(style::SelectorDataList::const_reverse_iterator componentDataIt,
+                                         style::SelectorDataList::const_reverse_iterator componentDataListEndIt,
                                          element::AbstractElement *element);
 
     public:
@@ -46,6 +46,8 @@ namespace gui::elementStyle::manager {
 
         void addDefaultFontPath(const std::string &path);
         const std::unordered_set<std::string> &getDefaultFontsPaths() const;
+
+        std::list<element::AbstractElement *> findAllElementsBySelectors(const std::string &selectors);
     };
 
 } // namespace gui::elementStyle::manager

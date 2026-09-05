@@ -11,39 +11,39 @@ namespace gui::element::ui::render {
 
     UiRenderNode::~UiRenderNode() { SDL_DestroyTexture(nodeTexture); }
 
-    void UiRenderNode::computeSelfAndChildsLayout() {
+    void UiRenderNode::computeSelfAndChildrenLayout() {
         if (_baseElement == nullptr) return;
-        std::list<std::tuple<int, int>> childsSizes = {};
+        std::list<std::tuple<int, int>> childrenSizes = {};
         UiRenderNode *childNode = child();
         while (childNode != nullptr) {
-            childNode->computeSelfAndChildsLayout();
-            childsSizes.push_back(std::tuple<int, int>(childNode->defaultSizeWithChilds.width, childNode->defaultSizeWithChilds.height));
+            childNode->computeSelfAndChildrenLayout();
+            childrenSizes.push_back(std::tuple<int, int>(childNode->defaultSizeWithChildren.width, childNode->defaultSizeWithChildren.height));
             childNode = childNode->next();
         }
 
-        _baseElement->computeSelfAndChildsLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height), childsSizes);
-        _baseElement->computeTotalLayout(&(defaultSizeWithChilds.width), &(defaultSizeWithChilds.height));
+        _baseElement->computeSelfAndChildrenLayout(&(defaultSizeWithChildren.width), &(defaultSizeWithChildren.height), childrenSizes);
+        _baseElement->computeTotalLayout(&(defaultSizeWithChildren.width), &(defaultSizeWithChildren.height));
     }
 
     void UiRenderNode::computeRelativeLayout(Size *size) {
         if (_baseElement == nullptr) return;
         if (size) _baseElement->setSize(*size);
-        else _baseElement->setSize(defaultSizeWithChilds);
+        else _baseElement->setSize(defaultSizeWithChildren);
         // set variables like rem, em, ...
         // percentages should be set at this moment
-        std::list<std::tuple<int, int>> childsSizes = {};
+        std::list<std::tuple<int, int>> childrenSizes = {};
         UiRenderNode *nodeChild = child();
         while (nodeChild != nullptr) {
             nodeChild->computeRelativeLayout();
-            childsSizes.push_back(std::tuple<int, int>(nodeChild->relativeSize.width, nodeChild->relativeSize.height));
+            childrenSizes.push_back(std::tuple<int, int>(nodeChild->relativeSize.width, nodeChild->relativeSize.height));
             nodeChild = nodeChild->next();
         }
 
         if (size) {
-            _baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), childsSizes);
+            _baseElement->computeSelfAndChildrenLayout(&(relativeSize.width), &(relativeSize.height), childrenSizes);
         }
         else {
-            _baseElement->computeSelfAndChildsLayout(&(relativeSize.width), &(relativeSize.height), childsSizes);
+            _baseElement->computeSelfAndChildrenLayout(&(relativeSize.width), &(relativeSize.height), childrenSizes);
         }
         _baseElement->computeTotalLayout(&(relativeSize.width), &(relativeSize.height));
     }

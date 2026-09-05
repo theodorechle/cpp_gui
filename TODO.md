@@ -25,9 +25,12 @@
 
 - Fix inconsistencies on namespaces (for example, some classes are in ui and others not)
 
-- Search elements using CSS like selectors/path/XPath (name, id, class, ...)
+- Search elements using CSS like selectors/path/XPath (name, id, class, ...):
+  - Same path syntax as CSS selectors
 
-- rename childs -> children
+- Add an ID (more a typedef which can be a single value or a struct, so it can maybe evolve later) to elements to allow interacting with them
+
+- rename children -> children
 - previous draw not cleared properly when resizing an element on which size is set with percentages
 
 - asynchronous:
@@ -42,3 +45,17 @@
     - thread pool?
     - a thread for multiple elements?
     - a thread per element?
+  - requests to read, like events, can be synchronous using a future:
+    ```cpp
+    std::promise<Response> promise;
+    std::future<Response> response = promise.get_future();
+
+    // send request to element, which will then resolve the promise like
+        promise->set_value(Response());
+    // or if element is not found
+        promise->set_exception(std::make_exception_ptr(std::runtime_error("element not found"))); // or custom error (better)
+
+    // the manager waits using
+    response.get();
+    // and then return the result
+    ```

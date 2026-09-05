@@ -4,7 +4,7 @@ namespace gui {
     namespace converter {
         bool NumberConverter::convertToInt(style::StyleValue *value, int *result) {
             std::string valueStr = value->value();
-            if (value->type() == style::StyleValueType::Int) {
+            if (value->type() == style::ValueType::Int) {
                 (*result) = std::stoul(valueStr, nullptr, 10);
                 return true;
             }

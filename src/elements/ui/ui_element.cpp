@@ -26,7 +26,7 @@ namespace gui::element {
         style::StyleValue *rule = nullptr;
         std::string value = defaultString;
         _style.getRule(ruleNames, &rule);
-        if (rule != nullptr && rule->type() == style::StyleValueType::String) value = rule->value();
+        if (rule != nullptr && rule->type() == style::ValueType::String) value = rule->value();
         delete rule;
         return value;
     }
@@ -37,7 +37,7 @@ namespace gui::element {
         std::string value = defaultValue;
         _style.getRule(ruleName, &rule);
         if (rule != nullptr
-            && rule->type() == style::StyleValueType::EnumValue
+            && rule->type() == style::ValueType::EnumValue
             && (allowedValues.empty() || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->value()) != allowedValues.cend())) {
             value = rule->value();
         }
@@ -51,7 +51,7 @@ namespace gui::element {
         std::string value = defaultValue;
         _style.getRule(ruleNames, &rule);
         if (rule != nullptr
-            && rule->type() == style::StyleValueType::EnumValue
+            && rule->type() == style::ValueType::EnumValue
             && (allowedValues.empty() || std::find(allowedValues.cbegin(), allowedValues.cend(), rule->value()) != allowedValues.cend())) {
             value = rule->value();
         }
@@ -184,13 +184,11 @@ namespace gui::element {
 
     int UiElement::width(bool *found) const {
         const UiElement *elementParent = static_cast<const UiElement *>(parent());
-        std::cerr << "computing width\n";
         return computeSize({"width"}, 0, (elementParent == nullptr) ? 0 : elementParent->getWidth(), found);
     };
 
     int UiElement::height(bool *found) const {
         const UiElement *elementParent = static_cast<const UiElement *>(parent());
-        std::cerr << "computing height\n";
         return computeSize({"height"}, 0, (elementParent == nullptr) ? 0 : elementParent->getHeight(), found);
     };
 
@@ -255,7 +253,7 @@ namespace gui::element {
         if (found) (*height) = std::min(*height, size);
     }
 
-    void UiElement::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {}
+    void UiElement::computeSelfAndChildrenLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childrenSizes) const {}
 
     bool UiElement::setClipRect(const SDL_Rect *clipRect, std::string callerName) const {
         if (!SDL_SetRenderClipRect(_renderer, clipRect)) {
@@ -265,12 +263,12 @@ namespace gui::element {
         return true;
     }
 
-    void UiElement::renderSelfBeforeChilds() const {}
+    void UiElement::renderSelfBeforeChildren() const {}
 
-    void UiElement::renderSelfAfterChilds() const {}
+    void UiElement::renderSelfAfterChildren() const {}
 
-    void UiElement::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
-                                 std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {}
+    void UiElement::renderChildren(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                   std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {}
 
     bool UiElement::render(const ElementData *elementData, std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                            std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
@@ -300,11 +298,11 @@ namespace gui::element {
 
         if (!setClipRect(&paddedRect, "UiElement::render (inner rect)")) return false;
 
-        renderSelfBeforeChildsWrapper();
+        renderSelfBeforeChildrenWrapper();
 
-        renderChildsWrapper(renderChildCallback, childInfosCallback);
+        renderChildrenWrapper(renderChildCallback, childInfosCallback);
 
-        renderSelfAfterChildsWrapper();
+        renderSelfAfterChildrenWrapper();
 
         if (!setClipRect(&innerRect, "UiElement::render (inner rect)")) return false;
 
@@ -486,13 +484,13 @@ namespace gui::element {
         }
     }
 
-    void UiElement::renderSelfBeforeChildsWrapper() const { renderSelfBeforeChilds(); }
+    void UiElement::renderSelfBeforeChildrenWrapper() const { renderSelfBeforeChildren(); }
 
-    void UiElement::renderSelfAfterChildsWrapper() const { renderSelfAfterChilds(); }
+    void UiElement::renderSelfAfterChildrenWrapper() const { renderSelfAfterChildren(); }
 
-    void UiElement::renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
-                                        std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
-        renderChilds(renderChildCallback, childInfosCallback);
+    void UiElement::renderChildrenWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+                                          std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
+        renderChildren(renderChildCallback, childInfosCallback);
     }
 
     bool UiElement::renderSingleChildWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,

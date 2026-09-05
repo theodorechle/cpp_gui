@@ -22,15 +22,15 @@ namespace gui::elementStyle {
         _rules = newStyle;
     }
 
-    void ElementStyle::addSelector(const std::string &selectorName, style::StyleComponentType selectorType) {
-        _selectors.insert(style::StyleComponentData(selectorName, selectorType));
+    void ElementStyle::addSelector(const std::string &selectorName, style::SelectorType selectorType) {
+        _selectors.insert(style::SelectorData(selectorName, selectorType));
     }
 
-    void ElementStyle::removeSelector(const std::string &selectorName, style::StyleComponentType selectorType) {
-        _selectors.erase(style::StyleComponentData(selectorName, selectorType));
+    void ElementStyle::removeSelector(const std::string &selectorName, style::SelectorType selectorType) {
+        _selectors.erase(style::SelectorData(selectorName, selectorType));
     }
 
-    bool ElementStyle::hasSelector(const style::StyleComponentData &selector) const { return _selectors.find(selector) != _selectors.cend(); }
+    bool ElementStyle::hasSelector(const style::SelectorData &selector) const { return _selectors.find(selector) != _selectors.cend(); }
 
     void ElementStyle::updateStylePriorityFromFile(int oldFileNumber, int newFileNumber) {
         for (style::RulesMap::iterator it = _rules->begin(); it != _rules->end(); it++) {
@@ -42,9 +42,9 @@ namespace gui::elementStyle {
 
     void ElementStyle::clear() { _rules->clear(); }
 
-    void ElementStyle::activateModifier(const std::string &modifier) { _selectors.insert({modifier, style::StyleComponentType::Modifier}); }
+    void ElementStyle::activateModifier(const std::string &modifier) { _selectors.insert({modifier, style::SelectorType::Modifier}); }
 
-    void ElementStyle::deactivateModifier(const std::string &modifier) { _selectors.erase({modifier, style::StyleComponentType::Modifier}); }
+    void ElementStyle::deactivateModifier(const std::string &modifier) { _selectors.erase({modifier, style::SelectorType::Modifier}); }
 
     void ElementStyle::deleteStyle(int fileNumber, int ruleNumber) {
         for (style::RulesMap::iterator it = _rules->begin(); it != _rules->end(); it++) {
@@ -66,16 +66,16 @@ namespace gui::elementStyle {
 
     std::list<std::string> ElementStyle::debugToString() const {
         std::list<std::string> pathFragment = {};
-        for (const style::StyleComponentData &selector : _selectors) {
+        for (const style::SelectorData &selector : _selectors) {
             char firstChar[2] = "";
             switch (selector.second) {
-            case style::StyleComponentType::Identifier:
+            case style::SelectorType::Identifier:
                 firstChar[0] = '#';
                 break;
-            case style::StyleComponentType::Class:
+            case style::SelectorType::Class:
                 firstChar[0] = '.';
                 break;
-            case style::StyleComponentType::Modifier:
+            case style::SelectorType::Modifier:
                 firstChar[0] = ':';
                 break;
             default:
@@ -117,10 +117,10 @@ namespace gui::elementStyle {
     std::string ElementStyle::debugValue() {
         std::stringstream stringStream;
         bool first = true;
-        for (style::StyleComponentData selector : _selectors) {
+        for (style::SelectorData selector : _selectors) {
             if (!first) stringStream << ",";
             first = false;
-            stringStream << selector.first << "(" << style::styleComponentTypeToString(selector.second) << ")";
+            stringStream << selector.first << "(" << style::selectorTypeToString(selector.second) << ")";
         }
         return stringStream.str();
     }

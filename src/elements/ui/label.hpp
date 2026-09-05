@@ -12,9 +12,9 @@ namespace gui::element {
 
         void initBeforeLayoutComputing() override;
 
-        void computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const override;
+        void computeSelfAndChildrenLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childrenSizes) const override;
         void getTextSize(int *width, int *height) const;
-        void renderSelfAfterChilds() const override;
+        void renderSelfAfterChildren() const override;
 
     protected:
         Label(const std::string &elementName, const std::string &text, gui::elementStyle::manager::StyleManager *elementsStyleManager = nullptr,

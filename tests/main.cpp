@@ -3,7 +3,7 @@
 #include "apply_style_tests/apply_style_tests.hpp"
 
 int main() {
-    test::Tests tests = test::Tests(-1);
+    test::Tests tests = test::Tests();
     styleNodesTests::testsStyleNodes(&tests);
     applyStyleTests::applyStyleTests(&tests);
     tests.runTests();

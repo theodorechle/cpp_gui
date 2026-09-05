@@ -38,7 +38,7 @@ namespace gui::element {
             void initElementsBeforeLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
             void restoreAfterLayoutComputing(ui::render::UiRenderNode *rootRenderNode);
             void prepareRenderNodes(UiElement *rootElement, ui::render::UiRenderNode *rootRenderNode);
-            void computeNodesAndChildsLayout(ui::render::UiRenderNode *node);
+            void computeNodesAndChildrenLayout(ui::render::UiRenderNode *node);
             void computeNodesRelativeLayout(ui::render::UiRenderNode *node, ui::Size *size = nullptr);
             void computeNodesFinalLayout(ui::render::UiRenderNode *node, SDL_Rect *rootClipRect = nullptr);
             void computeElementsLayout();

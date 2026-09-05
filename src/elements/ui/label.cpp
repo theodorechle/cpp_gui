@@ -28,7 +28,7 @@ namespace gui::element {
         TTF_SetFontStyle(ttfFont, style);
     }
 
-    void Label::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
+    void Label::computeSelfAndChildrenLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childrenSizes) const {
         getTextSize(selfWidth, selfHeight);
     }
 
@@ -51,12 +51,12 @@ namespace gui::element {
         (*height) = 0;
     }
 
-    void Label::renderSelfAfterChilds() const {
+    void Label::renderSelfAfterChildren() const {
         SDL_Rect rect;
         SDL_Color color;
         SDL_GetRenderClipRect(renderer(), &rect);
         if (textEngine() == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Text engine is not defined.");
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChildren: Text engine is not defined.");
             return;
         }
 
@@ -66,18 +66,18 @@ namespace gui::element {
         if (wrapping == "wrapped") {
             int wrapWidth = rect.w;
             if (!TTF_SetTextWrapWidth(ttfText, wrapWidth)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Can't set text wrap width: %s", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChildren: Can't set text wrap width: %s", SDL_GetError());
             }
         }
         else if (wrapping == "line-break") {
             if (!TTF_SetTextWrapWidth(ttfText, 0)) {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Can't set text wrap width: %s", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChildren: Can't set text wrap width: %s", SDL_GetError());
             }
         }
 
         color = textColor();
         if (!TTF_SetTextColor(ttfText, color.r, color.g, color.b, color.a)) {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Can't set text color: %s", SDL_GetError());
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChildren: Can't set text color: %s", SDL_GetError());
             return;
         }
 
@@ -107,7 +107,7 @@ namespace gui::element {
             rect.y += (rect.h - textHeight);
         }
         if (!TTF_DrawRendererText(ttfText, rect.x, rect.y)) {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChilds: Can't render text: %s", SDL_GetError());
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Label::renderSelfAfterChildren: Can't render text: %s", SDL_GetError());
         }
     }
 

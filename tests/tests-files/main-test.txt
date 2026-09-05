@@ -67,7 +67,7 @@ root {
 
 list {
     vertical: true;
-    childs-size: biggest;
+    children-size: biggest;
 }
 
 #aaaaa-label {
@@ -83,7 +83,7 @@ list {
 
     list {
         vertical: false;
-        childs-size: biggest;
+        children-size: biggest;
 
         label {
             border: 1px;

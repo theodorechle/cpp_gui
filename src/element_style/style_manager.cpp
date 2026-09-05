@@ -41,7 +41,7 @@ namespace gui::elementStyle::manager {
         for (style::StyleDefinition *styleComponent : style) {
             if (!elementSelectorsCompatibles(actualElement, &styleComponent->first)) continue;
 
-            const style::StyleValuesMap *styleMap = &styleComponent->second;
+            const style::RulesMap *styleMap = &styleComponent->second;
 
             for (const std::pair<const std::string, style::StyleRule> &styleRule : *styleMap) {
                 if (inheritance && config->inheritableRules.find(styleRule.first) == config->inheritableRules.cend()) continue;
@@ -140,8 +140,8 @@ namespace gui::elementStyle::manager {
         if (_rootElement != nullptr && files.find(fileNumber) != files.cend()) {
             removeStyleInElements(fileNumber, _rootElement);
             for (style::StyleDefinition *block : style) {
-                style::StyleValuesMap &styleMap = block->second;
-                for (style::StyleValuesMap::iterator ruleIt = styleMap.begin(); ruleIt != styleMap.end();) {
+                style::RulesMap &styleMap = block->second;
+                for (style::RulesMap::iterator ruleIt = styleMap.begin(); ruleIt != styleMap.end();) {
                     if (ruleIt->second.fileNumber == fileNumber) {
                         ruleIt = styleMap.erase(ruleIt);
                     }
@@ -152,30 +152,30 @@ namespace gui::elementStyle::manager {
         }
     }
 
-    bool StyleManager::elementMatchSelector(element::AbstractElement *element, const style::StyleComponentData &selector) {
-        return selector.second == style::StyleComponentType::StarWildcard || element->style()->hasSelector(selector);
+    bool StyleManager::elementMatchSelector(element::AbstractElement *element, const style::SelectorData &selector) {
+        return selector.second == style::SelectorType::StarWildcard || element->style()->hasSelector(selector);
     }
 
-    bool StyleManager::elementSelectorsCompatibles(element::AbstractElement *element, const style::StyleComponentDataList *componentsList) {
+    bool StyleManager::elementSelectorsCompatibles(element::AbstractElement *element, const style::SelectorDataList *componentsList) {
         if (element == nullptr || componentsList == nullptr) return false;
-        style::StyleComponentDataList::const_reverse_iterator componentDataIt = componentsList->crbegin();
+        style::SelectorDataList::const_reverse_iterator componentDataIt = componentsList->crbegin();
         return elementSelectorsCompatibles(componentDataIt, componentsList->crend(), element);
     }
 
-    bool StyleManager::elementSelectorsCompatibles(style::StyleComponentDataList::const_reverse_iterator componentDataIt,
-                                                   style::StyleComponentDataList::const_reverse_iterator componentDataListEndIt,
+    bool StyleManager::elementSelectorsCompatibles(style::SelectorDataList::const_reverse_iterator componentDataIt,
+                                                   style::SelectorDataList::const_reverse_iterator componentDataListEndIt,
                                                    element::AbstractElement *element) {
         element::AbstractElement *currentElement = element;
-        for (style::StyleComponentDataList::const_reverse_iterator it = componentDataIt; it != componentDataListEndIt; it++) {
+        for (style::SelectorDataList::const_reverse_iterator it = componentDataIt; it != componentDataListEndIt; it++) {
             switch (it->second) {
-            case style::StyleRelation::SameElement:
+            case style::SelectorsRelation::SameElement:
                 if (!elementMatchSelector(currentElement, it->first)) return false;
                 break;
-            case style::StyleRelation::DirectParent:
+            case style::SelectorsRelation::DirectParent:
                 currentElement = currentElement->parent();
                 if (!currentElement || !elementMatchSelector(currentElement, it->first)) return false;
                 break;
-            case style::StyleRelation::AnyParent:
+            case style::SelectorsRelation::AnyParent:
                 while (currentElement) {
                     currentElement = currentElement->parent();
                     if (!currentElement) return false;
@@ -190,4 +190,12 @@ namespace gui::elementStyle::manager {
         }
         return true;
     }
+
+    std::list<element::AbstractElement *> findAllElementsBySelectors(const std::string &selectors) {
+        const style::config::Config *config = new style::config::Config();
+        style::StyleDeserializer::deserializeSelectors(selectors, config);
+        // TODO
+        return {};
+    }
+
 } // namespace gui::elementStyle::manager

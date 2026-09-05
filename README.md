@@ -138,7 +138,7 @@ Now, to create new elements, we simply need to add them as child of other elemen
     parentContainer->addChild(new gui::element::Label("some text", elementsStyleManager,
                                                       {"red"}, "test-label", textEngine));
 ```
-Since `parentContainer` is known to the element manager, all of its childs will also be known to it.
+Since `parentContainer` is known to the element manager, all of its children will also be known to it.
 
 
 After that we need to implements the other SDL callbacks.
@@ -269,8 +269,8 @@ An element on which you can draw shapes.
 For now it only supports drawing rects, but more are coming.
 
 ## List
-Displays its childs element in a list, one after the other, vertically or horizontally, with optional gap between them.
+Displays its children element in a list, one after the other, vertically or horizontally, with optional gap between them.
 
 ## Container
-Displays its childs one above the other.
+Displays its children one above the other.
 Might be removed to become the default behavior of an UiElement.

@@ -8,20 +8,20 @@ namespace gui::element {
         if (onClick != nullptr) registerEventHandler(ui::event::GuiEventType::EVENT_MOUSE_BUTTON_DOWN, onClick);
     }
 
-    void Button::computeSelfAndChildsLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childsSizes) const {
-        std::list<int> childsWidths;
-        std::list<int> childsHeights;
+    void Button::computeSelfAndChildrenLayout(int *selfWidth, int *selfHeight, std::list<std::tuple<int, int>> childrenSizes) const {
+        std::list<int> childrenWidths;
+        std::list<int> childrenHeights;
 
-        for (const std::tuple<int, int> &childSize : childsSizes) {
-            childsWidths.push_back(std::get<0>(childSize));
-            childsHeights.push_back(std::get<1>(childSize));
+        for (const std::tuple<int, int> &childSize : childrenSizes) {
+            childrenWidths.push_back(std::get<0>(childSize));
+            childrenHeights.push_back(std::get<1>(childSize));
         }
 
-        (*selfWidth) = *std::max_element(childsWidths.cbegin(), childsWidths.cend());
-        (*selfHeight) = *std::max_element(childsHeights.cbegin(), childsHeights.cend());
+        (*selfWidth) = *std::max_element(childrenWidths.cbegin(), childrenWidths.cend());
+        (*selfHeight) = *std::max_element(childrenHeights.cbegin(), childrenHeights.cend());
     }
 
-    void Button::renderChilds(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+    void Button::renderChildren(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                               std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {
         const UiElement *elementChild = static_cast<const UiElement *>(child());
         while (elementChild != nullptr) {

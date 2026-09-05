@@ -47,8 +47,8 @@ namespace gui::element {
 
         const std::string &name() const { return elementName; }
         void addChild(AbstractElement *newChild);
-        // remove pointer to childs, but does not delete them
-        void removeChilds();
+        // remove pointer to children, but does not delete them
+        void removeChildren();
         void setParent(AbstractElement *parent);
 
         void manager(manager::AbstractManager *manager);
@@ -60,18 +60,18 @@ namespace gui::element {
          * Override this function to draw self element.
          * Only draw element content (no border / background)
          */
-        virtual void renderSelfBeforeChildsWrapper() const {};
+        virtual void renderSelfBeforeChildrenWrapper() const {};
 
         /**
          * Override this function to draw self element.
          * Only draw element content (no border / background)
          */
-        virtual void renderSelfAfterChildsWrapper() const {};
+        virtual void renderSelfAfterChildrenWrapper() const {};
 
         /**
          * Should call each child with a portion of the element surface
          */
-        virtual void renderChildsWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
+        virtual void renderChildrenWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
                                          std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {};
 
         /**

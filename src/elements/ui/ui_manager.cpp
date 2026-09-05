@@ -268,7 +268,7 @@ namespace gui::element {
                 resetInvalidPointersOnNodesDeletion(node);
                 if (node) {
                     delete node->child();
-                    node->removeChilds(); // TODO: remove only concerned child
+                    node->removeChildren(); // TODO: remove only concerned child
                 }
                 needUpdate(elementsTree);
                 break;
@@ -296,7 +296,7 @@ namespace gui::element {
             }
         }
 
-        void UiManager::computeNodesAndChildsLayout(ui::render::UiRenderNode *node) { node->computeSelfAndChildsLayout(); }
+        void UiManager::computeNodesAndChildrenLayout(ui::render::UiRenderNode *node) { node->computeSelfAndChildrenLayout(); }
 
         void UiManager::computeNodesRelativeLayout(ui::render::UiRenderNode *node, ui::Size *size) {
             ui::render::UiRenderNode *currentNode = node;
@@ -336,7 +336,7 @@ namespace gui::element {
 #endif
                 if (!renderNode) continue;
                 delete renderNode->child();
-                renderNode->removeChilds();
+                renderNode->removeChildren();
 #ifdef DEBUG_DEBUG
                 std::clog << "render_nodes after removing\n";
                 rootRenderNode->debugDisplay();
@@ -361,7 +361,7 @@ namespace gui::element {
         }
 
         void UiManager::computeElementsLayout() {
-            computeNodesAndChildsLayout(rootRenderNode);
+            computeNodesAndChildrenLayout(rootRenderNode);
             ui::Size size = ui::Size{clipRect.w, clipRect.h};
             computeNodesRelativeLayout(rootRenderNode, &size);
             computeNodesFinalLayout(rootRenderNode, &clipRect);

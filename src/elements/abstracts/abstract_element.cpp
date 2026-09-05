@@ -25,12 +25,12 @@ namespace gui::element {
     AbstractElement::AbstractElement(std::string elementName, elementStyle::manager::StyleManager *elementsStyleManager,
                                      std::vector<std::string> classes, const std::string &identifier)
         : elementName{elementName}, elementsStyleManager{elementsStyleManager}, _style(elementStyle::ElementStyle()) {
-        _style.addSelector(elementName, style::StyleComponentType::ElementName);
+        _style.addSelector(elementName, style::SelectorType::ElementName);
         // set selectors
         for (std::string c : classes) {
-            _style.addSelector(c, style::StyleComponentType::Class);
+            _style.addSelector(c, style::SelectorType::Class);
         }
-        if (!identifier.empty()) _style.addSelector(identifier, style::StyleComponentType::Identifier);
+        if (!identifier.empty()) _style.addSelector(identifier, style::SelectorType::Identifier);
         if (elementsStyleManager == nullptr) return;
     }
 
@@ -48,8 +48,8 @@ namespace gui::element {
         sendEventToManager(event::ElementEvent::ADD_CHILD);
     }
 
-    void AbstractElement::removeChilds() {
-        commons::Node<AbstractElement>::removeChilds();
+    void AbstractElement::removeChildren() {
+        commons::Node<AbstractElement>::removeChildren();
         sendEventToManager(event::ElementEvent::REMOVE_CHILDS);
     }
 
@@ -98,8 +98,8 @@ namespace gui::element {
     }
 
     void AbstractElement::setModifierState(std::string modifier, bool enabled) {
-        if (enabled) _style.addSelector(modifier, style::StyleComponentType::Modifier);
-        else _style.removeSelector(modifier, style::StyleComponentType::Modifier);
+        if (enabled) _style.addSelector(modifier, style::SelectorType::Modifier);
+        else _style.removeSelector(modifier, style::SelectorType::Modifier);
     }
 
     void AbstractElement::catchEvent(const event::Event *event) { eventQueue.push(event); }
