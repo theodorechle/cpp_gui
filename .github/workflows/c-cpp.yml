@@ -2,9 +2,9 @@ name: C++ CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 concurrency:
   group: ${{ github.ref }}
@@ -15,73 +15,72 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository and submodules
-      uses: actions/checkout@v5
-      with:
-        submodules: recursive
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
 
-    - name: Install tests lib
-      run: |
-        git clone https://github.com/theodorechle/cpp_tests
-        cd cpp_tests
-        make -j $(nproc)
-        make install INSTALL_PATH=/tmp/cpptests
-        cd ..
+      - name: Install tests lib
+        run: |
+          git clone https://github.com/theodorechle/cpp_tests
+          cd cpp_tests
+          make -j $(nproc)
+          make install INSTALL_PATH=/tmp/cpptests
+          cd ..
 
-    - name: Install apt dependencies
-      uses: awalsh128/cache-apt-pkgs-action@latest
-      with:
-        packages: build-essential git make \
-          pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
-          libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
-          libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
-          libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
-          libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev cmake libharfbuzz-dev
+      - name: Install apt dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: build-essential git make \
+            pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
+            libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+            libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+            libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+            libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev cmake libharfbuzz-dev
 
-    - name: Add permission to cache SDL
-      run: sudo chmod -R 777 /usr/local
+      - name: Add permission to cache SDL
+        run: sudo chmod -R 777 /usr/local
 
-    - name: Cache SDL libraries
-      id: cache-sdl
-      uses: actions/cache@v5
-      with:
-        path: |
-          /usr/local/lib/cmake/SDL3
-          /usr/local/lib/cmake/SDL3_ttf
-          /usr/local/lib/pkgconfig
-          /usr/local/lib/libSDL3.so
-          /usr/local/lib/libSDL3.so.0
-          /usr/local/lib/libSDL3.so.0.5.0
-          /usr/local/lib/libSDL3_ttf.so
-          /usr/local/lib/libSDL3_ttf.so.0
-          /usr/local/lib/libSDL3_ttf.so.0.3.0
+      - name: Cache SDL libraries
+        id: cache-sdl
+        uses: actions/cache@v5
+        with:
+          path: |
+            /usr/local/lib/cmake/SDL3
+            /usr/local/lib/cmake/SDL3_ttf
+            /usr/local/lib/pkgconfig
+            /usr/local/lib/libSDL3.so
+            /usr/local/lib/libSDL3.so.0
+            /usr/local/lib/libSDL3.so.0.5.0
+            /usr/local/lib/libSDL3_ttf.so
+            /usr/local/lib/libSDL3_ttf.so.0
+            /usr/local/lib/libSDL3_ttf.so.0.3.0
 
-          /usr/local/include/SDL3
-          /usr/local/include/SDL3_ttf
-        key: ${{ runner.os }}-cache-sdl
+            /usr/local/include/SDL3
+            /usr/local/include/SDL3_ttf
+          key: ${{ runner.os }}-cache-sdl
 
-    - if: ${{ steps.cache-sdl.outputs.cache-hit != 'true' }}
-      name: Install SDL libraries
-      run: |
-        git clone https://github.com/libsdl-org/SDL.git
-        cd SDL
-        cmake -S . -B build
-        cmake --build build -j
-        sudo cmake --install build --prefix /usr/local
+      - if: ${{ steps.cache-sdl.outputs.cache-hit != 'true' }}
+        name: Install SDL libraries
+        run: |
+          git clone https://github.com/libsdl-org/SDL.git
+          cd SDL
+          cmake -S . -B build -DSDL_UNIX_CONSOLE_BUILD=ON
+          cmake --build build -j
+          sudo cmake --install build --prefix /usr/local
 
-        git clone https://github.com/libsdl-org/SDL_ttf/
-        cd SDL_ttf
-        ./external/download.sh
-        cmake -S . -B build
-        cmake --build build -j
-        sudo cmake --install build --prefix /usr/local
+          git clone https://github.com/libsdl-org/SDL_ttf/
+          cd SDL_ttf
+          ./external/download.sh
+          cmake -S . -B build
+          cmake --build build -j
+          sudo cmake --install build --prefix /usr/local
 
-    - name: Compile tests
-      run: make -j $(nproc) tests
+      - name: Compile main program
+        run: make -j $(nproc)
 
-    - name: Execute tests
-      run: bin/tests
+      - name: Compile tests
+        run: make -j $(nproc) tests SHARED_LIBS_BASE_PATH=/tmp/cpptests
 
-
-    - name: Compile main program
-      run: make -j $(nproc)
+      - name: Execute tests
+        run: bin/tests
