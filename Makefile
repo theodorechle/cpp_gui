@@ -1,7 +1,8 @@
-SHARED_LIBS_PATH:=/usr/local/lib
-SHARED_LIBS_INCLUDES_PATH:=/usr/local/include
-CPP_C=g++
-CPP_FLAGS=-std=c++23 -Wall -g -MMD -MP -I$(SHARED_LIBS_INCLUDES_PATH)/cpptests
+SHARED_LIBS_BASE_PATH?=/usr/local
+SHARED_LIBS_PATH:=$(SHARED_LIBS_BASE_PATH)/lib
+SHARED_LIBS_INCLUDES_PATH:=$(SHARED_LIBS_BASE_PATH)/include
+CPP_C:=g++
+CPP_FLAGS:=-std=c++23 -Wall -g -MMD -MP -I$(SHARED_LIBS_INCLUDES_PATH)
 SDL_CMD=`pkg-config sdl3 sdl3-ttf --cflags --libs`
 BIN_DIR=bin
 OBJ_DIR=obj/lib
@@ -58,7 +59,7 @@ $(MAIN): $(OBJ_MAIN) $(LIB).a $(STYLE_LIB).a
 # Build the tests executable (tests + lib)
 $(TESTS): $(OBJ_TESTS) $(LIB).a $(TESTS_LIB) $(STYLE_LIB).a
 	@mkdir -p $(BIN_DIR)
-	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD) -lcpptests -Wl,-rpath,'$(SHARED_LIBS_PATH)'
+	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD) -Wl,-rpath,'$(SHARED_LIBS_PATH)'
 
 # Rule for compiling all object files
 $(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp

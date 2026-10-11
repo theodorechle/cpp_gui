@@ -20,6 +20,14 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Install tests lib
+      run: |
+        git clone https://github.com/theodorechle/cpp_tests
+        cd cpp_tests
+        make -j $(nproc)
+        make install INSTALL_PATH=/tmp/cpptests
+        cd ..
+
     - name: Install apt dependencies
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
