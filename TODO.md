@@ -59,3 +59,5 @@
     response.get();
     // and then return the result
     ```
+
+With rvalues, I guess I could allow creating elements simply without giving user access to the element (since a rvalue means (to verify) it has been created in place, in the function call.

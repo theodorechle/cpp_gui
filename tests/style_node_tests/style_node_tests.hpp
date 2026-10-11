@@ -1,7 +1,7 @@
 #ifndef STYLE_NODE_TESTS_HPP
 #define STYLE_NODE_TESTS_HPP
 
-#include "../../cpp_tests/src/tests.hpp"
+#include <cpptests/tests.hpp>
 #include "../../cpp_style/src/style_component.hpp"
 
 namespace styleNodesTests {

@@ -1,5 +1,7 @@
+SHARED_LIBS_PATH:=/usr/local/lib
+SHARED_LIBS_INCLUDES_PATH:=/usr/local/include
 CPP_C=g++
-CPP_FLAGS=-std=c++23 -Wall -g -MMD -MP
+CPP_FLAGS=-std=c++23 -Wall -g -MMD -MP -I$(SHARED_LIBS_INCLUDES_PATH)/cpptests
 SDL_CMD=`pkg-config sdl3 sdl3-ttf --cflags --libs`
 BIN_DIR=bin
 OBJ_DIR=obj/lib
@@ -8,7 +10,7 @@ SRC_DIR=src
 TESTS_DIR=tests
 LIB=bin/cpp_gui_lib
 STYLE_LIB=cpp_style/bin/cpp_style_lib
-TESTS_LIB=cpp_tests/bin/cpp_tests_lib
+TESTS_LIB:=$(SHARED_LIBS_PATH)/libcpptests.so
 
 # Subdirectories
 SUBDIRS=app_utils elements/abstracts elements/ui elements/ui/render_nodes converters element_style thread_safe
@@ -54,9 +56,9 @@ $(MAIN): $(OBJ_MAIN) $(LIB).a $(STYLE_LIB).a
 	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD)
 
 # Build the tests executable (tests + lib)
-$(TESTS): $(OBJ_TESTS) $(LIB).a $(TESTS_LIB).a $(STYLE_LIB).a
+$(TESTS): $(OBJ_TESTS) $(LIB).a $(TESTS_LIB) $(STYLE_LIB).a
 	@mkdir -p $(BIN_DIR)
-	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD)
+	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD) -lcpptests -Wl,-rpath,'$(SHARED_LIBS_PATH)'
 
 # Rule for compiling all object files
 $(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp
