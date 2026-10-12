@@ -1,5 +1,5 @@
 #include "element_style.hpp"
-#include "../../cpp_commons/src/node.hpp"
+#include <cppcommons/node.hpp>
 #include <sstream>
 #include <string>
 

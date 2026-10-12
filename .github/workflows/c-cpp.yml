@@ -20,14 +20,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install tests lib
-        run: |
-          git clone https://github.com/theodorechle/cpp_tests
-          cd cpp_tests
-          make -j $(nproc)
-          make install INSTALL_PATH=/tmp/cpptests
-          cd ..
-
       - name: Install apt dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
@@ -76,11 +68,34 @@ jobs:
           cmake --build build -j
           sudo cmake --install build --prefix /usr/local
 
+      - name: Cache custom libs
+        id: cache-custom-libs
+        uses: actions/cache@v5
+        with:
+          path: |
+            /tmp/libs
+          key: ${{ runner.os }}-cache-custom-libs
+
+      - if: ${{ steps.cache-custom-libs.outputs.cache-hit != 'true' }}
+        name: Install custom libs
+        run: |
+          git clone https://github.com/theodorechle/cpp_tests
+          cd cpp_tests
+          make -j $(nproc)
+          make install INSTALL_PATH=/tmp/libs
+          cd ..
+
+          git clone https://github.com/theodorechle/cpp_commons
+          cd cpp_commons
+          make -j $(nproc)
+          make install INSTALL_PATH=/tmp/libs
+          cd ..
+
       - name: Compile main program
         run: make -j $(nproc)
 
       - name: Compile tests
-        run: make -j $(nproc) tests SHARED_LIBS_BASE_PATH=/tmp/cpptests
+        run: make -j $(nproc) tests SHARED_LIBS_BASE_PATH=/tmp/libs
 
       - name: Execute tests
         run: bin/tests

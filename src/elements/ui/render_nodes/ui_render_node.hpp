@@ -1,11 +1,11 @@
 #ifndef UI_RENDER_NODE_HPP
 #define UI_RENDER_NODE_HPP
 
-#include "../../../../cpp_commons/src/node.hpp"
 #include "../ui_element.hpp"
 #include "../utils.hpp"
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
+#include <cppcommons/node.hpp>
 
 namespace gui::element::ui::render {
     class UiRenderNode : public commons::Node<UiRenderNode> {

@@ -11,6 +11,7 @@ SRC_DIR=src
 TESTS_DIR=tests
 LIB=bin/cpp_gui_lib
 STYLE_LIB=cpp_style/bin/cpp_style_lib
+COMMONS_LIB:=$(SHARED_LIBS_PATH)/libcppcommons.so
 TESTS_LIB:=$(SHARED_LIBS_PATH)/libcpptests.so
 
 # Subdirectories
@@ -25,6 +26,8 @@ SRC_TESTS=$(wildcard $(TESTS_DIR)/*.cpp) $(wildcard $(TESTS_DIR)/*/*.cpp)
 OBJ_MAIN=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_MAIN))
 OBJ_SUBDIRS=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_SUBDIRS))
 OBJ_TESTS=$(patsubst $(SRC_DIR)/%.cpp, $(OBJ_TEST_DIR)/%.o, $(SRC_TESTS))
+DEPS:=$(OBJ_MAIN:.o=.d) $(OBJ_SUBDIRS:.o=.d)
+TEST_DEPS:=$(OBJ_SUBDIRS:.o=.d)
 
 # Executable targets
 MAIN=$(BIN_DIR)/cpp_gui
@@ -37,7 +40,7 @@ ifeq ($(DEBUG),1)
 CPP_FLAGS += -DDEBUG
 endif
 
-ifeq ($(DEBUG_DEBUG),1)
+ifeq ($(DEBUG),2)
 CPP_FLAGS += -DDEBUG -DDEBUG_DEBUG
 endif
 
@@ -56,8 +59,15 @@ $(MAIN): $(OBJ_MAIN) $(LIB).a $(STYLE_LIB).a
 	@mkdir -p $(BIN_DIR)
 	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD)
 
+# Rule for compiling all object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CPP_C) $(CPP_FLAGS) -c $< -o $@
+
+-include $(DEPS)
+
 # Build the tests executable (tests + lib)
-$(TESTS): $(OBJ_TESTS) $(LIB).a $(TESTS_LIB) $(STYLE_LIB).a
+$(TESTS): $(OBJ_TESTS) $(LIB).a $(COMMONS_LIB) $(TESTS_LIB) $(STYLE_LIB).a
 	@mkdir -p $(BIN_DIR)
 	$(CPP_C) $(CPP_FLAGS) -o $@ $^ $(SDL_CMD) -Wl,-rpath,'$(SHARED_LIBS_PATH)'
 
@@ -66,19 +76,12 @@ $(OBJ_TEST_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CPP_C) $(CPP_FLAGS) -c $< -o $@
 
+-include $(TEST_DEPS)
+
 $(STYLE_LIB).a:
 	$(MAKE) -C cpp_style lib DEBUG=$(DEBUG)
-
-$(TESTS_LIB).a:
-	$(MAKE) -C cpp_tests lib DEBUG=$(DEBUG)
-
-# Rule for compiling all object files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(dir $@)
-	$(CPP_C) $(CPP_FLAGS) -c $< -o $@
 
 # Clean all generated files
 clean:
 	rm -rf bin obj
 	$(MAKE) -C cpp_style clean
-	$(MAKE) -C cpp_tests clean

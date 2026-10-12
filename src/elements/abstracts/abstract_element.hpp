@@ -1,10 +1,10 @@
 #ifndef ABSTRACT_ELEMENT_HPP
 #define ABSTRACT_ELEMENT_HPP
 
-#include "../../../cpp_commons/src/node.hpp"
 #include "../../element_style/element_style.hpp"
 #include "../../thread_safe/queue.hpp"
 #include "abstract_utils.hpp"
+#include <cppcommons/node.hpp>
 
 #include <functional>
 #include <string>
@@ -72,7 +72,7 @@ namespace gui::element {
          * Should call each child with a portion of the element surface
          */
         virtual void renderChildrenWrapper(std::function<bool(const AbstractElement *, RenderData *)> renderChildCallback,
-                                         std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {};
+                                           std::function<const ElementData *(const AbstractElement *)> childInfosCallback) const {};
 
         /**
          * Should call rendering functions, including (if used) previous functions.

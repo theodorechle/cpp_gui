@@ -7,3 +7,4 @@ obj/**
 log*
 valgrind-suppressions
 compile_commands.json
+.cache
