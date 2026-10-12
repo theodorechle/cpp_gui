@@ -99,10 +99,5 @@ jobs:
       - name: Compile tests
         run: make -j $(nproc) tests SHARED_LIBS_BASE_PATH=$LIBS_INSTALL_PATH
 
-      - name: Upload binaries artifacts
-        uses: actions/uploadd-artifact@v4
-        with:
-          name: binaries
-
       - name: Execute tests
         run: bin/tests
