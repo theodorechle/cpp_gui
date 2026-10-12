@@ -1,0 +1,4 @@
+[submodule "cpp_style"]
+	path = cpp_style
+	url = git@github.com:theodorechle/cpp_style
+	branch = main
