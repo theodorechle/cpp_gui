@@ -10,8 +10,11 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  LIBS_INSTALL_PATH: /tmp/libs
+
 jobs:
-  build:
+  install-libs:
     runs-on: ubuntu-latest
 
     steps:
@@ -72,8 +75,7 @@ jobs:
         id: cache-custom-libs
         uses: actions/cache@v5
         with:
-          path: |
-            /tmp/libs
+          path: $LIBS_INSTALL_PATH
           key: ${{ runner.os }}-cache-custom-libs
 
       - if: ${{ steps.cache-custom-libs.outputs.cache-hit != 'true' }}
@@ -82,20 +84,26 @@ jobs:
           git clone https://github.com/theodorechle/cpp_tests
           cd cpp_tests
           make -j $(nproc)
-          make install INSTALL_PATH=/tmp/libs
+          make install INSTALL_PATH=$LIBS_INSTALL_PATH
           cd ..
 
           git clone https://github.com/theodorechle/cpp_commons
           cd cpp_commons
           make -j $(nproc)
-          make install INSTALL_PATH=/tmp/libs
+          make install INSTALL_PATH=$LIBS_INSTALL_PATH
           cd ..
 
+  build:
+    runs-on: ubuntu-latest
+    steps:
       - name: Compile main program
-        run: make -j $(nproc) SHARED_LIBS_BASE_PATH=/tmp/libs
+        run: make -j $(nproc) SHARED_LIBS_BASE_PATH=$LIBS_INSTALL_PATH
 
       - name: Compile tests
-        run: make -j $(nproc) tests SHARED_LIBS_BASE_PATH=/tmp/libs
+        run: make -j $(nproc) tests SHARED_LIBS_BASE_PATH=$LIBS_INSTALL_PATH
 
+  tests:
+    runs-on: ubuntu-latest
+    steps:
       - name: Execute tests
         run: bin/tests
