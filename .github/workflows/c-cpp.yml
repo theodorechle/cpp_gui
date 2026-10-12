@@ -92,7 +92,7 @@ jobs:
           cd ..
 
       - name: Compile main program
-        run: make -j $(nproc)
+        run: make -j $(nproc) SHARED_LIBS_BASE_PATH=/tmp/libs
 
       - name: Compile tests
         run: make -j $(nproc) tests SHARED_LIBS_BASE_PATH=/tmp/libs
