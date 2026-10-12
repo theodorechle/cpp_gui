@@ -14,7 +14,7 @@ env:
   LIBS_INSTALL_PATH: /tmp/libs
 
 jobs:
-  install-libs:
+  build-and-run-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -88,10 +88,6 @@ jobs:
           make install INSTALL_PATH=$LIBS_INSTALL_PATH
           cd ..
 
-  build:
-    needs: [install-libs]
-    runs-on: ubuntu-latest
-    steps:
       - name: Checkout repository and submodules
         uses: actions/checkout@v5
         with:
@@ -103,9 +99,10 @@ jobs:
       - name: Compile tests
         run: make -j $(nproc) tests SHARED_LIBS_BASE_PATH=$LIBS_INSTALL_PATH
 
-  tests:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
+      - name: Upload binaries artifacts
+        uses: actions/uploadd-artifact@v4
+        with:
+          name: binaries
+
       - name: Execute tests
         run: bin/tests
