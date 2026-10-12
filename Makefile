@@ -79,7 +79,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # Clean all generated files
 clean:
-	@find obj -mindepth 1 ! -name .gitkeep -delete
-	@find bin -mindepth 1 ! -name .gitkeep -delete
+	rm -rf bin obj
 	$(MAKE) -C cpp_style clean
 	$(MAKE) -C cpp_tests clean
