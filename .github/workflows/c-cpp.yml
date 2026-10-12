@@ -94,6 +94,7 @@ jobs:
           cd ..
 
   build:
+    needs: [install-libs]
     runs-on: ubuntu-latest
     steps:
       - name: Compile main program
@@ -103,6 +104,7 @@ jobs:
         run: make -j $(nproc) tests SHARED_LIBS_BASE_PATH=$LIBS_INSTALL_PATH
 
   tests:
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Execute tests
